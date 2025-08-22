@@ -363,5 +363,15 @@
   "create": "Crear",
   "delete": "Eliminar",
   "deleting": "Eliminando...",
-  "locale": "es"
+  "locale": "es",
+  "additional_payments": {
+    "title": "Pagos Adicionales",
+    "subtitle": "Gestión unificada de ingresos adicionales para todo el personal",
+    "actions": {
+      "add_income": "Agregar Ingreso"
+    },
+    "dialogs": {
+      "new_income_title": "Nuevo Ingreso Adicional"
+    }
+  }
 }

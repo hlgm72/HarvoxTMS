@@ -363,5 +363,15 @@
   "create": "Create",
   "delete": "Delete",
   "deleting": "Deleting...",
-  "locale": "en"
+  "locale": "en",
+  "additional_payments": {
+    "title": "Additional Payments",
+    "subtitle": "Unified management of additional income for all personnel",
+    "actions": {
+      "add_income": "Add Income"
+    },
+    "dialogs": {
+      "new_income_title": "New Additional Income"
+    }
+  }
 }

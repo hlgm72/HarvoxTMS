@@ -7,15 +7,12 @@ import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
 import { UnifiedOtherIncomeForm } from "@/components/payments/UnifiedOtherIncomeForm";
 import { Calculator, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
+  const { t } = useTranslation();
   const [isCreateIncomeDialogOpen, setIsCreateIncomeDialogOpen] = useState(false);
-
-  // Subtitle general para la página
-  const getSubtitle = () => {
-    return "Gestión unificada de ingresos adicionales para todo el personal";
-  };
 
   const handleAddIncome = () => {
     setIsCreateIncomeDialogOpen(true);
@@ -25,13 +22,13 @@ export default function AdditionalPayments() {
     <>
       <PageToolbar 
         icon={Calculator}
-        title="Pagos Adicionales" 
-        subtitle={getSubtitle()}
+        title={t('additional_payments.title')}
+        subtitle={t('additional_payments.subtitle')}
         actions={
           <div className="flex gap-2">
             <Button onClick={handleAddIncome} className="gap-2">
               <Plus className="h-4 w-4" />
-              Agregar Ingreso
+              {t('additional_payments.actions.add_income')}
             </Button>
           </div>
         }
@@ -45,7 +42,7 @@ export default function AdditionalPayments() {
       <Dialog open={isCreateIncomeDialogOpen} onOpenChange={setIsCreateIncomeDialogOpen}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle>Nuevo Ingreso Adicional</DialogTitle>
+            <DialogTitle>{t('additional_payments.dialogs.new_income_title')}</DialogTitle>
           </DialogHeader>
           <UnifiedOtherIncomeForm 
             onClose={() => setIsCreateIncomeDialogOpen(false)} 
