@@ -83,15 +83,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Querying user company roles...");
     const { data: userRole, error: roleError } = await supabase
       .from("user_company_roles")
-      .select(`
-        company_id,
-        companies!user_company_roles_company_id_fkey (
-          name,
-          email,
-          owner_email,
-          owner_name
-        )
-      `)
+      .select("company_id")
       .eq("user_id", user.id)
       .eq("is_active", true)
       .limit(1)
@@ -117,7 +109,19 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("No se pudo obtener información de la compañía");
     }
 
-    const company = userRole.companies as any;
+    // Get company information separately
+    console.log("Querying company information...");
+    const { data: company, error: companyError } = await supabase
+      .from("companies")
+      .select("name, email, owner_email, owner_name")
+      .eq("id", userRole.company_id)
+      .single();
+
+    if (companyError) {
+      console.error("Company error details:", companyError);
+      throw new Error(`Error al consultar información de la empresa: ${companyError.message}`);
+    }
+
     const companyName = company.name || "FleetNest";
     const senderName = `${companyName} (via FleetNest)`;
     const companyEmail = company.email || company.owner_email;
