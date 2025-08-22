@@ -71,13 +71,19 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
         // Handle Supabase storage URLs
         let storageFilePath = documentUrl;
+        let bucketName = 'load-documents'; // default bucket
+        
         if (documentUrl.includes('/load-documents/')) {
           storageFilePath = documentUrl.split('/load-documents/')[1];
+          bucketName = 'load-documents';
+        } else if (documentUrl.includes('/company-documents/')) {
+          storageFilePath = documentUrl.split('/company-documents/')[1];
+          bucketName = 'company-documents';
         }
 
         // Generate signed URL for preview
         const { data: signedUrlData, error: urlError } = await supabase.storage
-          .from('load-documents')
+          .from(bucketName)
           .createSignedUrl(storageFilePath, 3600);
 
         if (urlError) {
