@@ -3,22 +3,35 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker using multiple approaches to ensure it works
-// console.log('🔧 DocumentPreview: Configuring PDF.js worker');
+// Configure PDF.js worker with better error handling
+let workerConfigured = false;
 
-// Method 1: Use the recommended approach for react-pdf v10+
-try {
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url,
-  ).toString();
-  // console.log('✅ DocumentPreview: Worker configured with .mjs file:', pdfjs.GlobalWorkerOptions.workerSrc);
-} catch (error) {
-  console.warn('⚠️ DocumentPreview: Failed to configure .mjs worker, trying fallback:', error);
-  // Fallback to CDN approach
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
-  console.log('✅ DocumentPreview: Fallback worker configured:', pdfjs.GlobalWorkerOptions.workerSrc);
-}
+const configurePDFWorker = () => {
+  if (workerConfigured) return;
+  
+  try {
+    // Method 1: Try the modern approach first
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.mjs',
+      import.meta.url,
+    ).toString();
+    workerConfigured = true;
+    console.log('✅ PDF worker configured with .mjs file');
+  } catch (error) {
+    console.warn('⚠️ Failed to configure .mjs worker, trying CDN fallback:', error);
+    
+    try {
+      // Fallback to CDN
+      pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+      workerConfigured = true;
+      console.log('✅ PDF worker configured with CDN fallback');
+    } catch (fallbackError) {
+      console.error('❌ Failed to configure PDF worker:', fallbackError);
+      // Last resort - disable PDF previews
+      workerConfigured = false;
+    }
+  }
+};
 
 interface DocumentPreviewProps {
   documentUrl: string;
@@ -37,6 +50,13 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [fileType, setFileType] = useState<'image' | 'pdf' | 'other'>('other');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pdfWorkerReady, setPdfWorkerReady] = useState(false);
+
+  // Configure PDF worker on component mount
+  useEffect(() => {
+    configurePDFWorker();
+    setPdfWorkerReady(workerConfigured);
+  }, []);
 
   useEffect(() => {
     const loadPreview = async () => {
@@ -136,12 +156,28 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
+      // If PDF worker is not ready, show a fallback icon
+      if (!pdfWorkerReady) {
+        return (
+          <div className="flex flex-col items-center justify-center h-full bg-muted/20">
+            <FileText className="h-8 w-8 text-muted-foreground mb-1" />
+            <div className="text-xs text-muted-foreground text-center">
+              PDF Preview
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
           <Document
             file={previewUrl}
-            onLoadError={() => {
+            onLoadError={(error) => {
+              console.error('PDF load error:', error);
               setError('Error loading PDF');
+            }}
+            onLoadSuccess={() => {
+              console.log('PDF loaded successfully');
             }}
             loading={
               <div className="flex items-center justify-center w-full h-32 bg-muted/20">
@@ -149,6 +185,11 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               </div>
             }
             className="w-full h-full"
+            options={{
+              cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
+              cMapPacked: true,
+              standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+            }}
           >
             <Page
               pageNumber={1}
@@ -157,6 +198,10 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               renderTextLayer={false}
               renderAnnotationLayer={false}
               className="w-full h-full"
+              onRenderError={(error) => {
+                console.error('PDF render error:', error);
+                setError('Error rendering PDF');
+              }}
             />
           </Document>
         </div>
