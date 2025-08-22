@@ -226,17 +226,6 @@ export function DocumentCard({
               </span>
             </div>
           )}
-
-          {/* Download Button */}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleDownload}
-            className="w-full text-xs h-8"
-          >
-            <Download className="h-3 w-3 mr-1" />
-            Descargar
-          </Button>
         </div>
 
         {/* Right column - Menu and Preview */}
@@ -326,38 +315,38 @@ export function DocumentCard({
           </div>
 
           {/* Document Preview */}
-          <div className="w-full aspect-square">
+          <div className="w-full aspect-square flex-1">
             <DocumentPreview
               documentUrl={document.file_url}
               fileName={document.file_name}
               className="w-full h-full rounded border"
             />
           </div>
-
-          {/* Action buttons below preview */}
-          <div className="space-y-1">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleDownload}
-              className="w-full text-xs h-7"
-            >
-              <FileText className="h-3 w-3 mr-1" />
-              Ver
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => {
-                // TODO: Implement email functionality
-                console.log('Enviar por email:', document.file_name);
-              }}
-              className="w-full text-xs h-7"
-            >
-              📧 Email
-            </Button>
-          </div>
         </div>
+      </div>
+
+      {/* Bottom row - Action buttons aligned horizontally */}
+      <div className="flex gap-2 px-4 pb-4">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleDownload}
+          className="flex-1 text-xs h-8"
+        >
+          <Download className="h-3 w-3 mr-1" />
+          Descargar
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => {
+            // TODO: Implement email functionality
+            console.log('Enviar por email:', document.file_name);
+          }}
+          className="flex-1 text-xs h-8"
+        >
+          📧 Email
+        </Button>
       </div>
     </Card>
   );
