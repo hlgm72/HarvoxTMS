@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
+import DocumentPreview from "@/components/loads/DocumentPreview";
 
 interface PredefinedDocumentType {
   value: string;
@@ -154,173 +155,187 @@ export function DocumentCard({
 
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3">
-            <div className="text-2xl">{getFileIcon()}</div>
-            <div className="flex-1 min-w-0">
-              <CardTitle className="text-sm font-medium line-clamp-2">
-                {typeInfo.label}
-              </CardTitle>
-              <CardDescription className="text-xs line-clamp-1">
-                {document.file_name}
-              </CardDescription>
-            </div>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleDownload}>
-                <Download className="h-4 w-4 mr-2" />
-                Descargar
-              </DropdownMenuItem>
+      <div className="flex">
+        {/* Left side - Document Info */}
+        <div className="flex-1">
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">{getFileIcon()}</div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-sm font-medium line-clamp-2">
+                    {typeInfo.label}
+                  </CardTitle>
+                  <CardDescription className="text-xs line-clamp-1">
+                    {document.file_name}
+                  </CardDescription>
+                </div>
+              </div>
               
-              {onEdit && (
-                <DropdownMenuItem onClick={() => onEdit(document)}>
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Editar
-                </DropdownMenuItem>
-              )}
-              {isArchived ? (
-                onRestore && (
-                  <DropdownMenuItem 
-                    onClick={() => onRestore(document.id)}
-                    className="text-green-600"
-                  >
-                    <ArchiveRestore className="h-4 w-4 mr-2" />
-                    Restaurar
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleDownload}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Descargar
                   </DropdownMenuItem>
-                )
-              ) : (
-                onArchive && (
-                  <DropdownMenuItem 
-                    onClick={() => onArchive(document.id)}
-                    className="text-amber-600"
-                  >
-                    <Archive className="h-4 w-4 mr-2" />
-                    Archivar
-                  </DropdownMenuItem>
-                )
-              )}
-              
-              {isCompanyOwner && (
-                <>
-                  <DropdownMenuSeparator />
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
+                  
+                  {onEdit && (
+                    <DropdownMenuItem onClick={() => onEdit(document)}>
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Editar
+                    </DropdownMenuItem>
+                  )}
+                  {isArchived ? (
+                    onRestore && (
                       <DropdownMenuItem 
-                        onSelect={(e) => e.preventDefault()}
-                        className="text-destructive focus:text-destructive"
+                        onClick={() => onRestore(document.id)}
+                        className="text-green-600"
                       >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Eliminar permanentemente
+                        <ArchiveRestore className="h-4 w-4 mr-2" />
+                        Restaurar
                       </DropdownMenuItem>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar documento permanentemente?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Esta acción no se puede deshacer. El documento será eliminado permanentemente 
-                          de nuestros servidores y se registrará en el log de auditoría.
-                          <br /><br />
-                          <strong>Archivo:</strong> {document.file_name}
-                          <br />
-                          <strong>Tipo:</strong> {document.document_type}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction 
-                          onClick={handlePermanentDelete}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Eliminar permanentemente
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </>
+                    )
+                  ) : (
+                    onArchive && (
+                      <DropdownMenuItem 
+                        onClick={() => onArchive(document.id)}
+                        className="text-amber-600"
+                      >
+                        <Archive className="h-4 w-4 mr-2" />
+                        Archivar
+                      </DropdownMenuItem>
+                    )
+                  )}
+                  
+                  {isCompanyOwner && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem 
+                            onSelect={(e) => e.preventDefault()}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Eliminar permanentemente
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Eliminar documento permanentemente?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta acción no se puede deshacer. El documento será eliminado permanentemente 
+                              de nuestros servidores y se registrará en el log de auditoría.
+                              <br /><br />
+                              <strong>Archivo:</strong> {document.file_name}
+                              <br />
+                              <strong>Tipo:</strong> {document.document_type}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={handlePermanentDelete}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Eliminar permanentemente
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Badges */}
+            <div className="flex flex-wrap gap-2">
+              {typeInfo.critical && (
+                <Badge variant="secondary" className="text-xs">
+                  Crítico
+                </Badge>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {/* Badges */}
-        <div className="flex flex-wrap gap-2">
-          {typeInfo.critical && (
-            <Badge variant="secondary" className="text-xs">
-              Crítico
-            </Badge>
-          )}
-          {getExpiryBadge()}
-        </div>
-      </CardHeader>
-
-      <CardContent className="pt-0 space-y-3">
-        {/* Document Dates */}
-        <div className="space-y-1">
-          {document.issue_date && (
-            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-              <Calendar className="h-3 w-3" />
-              <span>
-                Emitido: {formatDateOnly(document.issue_date)}
-              </span>
+              {getExpiryBadge()}
             </div>
-          )}
-          
-          {document.expires_at && (
-            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-              <Calendar className="h-3 w-3" />
-              <span>
-                Vence: {formatExpiryDate(document.expires_at)}
-              </span>
+          </CardHeader>
+
+          <CardContent className="pt-0 space-y-3">
+            {/* Document Dates */}
+            <div className="space-y-1">
+              {document.issue_date && (
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  <span>
+                    Emitido: {formatDateOnly(document.issue_date)}
+                  </span>
+                </div>
+              )}
+              
+              {document.expires_at && (
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  <span>
+                    Vence: {formatExpiryDate(document.expires_at)}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* File Info */}
+            <div className="space-y-1 text-xs text-muted-foreground">
+              <div>Tamaño: {formatFileSize(document.file_size)}</div>
+              <div>
+                Subido: {formatDateOnly(document.created_at)}
+              </div>
+            </div>
+
+            {/* Expiry Warning */}
+            {(expiryStatus === "expired" || expiryStatus === "expiring") && (
+              <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
+                expiryStatus === "expired" 
+                  ? "bg-red-50 text-red-700 border border-red-200" 
+                  : "bg-amber-50 text-amber-700 border border-amber-200"
+              }`}>
+                <AlertCircle className="h-3 w-3" />
+                <span>
+                  {expiryStatus === "expired" 
+                    ? "Este documento ha vencido" 
+                    : "Este documento vence pronto"
+                  }
+                </span>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex space-x-2 pt-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleDownload}
+                className="flex-1 text-xs h-8"
+              >
+                <Download className="h-3 w-3 mr-1" />
+                Descargar
+              </Button>
+            </div>
+          </CardContent>
         </div>
 
-        {/* File Info */}
-        <div className="space-y-1 text-xs text-muted-foreground">
-          <div>Tamaño: {formatFileSize(document.file_size)}</div>
-          <div>
-            Subido: {formatDateOnly(document.created_at)}
-          </div>
+        {/* Right side - Document Preview */}
+        <div className="w-48 border-l bg-muted/20">
+          <DocumentPreview
+            documentUrl={document.file_url}
+            fileName={document.file_name}
+            className="h-full w-full rounded-none"
+          />
         </div>
-
-        {/* Expiry Warning */}
-        {(expiryStatus === "expired" || expiryStatus === "expiring") && (
-          <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
-            expiryStatus === "expired" 
-              ? "bg-red-50 text-red-700 border border-red-200" 
-              : "bg-amber-50 text-amber-700 border border-amber-200"
-          }`}>
-            <AlertCircle className="h-3 w-3" />
-            <span>
-              {expiryStatus === "expired" 
-                ? "Este documento ha vencido" 
-                : "Este documento vence pronto"
-              }
-            </span>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex space-x-2 pt-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleDownload}
-            className="flex-1 text-xs h-8"
-          >
-            <Download className="h-3 w-3 mr-1" />
-            Descargar
-          </Button>
-        </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }
