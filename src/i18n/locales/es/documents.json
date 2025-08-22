@@ -1,0 +1,91 @@
+{
+  "title": "Documentos de la Compañía",
+  "subtitle": "Gestiona certificados, permisos y documentación legal",
+  "actions": {
+    "upload": "Subir Documento",
+    "upload_short": "Subir",
+    "upload_first": "Subir Primer Documento",
+    "view_active": "Ver Activos",
+    "view_archived": "Ver Archivados",
+    "active": "Activos",
+    "archived": "Archivados",
+    "email": "Enviar por Email ({{count}})",
+    "email_short": "Email ({{count}})",
+    "add": "Agregar",
+    "add_short": "Agregar"
+  },
+  "upload": {
+    "title": "Subir Nuevo Documento",
+    "description": "Selecciona el tipo de documento y sube el archivo correspondiente"
+  },
+  "categories": {
+    "all": "Todos",
+    "all_short": "Todo",
+    "legal": "Legales",
+    "legal_full": "Documentos Legales",
+    "insurance": "Seguros",
+    "insurance_short": "Seguro",
+    "permits": "Permisos",
+    "permits_short": "Permit",
+    "financial": "Financieros",
+    "financial_short": "Money",
+    "contracts": "Contratos",
+    "contracts_short": "Contr",
+    "other": "Otros",
+    "other_full": "Otros Documentos"
+  },
+  "types": {
+    "legal": {
+      "incorporation": "Incorporación",
+      "ein": "EIN (Tax ID)",
+      "business_license": "Licencia Comercial",
+      "operating_agreement": "Acuerdo Operativo"
+    },
+    "insurance": {
+      "general_liability": "Seguro General",
+      "auto_liability": "Seguro Vehicular",
+      "cargo_insurance": "Seguro de Carga",
+      "workers_comp": "Compensación Trabajadores"
+    },
+    "permits": {
+      "dot_permit": "Permiso DOT",
+      "mc_authority": "Autoridad MC",
+      "interstate_permit": "Permiso Interestatal",
+      "hazmat_permit": "Permiso Materiales Peligrosos"
+    },
+    "financial": {
+      "w9": "Formulario W-9",
+      "bank_statements": "Estados Bancarios",
+      "factoring_agreement": "Acuerdo de Factoraje",
+      "credit_application": "Aplicación de Crédito"
+    },
+    "contracts": {
+      "broker_agreement": "Acuerdo con Broker",
+      "customer_contract": "Contrato Cliente",
+      "lease_agreement": "Acuerdo de Arrendamiento"
+    }
+  },
+  "status": {
+    "total": "Total Documentos",
+    "expiring": "Por Vencer (30 días)",
+    "expired": "Vencidos"
+  },
+  "selection": {
+    "select_all": "Seleccionar Todos",
+    "deselect_all": "Deseleccionar Todos",
+    "selected": "{{selected}} de {{total}} documentos seleccionados"
+  },
+  "empty": {
+    "no_documents": "No hay documentos",
+    "no_documents_description": "Comienza subiendo los documentos esenciales de tu compañía",
+    "no_category": "No hay documentos en esta categoría",
+    "no_other": "No hay otros documentos"
+  },
+  "notifications": {
+    "archived_success": "Documento archivado exitosamente",
+    "restored_success": "Documento restaurado exitosamente",
+    "archive_error": "No se pudo archivar el documento",
+    "restore_error": "No se pudo restaurar el documento",
+    "no_selection": "Selecciona al menos un documento para enviar"
+  }
+}

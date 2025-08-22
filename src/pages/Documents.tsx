@@ -17,53 +17,58 @@ import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal"
 import { DocumentEditModal } from "@/components/documents/DocumentEditModal";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
+import { useTranslation } from "react-i18next";
 
-// Tipos de documentos predefinidos con categorías
-const PREDEFINED_DOCUMENT_TYPES = {
-  legal: {
-    title: "Documentos Legales",
-    types: [
-      { value: "incorporation", label: "Incorporación", critical: true },
-      { value: "ein", label: "EIN (Tax ID)", critical: true },
-      { value: "business_license", label: "Licencia Comercial", critical: true },
-      { value: "operating_agreement", label: "Acuerdo Operativo", critical: false }
-    ]
-  },
-  insurance: {
-    title: "Seguros",
-    types: [
-      { value: "general_liability", label: "Seguro General", critical: true },
-      { value: "auto_liability", label: "Seguro Vehicular", critical: true },
-      { value: "cargo_insurance", label: "Seguro de Carga", critical: true },
-      { value: "workers_comp", label: "Compensación Trabajadores", critical: false }
-    ]
-  },
-  permits: {
-    title: "Permisos y Licencias",
-    types: [
-      { value: "dot_permit", label: "Permiso DOT", critical: true },
-      { value: "mc_authority", label: "Autoridad MC", critical: true },
-      { value: "interstate_permit", label: "Permiso Interestatal", critical: false },
-      { value: "hazmat_permit", label: "Permiso Materiales Peligrosos", critical: false }
-    ]
-  },
-  financial: {
-    title: "Documentos Financieros",
-    types: [
-      { value: "w9", label: "Formulario W-9", critical: true },
-      { value: "bank_statements", label: "Estados Bancarios", critical: false },
-      { value: "factoring_agreement", label: "Acuerdo de Factoraje", critical: false },
-      { value: "credit_application", label: "Aplicación de Crédito", critical: false }
-    ]
-  },
-  contracts: {
-    title: "Contratos",
-    types: [
-      { value: "broker_agreement", label: "Acuerdo con Broker", critical: false },
-      { value: "customer_contract", label: "Contrato Cliente", critical: false },
-      { value: "lease_agreement", label: "Acuerdo de Arrendamiento", critical: false }
-    ]
-  }
+// Función para obtener tipos de documentos con traducciones
+const usePredefinedDocumentTypes = () => {
+  const { t } = useTranslation('documents');
+  
+  return {
+    legal: {
+      title: t('categories.legal_full'),
+      types: [
+        { value: "incorporation", label: t('types.legal.incorporation'), critical: true },
+        { value: "ein", label: t('types.legal.ein'), critical: true },
+        { value: "business_license", label: t('types.legal.business_license'), critical: true },
+        { value: "operating_agreement", label: t('types.legal.operating_agreement'), critical: false }
+      ]
+    },
+    insurance: {
+      title: t('categories.insurance'),
+      types: [
+        { value: "general_liability", label: t('types.insurance.general_liability'), critical: true },
+        { value: "auto_liability", label: t('types.insurance.auto_liability'), critical: true },
+        { value: "cargo_insurance", label: t('types.insurance.cargo_insurance'), critical: true },
+        { value: "workers_comp", label: t('types.insurance.workers_comp'), critical: false }
+      ]
+    },
+    permits: {
+      title: t('categories.permits'),
+      types: [
+        { value: "dot_permit", label: t('types.permits.dot_permit'), critical: true },
+        { value: "mc_authority", label: t('types.permits.mc_authority'), critical: true },
+        { value: "interstate_permit", label: t('types.permits.interstate_permit'), critical: false },
+        { value: "hazmat_permit", label: t('types.permits.hazmat_permit'), critical: false }
+      ]
+    },
+    financial: {
+      title: t('categories.financial'),
+      types: [
+        { value: "w9", label: t('types.financial.w9'), critical: true },
+        { value: "bank_statements", label: t('types.financial.bank_statements'), critical: false },
+        { value: "factoring_agreement", label: t('types.financial.factoring_agreement'), critical: false },
+        { value: "credit_application", label: t('types.financial.credit_application'), critical: false }
+      ]
+    },
+    contracts: {
+      title: t('categories.contracts'),
+      types: [
+        { value: "broker_agreement", label: t('types.contracts.broker_agreement'), critical: false },
+        { value: "customer_contract", label: t('types.contracts.customer_contract'), critical: false },
+        { value: "lease_agreement", label: t('types.contracts.lease_agreement'), critical: false }
+      ]
+    }
+  };
 };
 
 interface CompanyDocument {
@@ -85,6 +90,9 @@ interface CompanyDocument {
 }
 
 export default function Documents() {
+  const { t } = useTranslation('documents');
+  const PREDEFINED_DOCUMENT_TYPES = usePredefinedDocumentTypes();
+  
   const [activeTab, setActiveTab] = useState("all");
   const [viewMode, setViewMode] = useState<DocumentViewMode>("cards");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -132,7 +140,7 @@ export default function Documents() {
     },
     onSuccess: (archivedDocumentId) => {
       queryClient.invalidateQueries({ queryKey: ["company-documents"] });
-      showSuccess("Documento archivado", "El documento ha sido archivado exitosamente");
+      showSuccess(t('notifications.archived_success'));
       // Remove from selection if it was selected
       setSelectedDocuments(prev => {
         const newSet = new Set(prev);
@@ -141,7 +149,7 @@ export default function Documents() {
       });
     },
     onError: (error: any) => {
-      showError("Error", error.message || "No se pudo archivar el documento");
+      showError("Error", error.message || t('notifications.archive_error'));
     }
   });
 
@@ -158,7 +166,7 @@ export default function Documents() {
     },
     onSuccess: (restoredDocumentId) => {
       queryClient.invalidateQueries({ queryKey: ["company-documents"] });
-      showSuccess("Documento restaurado", "El documento ha sido restaurado exitosamente");
+      showSuccess(t('notifications.restored_success'));
       // Remove from selection if it was selected
       setSelectedDocuments(prev => {
         const newSet = new Set(prev);
@@ -167,7 +175,7 @@ export default function Documents() {
       });
     },
     onError: (error: any) => {
-      showError("Error", error.message || "No se pudo restaurar el documento");
+      showError("Error", error.message || t('notifications.restore_error'));
     }
   });
 
@@ -238,7 +246,7 @@ export default function Documents() {
 
   const handleOpenEmailModal = () => {
     if (selectedDocuments.size === 0) {
-      showError("Sin documentos", "Selecciona al menos un documento para enviar");
+      showError("Error", t('notifications.no_selection'));
       return;
     }
     setEmailModalOpen(true);
@@ -261,23 +269,23 @@ export default function Documents() {
     <div>
       <PageToolbar 
         icon={FileText}
-        title="Documentos de la Compañía"
-        subtitle="Gestiona certificados, permisos y documentación legal"
+        title={t('title')}
+        subtitle={t('subtitle')}
         actions={
           <div className="flex gap-2">
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={() => handleOpenUploadDialog()}>
                   <Plus className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Subir Documento</span>
-                  <span className="sm:hidden">Subir</span>
+                  <span className="hidden sm:inline">{t('actions.upload')}</span>
+                  <span className="sm:hidden">{t('actions.upload_short')}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Subir Nuevo Documento</DialogTitle>
+                  <DialogTitle>{t('upload.title')}</DialogTitle>
                   <DialogDescription>
-                    Selecciona el tipo de documento y sube el archivo correspondiente
+                    {t('upload.description')}
                   </DialogDescription>
                 </DialogHeader>
                 <CompanyDocumentUpload
@@ -306,14 +314,14 @@ export default function Documents() {
               {showArchived ? (
                 <>
                   <ArchiveX className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Ver Activos</span>
-                  <span className="sm:hidden">Activos</span>
+                  <span className="hidden sm:inline">{t('actions.view_active')}</span>
+                  <span className="sm:hidden">{t('actions.active')}</span>
                 </>
               ) : (
                 <>
                   <Archive className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Ver Archivados</span>
-                  <span className="sm:hidden">Archivados</span>
+                  <span className="hidden sm:inline">{t('actions.view_archived')}</span>
+                  <span className="sm:hidden">{t('actions.archived')}</span>
                 </>
               )}
             </Button>
@@ -324,8 +332,8 @@ export default function Documents() {
             {selectedDocuments.size > 0 && (
               <Button variant="outline" size="sm" onClick={handleOpenEmailModal}>
                 <Mail className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Enviar por Email ({selectedDocuments.size})</span>
-                <span className="sm:hidden">Email ({selectedDocuments.size})</span>
+                <span className="hidden sm:inline">{t('actions.email', { count: selectedDocuments.size })}</span>
+                <span className="sm:hidden">{t('actions.email_short', { count: selectedDocuments.size })}</span>
               </Button>
             )}
           </div>
@@ -338,7 +346,7 @@ export default function Documents() {
             <div className="flex items-center space-x-2">
               <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Total Documentos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('status.total')}</p>
                 <p className="text-lg sm:text-2xl font-bold">{statusCounts.total}</p>
               </div>
             </div>
@@ -350,7 +358,7 @@ export default function Documents() {
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Por Vencer (30 días)</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('status.expiring')}</p>
                 <p className="text-lg sm:text-2xl font-bold text-amber-600">{statusCounts.expiring}</p>
               </div>
             </div>
@@ -362,7 +370,7 @@ export default function Documents() {
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Vencidos</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('status.expired')}</p>
                 <p className="text-lg sm:text-2xl font-bold text-red-600">{statusCounts.expired}</p>
               </div>
             </div>
@@ -375,38 +383,38 @@ export default function Documents() {
         <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto gap-1">
           <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Todos</span>
-            <span className="sm:hidden">Todo</span>
+            <span className="hidden sm:inline">{t('categories.all')}</span>
+            <span className="sm:hidden">{t('categories.all_short')}</span>
           </TabsTrigger>
           <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <FileCheck className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Legales</span>
-            <span className="sm:hidden">Legal</span>
+            <span className="hidden sm:inline">{t('categories.legal')}</span>
+            <span className="sm:hidden">{t('categories.legal')}</span>
           </TabsTrigger>
           <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Seguros</span>
-            <span className="sm:hidden">Seguro</span>
+            <span className="hidden sm:inline">{t('categories.insurance')}</span>
+            <span className="sm:hidden">{t('categories.insurance_short')}</span>
           </TabsTrigger>
           <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Permisos</span>
-            <span className="sm:hidden">Permit</span>
+            <span className="hidden sm:inline">{t('categories.permits')}</span>
+            <span className="sm:hidden">{t('categories.permits_short')}</span>
           </TabsTrigger>
           <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Financieros</span>
-            <span className="sm:hidden">Money</span>
+            <span className="hidden sm:inline">{t('categories.financial')}</span>
+            <span className="sm:hidden">{t('categories.financial_short')}</span>
           </TabsTrigger>
           <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Contratos</span>
-            <span className="sm:hidden">Contr</span>
+            <span className="hidden sm:inline">{t('categories.contracts')}</span>
+            <span className="sm:hidden">{t('categories.contracts_short')}</span>
           </TabsTrigger>
           <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Otros</span>
-            <span className="sm:hidden">Otros</span>
+            <span className="hidden sm:inline">{t('categories.other')}</span>
+            <span className="sm:hidden">{t('categories.other')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -424,10 +432,10 @@ export default function Documents() {
                 ) : (
                   <CheckSquare className="w-4 h-4 mr-2" />
                 )}
-                {selectedDocuments.size === documents.length ? 'Deseleccionar Todos' : 'Seleccionar Todos'}
+                {selectedDocuments.size === documents.length ? t('selection.deselect_all') : t('selection.select_all')}
               </Button>
               <span className="text-sm text-muted-foreground">
-                {selectedDocuments.size} de {documents.length} documentos seleccionados
+                {t('selection.selected', { selected: selectedDocuments.size, total: documents.length })}
               </span>
             </div>
           )}
@@ -478,13 +486,13 @@ export default function Documents() {
           {documents.length === 0 && (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No hay documentos</h3>
+              <h3 className="text-lg font-medium mb-2">{t('empty.no_documents')}</h3>
               <p className="text-muted-foreground mb-4">
-                Comienza subiendo los documentos esenciales de tu compañía
+                {t('empty.no_documents_description')}
               </p>
               <Button onClick={() => handleOpenUploadDialog()}>
                 <Upload className="w-4 h-4 mr-2" />
-                Subir Primer Documento
+                {t('actions.upload_first')}
               </Button>
             </div>
           )}
@@ -495,12 +503,12 @@ export default function Documents() {
           <TabsContent key={categoryKey} value={categoryKey} className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">{category.title}</h2>
-              <Button 
+                <Button 
                 variant="outline" 
                 onClick={() => handleOpenUploadDialog()}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Agregar</span>
+                <span className="hidden sm:inline">{t('actions.add')}</span>
               </Button>
             </div>
             
@@ -552,14 +560,14 @@ export default function Documents() {
               <div className="text-center py-8">
                 <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                 <p className="text-muted-foreground mb-4">
-                  No hay documentos en esta categoría
+                  {t('empty.no_category')}
                 </p>
                 <Button 
                   variant="outline" 
                   onClick={() => handleOpenUploadDialog()}
                 >
                   <Upload className="w-4 h-4 mr-2" />
-                  Subir {category.title}
+                  {t('actions.upload')} {category.title}
                 </Button>
               </div>
             )}
@@ -569,13 +577,13 @@ export default function Documents() {
         {/* Other documents */}
         <TabsContent value="other" className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Otros Documentos</h2>
+            <h2 className="text-xl font-semibold">{t('categories.other_full')}</h2>
             <Button 
               variant="outline" 
               onClick={() => handleOpenUploadDialog("custom")}
             >
               <Plus className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Agregar</span>
+              <span className="hidden sm:inline">{t('actions.add')}</span>
             </Button>
           </div>
           
@@ -637,14 +645,14 @@ export default function Documents() {
             <div className="text-center py-8">
               <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-muted-foreground mb-4">
-                No hay otros documentos
+                {t('empty.no_other')}
               </p>
               <Button 
                 variant="outline" 
                 onClick={() => handleOpenUploadDialog("custom")}
               >
                 <Upload className="w-4 h-4 mr-2" />
-                Subir Documento
+                {t('actions.upload')}
               </Button>
             </div>
           )}

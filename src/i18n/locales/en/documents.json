@@ -1,0 +1,91 @@
+{
+  "title": "Company Documents",
+  "subtitle": "Manage certificates, permits, and legal documentation",
+  "actions": {
+    "upload": "Upload Document",
+    "upload_short": "Upload",
+    "upload_first": "Upload First Document",
+    "view_active": "View Active",
+    "view_archived": "View Archived",
+    "active": "Active",
+    "archived": "Archived",
+    "email": "Send by Email ({{count}})",
+    "email_short": "Email ({{count}})",
+    "add": "Add",
+    "add_short": "Add"
+  },
+  "upload": {
+    "title": "Upload New Document",
+    "description": "Select document type and upload the corresponding file"
+  },
+  "categories": {
+    "all": "All",
+    "all_short": "All",
+    "legal": "Legal",
+    "legal_full": "Legal Documents",
+    "insurance": "Insurance",
+    "insurance_short": "Insurance",
+    "permits": "Permits",
+    "permits_short": "Permits",
+    "financial": "Financial",
+    "financial_short": "Financial",
+    "contracts": "Contracts",
+    "contracts_short": "Contracts",
+    "other": "Other",
+    "other_full": "Other Documents"
+  },
+  "types": {
+    "legal": {
+      "incorporation": "Incorporation",
+      "ein": "EIN (Tax ID)",
+      "business_license": "Business License",
+      "operating_agreement": "Operating Agreement"
+    },
+    "insurance": {
+      "general_liability": "General Insurance",
+      "auto_liability": "Auto Insurance",
+      "cargo_insurance": "Cargo Insurance",
+      "workers_comp": "Workers' Compensation"
+    },
+    "permits": {
+      "dot_permit": "DOT Permit",
+      "mc_authority": "MC Authority",
+      "interstate_permit": "Interstate Permit",
+      "hazmat_permit": "Hazmat Permit"
+    },
+    "financial": {
+      "w9": "W-9 Form",
+      "bank_statements": "Bank Statements",
+      "factoring_agreement": "Factoring Agreement",
+      "credit_application": "Credit Application"
+    },
+    "contracts": {
+      "broker_agreement": "Broker Agreement",
+      "customer_contract": "Customer Contract",
+      "lease_agreement": "Lease Agreement"
+    }
+  },
+  "status": {
+    "total": "Total Documents",
+    "expiring": "Expiring (30 days)",
+    "expired": "Expired"
+  },
+  "selection": {
+    "select_all": "Select All",
+    "deselect_all": "Deselect All",
+    "selected": "{{selected}} of {{total}} documents selected"
+  },
+  "empty": {
+    "no_documents": "No documents",
+    "no_documents_description": "Start by uploading your company's essential documents",
+    "no_category": "No documents in this category",
+    "no_other": "No other documents"
+  },
+  "notifications": {
+    "archived_success": "Document archived successfully",
+    "restored_success": "Document restored successfully",
+    "archive_error": "Could not archive document",
+    "restore_error": "Could not restore document",
+    "no_selection": "Select at least one document to send"
+  }
+}
