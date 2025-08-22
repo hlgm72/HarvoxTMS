@@ -399,13 +399,13 @@ export function CompanyDocumentUpload({
               {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 z-40">
+          <PopoverContent className="w-auto p-0 z-[60]" align="start">
             <Calendar
               mode="single"
               selected={expiryDate}
               onSelect={setExpiryDate}
               initialFocus
-              className="pointer-events-auto"
+              className={cn("p-3 pointer-events-auto")}
               captionLayout="dropdown"
               fromYear={2020}
               toYear={2035}
