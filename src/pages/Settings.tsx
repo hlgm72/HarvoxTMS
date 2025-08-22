@@ -154,41 +154,46 @@ export default function Settings() {
         {/* Content */}
         <div className="space-y-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid gap-1 p-1 bg-muted rounded-lg grid-cols-3 lg:grid-cols-5">
+          <TabsList className="grid gap-1 p-1 bg-muted/30 rounded-lg grid-cols-3 lg:grid-cols-5 min-h-[60px]">
             <TabsTrigger 
               value="profile"
-              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
+              className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
-              <User className="h-4 w-4" />
-              <span className="text-xs md:text-sm">{t('settings.tabs.profile')}</span>
+              <User className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('settings.tabs.profile')}</span>
+              <span className="sm:hidden">Perfil</span>
             </TabsTrigger>
             <TabsTrigger 
               value="company"
-              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
+              className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
-              <Building className="h-4 w-4" />
-              <span className="text-xs md:text-sm">{t('settings.tabs.company')}</span>
+              <Building className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('settings.tabs.company')}</span>
+              <span className="sm:hidden">Empresa</span>
             </TabsTrigger>
             <TabsTrigger 
               value="system"
-              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
+              className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
-              <Database className="h-4 w-4" />
-              <span className="text-xs md:text-sm">{t('settings.tabs.system')}</span>
+              <Database className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('settings.tabs.system')}</span>
+              <span className="sm:hidden">Sistema</span>
             </TabsTrigger>
             <TabsTrigger 
               value="interface"
-              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
+              className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
-              <Palette className="h-4 w-4" />
-              <span className="text-xs md:text-sm">{t('settings.tabs.interface')}</span>
+              <Palette className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('settings.tabs.interface')}</span>
+              <span className="sm:hidden">Interfaz</span>
             </TabsTrigger>
             <TabsTrigger 
               value="notifications"
-              className="flex items-center justify-center gap-2 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
+              className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
-              <Bell className="h-4 w-4" />
-              <span className="text-xs md:text-sm">{t('settings.tabs.notifications')}</span>
+              <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{t('settings.tabs.notifications')}</span>
+              <span className="sm:hidden">Notif</span>
             </TabsTrigger>
           </TabsList>
 
