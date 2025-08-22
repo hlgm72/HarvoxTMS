@@ -26,6 +26,16 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY")!;
 
+    console.log("Environment check:", {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasServiceKey: !!supabaseServiceKey,
+      hasResendKey: !!resendApiKey
+    });
+
+    if (!supabaseUrl || !supabaseServiceKey || !resendApiKey) {
+      throw new Error("Configuración incompleta: faltan variables de entorno requeridas");
+    }
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
 
@@ -36,6 +46,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Get the authenticated user
     const authHeader = req.headers.get("Authorization");
+    console.log("Auth header present:", !!authHeader);
+    
     if (!authHeader) {
       throw new Error("No authorization header");
     }
@@ -53,14 +65,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { data: { user }, error: authError } = await authenticatedSupabase.auth.getUser();
 
-    if (authError || !user) {
+    if (authError) {
       console.error("Authentication error:", authError);
-      throw new Error("Authentication failed");
+      throw new Error(`Authentication failed: ${authError.message}`);
+    }
+
+    if (!user) {
+      console.error("No user found");
+      throw new Error("Authentication failed: no user found");
     }
 
     console.log(`Authenticated user: ${user.id}`);
 
-    // Get user's company information
+    // Get user's company information using service role client
+    console.log("Querying user company roles...");
     const { data: userRole, error: roleError } = await supabase
       .from("user_company_roles")
       .select(`
@@ -80,12 +98,20 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("User role query result:", { userRole, roleError });
 
     if (roleError) {
-      console.error("Role error:", roleError);
-      throw new Error("Error al consultar roles de usuario");
+      console.error("Role error details:", roleError);
+      throw new Error(`Error al consultar roles de usuario: ${roleError.message}`);
     }
 
     if (!userRole || !userRole.company_id) {
       console.error("No user role found for user:", user.id);
+      
+      // Try to get more info about available roles for debugging
+      const { data: allRoles, error: allRolesError } = await supabase
+        .from("user_company_roles")
+        .select("*")
+        .eq("user_id", user.id);
+      
+      console.log("All user roles:", { allRoles, allRolesError });
       throw new Error("No se pudo obtener información de la compañía");
     }
 
