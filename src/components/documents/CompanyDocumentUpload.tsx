@@ -43,6 +43,7 @@ export function CompanyDocumentUpload({
   const [documentType, setDocumentType] = useState(selectedType || "");
   const [customDocumentName, setCustomDocumentName] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [issueDate, setIssueDate] = useState<Date | undefined>();
   const [expiryDate, setExpiryDate] = useState<Date | undefined>();
   const [notes, setNotes] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -88,11 +89,12 @@ export function CompanyDocumentUpload({
       file: File;
       documentType: string;
       customDocumentName?: string;
+      issueDate?: string;
       expiryDate?: string;
       notes?: string;
       action?: 'replace' | 'version';
     }) => {
-      const { file, documentType, customDocumentName, expiryDate, notes, action = 'version' } = formData;
+      const { file, documentType, customDocumentName, issueDate, expiryDate, notes, action = 'version' } = formData;
 
       // Get user and company info
       const { data: { user } } = await supabase.auth.getUser();
@@ -152,6 +154,7 @@ export function CompanyDocumentUpload({
           file_url: publicUrl,
           file_size: file.size,
           content_type: file.type,
+          issue_date: issueDate || null,
           expires_at: expiryDate || null,
           uploaded_by: user.id,
           is_active: true,
@@ -187,6 +190,7 @@ export function CompanyDocumentUpload({
       setFile(null);
       setDocumentType("");
       setCustomDocumentName("");
+      setIssueDate(undefined);
       setExpiryDate(undefined);
       setNotes("");
       setShowDuplicateDialog(false);
@@ -254,6 +258,7 @@ export function CompanyDocumentUpload({
         file,
         documentType,
         customDocumentName,
+        issueDate: issueDate ? formatDateInUserTimeZone(issueDate) : undefined,
         expiryDate: expiryDate ? formatDateInUserTimeZone(expiryDate) : undefined,
         notes
       });
@@ -274,6 +279,7 @@ export function CompanyDocumentUpload({
       file: file!,
       documentType,
       customDocumentName,
+      issueDate: issueDate ? formatDateInUserTimeZone(issueDate) : undefined,
       expiryDate: expiryDate ? formatDateInUserTimeZone(expiryDate) : undefined,
       notes,
       action: duplicateAction
@@ -380,6 +386,40 @@ export function CompanyDocumentUpload({
         </div>
         <p className="text-xs text-muted-foreground">
           Formatos soportados: PDF, DOC, DOCX, JPG, PNG (máx. 10MB)
+        </p>
+      </div>
+
+      {/* Issue Date */}
+      <div className="space-y-2">
+        <Label>Fecha de Emisión (Opcional)</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !issueDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {issueDate ? formatPrettyDate(issueDate) : <span>Seleccionar fecha</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 z-[60]" align="start">
+            <Calendar
+              mode="single"
+              selected={issueDate}
+              onSelect={setIssueDate}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+              captionLayout="dropdown"
+              fromYear={2020}
+              toYear={2035}
+            />
+          </PopoverContent>
+        </Popover>
+        <p className="text-xs text-muted-foreground">
+          Fecha en que fue emitido o creado el documento
         </p>
       </div>
 

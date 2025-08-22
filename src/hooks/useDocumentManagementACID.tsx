@@ -10,6 +10,7 @@ export interface DocumentData {
   file_url: string;
   file_size?: number;
   content_type?: string;
+  issue_date?: string;
   expires_at?: string;
   notes?: string;
   is_active?: boolean;
@@ -226,6 +227,7 @@ export const useDocumentUploadFlowACID = () => {
           file_url: urlData.publicUrl,
           file_size: file.size,
           content_type: file.type,
+          issue_date: documentData.issue_date,
           expires_at: documentData.expires_at,
           notes: documentData.notes,
           is_active: documentData.is_active

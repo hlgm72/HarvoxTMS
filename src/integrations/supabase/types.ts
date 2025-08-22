@@ -311,6 +311,7 @@ export type Database = {
           file_url: string
           id: string
           is_active: boolean
+          issue_date: string | null
           notes: string | null
           updated_at: string
           uploaded_by: string | null
@@ -328,6 +329,7 @@ export type Database = {
           file_url: string
           id?: string
           is_active?: boolean
+          issue_date?: string | null
           notes?: string | null
           updated_at?: string
           uploaded_by?: string | null
@@ -345,6 +347,7 @@ export type Database = {
           file_url?: string
           id?: string
           is_active?: boolean
+          issue_date?: string | null
           notes?: string | null
           updated_at?: string
           uploaded_by?: string | null
