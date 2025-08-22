@@ -54,16 +54,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     const token = authHeader.replace("Bearer ", "");
     
-    // Create authenticated client for user queries
-    const authenticatedSupabase = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
-      global: {
-        headers: {
-          Authorization: authHeader,
-        },
-      },
-    });
-
-    const { data: { user }, error: authError } = await authenticatedSupabase.auth.getUser();
+    // Verify the token directly with the service role client
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError) {
       console.error("Authentication error:", authError);
