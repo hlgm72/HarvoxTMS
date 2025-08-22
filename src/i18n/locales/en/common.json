@@ -371,7 +371,70 @@
       "add_income": "Add Income"
     },
     "dialogs": {
-      "new_income_title": "New Additional Income"
+      "new_income_title": "New Additional Income",
+      "view_details_title": "Income Details",
+      "edit_title": "Edit Additional Income",
+      "delete_title": "Delete additional income?",
+      "delete_description": "This action will permanently delete the income \"{description}\" for ${amount}. The driver period will be recalculated automatically."
+    },
+    "stats": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "total": "Total"
+    },
+    "loading": "Loading additional income...",
+    "no_records": {
+      "title": "No additional income records",
+      "subtitle": "Additional income will appear here once created"
+    },
+    "roles": {
+      "drivers": "Drivers",
+      "dispatchers": "Dispatchers", 
+      "others": "Others"
+    },
+    "section_title": "Other Income",
+    "table": {
+      "description": "Description",
+      "type": "Type",
+      "amount": "Amount",
+      "date": "Date",
+      "driver": "Driver",
+      "dispatcher": "Dispatcher",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "types": {
+      "bonus": "Bonus",
+      "reimbursement": "Reimbursement", 
+      "compensation": "Compensation",
+      "overtime": "Overtime",
+      "allowance": "Allowance",
+      "other": "Other"
+    },
+    "detail_labels": {
+      "description": "Description",
+      "type": "Type",
+      "amount": "Amount",
+      "date": "Date",
+      "status": "Status",
+      "reference": "Reference",
+      "notes": "Notes"
+    },
+    "actions_labels": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "errors": {
+      "no_name": "No name",
+      "driver_not_found": "Driver not found",
+      "dispatcher_not_found": "Dispatcher not found",
+      "user_not_found": "User not found"
     }
   }
 }

@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { formatDateOnly } from '@/lib/dateFormatting';
 import { UnifiedOtherIncomeForm } from './UnifiedOtherIncomeForm';
+import { useTranslation } from "react-i18next";
 
 interface OtherIncomeItem {
   id: string;
@@ -55,6 +56,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   const { selectedCompany } = useUserCompanies();
   const { drivers: companyDrivers = [] } = useCompanyDrivers();
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
+  const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
@@ -75,43 +77,36 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
       const driver = companyDrivers.find(d => d.user_id === userId);
       if (driver) {
         const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim();
-        return fullName || 'Sin nombre';
+        return fullName || t('additional_payments.errors.no_name');
       }
-      return 'Conductor no encontrado';
+      return t('additional_payments.errors.driver_not_found');
     } else if (role === 'dispatcher') {
       const dispatcher = dispatchers.find(d => d.id === userId);
       if (dispatcher) {
         const fullName = `${dispatcher.first_name || ''} ${dispatcher.last_name || ''}`.trim();
-        return fullName || 'Sin nombre';
+        return fullName || t('additional_payments.errors.no_name');
       }
-      return 'Despachador no encontrado';
+      return t('additional_payments.errors.dispatcher_not_found');
     }
-    return 'Usuario no encontrado';
+    return t('additional_payments.errors.user_not_found');
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
-        return <Badge variant="default" className="gap-1"><CheckCircle className="h-3 w-3" />Aprobado</Badge>;
+        return <Badge variant="default" className="gap-1"><CheckCircle className="h-3 w-3" />{t('additional_payments.status.approved')}</Badge>;
       case "pending":
-        return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />Pendiente</Badge>;
+        return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />{t('additional_payments.status.pending')}</Badge>;
       case "rejected":
-        return <Badge variant="destructive" className="gap-1"><AlertCircle className="h-3 w-3" />Rechazado</Badge>;
+        return <Badge variant="destructive" className="gap-1"><AlertCircle className="h-3 w-3" />{t('additional_payments.status.rejected')}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const getIncomeTypeLabel = (type: string) => {
-    const types: Record<string, string> = {
-      bonus: "Bonificación",
-      reimbursement: "Reembolso",
-      compensation: "Compensación",
-      overtime: "Horas Extra",
-      allowance: "Asignación",
-      other: "Otro"
-    };
-    return types[type] || type;
+    const typeKey = `additional_payments.types.${type}`;
+    return t(typeKey, { defaultValue: type });
   };
 
   const handleViewItem = (item: OtherIncomeItem) => {
@@ -165,7 +160,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-6 w-6 animate-spin" />
-        <span className="ml-2">Cargando otros ingresos...</span>
+        <span className="ml-2">{t('additional_payments.loading')}</span>
       </div>
     );
   }
@@ -181,7 +176,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Aprobados</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('additional_payments.stats.approved')}</p>
                 <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalApproved)}</p>
               </div>
             </div>
@@ -195,7 +190,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Pendientes</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('additional_payments.stats.pending')}</p>
                 <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalPending)}</p>
               </div>
             </div>
@@ -209,7 +204,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('additional_payments.stats.total')}</p>
                 <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalApproved + totalPending)}</p>
               </div>
             </div>
@@ -224,12 +219,12 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                Agregar Ingreso
+                {t('additional_payments.actions.add_income')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md bg-white">
               <DialogHeader>
-                <DialogTitle>Nuevo Ingreso</DialogTitle>
+                <DialogTitle>{t('additional_payments.dialogs.new_income_title')}</DialogTitle>
               </DialogHeader>
               <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
             </DialogContent>
@@ -243,15 +238,15 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
           <CardContent className="p-8">
             <div className="text-center text-muted-foreground">
               <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium">No hay registros de otros ingresos</p>
-              <p className="text-sm">Los ingresos adicionales aparecerán aquí una vez creados</p>
+              <p className="text-lg font-medium">{t('additional_payments.no_records.title')}</p>
+              <p className="text-sm">{t('additional_payments.no_records.subtitle')}</p>
             </div>
           </CardContent>
         </Card>
       ) : (
         Object.entries(groupedData).map(([role, roleData]) => {
           const roleStats = getRoleStats(roleData);
-          const roleName = role === 'driver' ? 'Conductores' : role === 'dispatcher' ? 'Despachadores' : 'Otros';
+          const roleName = role === 'driver' ? t('additional_payments.roles.drivers') : role === 'dispatcher' ? t('additional_payments.roles.dispatchers') : t('additional_payments.roles.others');
           
           return (
             <Card key={role}>
@@ -260,12 +255,12 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                   <div className="space-y-1">
                     <CardTitle className="flex items-center gap-2">
                       <DollarSign className="h-5 w-5" />
-                      Otros Ingresos - {roleName}
+                      {t('additional_payments.section_title')} - {roleName}
                     </CardTitle>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>Aprobados: ${formatCurrency(roleStats.approved)}</span>
-                      <span>Pendientes: ${formatCurrency(roleStats.pending)}</span>
-                      <span className="font-medium">Total: ${formatCurrency(roleStats.total)}</span>
+                      <span>{t('additional_payments.stats.approved')}: ${formatCurrency(roleStats.approved)}</span>
+                      <span>{t('additional_payments.stats.pending')}: ${formatCurrency(roleStats.pending)}</span>
+                      <span className="font-medium">{t('additional_payments.stats.total')}: ${formatCurrency(roleStats.total)}</span>
                     </div>
                   </div>
                 </div>
@@ -274,13 +269,13 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Descripción</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Monto</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      {!isDriver && <TableHead>{role === 'driver' ? 'Conductor' : 'Despachador'}</TableHead>}
-                      <TableHead>Estado</TableHead>
-                      <TableHead className="w-[100px]">Acciones</TableHead>
+                      <TableHead>{t('additional_payments.table.description')}</TableHead>
+                      <TableHead>{t('additional_payments.table.type')}</TableHead>
+                      <TableHead>{t('additional_payments.table.amount')}</TableHead>
+                      <TableHead>{t('additional_payments.table.date')}</TableHead>
+                      {!isDriver && <TableHead>{role === 'driver' ? t('additional_payments.table.driver') : t('additional_payments.table.dispatcher')}</TableHead>}
+                      <TableHead>{t('additional_payments.table.status')}</TableHead>
+                      <TableHead className="w-[100px]">{t('additional_payments.table.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -339,43 +334,43 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Detalles del Ingreso</DialogTitle>
+            <DialogTitle>{t('additional_payments.dialogs.view_details_title')}</DialogTitle>
           </DialogHeader>
           {selectedItem && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium">Descripción</Label>
+                  <Label className="text-sm font-medium">{t('additional_payments.detail_labels.description')}</Label>
                   <p className="text-sm text-muted-foreground">{selectedItem.description}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Tipo</Label>
+                  <Label className="text-sm font-medium">{t('additional_payments.detail_labels.type')}</Label>
                   <p className="text-sm text-muted-foreground">{getIncomeTypeLabel(selectedItem.income_type)}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Monto</Label>
+                  <Label className="text-sm font-medium">{t('additional_payments.detail_labels.amount')}</Label>
                   <p className="text-sm font-semibold text-green-600">${formatCurrency(selectedItem.amount)}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Fecha</Label>
+                  <Label className="text-sm font-medium">{t('additional_payments.detail_labels.date')}</Label>
                   <p className="text-sm text-muted-foreground">
                     {formatDateOnly(selectedItem.income_date)}
                   </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Estado</Label>
+                  <Label className="text-sm font-medium">{t('additional_payments.detail_labels.status')}</Label>
                   <div>{getStatusBadge(selectedItem.status)}</div>
                 </div>
                 {selectedItem.reference_number && (
                   <div>
-                    <Label className="text-sm font-medium">Referencia</Label>
+                    <Label className="text-sm font-medium">{t('additional_payments.detail_labels.reference')}</Label>
                     <p className="text-sm text-muted-foreground">{selectedItem.reference_number}</p>
                   </div>
                 )}
               </div>
               {selectedItem.notes && (
                 <div>
-                  <Label className="text-sm font-medium">Notas</Label>
+                  <Label className="text-sm font-medium">{t('additional_payments.detail_labels.notes')}</Label>
                   <p className="text-sm text-muted-foreground">{selectedItem.notes}</p>
                 </div>
               )}
@@ -388,7 +383,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle>Editar Ingreso Adicional</DialogTitle>
+            <DialogTitle>{t('additional_payments.dialogs.edit_title')}</DialogTitle>
           </DialogHeader>
           {itemToEdit && (
             <UnifiedOtherIncomeForm 
@@ -415,15 +410,16 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar ingreso adicional?</AlertDialogTitle>
+            <AlertDialogTitle>{t('additional_payments.dialogs.delete_title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará permanentemente el ingreso "{itemToDelete?.description}" 
-              por ${formatCurrency(itemToDelete?.amount || 0)}. El período del conductor será 
-              recalculado automáticamente.
+              {t('additional_payments.dialogs.delete_description', {
+                description: itemToDelete?.description || '',
+                amount: formatCurrency(itemToDelete?.amount || 0)
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('additional_payments.actions_labels.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmDelete}
               disabled={deleteOtherIncome.isPending}
@@ -432,10 +428,10 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               {deleteOtherIncome.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Eliminando...
+                  {t('additional_payments.actions_labels.deleting')}
                 </>
               ) : (
-                'Eliminar'
+                t('additional_payments.actions_labels.delete')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

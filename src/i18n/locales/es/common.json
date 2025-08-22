@@ -371,7 +371,70 @@
       "add_income": "Agregar Ingreso"
     },
     "dialogs": {
-      "new_income_title": "Nuevo Ingreso Adicional"
+      "new_income_title": "Nuevo Ingreso Adicional",
+      "view_details_title": "Detalles del Ingreso",
+      "edit_title": "Editar Ingreso Adicional",
+      "delete_title": "¿Eliminar ingreso adicional?",
+      "delete_description": "Esta acción eliminará permanentemente el ingreso \"{description}\" por ${amount}. El período del conductor será recalculado automáticamente."
+    },
+    "stats": {
+      "approved": "Aprobados",
+      "pending": "Pendientes",
+      "total": "Total"
+    },
+    "loading": "Cargando otros ingresos...",
+    "no_records": {
+      "title": "No hay registros de otros ingresos",
+      "subtitle": "Los ingresos adicionales aparecerán aquí una vez creados"
+    },
+    "roles": {
+      "drivers": "Conductores",
+      "dispatchers": "Despachadores",
+      "others": "Otros"
+    },
+    "section_title": "Otros Ingresos",
+    "table": {
+      "description": "Descripción",
+      "type": "Tipo",
+      "amount": "Monto",
+      "date": "Fecha",
+      "driver": "Conductor",
+      "dispatcher": "Despachador",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente", 
+      "rejected": "Rechazado"
+    },
+    "types": {
+      "bonus": "Bonificación",
+      "reimbursement": "Reembolso",
+      "compensation": "Compensación",
+      "overtime": "Horas Extra",
+      "allowance": "Asignación",
+      "other": "Otro"
+    },
+    "detail_labels": {
+      "description": "Descripción",
+      "type": "Tipo",
+      "amount": "Monto",
+      "date": "Fecha",
+      "status": "Estado",
+      "reference": "Referencia",
+      "notes": "Notas"
+    },
+    "actions_labels": {
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "deleting": "Eliminando..."
+    },
+    "errors": {
+      "no_name": "Sin nombre",
+      "driver_not_found": "Conductor no encontrado",
+      "dispatcher_not_found": "Despachador no encontrado",
+      "user_not_found": "Usuario no encontrado"
     }
   }
 }
