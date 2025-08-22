@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore, Trash2 } from "lucide-react";
+import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore, Trash2, Pencil } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
@@ -48,6 +48,7 @@ interface DocumentCardProps {
   predefinedTypes: Record<string, DocumentCategory>;
   onArchive?: (id: string) => void;
   onRestore?: (id: string) => void;
+  onEdit?: (document: CompanyDocument) => void;
   getExpiryStatus: (expiresAt?: string) => string;
   isArchived?: boolean;
 }
@@ -57,6 +58,7 @@ export function DocumentCard({
   predefinedTypes, 
   onArchive, 
   onRestore,
+  onEdit,
   getExpiryStatus,
   isArchived = false
 }: DocumentCardProps) {
@@ -177,6 +179,13 @@ export function DocumentCard({
                 <Download className="h-4 w-4 mr-2" />
                 Descargar
               </DropdownMenuItem>
+              
+              {onEdit && (
+                <DropdownMenuItem onClick={() => onEdit(document)}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Editar
+                </DropdownMenuItem>
+              )}
               {isArchived ? (
                 onRestore && (
                   <DropdownMenuItem 

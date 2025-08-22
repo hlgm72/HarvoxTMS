@@ -14,6 +14,7 @@ import { DocumentCard } from "@/components/documents/DocumentCard";
 import { DocumentTable } from "@/components/documents/DocumentTable";
 import { DocumentViewToggle, DocumentViewMode } from "@/components/documents/DocumentViewToggle";
 import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal";
+import { DocumentEditModal } from "@/components/documents/DocumentEditModal";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
 
@@ -67,9 +68,11 @@ const PREDEFINED_DOCUMENT_TYPES = {
 
 interface CompanyDocument {
   id: string;
+  company_id: string;
   document_type: string;
   file_name: string;
   file_url: string;
+  issue_date?: string;
   expires_at?: string;
   created_at: string;
   file_size?: number;
@@ -78,6 +81,7 @@ interface CompanyDocument {
   is_active: boolean;
   archived_at?: string;
   archived_by?: string;
+  notes?: string;
 }
 
 export default function Documents() {
@@ -85,8 +89,10 @@ export default function Documents() {
   const [viewMode, setViewMode] = useState<DocumentViewMode>("cards");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>("");
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
+  const [editingDocument, setEditingDocument] = useState<CompanyDocument | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
@@ -236,6 +242,11 @@ export default function Documents() {
       return;
     }
     setEmailModalOpen(true);
+  };
+
+  const handleEditDocument = (document: CompanyDocument) => {
+    setEditingDocument(document);
+    setEditModalOpen(true);
   };
 
   if (isLoading) {
@@ -440,6 +451,7 @@ export default function Documents() {
                       predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
                       onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                       onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                      onEdit={handleEditDocument}
                       getExpiryStatus={getExpiryStatus}
                       isArchived={showArchived}
                     />
@@ -456,6 +468,7 @@ export default function Documents() {
                   onSelectAll={handleSelectAll}
                   onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                   onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                  onEdit={handleEditDocument}
                   getExpiryStatus={getExpiryStatus}
                   isArchived={showArchived}
                 />
@@ -510,6 +523,7 @@ export default function Documents() {
                         predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
                         onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                         onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                        onEdit={handleEditDocument}
                         getExpiryStatus={getExpiryStatus}
                         isArchived={showArchived}
                       />
@@ -526,6 +540,7 @@ export default function Documents() {
                     onSelectAll={handleSelectAll}
                     onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                     onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                    onEdit={handleEditDocument}
                     getExpiryStatus={getExpiryStatus}
                     isArchived={showArchived}
                   />
@@ -589,6 +604,7 @@ export default function Documents() {
                         predefinedTypes={PREDEFINED_DOCUMENT_TYPES}
                         onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                         onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                        onEdit={handleEditDocument}
                         getExpiryStatus={getExpiryStatus}
                         isArchived={showArchived}
                       />
@@ -607,6 +623,7 @@ export default function Documents() {
                   onSelectAll={handleSelectAll}
                   onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                   onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
+                  onEdit={handleEditDocument}
                   getExpiryStatus={getExpiryStatus}
                   isArchived={showArchived}
                 />
@@ -633,6 +650,16 @@ export default function Documents() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Edit Modal */}
+      <DocumentEditModal
+        document={editingDocument}
+        open={editModalOpen}
+        onOpenChange={(open) => {
+          setEditModalOpen(open);
+          if (!open) setEditingDocument(null);
+        }}
+      />
 
       {/* Email Modal */}
       <EmailDocumentsModal

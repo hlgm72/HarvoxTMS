@@ -45,7 +45,8 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Trash2
+  Trash2,
+  Pencil
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -87,6 +88,7 @@ interface DocumentTableProps {
   onSelectAll: () => void;
   onArchive?: (id: string) => void;
   onRestore?: (id: string) => void;
+  onEdit?: (document: CompanyDocument) => void;
   getExpiryStatus: (expiresAt?: string) => string;
   isArchived?: boolean;
 }
@@ -102,6 +104,7 @@ export function DocumentTable({
   onSelectAll,
   onArchive,
   onRestore,
+  onEdit,
   getExpiryStatus,
   isArchived = false
 }: DocumentTableProps) {
@@ -458,9 +461,16 @@ export function DocumentTable({
                           </DropdownMenuTrigger>
                            <DropdownMenuContent align="end">
                              <DropdownMenuItem onClick={() => handleDownload(document)}>
-                               <Download className="h-4 w-4 mr-2" />
-                               Descargar
-                             </DropdownMenuItem>
+                                <Download className="h-4 w-4 mr-2" />
+                                Descargar
+                              </DropdownMenuItem>
+                              
+                              {onEdit && (
+                                <DropdownMenuItem onClick={() => onEdit(document)}>
+                                  <Pencil className="h-4 w-4 mr-2" />
+                                  Editar
+                                </DropdownMenuItem>
+                              )}
                              {isArchived ? (
                                onRestore && (
                                  <DropdownMenuItem 
