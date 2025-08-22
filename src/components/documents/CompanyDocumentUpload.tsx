@@ -289,7 +289,8 @@ export function CompanyDocumentUpload({
   const selectedTypeInfo = allPredefinedTypes.find(t => t.value === documentType);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="bg-background border rounded-lg p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6">
       {/* Document Type Selection */}
       <div className="space-y-2">
         <Label htmlFor="document-type">Tipo de Documento *</Label>
@@ -491,6 +492,7 @@ export function CompanyDocumentUpload({
           )}
         </Button>
       </div>
+      </form>
 
       {/* Duplicate Document Dialog */}
       <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
@@ -584,6 +586,6 @@ export function CompanyDocumentUpload({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </form>
+    </div>
   );
 }
