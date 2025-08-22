@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
+import { formatPrettyDate } from '@/lib/dateFormatting';
 import { CalendarIcon, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -105,64 +106,81 @@ export function DocumentEditModal({ document, open, onOpenChange }: DocumentEdit
             <p className="text-xs text-muted-foreground">{document.document_type}</p>
           </div>
 
-          {/* Issue Date */}
-          <div className="space-y-2">
-            <Label>Fecha de emisión</Label>
-            <Popover open={issueDateOpen} onOpenChange={setIssueDateOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !issueDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {issueDate ? format(issueDate, "dd/MM/yyyy") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={issueDate}
-                  onSelect={(date) => {
-                    setIssueDate(date);
-                    setIssueDateOpen(false);
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          {/* Issue Date & Expiry Date */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Issue Date */}
+            <div className="space-y-2">
+              <Label>Fecha de Emisión</Label>
+              <Popover open={issueDateOpen} onOpenChange={setIssueDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !issueDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {issueDate ? formatPrettyDate(issueDate) : <span>Seleccionar fecha</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 z-[60]" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={issueDate}
+                    onSelect={(date) => {
+                      setIssueDate(date);
+                      setIssueDateOpen(false);
+                    }}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                    captionLayout="dropdown"
+                    fromYear={2000}
+                    toYear={2035}
+                  />
+                </PopoverContent>
+              </Popover>
+              <p className="text-xs text-muted-foreground">
+                Fecha de emisión del documento
+              </p>
+            </div>
 
-          {/* Expiry Date */}
-          <div className="space-y-2">
-            <Label>Fecha de vencimiento</Label>
-            <Popover open={expiryDateOpen} onOpenChange={setExpiryDateOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !expiryDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expiryDate ? format(expiryDate, "dd/MM/yyyy") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={expiryDate}
-                  onSelect={(date) => {
-                    setExpiryDate(date);
-                    setExpiryDateOpen(false);
-                  }}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            {/* Expiry Date */}
+            <div className="space-y-2">
+              <Label>Fecha de Vencimiento</Label>
+              <Popover open={expiryDateOpen} onOpenChange={setExpiryDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !expiryDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 z-[60]" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={expiryDate}
+                    onSelect={(date) => {
+                      setExpiryDate(date);
+                      setExpiryDateOpen(false);
+                    }}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                    captionLayout="dropdown"
+                    fromYear={2020}
+                    toYear={2035}
+                  />
+                </PopoverContent>
+              </Popover>
+              <p className="text-xs text-muted-foreground">
+                Te notificaremos antes de que expire
+              </p>
+            </div>
           </div>
 
           {/* Notes */}
@@ -171,7 +189,7 @@ export function DocumentEditModal({ document, open, onOpenChange }: DocumentEdit
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Notas adicionales sobre el documento..."
+              placeholder="Agrega cualquier información adicional sobre este documento..."
               rows={3}
             />
           </div>
