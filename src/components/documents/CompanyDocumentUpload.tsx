@@ -18,6 +18,13 @@ import { useFleetNotifications } from "@/components/notifications";
 import { Upload, FileText, Copy, Replace } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
+interface DocumentACIDResponse {
+  success: boolean;
+  message?: string;
+  document?: any;
+  document_id?: string;
+}
+
 interface PredefinedDocumentType {
   value: string;
   label: string;
@@ -146,24 +153,29 @@ export function CompanyDocumentUpload({
         .from("company-documents")
         .getPublicUrl(fileName);
 
-      // Save document record
-      const { error: insertError } = await supabase
-        .from("company_documents")
-        .insert({
-          company_id: companyId,
-          document_type: documentType,
-          file_name: documentType === "custom" ? customDocumentName || file.name : file.name,
-          file_url: publicUrl,
-          file_size: file.size,
-          content_type: file.type,
-          issue_date: issueDate || null,
-          expires_at: expiryDate || null,
-          uploaded_by: user.id,
-          is_active: true,
-          ...(notes && { notes })
+      // Save document record using ACID function
+      const { data: rpcResult, error: insertError } = await supabase
+        .rpc('create_or_update_document_with_validation', {
+          document_data: {
+            company_id: companyId,
+            document_type: documentType,
+            file_name: documentType === "custom" ? customDocumentName || file.name : file.name,
+            file_url: publicUrl,
+            file_size: file.size,
+            content_type: file.type,
+            issue_date: issueDate || null,
+            expires_at: expiryDate || null,
+            notes: notes || null,
+            is_active: true
+          }
         });
 
       if (insertError) throw insertError;
+      
+      const result = rpcResult as unknown as DocumentACIDResponse;
+      if (!result?.success) {
+        throw new Error(result?.message || 'Error en validación de documento');
+      }
 
       return { fileName, publicUrl, action, wasReplaced: !!existing };
     },
