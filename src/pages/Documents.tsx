@@ -15,6 +15,7 @@ import { DocumentTable } from "@/components/documents/DocumentTable";
 import { DocumentViewToggle, DocumentViewMode } from "@/components/documents/DocumentViewToggle";
 import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal";
 import { PageToolbar } from "@/components/layout/PageToolbar";
+import { useCompanyCache } from "@/hooks/useCompanyCache";
 
 // Tipos de documentos predefinidos con categorías
 const PREDEFINED_DOCUMENT_TYPES = {
@@ -89,20 +90,28 @@ export default function Documents() {
   const [showArchived, setShowArchived] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
   // Fetch company documents
   const { data: documents = [], isLoading } = useQuery({
-    queryKey: ["company-documents", showArchived],
+    queryKey: ["company-documents", userCompany?.company_id, showArchived],
     queryFn: async () => {
+      if (!userCompany?.company_id) {
+        console.warn("No company_id found for user");
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("company_documents")
         .select("*")
+        .eq("company_id", userCompany.company_id)
         .eq("is_active", !showArchived)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as CompanyDocument[];
-    }
+    },
+    enabled: !!userCompany?.company_id && !cacheLoading && !cacheError
   });
 
   // Archive document mutation
