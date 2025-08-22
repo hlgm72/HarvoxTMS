@@ -40,13 +40,25 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("No authorization header");
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
+    const token = authHeader.replace("Bearer ", "");
+    
+    // Create authenticated client for user queries
+    const authenticatedSupabase = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: {
+        headers: {
+          Authorization: authHeader,
+        },
+      },
+    });
+
+    const { data: { user }, error: authError } = await authenticatedSupabase.auth.getUser();
 
     if (authError || !user) {
+      console.error("Authentication error:", authError);
       throw new Error("Authentication failed");
     }
+
+    console.log(`Authenticated user: ${user.id}`);
 
     // Get user's company information
     const { data: userRole, error: roleError } = await supabase
@@ -65,7 +77,15 @@ const handler = async (req: Request): Promise<Response> => {
       .limit(1)
       .maybeSingle();
 
-    if (roleError || !userRole) {
+    console.log("User role query result:", { userRole, roleError });
+
+    if (roleError) {
+      console.error("Role error:", roleError);
+      throw new Error("Error al consultar roles de usuario");
+    }
+
+    if (!userRole || !userRole.company_id) {
+      console.error("No user role found for user:", user.id);
       throw new Error("No se pudo obtener información de la compañía");
     }
 
