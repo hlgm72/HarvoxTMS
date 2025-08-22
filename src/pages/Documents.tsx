@@ -93,11 +93,14 @@ export default function Documents() {
   const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
   console.log("Company cache debug:", { userCompany, cacheLoading, cacheError });
+  console.log("UserCompany full object:", userCompany);
 
   // Fetch company documents
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ["company-documents", userCompany?.company_id, showArchived],
     queryFn: async () => {
+      console.log("🔍 Executing documents query with company_id:", userCompany?.company_id);
+      
       if (!userCompany?.company_id) {
         console.warn("No company_id found for user");
         return [];
@@ -110,11 +113,15 @@ export default function Documents() {
         .eq("is_active", !showArchived)
         .order("created_at", { ascending: false });
 
+      console.log("📄 Documents query result:", { data, error, company_id: userCompany.company_id, showArchived });
+      
       if (error) throw error;
       return data as CompanyDocument[];
     },
     enabled: !!userCompany?.company_id && !cacheLoading && !cacheError
   });
+
+  console.log("📋 Final documents state:", { documents, isLoading, enabled: !!userCompany?.company_id && !cacheLoading && !cacheError });
 
   // Archive document mutation
   const archiveMutation = useMutation({
