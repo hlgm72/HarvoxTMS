@@ -319,4 +319,44 @@ All colors MUST be HSL.
   input[type="email"] {
     transition: background-color 0ms 50000s;
   }
+
+  /* Calendar dropdown month/year alignment fixes */
+  .rdp-dropdown_month,
+  .rdp-dropdown_year {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 32px !important;
+    padding: 4px 8px !important;
+    line-height: 1.5 !important;
+  }
+
+  .rdp-dropdown select {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    line-height: 1.5 !important;
+    padding: 4px 8px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  /* Ensure proper alignment for caption elements */
+  .rdp-caption_label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Fix any additional alignment issues in calendar */
+  .rdp-dropdown_month select,
+  .rdp-dropdown_year select {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align-last: center !important;
+  }
 }
