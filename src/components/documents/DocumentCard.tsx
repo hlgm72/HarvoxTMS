@@ -295,23 +295,6 @@ export function DocumentCard({
               Subido: {formatDateOnly(document.created_at)}
             </div>
           </div>
-
-          {/* Expiry Warning */}
-          {(expiryStatus === "expired" || expiryStatus === "expiring") && (
-            <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
-              expiryStatus === "expired" 
-                ? "bg-red-50 text-red-700 border border-red-200" 
-                : "bg-amber-50 text-amber-700 border border-amber-200"
-            }`}>
-              <AlertCircle className="h-3 w-3" />
-              <span>
-                {expiryStatus === "expired" 
-                  ? "Este documento ha vencido" 
-                  : "Este documento vence pronto"
-                }
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Right column - Preview only */}
