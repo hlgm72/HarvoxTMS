@@ -165,9 +165,6 @@ export function DocumentCard({
               <CardTitle className="text-sm font-medium line-clamp-2">
                 {typeInfo.label}
               </CardTitle>
-              <CardDescription className="text-xs line-clamp-1">
-                {document.file_name}
-              </CardDescription>
             </div>
           </div>
 
@@ -180,6 +177,11 @@ export function DocumentCard({
             )}
             {getExpiryBadge()}
           </div>
+
+          {/* File Name */}
+          <CardDescription className="text-xs line-clamp-1 text-muted-foreground">
+            {document.file_name}
+          </CardDescription>
 
           {/* Document Dates */}
           <div className="space-y-1">
