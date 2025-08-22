@@ -9,7 +9,6 @@ import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PreferencesForm } from '@/components/profile/PreferencesForm';
-import { OnboardingPreferencesForm } from '@/components/profile/OnboardingPreferencesForm';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -120,11 +119,8 @@ export default function Profile() {
               </CardContent>
             </Card>
 
-            {/* Language & Timezone Preferences */}
-            <PreferencesForm showCancelButton={false} />
-
-            {/* Onboarding Options */}
-            <OnboardingPreferencesForm />
+            {/* Language & Timezone Preferences with Onboarding Section */}
+            <PreferencesForm showCancelButton={false} showOnboardingSection={true} />
           </div>
         </div>
       </div>
