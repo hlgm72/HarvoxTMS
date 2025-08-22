@@ -298,9 +298,9 @@ export function DocumentCard({
         </div>
 
         {/* Right column - Preview only */}
-        <div className="w-32 sm:w-40">
+        <div className="w-36 sm:w-48">
           {/* Document Preview */}
-          <div className="w-full aspect-square">
+          <div className="w-full h-36 sm:h-48">
             <DocumentPreview
               documentUrl={document.file_url}
               fileName={document.file_name}
