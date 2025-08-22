@@ -63,7 +63,7 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
           </TabsContent>
 
           <TabsContent value="preferences" className="space-y-4 mt-0">
-            <PreferencesForm onCancel={onCancel} showCancelButton={showCancelButton} />
+            <PreferencesForm onCancel={onCancel} showCancelButton={showCancelButton} showOnboardingSection={true} />
           </TabsContent>
 
           {isDriver && (

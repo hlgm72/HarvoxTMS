@@ -118,9 +118,6 @@ export default function Profile() {
                 <ProfileForm onCancel={onCancelProfile} />
               </CardContent>
             </Card>
-
-            {/* Language & Timezone Preferences with Onboarding Section */}
-            <PreferencesForm showCancelButton={false} showOnboardingSection={true} />
           </div>
         </div>
       </div>
