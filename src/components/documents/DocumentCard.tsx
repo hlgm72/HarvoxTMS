@@ -158,89 +158,25 @@ export function DocumentCard({
       <div className="flex gap-4 p-4">
         {/* Left column - Document Info */}
         <div className="flex-1 space-y-3">
-          {/* Document Title and Icon */}
-          <div className="flex items-start space-x-3">
-            <div className="text-2xl">{getFileIcon()}</div>
-            <div className="flex-1 min-w-0">
-              <CardTitle className="text-sm font-medium line-clamp-2">
-                {typeInfo.label}
-              </CardTitle>
-            </div>
-          </div>
-
-          {/* Badges */}
-          <div className="flex flex-wrap gap-2">
-            {typeInfo.critical && (
-              <Badge variant="secondary" className="text-xs">
-                Crítico
-              </Badge>
-            )}
-            {getExpiryBadge()}
-          </div>
-
-          {/* File Name */}
-          <CardDescription className="text-xs line-clamp-1 text-muted-foreground">
-            {document.file_name}
-          </CardDescription>
-
-          {/* Document Dates */}
-          <div className="space-y-1">
-            {document.issue_date && (
-              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                <span>
-                  Emitido: {formatDateOnly(document.issue_date)}
-                </span>
+          {/* Document Title and Icon with Menu */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-start space-x-3 flex-1">
+              <div className="text-2xl">{getFileIcon()}</div>
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-sm font-medium line-clamp-2">
+                  {typeInfo.label}
+                </CardTitle>
               </div>
-            )}
+            </div>
             
-            {document.expires_at && (
-              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />
-                <span>
-                  Vence: {formatExpiryDate(document.expires_at)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* File Info */}
-          <div className="space-y-1 text-xs text-muted-foreground">
-            <div>Tamaño: {formatFileSize(document.file_size)}</div>
-            <div>
-              Subido: {formatDateOnly(document.created_at)}
-            </div>
-          </div>
-
-          {/* Expiry Warning */}
-          {(expiryStatus === "expired" || expiryStatus === "expiring") && (
-            <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
-              expiryStatus === "expired" 
-                ? "bg-red-50 text-red-700 border border-red-200" 
-                : "bg-amber-50 text-amber-700 border border-amber-200"
-            }`}>
-              <AlertCircle className="h-3 w-3" />
-              <span>
-                {expiryStatus === "expired" 
-                  ? "Este documento ha vencido" 
-                  : "Este documento vence pronto"
-                }
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Right column - Menu and Preview */}
-        <div className="w-32 sm:w-40 flex flex-col space-y-2">
-          {/* Menu dropdown aligned to the right */}
-          <div className="flex justify-end">
+            {/* Menu dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="z-50">
                 <DropdownMenuItem onClick={handleDownload}>
                   <Download className="h-4 w-4 mr-2" />
                   Descargar
@@ -316,8 +252,72 @@ export function DocumentCard({
             </DropdownMenu>
           </div>
 
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2">
+            {typeInfo.critical && (
+              <Badge variant="secondary" className="text-xs">
+                Crítico
+              </Badge>
+            )}
+            {getExpiryBadge()}
+          </div>
+
+          {/* File Name */}
+          <CardDescription className="text-xs line-clamp-1 text-muted-foreground">
+            {document.file_name}
+          </CardDescription>
+
+          {/* Document Dates */}
+          <div className="space-y-1">
+            {document.issue_date && (
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  Emitido: {formatDateOnly(document.issue_date)}
+                </span>
+              </div>
+            )}
+            
+            {document.expires_at && (
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  Vence: {formatExpiryDate(document.expires_at)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* File Info */}
+          <div className="space-y-1 text-xs text-muted-foreground">
+            <div>Tamaño: {formatFileSize(document.file_size)}</div>
+            <div>
+              Subido: {formatDateOnly(document.created_at)}
+            </div>
+          </div>
+
+          {/* Expiry Warning */}
+          {(expiryStatus === "expired" || expiryStatus === "expiring") && (
+            <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
+              expiryStatus === "expired" 
+                ? "bg-red-50 text-red-700 border border-red-200" 
+                : "bg-amber-50 text-amber-700 border border-amber-200"
+            }`}>
+              <AlertCircle className="h-3 w-3" />
+              <span>
+                {expiryStatus === "expired" 
+                  ? "Este documento ha vencido" 
+                  : "Este documento vence pronto"
+                }
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Right column - Preview only */}
+        <div className="w-32 sm:w-40">
           {/* Document Preview */}
-          <div className="w-full aspect-square flex-1">
+          <div className="w-full aspect-square">
             <DocumentPreview
               documentUrl={document.file_url}
               fileName={document.file_name}
