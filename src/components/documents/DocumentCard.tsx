@@ -115,8 +115,44 @@ export function DocumentCard({
     window.document.body.removeChild(link);
   };
 
-  const handleOpenInNewTab = () => {
-    window.open(document.file_url, '_blank');
+  const handleOpenInNewTab = async () => {
+    try {
+      // Handle blob URLs (temporary documents)
+      if (document.file_url.startsWith('blob:')) {
+        window.open(document.file_url, '_blank');
+        return;
+      }
+
+      // Handle Supabase storage URLs - generate signed URL
+      let storageFilePath = document.file_url;
+      let bucketName = 'company-documents'; // default bucket
+      
+      if (document.file_url.includes('/load-documents/')) {
+        storageFilePath = document.file_url.split('/load-documents/')[1];
+        bucketName = 'load-documents';
+      } else if (document.file_url.includes('/company-documents/')) {
+        storageFilePath = document.file_url.split('/company-documents/')[1];
+        bucketName = 'company-documents';
+      }
+
+      // Generate signed URL for access
+      const { data: signedUrlData, error: urlError } = await supabase.storage
+        .from(bucketName)
+        .createSignedUrl(storageFilePath, 3600);
+
+      if (urlError) {
+        console.error('Error generating document URL:', urlError);
+        showError('Error al abrir el documento');
+        return;
+      }
+
+      if (signedUrlData?.signedUrl) {
+        window.open(signedUrlData.signedUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Error opening document:', error);
+      showError('Error al abrir el documento');
+    }
   };
 
   const handlePermanentDelete = async () => {
