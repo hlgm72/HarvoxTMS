@@ -19,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
 import DocumentPreview from "@/components/loads/DocumentPreview";
+import { DocumentPreviewModal } from "./DocumentPreviewModal";
+import { useState } from "react";
 
 interface PredefinedDocumentType {
   value: string;
@@ -65,6 +67,7 @@ export function DocumentCard({
 }: DocumentCardProps) {
   const { isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   // Find document type info
   const getDocumentTypeInfo = () => {
     for (const category of Object.values(predefinedTypes)) {
@@ -304,7 +307,11 @@ export function DocumentCard({
         {/* Right column - Preview only */}
         <div className="w-36 sm:w-48">
           {/* Document Preview */}
-          <div className="w-full h-36 sm:h-48">
+          <div 
+            className="w-full h-36 sm:h-48 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setIsPreviewModalOpen(true)}
+            title="Haz clic para ver en tamaño completo"
+          >
             <DocumentPreview
               documentUrl={document.file_url}
               fileName={document.file_name}
@@ -337,6 +344,15 @@ export function DocumentCard({
           📧 Email
         </Button>
       </div>
+
+      {/* Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={() => setIsPreviewModalOpen(false)}
+        documentUrl={document.file_url}
+        fileName={document.file_name}
+        onDownload={handleDownload}
+      />
     </Card>
   );
 }
