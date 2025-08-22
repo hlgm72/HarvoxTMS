@@ -155,9 +155,11 @@ export function DocumentCard({
 
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3 flex-1">
+      <div className="flex gap-4 p-4">
+        {/* Left column - Document Info */}
+        <div className="flex-1 space-y-3">
+          {/* Document Title and Icon */}
+          <div className="flex items-start space-x-3">
             <div className="text-2xl">{getFileIcon()}</div>
             <div className="flex-1 min-w-0">
               <CardTitle className="text-sm font-medium line-clamp-2">
@@ -168,8 +170,79 @@ export function DocumentCard({
               </CardDescription>
             </div>
           </div>
-          
-          <div className="flex flex-col items-end space-y-2">
+
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2">
+            {typeInfo.critical && (
+              <Badge variant="secondary" className="text-xs">
+                Crítico
+              </Badge>
+            )}
+            {getExpiryBadge()}
+          </div>
+
+          {/* Document Dates */}
+          <div className="space-y-1">
+            {document.issue_date && (
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  Emitido: {formatDateOnly(document.issue_date)}
+                </span>
+              </div>
+            )}
+            
+            {document.expires_at && (
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  Vence: {formatExpiryDate(document.expires_at)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* File Info */}
+          <div className="space-y-1 text-xs text-muted-foreground">
+            <div>Tamaño: {formatFileSize(document.file_size)}</div>
+            <div>
+              Subido: {formatDateOnly(document.created_at)}
+            </div>
+          </div>
+
+          {/* Expiry Warning */}
+          {(expiryStatus === "expired" || expiryStatus === "expiring") && (
+            <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
+              expiryStatus === "expired" 
+                ? "bg-red-50 text-red-700 border border-red-200" 
+                : "bg-amber-50 text-amber-700 border border-amber-200"
+            }`}>
+              <AlertCircle className="h-3 w-3" />
+              <span>
+                {expiryStatus === "expired" 
+                  ? "Este documento ha vencido" 
+                  : "Este documento vence pronto"
+                }
+              </span>
+            </div>
+          )}
+
+          {/* Download Button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleDownload}
+            className="w-full text-xs h-8"
+          >
+            <Download className="h-3 w-3 mr-1" />
+            Descargar
+          </Button>
+        </div>
+
+        {/* Right column - Menu and Preview */}
+        <div className="w-32 sm:w-40 flex flex-col space-y-2">
+          {/* Menu dropdown aligned to the right */}
+          <div className="flex justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -250,89 +323,42 @@ export function DocumentCard({
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+          </div>
 
-            {/* Document Preview - Right below the menu */}
-            <div className="w-24 h-24 sm:w-28 sm:h-28">
-              <DocumentPreview
-                documentUrl={document.file_url}
-                fileName={document.file_name}
-                className="w-full h-full rounded border"
-              />
-            </div>
+          {/* Document Preview */}
+          <div className="w-full aspect-square">
+            <DocumentPreview
+              documentUrl={document.file_url}
+              fileName={document.file_name}
+              className="w-full h-full rounded border"
+            />
+          </div>
+
+          {/* Action buttons below preview */}
+          <div className="space-y-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleDownload}
+              className="w-full text-xs h-7"
+            >
+              <FileText className="h-3 w-3 mr-1" />
+              Ver
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                // TODO: Implement email functionality
+                console.log('Enviar por email:', document.file_name);
+              }}
+              className="w-full text-xs h-7"
+            >
+              📧 Email
+            </Button>
           </div>
         </div>
-
-        {/* Badges */}
-        <div className="flex flex-wrap gap-2 mt-2">
-          {typeInfo.critical && (
-            <Badge variant="secondary" className="text-xs">
-              Crítico
-            </Badge>
-          )}
-          {getExpiryBadge()}
-        </div>
-      </CardHeader>
-
-      <CardContent className="pt-0 space-y-3">
-        {/* Document Dates */}
-        <div className="space-y-1">
-          {document.issue_date && (
-            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-              <Calendar className="h-3 w-3" />
-              <span>
-                Emitido: {formatDateOnly(document.issue_date)}
-              </span>
-            </div>
-          )}
-          
-          {document.expires_at && (
-            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-              <Calendar className="h-3 w-3" />
-              <span>
-                Vence: {formatExpiryDate(document.expires_at)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* File Info */}
-        <div className="space-y-1 text-xs text-muted-foreground">
-          <div>Tamaño: {formatFileSize(document.file_size)}</div>
-          <div>
-            Subido: {formatDateOnly(document.created_at)}
-          </div>
-        </div>
-
-        {/* Expiry Warning */}
-        {(expiryStatus === "expired" || expiryStatus === "expiring") && (
-          <div className={`flex items-center space-x-2 p-2 rounded text-xs ${
-            expiryStatus === "expired" 
-              ? "bg-red-50 text-red-700 border border-red-200" 
-              : "bg-amber-50 text-amber-700 border border-amber-200"
-          }`}>
-            <AlertCircle className="h-3 w-3" />
-            <span>
-              {expiryStatus === "expired" 
-                ? "Este documento ha vencido" 
-                : "Este documento vence pronto"
-              }
-            </span>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex space-x-2 pt-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleDownload}
-            className="flex-1 text-xs h-8"
-          >
-            <Download className="h-3 w-3 mr-1" />
-            Descargar
-          </Button>
-        </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }
