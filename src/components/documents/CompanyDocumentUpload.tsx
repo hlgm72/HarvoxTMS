@@ -389,72 +389,75 @@ export function CompanyDocumentUpload({
         </p>
       </div>
 
-      {/* Issue Date */}
-      <div className="space-y-2">
-        <Label>Fecha de Emisión (Opcional)</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !issueDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {issueDate ? formatPrettyDate(issueDate) : <span>Seleccionar fecha</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 z-[60]" align="start">
-            <Calendar
-              mode="single"
-              selected={issueDate}
-              onSelect={setIssueDate}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-              captionLayout="dropdown"
-              fromYear={2020}
-              toYear={2035}
-            />
-          </PopoverContent>
-        </Popover>
-        <p className="text-xs text-muted-foreground">
-          Fecha en que fue emitido o creado el documento
-        </p>
-      </div>
+      {/* Issue Date & Expiry Date */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Issue Date */}
+        <div className="space-y-2">
+          <Label>Fecha de Emisión (Opcional)</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !issueDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {issueDate ? formatPrettyDate(issueDate) : <span>Seleccionar fecha</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 z-[60]" align="start">
+              <Calendar
+                mode="single"
+                selected={issueDate}
+                onSelect={setIssueDate}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+                captionLayout="dropdown"
+                fromYear={2020}
+                toYear={2035}
+              />
+            </PopoverContent>
+          </Popover>
+          <p className="text-xs text-muted-foreground">
+            Fecha de emisión del documento
+          </p>
+        </div>
 
-      {/* Expiry Date */}
-      <div className="space-y-2">
-        <Label>Fecha de Vencimiento (Opcional)</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !expiryDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 z-[60]" align="start">
-            <Calendar
-              mode="single"
-              selected={expiryDate}
-              onSelect={setExpiryDate}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-              captionLayout="dropdown"
-              fromYear={2020}
-              toYear={2035}
-            />
-          </PopoverContent>
-        </Popover>
-        <p className="text-xs text-muted-foreground">
-          Si el documento tiene fecha de vencimiento, te notificaremos antes de que expire
-        </p>
+        {/* Expiry Date */}
+        <div className="space-y-2">
+          <Label>Fecha de Vencimiento (Opcional)</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !expiryDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 z-[60]" align="start">
+              <Calendar
+                mode="single"
+                selected={expiryDate}
+                onSelect={setExpiryDate}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+                captionLayout="dropdown"
+                fromYear={2020}
+                toYear={2035}
+              />
+            </PopoverContent>
+          </Popover>
+          <p className="text-xs text-muted-foreground">
+            Te notificaremos antes de que expire
+          </p>
+        </div>
       </div>
 
       {/* Notes */}
