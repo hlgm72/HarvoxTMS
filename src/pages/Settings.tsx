@@ -16,8 +16,7 @@ import { Company } from '@/types/company';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
-import { PersonalInfoForm } from '@/components/profile/PersonalInfoForm';
-import { SecurityForm } from '@/components/profile/SecurityForm';
+import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PreferencesForm } from '@/components/profile/PreferencesForm';
 import { OnboardingPreferencesForm } from '@/components/profile/OnboardingPreferencesForm';
 import { useForm } from 'react-hook-form';
@@ -269,7 +268,7 @@ export default function Settings() {
 
                       {/* Tab: Personal */}
                       <TabsContent value="personal" className="space-y-6">
-                        <PersonalInfoForm showCancelButton={false} />
+                        <ProfileForm showCancelButton={false} />
                       </TabsContent>
 
                       {/* Tab: Preferencia */}
@@ -279,8 +278,75 @@ export default function Settings() {
 
                       {/* Tab: Seguridad */}
                       <TabsContent value="seguridad" className="space-y-6">
-                        <SecurityForm showCancelButton={false} />
-                        
+                        {/* Cambio de Contraseña */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <KeyRound className="h-5 w-5" />
+                              Cambiar Contraseña
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <Form {...passwordForm}>
+                              <form onSubmit={passwordForm.handleSubmit(onSubmitPassword)} className="space-y-4">
+                                <FormField
+                                  control={passwordForm.control}
+                                  name="currentPassword"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Contraseña Actual</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={passwordForm.control}
+                                  name="newPassword"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Nueva Contraseña</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={passwordForm.control}
+                                  name="confirmPassword"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                                      <FormControl>
+                                        <Input type="password" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <div className="flex gap-2">
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={() => passwordForm.reset()}
+                                  >
+                                    <RotateCcw className="mr-2 h-4 w-4" />
+                                    Cancelar
+                                  </Button>
+                                  <Button type="submit" disabled={changingPassword}>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {changingPassword ? 'Cambiando...' : 'Cambiar Contraseña'}
+                                  </Button>
+                                </div>
+                              </form>
+                            </Form>
+                          </CardContent>
+                        </Card>
+
                         {/* Opciones de Tour y Configuración */}
                         <OnboardingPreferencesForm />
                       </TabsContent>
