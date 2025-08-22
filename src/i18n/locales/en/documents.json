@@ -190,5 +190,67 @@
       "upload_failed": "Error uploading document",
       "upload_failed_description": "Could not upload the document. Please try again."
     }
+  },
+  "email_modal": {
+    "title": "Send Documents",
+    "description": "Send selected documents to one or more recipients",
+    "selected_documents": "Selected Documents ({{count}}/{{max}})",
+    "too_many": "Too many",
+    "recipients": {
+      "label": "Recipients *",
+      "placeholder": "email1@company.com, email2@company.com",
+      "help": "Separate emails with commas",
+      "error_required": "Please enter at least one recipient",
+      "error_invalid": "Invalid emails: {{emails}}"
+    },
+    "subject": {
+      "label": "Subject *",
+      "placeholder": "Company documents",
+      "error_required": "Please enter a subject for the email"
+    },
+    "message": {
+      "label": "Message (Optional)",
+      "placeholder": "Dear recipient, please find attached the requested documents..."
+    },
+    "file_info": {
+      "total": "Total: {{size}}MB / {{max}}MB",
+      "exceeds_limit": "Exceeds limit",
+      "near_limit": "Near limit",
+      "large_files": "{{count}} file(s) too large",
+      "can_split": "Can be split into emails"
+    },
+    "buttons": {
+      "send": "Send Documents",
+      "sending": "Sending...",
+      "cancel": "Cancel",
+      "split": "Split into Emails",
+      "split_short": "Split"
+    },
+    "split": {
+      "title_part": "{{subject}} (Part {{current}} of {{total}})",
+      "message_note": "Note: This is email {{current}} of {{total}} with documents split by size.",
+      "incomplete_data": "Incomplete data",
+      "complete_fields": "Please complete recipients and subject before splitting",
+      "no_valid_docs": "No valid documents",
+      "no_docs_within_limits": "No documents meet the size limits"
+    },
+    "notifications": {
+      "partial_success": "Partial sending completed",
+      "partial_message": "Sent {{attached}} of {{total}} documents. The following could not be sent: {{failed}}",
+      "success": "Documents sent",
+      "success_message": "Successfully sent {{count}} documents by email",
+      "split_success": "Sent {{total}} documents in {{emails}} email(s)",
+      "error": "Error sending documents",
+      "error_message": "Could not send documents by email",
+      "files_too_large": "Files too large",
+      "files_exceed_10mb": "The following files exceed 10MB: {{files}}",
+      "too_many_documents": "Too many documents",
+      "max_documents_per_email": "Maximum {{max}} documents per email. You have {{count}}.",
+      "total_size_exceeded": "Total size exceeded",
+      "size_exceeds_limit": "Total size ({{size}}MB) exceeds the {{max}}MB limit. {{splitText}}",
+      "use_split_option": "Use the \"Split into emails\" option.",
+      "no_documents": "No documents",
+      "no_selected_documents": "No documents selected to send"
+    }
   }
 }

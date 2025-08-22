@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export function EmailDocumentsModal({
   selectedDocuments, 
   onSuccess 
 }: EmailDocumentsModalProps) {
+  const { t } = useTranslation('documents');
   const [recipients, setRecipients] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -77,13 +79,17 @@ export function EmailDocumentsModal({
       
       if (failedDocuments.length > 0) {
         showError(
-          "Envío parcial completado",
-          `Se enviaron ${attachmentCount} de ${totalRequested} documentos. Los siguientes no se pudieron enviar: ${failedDocuments.map((f: any) => `${f.name} (${f.reason})`).join(', ')}`
+          t('email_modal.notifications.partial_success'),
+          t('email_modal.notifications.partial_message', {
+            attached: attachmentCount,
+            total: totalRequested,
+            failed: failedDocuments.map((f: any) => `${f.name} (${f.reason})`).join(', ')
+          })
         );
       } else {
         showSuccess(
-          "Documentos enviados",
-          `Se enviaron ${attachmentCount} documentos por email exitosamente`
+          t('email_modal.notifications.success'),
+          t('email_modal.notifications.success_message', { count: attachmentCount })
         );
       }
       
@@ -97,8 +103,8 @@ export function EmailDocumentsModal({
     onError: (error: any) => {
       console.error("Error sending documents:", error);
       showError(
-        "Error al enviar documentos",
-        error.message || "No se pudieron enviar los documentos por email"
+        t('email_modal.notifications.error'),
+        error.message || t('email_modal.notifications.error_message')
       );
     }
   });
@@ -112,7 +118,7 @@ export function EmailDocumentsModal({
     
     // Validate form
     if (!recipients.trim()) {
-      errors.recipients = "Por favor ingresa al menos un destinatario";
+      errors.recipients = t('email_modal.recipients.error_required');
     } else {
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -120,38 +126,48 @@ export function EmailDocumentsModal({
       const invalidEmails = emailList.filter(email => !emailRegex.test(email));
       
       if (invalidEmails.length > 0) {
-        errors.recipients = `Emails inválidos: ${invalidEmails.join(', ')}`;
+        errors.recipients = t('email_modal.recipients.error_invalid', { emails: invalidEmails.join(', ') });
       }
     }
 
     if (!subject.trim()) {
-      errors.subject = "Por favor ingresa un asunto para el email";
+      errors.subject = t('email_modal.subject.error_required');
     }
 
     // Enhanced validations
     if (largeFiles.length > 0) {
       showError(
-        "Archivos muy grandes", 
-        `Los siguientes archivos exceden 10MB: ${largeFiles.map(f => f.file_name).join(', ')}`
+        t('email_modal.notifications.files_too_large'), 
+        t('email_modal.notifications.files_exceed_10mb', { files: largeFiles.map(f => f.file_name).join(', ') })
       );
       return;
     }
 
     if (exceedsCount) {
-      showError("Demasiados documentos", `Máximo ${MAX_DOCUMENTS} documentos por email. Tienes ${selectedDocuments.length}.`);
+      showError(
+        t('email_modal.notifications.too_many_documents'), 
+        t('email_modal.notifications.max_documents_per_email', { max: MAX_DOCUMENTS, count: selectedDocuments.length })
+      );
       return;
     }
 
     if (exceedsTotal) {
       showError(
-        "Tamaño total excedido", 
-        `El tamaño total (${totalSizeMB}MB) excede el límite de ${(MAX_TOTAL_SIZE / (1024 * 1024)).toFixed(0)}MB. ${canSplit ? 'Usa la opción "Dividir en emails".' : ''}`
+        t('email_modal.notifications.total_size_exceeded'), 
+        t('email_modal.notifications.size_exceeds_limit', { 
+          size: totalSizeMB, 
+          max: (MAX_TOTAL_SIZE / (1024 * 1024)).toFixed(0),
+          splitText: canSplit ? t('email_modal.notifications.use_split_option') : ''
+        })
       );
       return;
     }
 
     if (selectedDocuments.length === 0) {
-      showError("Sin documentos", "No hay documentos seleccionados para enviar");
+      showError(
+        t('email_modal.notifications.no_documents'), 
+        t('email_modal.notifications.no_selected_documents')
+      );
       return;
     }
 
@@ -209,35 +225,43 @@ export function EmailDocumentsModal({
 
   const handleSplitAndSend = async () => {
     if (!recipients.trim() || !subject.trim()) {
-      showError("Datos incompletos", "Por favor completa destinatarios y asunto antes de dividir");
+      showError(
+        t('email_modal.split.incomplete_data'), 
+        t('email_modal.split.complete_fields')
+      );
       return;
     }
 
     const groups = splitDocuments();
     
     if (groups.length === 0) {
-      showError("Sin documentos válidos", "No hay documentos que cumplan con los límites de tamaño");
+      showError(
+        t('email_modal.split.no_valid_docs'), 
+        t('email_modal.split.no_docs_within_limits')
+      );
       return;
     }
 
     try {
       for (let i = 0; i < groups.length; i++) {
         const group = groups[i];
-        const emailSubject = groups.length > 1 ? `${subject} (Parte ${i + 1} de ${groups.length})` : subject;
+        const emailSubject = groups.length > 1 ? 
+          t('email_modal.split.title_part', { subject, current: i + 1, total: groups.length }) : 
+          subject;
         
         await sendEmailMutation.mutateAsync({
           recipients,
           subject: emailSubject,
           message: groups.length > 1 
-            ? `${message}\n\nNota: Este es el email ${i + 1} de ${groups.length} con los documentos divididos por tamaño.`
+            ? `${message}\n\n${t('email_modal.split.message_note', { current: i + 1, total: groups.length })}`
             : message,
           documentIds: group.map(doc => doc.id)
         });
       }
       
       showSuccess(
-        "Documentos enviados", 
-        `Se enviaron ${selectedDocuments.length} documentos en ${groups.length} email(s)`
+        t('email_modal.notifications.success'), 
+        t('email_modal.notifications.split_success', { total: selectedDocuments.length, emails: groups.length })
       );
       onSuccess();
       onOpenChange(false);
@@ -255,10 +279,10 @@ export function EmailDocumentsModal({
         <DialogHeader className="space-y-2 sm:space-y-3">
           <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
-            <span className="truncate">Enviar Documentos</span>
+            <span className="truncate">{t('email_modal.title')}</span>
           </DialogTitle>
           <DialogDescription className="text-sm">
-            Envía los documentos seleccionados a uno o varios destinatarios
+            {t('email_modal.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -267,12 +291,12 @@ export function EmailDocumentsModal({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label className="text-sm font-medium">
-                Documentos Seleccionados ({selectedDocuments.length}/{MAX_DOCUMENTS})
+                {t('email_modal.selected_documents', { count: selectedDocuments.length, max: MAX_DOCUMENTS })}
               </Label>
               {exceedsCount && (
                 <Badge variant="destructive" className="text-xs">
                   <AlertTriangle className="w-3 h-3 mr-1" />
-                  Demasiados
+                  {t('email_modal.too_many')}
                 </Badge>
               )}
             </div>
@@ -314,18 +338,18 @@ export function EmailDocumentsModal({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="text-muted-foreground truncate">
-                  Total: {totalSizeMB}MB / {(MAX_TOTAL_SIZE / (1024 * 1024)).toFixed(0)}MB
+                  {t('email_modal.file_info.total', { size: totalSizeMB, max: (MAX_TOTAL_SIZE / (1024 * 1024)).toFixed(0) })}
                 </span>
                 {exceedsTotal && (
                   <Badge variant="destructive" className="text-xs">
                     <AlertTriangle className="w-3 h-3 mr-1" />
-                    Excede límite
+                    {t('email_modal.file_info.exceeds_limit')}
                   </Badge>
                 )}
                 {nearLimit && !exceedsTotal && (
                   <Badge variant="secondary" className="text-xs">
                     <AlertTriangle className="w-3 h-3 mr-1" />
-                    Cerca del límite
+                    {t('email_modal.file_info.near_limit')}
                   </Badge>
                 )}
               </div>
@@ -348,14 +372,14 @@ export function EmailDocumentsModal({
                {largeFiles.length > 0 && (
                 <div className="text-xs text-red-600 bg-red-50 p-2 rounded flex items-center gap-1">
                   <FileWarning className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{largeFiles.length} archivo(s) muy grandes</span>
+                  <span className="truncate">{t('email_modal.file_info.large_files', { count: largeFiles.length })}</span>
                 </div>
               )}
               
               {canSplit && (
                 <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded flex items-center gap-1">
                   <Split className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">Se pueden dividir en emails</span>
+                  <span className="truncate">{t('email_modal.file_info.can_split')}</span>
                 </div>
               )}
             </div>
@@ -365,7 +389,7 @@ export function EmailDocumentsModal({
 
           {/* Recipients */}
           <div className="space-y-2">
-            <Label htmlFor="recipients">Destinatarios *</Label>
+            <Label htmlFor="recipients">{t('email_modal.recipients.label')}</Label>
             <Input
               id="recipients"
               value={recipients}
@@ -377,7 +401,7 @@ export function EmailDocumentsModal({
                   setValidationErrors(newErrors);
                 }
               }}
-              placeholder="email1@empresa.com, email2@empresa.com"
+              placeholder={t('email_modal.recipients.placeholder')}
               disabled={sendEmailMutation.isPending}
               className={validationErrors.recipients ? "border-red-500" : ""}
             />
@@ -387,13 +411,13 @@ export function EmailDocumentsModal({
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              Separa emails con comas
+              {t('email_modal.recipients.help')}
             </p>
           </div>
 
           {/* Subject */}
           <div className="space-y-2">
-            <Label htmlFor="subject">Asunto *</Label>
+            <Label htmlFor="subject">{t('email_modal.subject.label')}</Label>
             <Input
               id="subject"
               value={subject}
@@ -405,7 +429,7 @@ export function EmailDocumentsModal({
                   setValidationErrors(newErrors);
                 }
               }}
-              placeholder="Documentos de la empresa"
+              placeholder={t('email_modal.subject.placeholder')}
               disabled={sendEmailMutation.isPending}
               className={validationErrors.subject ? "border-red-500" : ""}
             />
@@ -418,12 +442,12 @@ export function EmailDocumentsModal({
 
           {/* Message */}
           <div className="space-y-2">
-            <Label htmlFor="message">Mensaje (Opcional)</Label>
+            <Label htmlFor="message">{t('email_modal.message.label')}</Label>
             <Textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Estimado(a), adjunto encontrará los documentos solicitados..."
+              placeholder={t('email_modal.message.placeholder')}
               rows={3}
               className="resize-none"
               disabled={sendEmailMutation.isPending}
@@ -441,8 +465,8 @@ export function EmailDocumentsModal({
                 className="w-full text-sm"
               >
                 <Split className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Dividir en Emails</span>
-                <span className="sm:hidden">Dividir</span>
+                <span className="hidden sm:inline">{t('email_modal.buttons.split')}</span>
+                <span className="sm:hidden">{t('email_modal.buttons.split_short')}</span>
               </Button>
             )}
             
@@ -454,7 +478,7 @@ export function EmailDocumentsModal({
                 disabled={sendEmailMutation.isPending}
                 className="w-full text-sm order-2 sm:order-1"
               >
-                Cancelar
+                {t('email_modal.buttons.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -470,14 +494,14 @@ export function EmailDocumentsModal({
                 {sendEmailMutation.isPending ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    <span className="hidden sm:inline">Enviando...</span>
+                    <span className="hidden sm:inline">{t('email_modal.buttons.sending')}</span>
                     <span className="sm:hidden">Enviando</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Enviar Documentos</span>
-                    <span className="sm:hidden">Enviar</span>
+                    <span className="hidden sm:inline">{t('email_modal.buttons.send')}</span>
+                    <span className="sm:hidden">{t('email_modal.buttons.send')}</span>
                   </>
                 )}
               </Button>

@@ -190,5 +190,67 @@
       "upload_failed": "Error al subir documento",
       "upload_failed_description": "No se pudo subir el documento. Intenta nuevamente."
     }
+  },
+  "email_modal": {
+    "title": "Enviar Documentos",
+    "description": "Envía los documentos seleccionados a uno o varios destinatarios",
+    "selected_documents": "Documentos Seleccionados ({{count}}/{{max}})",
+    "too_many": "Demasiados",
+    "recipients": {
+      "label": "Destinatarios *",
+      "placeholder": "email1@empresa.com, email2@empresa.com",
+      "help": "Separa emails con comas",
+      "error_required": "Por favor ingresa al menos un destinatario",
+      "error_invalid": "Emails inválidos: {{emails}}"
+    },
+    "subject": {
+      "label": "Asunto *",
+      "placeholder": "Documentos de la empresa",
+      "error_required": "Por favor ingresa un asunto para el email"
+    },
+    "message": {
+      "label": "Mensaje (Opcional)",
+      "placeholder": "Estimado(a), adjunto encontrará los documentos solicitados..."
+    },
+    "file_info": {
+      "total": "Total: {{size}}MB / {{max}}MB",
+      "exceeds_limit": "Excede límite",
+      "near_limit": "Cerca del límite",
+      "large_files": "{{count}} archivo(s) muy grandes",
+      "can_split": "Se pueden dividir en emails"
+    },
+    "buttons": {
+      "send": "Enviar Documentos",
+      "sending": "Enviando...",
+      "cancel": "Cancelar",
+      "split": "Dividir en Emails",
+      "split_short": "Dividir"
+    },
+    "split": {
+      "title_part": "{{subject}} (Parte {{current}} de {{total}})",
+      "message_note": "Nota: Este es el email {{current}} de {{total}} con los documentos divididos por tamaño.",
+      "incomplete_data": "Datos incompletos",
+      "complete_fields": "Por favor completa destinatarios y asunto antes de dividir",
+      "no_valid_docs": "Sin documentos válidos",
+      "no_docs_within_limits": "No hay documentos que cumplan con los límites de tamaño"
+    },
+    "notifications": {
+      "partial_success": "Envío parcial completado",
+      "partial_message": "Se enviaron {{attached}} de {{total}} documentos. Los siguientes no se pudieron enviar: {{failed}}",
+      "success": "Documentos enviados",
+      "success_message": "Se enviaron {{count}} documentos por email exitosamente",
+      "split_success": "Se enviaron {{total}} documentos en {{emails}} email(s)",
+      "error": "Error al enviar documentos",
+      "error_message": "No se pudieron enviar los documentos por email",
+      "files_too_large": "Archivos muy grandes",
+      "files_exceed_10mb": "Los siguientes archivos exceden 10MB: {{files}}",
+      "too_many_documents": "Demasiados documentos",
+      "max_documents_per_email": "Máximo {{max}} documentos por email. Tienes {{count}}.",
+      "total_size_exceeded": "Tamaño total excedido",
+      "size_exceeds_limit": "El tamaño total ({{size}}MB) excede el límite de {{max}}MB. {{splitText}}",
+      "use_split_option": "Usa la opción \"Dividir en emails\".",
+      "no_documents": "Sin documentos",
+      "no_selected_documents": "No hay documentos seleccionados para enviar"
+    }
   }
 }
