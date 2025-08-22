@@ -92,6 +92,8 @@ export default function Documents() {
   const queryClient = useQueryClient();
   const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
+  console.log("Company cache debug:", { userCompany, cacheLoading, cacheError });
+
   // Fetch company documents
   const { data: documents = [], isLoading } = useQuery({
     queryKey: ["company-documents", userCompany?.company_id, showArchived],
