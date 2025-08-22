@@ -296,8 +296,8 @@ export default function Documents() {
       
       <div className="p-2 md:p-4 space-y-4 md:space-y-6">
         {/* Controls Section */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2 items-center">
             <Button 
               variant={showArchived ? "default" : "outline"} 
               size="sm"
@@ -317,6 +317,10 @@ export default function Documents() {
                 </>
               )}
             </Button>
+            <DocumentViewToggle 
+              currentView={viewMode} 
+              onViewChange={setViewMode} 
+            />
             {selectedDocuments.size > 0 && (
               <Button variant="outline" size="sm" onClick={handleOpenEmailModal}>
                 <Mail className="w-4 h-4 mr-2" />
@@ -325,10 +329,6 @@ export default function Documents() {
               </Button>
             )}
           </div>
-          <DocumentViewToggle 
-            currentView={viewMode} 
-            onViewChange={setViewMode} 
-          />
         </div>
 
       {/* Status Overview */}
