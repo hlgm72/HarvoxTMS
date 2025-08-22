@@ -13,6 +13,7 @@ import paymentsEn from './locales/en/payments.json';
 import loadsEn from './locales/en/loads.json';
 import onboardingEn from './locales/en/onboarding.json';
 import clientsEn from './locales/en/clients.json';
+import documentsEn from './locales/en/documents.json';
 
 // Import admin sub-modules
 import adminPagesEn from './locales/en/admin/pages.json';
@@ -31,6 +32,7 @@ import paymentsEs from './locales/es/payments.json';
 import loadsEs from './locales/es/loads.json';
 import onboardingEs from './locales/es/onboarding.json';
 import clientsEs from './locales/es/clients.json';
+import documentsEs from './locales/es/documents.json';
 
 const resources = {
   en: {
@@ -45,6 +47,7 @@ const resources = {
     loads: loadsEn,
     onboarding: onboardingEn,
     clients: clientsEn,
+    documents: documentsEn,
     admin: {
       pages: adminPagesEn,
       navigation: adminNavigationEn,
@@ -63,6 +66,7 @@ const resources = {
     loads: loadsEs,
     onboarding: onboardingEs,
     clients: clientsEs,
+    documents: documentsEs,
     admin: adminEs,
   },
 };
@@ -76,7 +80,7 @@ i18n
     fallbackLng: 'en',
     
     // Namespaces
-    ns: ['common', 'landing', 'auth', 'fleet', 'equipment', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients'],
+    ns: ['common', 'landing', 'auth', 'fleet', 'equipment', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients', 'documents'],
     defaultNS: 'common',
     
     // Configuration
