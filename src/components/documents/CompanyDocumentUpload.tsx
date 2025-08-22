@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFleetNotifications } from "@/components/notifications";
 import { Upload, FileText, Copy, Replace } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface DocumentACIDResponse {
   success: boolean;
@@ -47,6 +48,7 @@ export function CompanyDocumentUpload({
   selectedType, 
   onSuccess 
 }: CompanyDocumentUploadProps) {
+  const { t } = useTranslation('documents');
   const [documentType, setDocumentType] = useState(selectedType || "");
   const [customDocumentName, setCustomDocumentName] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -107,7 +109,7 @@ export function CompanyDocumentUpload({
 
       // Get user and company info
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuario no autenticado");
+      if (!user) throw new Error(t('upload_modal.validation.auth_error'));
 
       const { data: userRoles } = await supabase
         .from("user_company_roles")
@@ -117,7 +119,7 @@ export function CompanyDocumentUpload({
         .limit(1)
         .maybeSingle();
 
-      if (!userRoles) throw new Error("No se pudo obtener la información de la compañía");
+      if (!userRoles) throw new Error(t('upload_modal.validation.company_info_error'));
 
       const companyId = userRoles.company_id;
 
@@ -174,7 +176,7 @@ export function CompanyDocumentUpload({
       
       const result = rpcResult as unknown as DocumentACIDResponse;
       if (!result?.success) {
-        throw new Error(result?.message || 'Error en validación de documento');
+        throw new Error(result?.message || t('upload_modal.error.upload_failed_description'));
       }
 
       return { fileName, publicUrl, action, wasReplaced: !!existing };
@@ -184,18 +186,18 @@ export function CompanyDocumentUpload({
       
       if (wasReplaced && action === 'replace') {
         showSuccess(
-          "Documento reemplazado exitosamente",
-          "El documento anterior se archivó y el nuevo se guardó correctamente"
+          t('upload_modal.success.replaced'),
+          t('upload_modal.success.replaced_description')
         );
       } else if (action === 'version') {
         showSuccess(
-          "Nueva versión guardada",
-          "Se creó una nueva versión del documento manteniendo la anterior"
+          t('upload_modal.success.new_version'),
+          t('upload_modal.success.new_version_description')
         );
       } else {
         showSuccess(
-          "Documento subido exitosamente",
-          "El documento se ha guardado correctamente"
+          t('upload_modal.success.uploaded'),
+          t('upload_modal.success.uploaded_description')
         );
       }
       
@@ -213,8 +215,8 @@ export function CompanyDocumentUpload({
     onError: (error) => {
       console.error("Error uploading document:", error);
       showError(
-        "Error al subir documento",
-        "No se pudo subir el documento. Intenta nuevamente."
+        t('upload_modal.error.upload_failed'),
+        t('upload_modal.error.upload_failed_description')
       );
     }
   });
@@ -224,16 +226,16 @@ export function CompanyDocumentUpload({
     
     if (!file || !documentType) {
       showError(
-        "Campos requeridos",
-        "Por favor selecciona un tipo de documento y un archivo"
+        t('upload_modal.validation.required_fields'),
+        t('upload_modal.validation.select_type_and_file')
       );
       return;
     }
 
     if (documentType === "custom" && !customDocumentName.trim()) {
       showError(
-        "Nombre requerido",
-        "Por favor ingresa un nombre para el documento personalizado"
+        t('upload_modal.validation.name_required'),
+        t('upload_modal.validation.custom_name_required')
       );
       return;
     }
@@ -242,7 +244,7 @@ export function CompanyDocumentUpload({
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        showError("Error", "Usuario no autenticado");
+        showError("Error", t('upload_modal.validation.auth_error'));
         return;
       }
 
@@ -255,7 +257,7 @@ export function CompanyDocumentUpload({
         .maybeSingle();
 
       if (!userRoles) {
-        showError("Error", "No se pudo obtener la información de la compañía");
+        showError("Error", t('upload_modal.validation.company_info_error'));
         return;
       }
 
@@ -278,7 +280,7 @@ export function CompanyDocumentUpload({
       });
     } catch (error) {
       console.error("Error checking existing documents:", error);
-      showError("Error", "Error al verificar documentos existentes");
+      showError("Error", t('upload_modal.validation.check_existing_error'));
     }
   };
 
@@ -307,10 +309,10 @@ export function CompanyDocumentUpload({
       <form onSubmit={handleSubmit} className="space-y-6">
       {/* Document Type Selection */}
       <div className="space-y-2">
-        <Label htmlFor="document-type">Tipo de Documento *</Label>
+        <Label htmlFor="document-type">{t('upload_modal.document_type_label')}</Label>
         <Select value={documentType} onValueChange={setDocumentType}>
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona el tipo de documento" />
+            <SelectValue placeholder={t('upload_modal.document_type_placeholder')} />
           </SelectTrigger>
           <SelectContent className="z-50">
             {Object.entries(predefinedTypes).map(([categoryKey, category]) => (
@@ -324,7 +326,7 @@ export function CompanyDocumentUpload({
                       <span>{type.label}</span>
                       {type.critical && (
                         <Badge variant="secondary" className="text-xs">
-                          Crítico
+                          {t('card.badges.critical')}
                         </Badge>
                       )}
                     </div>
@@ -334,11 +336,11 @@ export function CompanyDocumentUpload({
             ))}
             <div className="border-t mt-2 pt-2">
               <div className="px-2 py-1 text-sm font-medium text-muted-foreground">
-                Personalizado
+                {t('upload_modal.custom_section')}
               </div>
               <SelectItem value="custom">
                 <div className="flex items-center space-x-2">
-                  <span>Documento Personalizado</span>
+                  <span>{t('upload_modal.custom_document')}</span>
                 </div>
               </SelectItem>
             </div>
@@ -348,7 +350,7 @@ export function CompanyDocumentUpload({
         {selectedTypeInfo?.critical && (
           <p className="text-sm text-amber-600 flex items-center space-x-1">
             <AlertTriangle className="w-4 h-4" />
-            <span>Este es un documento crítico para operaciones</span>
+            <span>{t('upload_modal.critical_warning')}</span>
           </p>
         )}
       </div>
@@ -356,24 +358,24 @@ export function CompanyDocumentUpload({
       {/* Custom Document Name */}
       {documentType === "custom" && (
         <div className="space-y-2">
-          <Label htmlFor="custom-name">Nombre del Documento *</Label>
+          <Label htmlFor="custom-name">{t('upload_modal.custom_name_label')}</Label>
           <Input
             id="custom-name"
             value={customDocumentName}
             onChange={(e) => setCustomDocumentName(e.target.value)}
-            placeholder="Ej: Certificación Especial, Acuerdo Personalizado"
+            placeholder={t('upload_modal.custom_name_placeholder')}
           />
         </div>
       )}
 
       {/* File Upload */}
       <div className="space-y-2">
-        <Label htmlFor="file">Archivo *</Label>
+        <Label htmlFor="file">{t('upload_modal.file_label')}</Label>
         <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
           <div className="text-center">
             <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
             <div className="text-sm text-muted-foreground mb-2">
-              Arrastra y suelta tu archivo aquí, o
+              {t('upload_modal.file_drop_text')}
             </div>
             <Input
               type="file"
@@ -386,21 +388,21 @@ export function CompanyDocumentUpload({
               <Button type="button" variant="outline" asChild>
                 <span>
                   <Upload className="w-4 h-4 mr-2" />
-                  Seleccionar Archivo
+                  {t('upload_modal.select_file')}
                 </span>
               </Button>
             </Label>
           </div>
           {file && (
             <div className="mt-4 p-3 bg-muted rounded text-sm">
-              <strong>Archivo seleccionado:</strong> {file.name}
+              <strong>{t('upload_modal.file_selected')}:</strong> {file.name}
               <br />
-              <strong>Tamaño:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
+              <strong>{t('upload_modal.file_size')}:</strong> {(file.size / 1024 / 1024).toFixed(2)} MB
             </div>
           )}
         </div>
         <p className="text-xs text-muted-foreground">
-          Formatos soportados: PDF, DOC, DOCX, JPG, PNG (máx. 10MB)
+          {t('upload_modal.supported_formats')}
         </p>
       </div>
 
@@ -408,7 +410,7 @@ export function CompanyDocumentUpload({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Issue Date */}
         <div className="space-y-2">
-          <Label>Fecha de Emisión (Opcional)</Label>
+          <Label>{t('upload_modal.issue_date_label')}</Label>
           <Popover open={issueDateOpen} onOpenChange={setIssueDateOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -419,7 +421,7 @@ export function CompanyDocumentUpload({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {issueDate ? formatPrettyDate(issueDate) : <span>Seleccionar fecha</span>}
+                {issueDate ? formatPrettyDate(issueDate) : <span>{t('upload_modal.issue_date_placeholder')}</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 z-[60]" align="start">
@@ -439,13 +441,13 @@ export function CompanyDocumentUpload({
             </PopoverContent>
           </Popover>
           <p className="text-xs text-muted-foreground">
-            Fecha de emisión del documento
+            {t('upload_modal.issue_date_help')}
           </p>
         </div>
 
         {/* Expiry Date */}
         <div className="space-y-2">
-          <Label>Fecha de Vencimiento (Opcional)</Label>
+          <Label>{t('upload_modal.expiry_date_label')}</Label>
           <Popover open={expiryDateOpen} onOpenChange={setExpiryDateOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -456,7 +458,7 @@ export function CompanyDocumentUpload({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
+                {expiryDate ? formatPrettyDate(expiryDate) : <span>{t('upload_modal.expiry_date_placeholder')}</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 z-[60]" align="start">
@@ -476,19 +478,19 @@ export function CompanyDocumentUpload({
             </PopoverContent>
           </Popover>
           <p className="text-xs text-muted-foreground">
-            Te notificaremos antes de que expire
+            {t('upload_modal.expiry_date_help')}
           </p>
         </div>
       </div>
 
       {/* Notes */}
       <div className="space-y-2">
-        <Label htmlFor="notes">Notas (Opcional)</Label>
+        <Label htmlFor="notes">{t('upload_modal.notes_label')}</Label>
         <Textarea
           id="notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Agrega cualquier información adicional sobre este documento..."
+          placeholder={t('upload_modal.notes_placeholder')}
           rows={3}
         />
       </div>
@@ -502,12 +504,12 @@ export function CompanyDocumentUpload({
           {uploadMutation.isPending ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Subiendo...
+              {t('upload_modal.uploading')}
             </>
           ) : (
             <>
               <Upload className="w-4 h-4 mr-2" />
-              Subir Documento
+              {t('upload_modal.upload_button')}
             </>
           )}
         </Button>
@@ -520,11 +522,13 @@ export function CompanyDocumentUpload({
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <AlertTriangle className="w-5 h-5 text-amber-500" />
-              <span>Documento Existente Detectado</span>
+              <span>{t('upload_modal.duplicate_dialog.title')}</span>
             </DialogTitle>
             <DialogDescription>
-              Ya tienes un documento de tipo "{allPredefinedTypes.find(t => t.value === documentType)?.label || documentType}" 
-              subido {existingDocument && formatDateAuto(existingDocument.created_at)}.
+              {t('upload_modal.duplicate_dialog.description', {
+                type: allPredefinedTypes.find(t => t.value === documentType)?.label || documentType,
+                date: existingDocument && formatDateAuto(existingDocument.created_at)
+              })}
             </DialogDescription>
           </DialogHeader>
 
@@ -535,20 +539,22 @@ export function CompanyDocumentUpload({
                 <span className="font-medium">{existingDocument?.file_name}</span>
               </div>
               <div className="text-xs text-muted-foreground mt-1">
-                Subido el {existingDocument && formatDateTimeAuto(existingDocument.created_at)}
+                {t('upload_modal.duplicate_dialog.uploaded_on', {
+                  date: existingDocument && formatDateTimeAuto(existingDocument.created_at)
+                })}
               </div>
             </div>
 
             <div className="space-y-3">
-              <Label className="text-sm font-medium">¿Qué deseas hacer?</Label>
+              <Label className="text-sm font-medium">{t('upload_modal.duplicate_dialog.what_to_do')}</Label>
               <RadioGroup value={duplicateAction} onValueChange={(value: 'replace' | 'version' | 'cancel') => setDuplicateAction(value)}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="replace" id="replace" />
                   <Label htmlFor="replace" className="flex items-center space-x-2 cursor-pointer">
                     <Replace className="w-4 h-4 text-red-500" />
                     <div>
-                      <div className="font-medium">Reemplazar documento existente</div>
-                      <div className="text-xs text-muted-foreground">El documento anterior se archivará</div>
+                      <div className="font-medium">{t('upload_modal.duplicate_dialog.replace_option')}</div>
+                      <div className="text-xs text-muted-foreground">{t('upload_modal.duplicate_dialog.replace_description')}</div>
                     </div>
                   </Label>
                 </div>
@@ -558,8 +564,8 @@ export function CompanyDocumentUpload({
                   <Label htmlFor="version" className="flex items-center space-x-2 cursor-pointer">
                     <Copy className="w-4 h-4 text-blue-500" />
                     <div>
-                      <div className="font-medium">Mantener ambos (agregar versión)</div>
-                      <div className="text-xs text-muted-foreground">Se creará una nueva versión del documento</div>
+                      <div className="font-medium">{t('upload_modal.duplicate_dialog.version_option')}</div>
+                      <div className="text-xs text-muted-foreground">{t('upload_modal.duplicate_dialog.version_description')}</div>
                     </div>
                   </Label>
                 </div>
@@ -569,8 +575,8 @@ export function CompanyDocumentUpload({
                   <Label htmlFor="cancel" className="flex items-center space-x-2 cursor-pointer">
                     <AlertTriangle className="w-4 h-4 text-gray-500" />
                     <div>
-                      <div className="font-medium">Cancelar subida</div>
-                      <div className="text-xs text-muted-foreground">No subir el nuevo documento</div>
+                      <div className="font-medium">{t('upload_modal.duplicate_dialog.cancel_option')}</div>
+                      <div className="text-xs text-muted-foreground">{t('upload_modal.duplicate_dialog.cancel_description')}</div>
                     </div>
                   </Label>
                 </div>
@@ -583,7 +589,7 @@ export function CompanyDocumentUpload({
               variant="outline" 
               onClick={() => setShowDuplicateDialog(false)}
             >
-              Cancelar
+              {t('upload_modal.duplicate_dialog.cancel_button')}
             </Button>
             <Button 
               onClick={handleDuplicateAction}
@@ -593,13 +599,13 @@ export function CompanyDocumentUpload({
               {uploadMutation.isPending ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Procesando...
+                  {t('upload_modal.duplicate_dialog.processing')}
                 </>
               ) : (
                 <>
-                  {duplicateAction === 'replace' && 'Reemplazar'}
-                  {duplicateAction === 'version' && 'Crear Versión'}
-                  {duplicateAction === 'cancel' && 'Cancelar'}
+                  {duplicateAction === 'replace' && t('upload_modal.duplicate_dialog.replace_button')}
+                  {duplicateAction === 'version' && t('upload_modal.duplicate_dialog.version_button')}
+                  {duplicateAction === 'cancel' && t('upload_modal.duplicate_dialog.cancel_button')}
                 </>
               )}
             </Button>

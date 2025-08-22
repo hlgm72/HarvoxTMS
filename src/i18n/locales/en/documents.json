@@ -128,5 +128,67 @@
     "delete_error": "There was an error deleting the document",
     "delete_success": "Document deleted permanently",
     "email_success": "Email sent successfully"
+  },
+  "upload_modal": {
+    "document_type_label": "Document Type *",
+    "document_type_placeholder": "Select document type",
+    "custom_section": "Custom",
+    "custom_document": "Custom Document",
+    "custom_name_label": "Document Name *",
+    "custom_name_placeholder": "e.g. Special Certification, Custom Agreement",
+    "critical_warning": "This is a critical document for operations",
+    "file_label": "File *",
+    "file_drop_text": "Drag and drop your file here, or",
+    "select_file": "Select File",
+    "file_selected": "Selected file",
+    "file_size": "Size",
+    "supported_formats": "Supported formats: PDF, DOC, DOCX, JPG, PNG (max. 10MB)",
+    "issue_date_label": "Issue Date (Optional)",
+    "issue_date_placeholder": "Select date",
+    "issue_date_help": "Document issue date",
+    "expiry_date_label": "Expiry Date (Optional)",
+    "expiry_date_placeholder": "Select date", 
+    "expiry_date_help": "We'll notify you before it expires",
+    "notes_label": "Notes (Optional)",
+    "notes_placeholder": "Add any additional information about this document...",
+    "uploading": "Uploading...",
+    "upload_button": "Upload Document",
+    "duplicate_dialog": {
+      "title": "Existing Document Detected",
+      "description": "You already have a document of type \"{{type}}\" uploaded {{date}}.",
+      "uploaded_on": "Uploaded on {{date}}",
+      "what_to_do": "What would you like to do?",
+      "replace_option": "Replace existing document",
+      "replace_description": "The previous document will be archived",
+      "version_option": "Keep both (add version)",
+      "version_description": "A new version of the document will be created",
+      "cancel_option": "Cancel upload",
+      "cancel_description": "Don't upload the new document",
+      "cancel_button": "Cancel",
+      "replace_button": "Replace",
+      "version_button": "Create Version",
+      "processing": "Processing..."
+    },
+    "validation": {
+      "required_fields": "Required fields",
+      "select_type_and_file": "Please select a document type and file",
+      "name_required": "Name required",
+      "custom_name_required": "Please enter a name for the custom document",
+      "auth_error": "User not authenticated",
+      "company_info_error": "Could not get company information",
+      "check_existing_error": "Error checking existing documents"
+    },
+    "success": {
+      "replaced": "Document replaced successfully",
+      "replaced_description": "The previous document was archived and the new one was saved correctly",
+      "new_version": "New version saved",
+      "new_version_description": "A new version of the document was created while keeping the previous one",
+      "uploaded": "Document uploaded successfully", 
+      "uploaded_description": "The document has been saved correctly"
+    },
+    "error": {
+      "upload_failed": "Error uploading document",
+      "upload_failed_description": "Could not upload the document. Please try again."
+    }
   }
 }

@@ -128,5 +128,67 @@
     "delete_error": "Hubo un error al eliminar el documento",
     "delete_success": "Documento eliminado permanentemente",
     "email_success": "Email enviado exitosamente"
+  },
+  "upload_modal": {
+    "document_type_label": "Tipo de Documento *",
+    "document_type_placeholder": "Selecciona el tipo de documento",
+    "custom_section": "Personalizado",
+    "custom_document": "Documento Personalizado",
+    "custom_name_label": "Nombre del Documento *",
+    "custom_name_placeholder": "Ej: Certificación Especial, Acuerdo Personalizado",
+    "critical_warning": "Este es un documento crítico para operaciones",
+    "file_label": "Archivo *",
+    "file_drop_text": "Arrastra y suelta tu archivo aquí, o",
+    "select_file": "Seleccionar Archivo",
+    "file_selected": "Archivo seleccionado",
+    "file_size": "Tamaño",
+    "supported_formats": "Formatos soportados: PDF, DOC, DOCX, JPG, PNG (máx. 10MB)",
+    "issue_date_label": "Fecha de Emisión (Opcional)",
+    "issue_date_placeholder": "Seleccionar fecha",
+    "issue_date_help": "Fecha de emisión del documento",
+    "expiry_date_label": "Fecha de Vencimiento (Opcional)",
+    "expiry_date_placeholder": "Seleccionar fecha",
+    "expiry_date_help": "Te notificaremos antes de que expire",
+    "notes_label": "Notas (Opcional)",
+    "notes_placeholder": "Agrega cualquier información adicional sobre este documento...",
+    "uploading": "Subiendo...",
+    "upload_button": "Subir Documento",
+    "duplicate_dialog": {
+      "title": "Documento Existente Detectado",
+      "description": "Ya tienes un documento de tipo \"{{type}}\" subido {{date}}.",
+      "uploaded_on": "Subido el {{date}}",
+      "what_to_do": "¿Qué deseas hacer?",
+      "replace_option": "Reemplazar documento existente",
+      "replace_description": "El documento anterior se archivará",
+      "version_option": "Mantener ambos (agregar versión)",
+      "version_description": "Se creará una nueva versión del documento",
+      "cancel_option": "Cancelar subida",
+      "cancel_description": "No subir el nuevo documento",
+      "cancel_button": "Cancelar",
+      "replace_button": "Reemplazar",
+      "version_button": "Crear Versión",
+      "processing": "Procesando..."
+    },
+    "validation": {
+      "required_fields": "Campos requeridos",
+      "select_type_and_file": "Por favor selecciona un tipo de documento y un archivo",
+      "name_required": "Nombre requerido",
+      "custom_name_required": "Por favor ingresa un nombre para el documento personalizado",
+      "auth_error": "Usuario no autenticado",
+      "company_info_error": "No se pudo obtener la información de la compañía",
+      "check_existing_error": "Error al verificar documentos existentes"
+    },
+    "success": {
+      "replaced": "Documento reemplazado exitosamente",
+      "replaced_description": "El documento anterior se archivó y el nuevo se guardó correctamente",
+      "new_version": "Nueva versión guardada",
+      "new_version_description": "Se creó una nueva versión del documento manteniendo la anterior",
+      "uploaded": "Documento subido exitosamente",
+      "uploaded_description": "El documento se ha guardado correctamente"
+    },
+    "error": {
+      "upload_failed": "Error al subir documento",
+      "upload_failed_description": "No se pudo subir el documento. Intenta nuevamente."
+    }
   }
 }
