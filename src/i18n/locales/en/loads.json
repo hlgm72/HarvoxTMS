@@ -78,19 +78,41 @@
     "title": "Load Actions",
     "filters": {
       "title": "Load Filters",
-      "description": "Filter loads by status, driver, broker and dates"
+      "description": "Filter loads by status, driver, broker and dates",
+      "filters": "Filters",
+      "filters_active": "Filters (active)",
+      "options": {
+        "status": {
+          "all": "All statuses"
+        },
+        "broker": {
+          "all": "All brokers"
+        }
+      }
     },
     "export": {
       "title": "Export Data", 
-      "description": "Export load data in different formats"
+      "description": "Export load data in different formats",
+      "export": "Export"
     },
     "view": {
       "title": "View Settings",
-      "description": "Customize how loads are displayed"
+      "description": "Customize how loads are displayed",
+      "view": "View",
+      "options": {
+        "sort": {
+          "date_desc": "Date (newest first)",
+          "date_asc": "Date (oldest first)",
+          "amount_desc": "Amount (highest first)",
+          "amount_asc": "Amount (lowest first)",
+          "status": "Status"
+        }
+      }
     },
     "stats": {
       "title": "Statistics",
-      "description": "View quick statistics of your loads"
+      "description": "View quick statistics of your loads",
+      "statistics": "Statistics"
     }
   },
   "filters": {

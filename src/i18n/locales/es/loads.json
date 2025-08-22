@@ -78,19 +78,41 @@
     "title": "Acciones de Cargas",
     "filters": {
       "title": "Filtros de Cargas",
-      "description": "Filtrar cargas por estado, conductor, broker y fechas"
+      "description": "Filtrar cargas por estado, conductor, broker y fechas",
+      "filters": "Filtros",
+      "filters_active": "Filtros (activos)",
+      "options": {
+        "status": {
+          "all": "Todos los estados"
+        },
+        "broker": {
+          "all": "Todos los brokers"
+        }
+      }
     },
     "export": {
       "title": "Exportar Datos", 
-      "description": "Exportar datos de cargas en diferentes formatos"
+      "description": "Exportar datos de cargas en diferentes formatos",
+      "export": "Exportar"
     },
     "view": {
       "title": "Configuración de Vista",
-      "description": "Personalizar cómo se muestran las cargas"
+      "description": "Personalizar cómo se muestran las cargas",
+      "view": "Vista",
+      "options": {
+        "sort": {
+          "date_desc": "Fecha (más reciente)",
+          "date_asc": "Fecha (más antigua)",
+          "amount_desc": "Monto (mayor a menor)",
+          "amount_asc": "Monto (menor a mayor)",
+          "status": "Estado"
+        }
+      }
     },
     "stats": {
       "title": "Estadísticas",
-      "description": "Ver estadísticas rápidas de tus cargas"
+      "description": "Ver estadísticas rápidas de tus cargas",
+      "statistics": "Estadísticas"
     }
   },
   "filters": {
