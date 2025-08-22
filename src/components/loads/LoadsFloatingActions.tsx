@@ -204,11 +204,11 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
             {activeTab === 'filters' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium">Filtros Aplicados</h3>
+                  <h3 className="text-sm font-medium">{t('floating_actions.filters.applied_filters')}</h3>
                   {hasActiveFilters && (
                     <Button variant="outline" size="sm" onClick={clearFilters}>
                       <FilterX className="h-3 w-3 mr-1" />
-                      Limpiar
+                      {t('floating_actions.filters.clear')}
                     </Button>
                   )}
                 </div>
@@ -216,13 +216,13 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 <div className="space-y-4">
                   {/* Status Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Estado</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.status')}</label>
                     <Select 
                       value={filters.status} 
                       onValueChange={(value) => handleFilterChange("status", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar estado" />
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.status')} />
                       </SelectTrigger>
                       <SelectContent>
                         {statusOptions.map((option) => (
@@ -236,17 +236,17 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
 
                   {/* Driver Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Conductor</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.driver')}</label>
                     <Select 
                       value={filters.driver} 
                       onValueChange={(value) => handleFilterChange("driver", value)}
                       disabled={driversLoading}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={driversLoading ? "Cargando..." : "Seleccionar conductor"} />
+                        <SelectValue placeholder={driversLoading ? t('floating_actions.filters.placeholders.loading') : t('floating_actions.filters.placeholders.driver')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos los conductores</SelectItem>
+                        <SelectItem value="all">{t('floating_actions.filters.options.driver.all')}</SelectItem>
                         {driversData.map((driver) => (
                           <SelectItem key={driver.value} value={driver.value}>
                             {driver.label}
@@ -258,13 +258,13 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
 
                   {/* Broker Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Broker / Cliente</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.broker')}</label>
                     <Select 
                       value={filters.broker} 
                       onValueChange={(value) => handleFilterChange("broker", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar broker" />
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.broker')} />
                       </SelectTrigger>
                       <SelectContent>
                         {brokerOptions.map((option) => (
@@ -278,7 +278,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
 
                   {/* Period Filter - Complete Dropdown */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Período de Pago</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.period')}</label>
                     <Select 
                       value={periodFilter?.type || 'current'} 
                       onValueChange={(value) => {
@@ -348,20 +348,20 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar período" />
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.period')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="current">{t('periods.current')}</SelectItem>
                         <SelectItem value="previous">{t('periods.previous')}</SelectItem>
-                        <SelectItem value="next">Período Siguiente</SelectItem>
-                        <SelectItem value="all">Todos los Períodos</SelectItem>
-                        <SelectItem value="this_month">Este Mes</SelectItem>
-                        <SelectItem value="last_month">Mes Pasado</SelectItem>
-                        <SelectItem value="this_quarter">Este Trimestre</SelectItem>
-                        <SelectItem value="last_quarter">Trimestre Pasado</SelectItem>
-                        <SelectItem value="this_year">Este Año</SelectItem>
-                        <SelectItem value="last_year">Año Pasado</SelectItem>
-                        <SelectItem value="specific">Período Específico...</SelectItem>
+                        <SelectItem value="next">{t('periods.next')}</SelectItem>
+                        <SelectItem value="all">{t('periods.all')}</SelectItem>
+                        <SelectItem value="this_month">{t('periods.this_month')}</SelectItem>
+                        <SelectItem value="last_month">{t('periods.last_month')}</SelectItem>
+                        <SelectItem value="this_quarter">{t('periods.this_quarter')}</SelectItem>
+                        <SelectItem value="last_quarter">{t('periods.last_quarter')}</SelectItem>
+                        <SelectItem value="this_year">{t('periods.this_year')}</SelectItem>
+                        <SelectItem value="last_year">{t('periods.last_year')}</SelectItem>
+                        <SelectItem value="specific">{t('periods.specific')}</SelectItem>
                       </SelectContent>
                     </Select>
                     {periodFilter?.type && periodFilter.type !== 'current' && (
@@ -374,7 +374,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
 
                   {/* Date Range Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Fecha de Pickup</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.date_range')}</label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -395,7 +395,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                               formatMediumDate(filters.dateRange.from)
                             )
                           ) : (
-                            "Seleccionar fechas"
+                            t('floating_actions.filters.placeholders.date_range')
                           )}
                         </Button>
                       </PopoverTrigger>

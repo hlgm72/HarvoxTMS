@@ -81,12 +81,30 @@
       "description": "Filtrar cargas por estado, conductor, broker y fechas",
       "filters": "Filtros",
       "filters_active": "Filtros (activos)",
+      "applied_filters": "Filtros Aplicados",
+      "clear": "Limpiar",
+      "status": "Estado",
+      "driver": "Conductor",
+      "broker": "Broker / Cliente",
+      "period": "Período de Pago",
+      "date_range": "Fecha de Pickup",
+      "placeholders": {
+        "status": "Seleccionar estado",
+        "loading": "Cargando...",
+        "driver": "Seleccionar conductor",
+        "broker": "Seleccionar broker",
+        "period": "Seleccionar período",
+        "date_range": "Seleccionar fechas"
+      },
       "options": {
         "status": {
           "all": "Todos los estados"
         },
         "broker": {
           "all": "Todos los brokers"
+        },
+        "driver": {
+          "all": "Todos los conductores"
         }
       }
     },

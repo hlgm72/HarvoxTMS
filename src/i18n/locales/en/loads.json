@@ -81,12 +81,30 @@
       "description": "Filter loads by status, driver, broker and dates",
       "filters": "Filters",
       "filters_active": "Filters (active)",
+      "applied_filters": "Applied Filters",
+      "clear": "Clear",
+      "status": "Status",
+      "driver": "Driver",
+      "broker": "Broker / Client",
+      "period": "Payment Period",
+      "date_range": "Pickup Date",
+      "placeholders": {
+        "status": "Select status",
+        "loading": "Loading...",
+        "driver": "Select driver",
+        "broker": "Select broker",
+        "period": "Select period",
+        "date_range": "Select dates"
+      },
       "options": {
         "status": {
           "all": "All statuses"
         },
         "broker": {
           "all": "All brokers"
+        },
+        "driver": {
+          "all": "All drivers"
         }
       }
     },
