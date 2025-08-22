@@ -289,7 +289,7 @@ export function CompanyDocumentUpload({
   const selectedTypeInfo = allPredefinedTypes.find(t => t.value === documentType);
 
   return (
-    <div className="bg-background border rounded-lg p-6 shadow-sm">
+    <div className="bg-white border rounded-lg p-6 shadow-sm">
       <form onSubmit={handleSubmit} className="space-y-6">
       {/* Document Type Selection */}
       <div className="space-y-2">
