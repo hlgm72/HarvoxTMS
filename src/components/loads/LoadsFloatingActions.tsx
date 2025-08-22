@@ -27,31 +27,6 @@ import { format, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOf
 import { formatShortDate, formatMediumDate, formatCurrency, formatDateInUserTimeZone, formatMonthName } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
-const statusOptions = [
-  { value: "all", label: "Todos los estados" },
-  { value: "created", label: "Creada" },
-  { value: "route_planned", label: "Ruta Planificada" },
-  { value: "assigned", label: "Asignada" },
-  { value: "in_transit", label: "En Tránsito" },
-  { value: "delivered", label: "Entregada" },
-  { value: "completed", label: "Completada" }
-];
-
-
-const brokerOptions = [
-  { value: "all", label: "Todos los brokers" },
-  { value: "broker1", label: "ABC Logistics" },
-  { value: "broker2", label: "XYZ Freight" },
-  { value: "broker3", label: "Global Transport" }
-];
-
-const sortOptions = [
-  { value: "date_desc", label: "Fecha (más reciente)" },
-  { value: "date_asc", label: "Fecha (más antigua)" },
-  { value: "amount_desc", label: "Monto (mayor a menor)" },
-  { value: "amount_asc", label: "Monto (menor a mayor)" },
-  { value: "status", label: "Estado" }
-];
 
 interface LoadsFloatingActionsProps {
   filters: {
@@ -75,6 +50,31 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
   const { t } = useTranslation('loads');
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
+  
+  const statusOptions = [
+    { value: "all", label: t('floating_actions.filters.options.status.all') },
+    { value: "created", label: t('status.created') },
+    { value: "route_planned", label: t('status.route_planned') },
+    { value: "assigned", label: t('status.assigned') },
+    { value: "in_transit", label: t('status.in_transit') },
+    { value: "delivered", label: t('status.delivered') },
+    { value: "completed", label: t('status.completed') }
+  ];
+
+  const brokerOptions = [
+    { value: "all", label: t('floating_actions.filters.options.broker.all') },
+    { value: "broker1", label: "ABC Logistics" },
+    { value: "broker2", label: "XYZ Freight" },
+    { value: "broker3", label: "Global Transport" }
+  ];
+
+  const sortOptions = [
+    { value: "date_desc", label: t('floating_actions.view.options.sort.date_desc') },
+    { value: "date_asc", label: t('floating_actions.view.options.sort.date_asc') },
+    { value: "amount_desc", label: t('floating_actions.view.options.sort.amount_desc') },
+    { value: "amount_asc", label: t('floating_actions.view.options.sort.amount_asc') },
+    { value: "status", label: t('floating_actions.view.options.sort.status') }
+  ];
   
   // Obtener lista de conductores reales
   const { data: driversData = [], isLoading: driversLoading } = useDriversList();
@@ -147,26 +147,26 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
   const floatingActions = [
     {
       icon: Filter,
-      label: hasActiveFilters ? 'Filtros (activos)' : 'Filtros',
+      label: hasActiveFilters ? t('floating_actions.filters.filters_active') : t('floating_actions.filters.filters'),
       onClick: () => openSheet('filters'),
       variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
       className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
     },
     {
       icon: Download,
-      label: 'Exportar',
+      label: t('floating_actions.export.export'),
       onClick: () => openSheet('export'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: Settings,
-      label: 'Vista',
+      label: t('floating_actions.view.view'),
       onClick: () => openSheet('view'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: BarChart3,
-      label: 'Estadísticas',
+      label: t('floating_actions.stats.statistics'),
       onClick: () => openSheet('stats'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     }
