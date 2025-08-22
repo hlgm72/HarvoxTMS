@@ -123,6 +123,20 @@
       "title": "Configuración de Vista",
       "description": "Personalizar cómo se muestran las cargas",
       "view": "Vista",
+      "sort_by": "Ordenar por",
+      "density": "Densidad",
+      "visible_columns": "Columnas Visibles",
+      "density_options": {
+        "compact": "Compacta",
+        "normal": "Normal",
+        "comfortable": "Confortable"
+      },
+      "columns": {
+        "broker_info": "Información del Broker",
+        "driver_info": "Información del Conductor", 
+        "dates": "Fechas",
+        "amounts": "Montos"
+      },
       "options": {
         "sort": {
           "date_desc": "Fecha (más reciente)",
@@ -136,7 +150,15 @@
     "stats": {
       "title": "Estadísticas",
       "description": "Ver estadísticas rápidas de tus cargas",
-      "statistics": "Estadísticas"
+      "statistics": "Estadísticas",
+      "total_loads": "Total Cargas",
+      "total_value": "Valor Total",
+      "in_transit": "En Tránsito",
+      "pending": "Pendientes",
+      "load_status": "Estados de Carga",
+      "completed": "Completadas",
+      "average_per_load": "Promedio por Carga",
+      "average_value": "Valor promedio por carga"
     }
   },
   "filters": {

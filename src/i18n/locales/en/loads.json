@@ -123,6 +123,20 @@
       "title": "View Settings",
       "description": "Customize how loads are displayed",
       "view": "View",
+      "sort_by": "Sort by",
+      "density": "Density",
+      "visible_columns": "Visible Columns",
+      "density_options": {
+        "compact": "Compact",
+        "normal": "Normal",
+        "comfortable": "Comfortable"
+      },
+      "columns": {
+        "broker_info": "Broker Information",
+        "driver_info": "Driver Information", 
+        "dates": "Dates",
+        "amounts": "Amounts"
+      },
       "options": {
         "sort": {
           "date_desc": "Date (newest first)",
@@ -136,7 +150,15 @@
     "stats": {
       "title": "Statistics",
       "description": "View quick statistics of your loads",
-      "statistics": "Statistics"
+      "statistics": "Statistics",
+      "total_loads": "Total Loads",
+      "total_value": "Total Value",
+      "in_transit": "In Transit",
+      "pending": "Pending",
+      "load_status": "Load Status",
+      "completed": "Completed",
+      "average_per_load": "Average per Load",
+      "average_value": "Average value per load"
     }
   },
   "filters": {

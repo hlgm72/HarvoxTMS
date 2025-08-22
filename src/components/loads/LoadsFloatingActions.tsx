@@ -459,10 +459,10 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
             {activeTab === 'view' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Configuración de Vista</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.title')}</h3>
                   
                   <div className="space-y-2 mb-4">
-                    <label className="text-sm font-medium">Ordenar por</label>
+                    <label className="text-sm font-medium">{t('floating_actions.view.sort_by')}</label>
                     <Select 
                       value={viewConfig.sortBy} 
                       onValueChange={(value) => setViewConfig({...viewConfig, sortBy: value})}
@@ -481,7 +481,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    <label className="text-sm font-medium">Densidad</label>
+                    <label className="text-sm font-medium">{t('floating_actions.view.density')}</label>
                     <Select 
                       value={viewConfig.density} 
                       onValueChange={(value) => setViewConfig({...viewConfig, density: value})}
@@ -490,9 +490,9 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="compact">Compacta</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="comfortable">Confortable</SelectItem>
+                        <SelectItem value="compact">{t('floating_actions.view.density_options.compact')}</SelectItem>
+                        <SelectItem value="normal">{t('floating_actions.view.density_options.normal')}</SelectItem>
+                        <SelectItem value="comfortable">{t('floating_actions.view.density_options.comfortable')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -501,31 +501,31 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Columnas Visibles</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.visible_columns')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Información del Broker</label>
+                      <label className="text-sm">{t('floating_actions.view.columns.broker_info')}</label>
                       <Switch 
                         checked={viewConfig.showBrokerInfo}
                         onCheckedChange={(checked) => setViewConfig({...viewConfig, showBrokerInfo: checked})}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Información del Conductor</label>
+                      <label className="text-sm">{t('floating_actions.view.columns.driver_info')}</label>
                       <Switch 
                         checked={viewConfig.showDriverInfo}
                         onCheckedChange={(checked) => setViewConfig({...viewConfig, showDriverInfo: checked})}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Fechas</label>
+                      <label className="text-sm">{t('floating_actions.view.columns.dates')}</label>
                       <Switch 
                         checked={viewConfig.showDates}
                         onCheckedChange={(checked) => setViewConfig({...viewConfig, showDates: checked})}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Montos</label>
+                      <label className="text-sm">{t('floating_actions.view.columns.amounts')}</label>
                       <Switch 
                         checked={viewConfig.showAmounts}
                         onCheckedChange={(checked) => setViewConfig({...viewConfig, showAmounts: checked})}
@@ -540,23 +540,23 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
             {activeTab === 'stats' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Estadísticas Rápidas</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.title')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-primary">{mockStats.totalLoads}</div>
-                      <div className="text-xs text-muted-foreground">Total Cargas</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.stats.total_loads')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalValue)}</div>
-                      <div className="text-xs text-muted-foreground">Valor Total</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.stats.total_value')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-blue-600">{mockStats.inTransit}</div>
-                      <div className="text-xs text-muted-foreground">En Tránsito</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.stats.in_transit')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-orange-600">{mockStats.pending}</div>
-                      <div className="text-xs text-muted-foreground">Pendientes</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.stats.pending')}</div>
                     </div>
                   </div>
                 </div>
@@ -564,22 +564,22 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Estados de Carga</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.load_status')}</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Completadas</span>
+                      <span className="text-sm">{t('floating_actions.stats.completed')}</span>
                       <Badge variant="outline" className="bg-green-100 text-green-700">
                         {mockStats.completed}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">En Tránsito</span>
+                      <span className="text-sm">{t('floating_actions.stats.in_transit')}</span>
                       <Badge variant="outline" className="bg-orange-100 text-orange-700">
                         {mockStats.inTransit}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Pendientes</span>
+                      <span className="text-sm">{t('floating_actions.stats.pending')}</span>
                       <Badge variant="outline" className="bg-yellow-100 text-yellow-700">
                         {mockStats.pending}
                       </Badge>
@@ -590,10 +590,10 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Promedio por Carga</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.average_per_load')}</h3>
                   <div className="bg-muted rounded-lg p-3">
                     <div className="text-xl font-bold text-primary">${formatCurrency(mockStats.averageValue)}</div>
-                    <div className="text-xs text-muted-foreground">Valor promedio por carga</div>
+                    <div className="text-xs text-muted-foreground">{t('floating_actions.stats.average_value')}</div>
                   </div>
                 </div>
               </div>
