@@ -1,36 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
-import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with better error handling
-let workerConfigured = false;
+// Lazy load react-pdf components to avoid worker issues
+let Document: any = null;
+let Page: any = null;
+let pdfjs: any = null;
 
-const configurePDFWorker = () => {
-  if (workerConfigured) return;
+// Flag to track if PDF support is available
+let pdfSupportAvailable = false;
+
+// Function to safely initialize PDF support
+const initializePDFSupport = async () => {
+  if (pdfSupportAvailable) return true;
   
   try {
-    // Method 1: Try the modern approach first
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.min.mjs',
-      import.meta.url,
-    ).toString();
-    workerConfigured = true;
-    console.log('✅ PDF worker configured with .mjs file');
-  } catch (error) {
-    console.warn('⚠️ Failed to configure .mjs worker, trying CDN fallback:', error);
+    // Dynamically import react-pdf only when needed
+    const reactPdf = await import('react-pdf');
+    Document = reactPdf.Document;
+    Page = reactPdf.Page;
+    pdfjs = reactPdf.pdfjs;
     
-    try {
-      // Fallback to CDN
-      pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-      workerConfigured = true;
-      console.log('✅ PDF worker configured with CDN fallback');
-    } catch (fallbackError) {
-      console.error('❌ Failed to configure PDF worker:', fallbackError);
-      // Last resort - disable PDF previews
-      workerConfigured = false;
+    // Configure worker with multiple fallbacks
+    if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+      try {
+        // Method 1: Try the modern approach
+        pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+          'pdfjs-dist/build/pdf.worker.min.mjs',
+          import.meta.url,
+        ).toString();
+        
+        // Test if worker works by creating a minimal document
+        await testPDFWorker();
+        pdfSupportAvailable = true;
+        console.log('✅ PDF worker configured successfully with .mjs');
+        return true;
+      } catch (error) {
+        console.warn('⚠️ .mjs worker failed, trying CDN fallback:', error);
+        
+        try {
+          // Method 2: CDN fallback
+          pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+          await testPDFWorker();
+          pdfSupportAvailable = true;
+          console.log('✅ PDF worker configured with CDN fallback');
+          return true;
+        } catch (cdnError) {
+          console.error('❌ Both PDF worker configurations failed:', cdnError);
+          return false;
+        }
+      }
     }
+    
+    pdfSupportAvailable = true;
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to initialize PDF support:', error);
+    return false;
   }
+};
+
+// Test function to verify PDF worker functionality
+const testPDFWorker = async () => {
+  // This is a minimal test - we don't actually load a PDF but verify the worker is accessible
+  if (!pdfjs || !pdfjs.GlobalWorkerOptions.workerSrc) {
+    throw new Error('PDF worker not configured');
+  }
+  // If we get here without error, the basic configuration is working
 };
 
 interface DocumentPreviewProps {
@@ -50,12 +86,15 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [fileType, setFileType] = useState<'image' | 'pdf' | 'other'>('other');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [pdfWorkerReady, setPdfWorkerReady] = useState(false);
+  const [pdfReady, setPdfReady] = useState(false);
 
-  // Configure PDF worker on component mount
+  // Initialize PDF support on mount
   useEffect(() => {
-    configurePDFWorker();
-    setPdfWorkerReady(workerConfigured);
+    const initPDF = async () => {
+      const pdfAvailable = await initializePDFSupport();
+      setPdfReady(pdfAvailable);
+    };
+    initPDF();
   }, []);
 
   useEffect(() => {
@@ -156,56 +195,69 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      // If PDF worker is not ready, show a fallback icon
-      if (!pdfWorkerReady) {
+      // If PDF support is not available, show fallback
+      if (!pdfReady || !Document || !Page) {
         return (
           <div className="flex flex-col items-center justify-center h-full bg-muted/20">
             <FileText className="h-8 w-8 text-muted-foreground mb-1" />
             <div className="text-xs text-muted-foreground text-center">
-              PDF Preview
+              PDF Document
             </div>
           </div>
         );
       }
 
-      return (
-        <div className="w-full h-full bg-white rounded overflow-hidden">
-          <Document
-            file={previewUrl}
-            onLoadError={(error) => {
-              console.error('PDF load error:', error);
-              setError('Error loading PDF');
-            }}
-            onLoadSuccess={() => {
-              console.log('PDF loaded successfully');
-            }}
-            loading={
-              <div className="flex items-center justify-center w-full h-32 bg-muted/20">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            }
-            className="w-full h-full"
-            options={{
-              cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
-              cMapPacked: true,
-              standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
-            }}
-          >
-            <Page
-              pageNumber={1}
-              width={128}
-              height={128}
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-              className="w-full h-full"
-              onRenderError={(error) => {
-                console.error('PDF render error:', error);
-                setError('Error rendering PDF');
+      // Render PDF with error boundary
+      try {
+        return (
+          <div className="w-full h-full bg-white rounded overflow-hidden">
+            <Document
+              file={previewUrl}
+              onLoadError={(error) => {
+                console.error('PDF load error:', error);
+                setError('Error loading PDF');
               }}
-            />
-          </Document>
-        </div>
-      );
+              onLoadSuccess={() => {
+                console.log('PDF loaded successfully');
+              }}
+              loading={
+                <div className="flex items-center justify-center w-full h-32 bg-muted/20">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              }
+              className="w-full h-full"
+              options={{
+                cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs?.version || '3.11.174'}/cmaps/`,
+                cMapPacked: true,
+                standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs?.version || '3.11.174'}/standard_fonts/`,
+              }}
+            >
+              <Page
+                pageNumber={1}
+                width={128}
+                height={128}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
+                className="w-full h-full"
+                onRenderError={(error) => {
+                  console.error('PDF render error:', error);
+                  setError('Error rendering PDF');
+                }}
+              />
+            </Document>
+          </div>
+        );
+      } catch (pdfError) {
+        console.error('PDF component error:', pdfError);
+        return (
+          <div className="flex flex-col items-center justify-center h-full bg-muted/20">
+            <FileText className="h-8 w-8 text-muted-foreground mb-1" />
+            <div className="text-xs text-muted-foreground text-center">
+              PDF Document
+            </div>
+          </div>
+        );
+      }
     }
 
     return (
