@@ -155,9 +155,9 @@ export function DocumentCard({
 
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <div className="flex">
+      <div className="flex flex-col sm:flex-row">
         {/* Left side - Document Info */}
-        <div className="flex-1">
+        <div className="w-full sm:w-80 lg:w-96">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
@@ -328,11 +328,11 @@ export function DocumentCard({
         </div>
 
         {/* Right side - Document Preview */}
-        <div className="w-48 border-l bg-muted/20">
+        <div className="w-full sm:w-48 lg:w-56 border-l-0 sm:border-l border-t sm:border-t-0 bg-muted/20">
           <DocumentPreview
             documentUrl={document.file_url}
             fileName={document.file_name}
-            className="h-full w-full rounded-none"
+            className="h-40 sm:h-full w-full rounded-none"
           />
         </div>
       </div>
