@@ -251,13 +251,13 @@ export function EmailDocumentsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-2xl mx-2 sm:mx-0 bg-white max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Mail className="w-5 h-5" />
-            Enviar Documentos por Email
+      <DialogContent className="w-[95vw] max-w-2xl mx-1 sm:mx-0 bg-white max-h-[90vh] sm:max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="space-y-2 sm:space-y-3">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
+            <span className="truncate">Enviar Documentos</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             Envía los documentos seleccionados a uno o varios destinatarios
           </DialogDescription>
         </DialogHeader>
@@ -277,42 +277,44 @@ export function EmailDocumentsModal({
               )}
             </div>
             
-            <div className="max-h-32 sm:max-h-40 overflow-y-auto border rounded-md p-2 sm:p-3 space-y-2">
+            <div className="max-h-28 sm:max-h-40 overflow-y-auto border rounded-md p-2 sm:p-3 space-y-1 sm:space-y-2">
               {selectedDocuments.map((doc) => {
                 const fileSizeMB = (doc.file_size || 0) / (1024 * 1024);
                 const isLarge = (doc.file_size || 0) > MAX_FILE_SIZE;
                 
                 return (
-                   <div key={doc.id} className={`flex items-center justify-between rounded p-1.5 sm:p-2 ${isLarge ? 'bg-red-50 border border-red-200' : 'bg-muted/50'}`}>
+                   <div key={doc.id} className={`flex items-center gap-2 rounded p-2 sm:p-2 ${isLarge ? 'bg-red-50 border border-red-200' : 'bg-muted/50'}`}>
                      <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
                        {isLarge ? (
                          <FileWarning className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
                        ) : (
                          <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
                        )}
-                       <span className="text-xs sm:text-sm truncate">{doc.file_name}</span>
-                      <Badge 
-                        variant={isLarge ? "destructive" : "outline"} 
-                        className="text-xs"
-                      >
-                        {fileSizeMB >= 1 ? `${fileSizeMB.toFixed(1)}MB` : `${(doc.file_size || 0 / 1024).toFixed(0)}KB`}
-                      </Badge>
-                      {isLarge && (
-                        <Badge variant="destructive" className="text-xs">
-                          &gt;10MB
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                       <span className="text-xs sm:text-sm truncate flex-1">{doc.file_name}</span>
+                     </div>
+                     <div className="flex items-center gap-1 flex-shrink-0">
+                       <Badge 
+                         variant={isLarge ? "destructive" : "outline"} 
+                         className="text-xs"
+                       >
+                         {fileSizeMB >= 1 ? `${fileSizeMB.toFixed(1)}MB` : `${(doc.file_size || 0 / 1024).toFixed(0)}KB`}
+                       </Badge>
+                       {isLarge && (
+                         <Badge variant="destructive" className="text-xs">
+                           &gt;10MB
+                         </Badge>
+                       )}
+                     </div>
+                   </div>
                 );
               })}
             </div>
             
             {/* Enhanced Size Status */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Tamaño total: {totalSizeMB}MB de {(MAX_TOTAL_SIZE / (1024 * 1024)).toFixed(0)}MB máximo
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-muted-foreground truncate">
+                  Total: {totalSizeMB}MB / {(MAX_TOTAL_SIZE / (1024 * 1024)).toFixed(0)}MB
                 </span>
                 {exceedsTotal && (
                   <Badge variant="destructive" className="text-xs">
@@ -343,17 +345,17 @@ export function EmailDocumentsModal({
               </div>
               
               {/* Validation Messages */}
-              {largeFiles.length > 0 && (
-                <div className="text-xs text-red-600 bg-red-50 p-2 rounded">
-                  <FileWarning className="w-3 h-3 inline mr-1" />
-                  {largeFiles.length} archivo(s) exceden 10MB y no se pueden enviar
+               {largeFiles.length > 0 && (
+                <div className="text-xs text-red-600 bg-red-50 p-2 rounded flex items-center gap-1">
+                  <FileWarning className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">{largeFiles.length} archivo(s) muy grandes</span>
                 </div>
               )}
               
               {canSplit && (
-                <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                  <Split className="w-3 h-3 inline mr-1" />
-                  Los documentos se pueden dividir en múltiples emails
+                <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded flex items-center gap-1">
+                  <Split className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">Se pueden dividir en emails</span>
                 </div>
               )}
             </div>
@@ -380,12 +382,12 @@ export function EmailDocumentsModal({
               className={validationErrors.recipients ? "border-red-500" : ""}
             />
             {validationErrors.recipients && (
-              <p className="text-xs text-red-600 bg-red-50 p-2 rounded">
+              <p className="text-xs text-red-600 bg-red-50 p-2 rounded break-words">
                 {validationErrors.recipients}
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              Separa múltiples emails con comas
+              Separa emails con comas
             </p>
           </div>
 
@@ -408,7 +410,7 @@ export function EmailDocumentsModal({
               className={validationErrors.subject ? "border-red-500" : ""}
             />
             {validationErrors.subject && (
-              <p className="text-xs text-red-600 bg-red-50 p-2 rounded">
+              <p className="text-xs text-red-600 bg-red-50 p-2 rounded break-words">
                 {validationErrors.subject}
               </p>
             )}
@@ -422,35 +424,35 @@ export function EmailDocumentsModal({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Estimado(a), adjunto encontrará los documentos solicitados..."
-              rows={4}
+              rows={3}
+              className="resize-none"
               disabled={sendEmailMutation.isPending}
             />
           </div>
 
           {/* Enhanced Actions */}
-          <div className="flex flex-col sm:flex-row justify-between gap-3">
-            <div className="w-full sm:w-auto">
-              {canSplit && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleSplitAndSend}
-                  disabled={sendEmailMutation.isPending || largeFiles.length > 0}
-                  className="w-full sm:w-auto text-sm"
-                >
-                  <Split className="w-4 h-4 mr-2" />
-                  Dividir en Emails
-                </Button>
-              )}
-            </div>
+          <div className="flex flex-col gap-3">
+            {canSplit && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleSplitAndSend}
+                disabled={sendEmailMutation.isPending || largeFiles.length > 0}
+                className="w-full text-sm"
+              >
+                <Split className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Dividir en Emails</span>
+                <span className="sm:hidden">Dividir</span>
+              </Button>
+            )}
             
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={sendEmailMutation.isPending}
-                className="w-full sm:w-auto text-sm"
+                className="w-full text-sm order-2 sm:order-1"
               >
                 Cancelar
               </Button>
@@ -463,7 +465,7 @@ export function EmailDocumentsModal({
                   largeFiles.length > 0 ||
                   selectedDocuments.length === 0
                 }
-                className="w-full sm:w-auto text-sm"
+                className="w-full text-sm order-1 sm:order-2"
               >
                 {sendEmailMutation.isPending ? (
                   <>
