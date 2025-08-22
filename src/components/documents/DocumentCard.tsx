@@ -19,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
 import DocumentPreview from "@/components/loads/DocumentPreview";
+import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal";
+import { useState } from "react";
 
 interface PredefinedDocumentType {
   value: string;
@@ -65,6 +67,7 @@ export function DocumentCard({
 }: DocumentCardProps) {
   const { isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   
   // Find document type info
   const getDocumentTypeInfo = () => {
@@ -415,15 +418,23 @@ export function DocumentCard({
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => {
-            // TODO: Implement email functionality
-            console.log('Enviar por email:', document.file_name);
-          }}
+          onClick={() => setEmailModalOpen(true)}
           className="flex-1 text-xs h-8"
         >
           📧 Email
         </Button>
       </div>
+
+      {/* Email Modal */}
+      <EmailDocumentsModal
+        open={emailModalOpen}
+        onOpenChange={setEmailModalOpen}
+        selectedDocuments={[document]}
+        onSuccess={() => {
+          setEmailModalOpen(false);
+          showSuccess("Email enviado exitosamente");
+        }}
+      />
 
     </Card>
   );
