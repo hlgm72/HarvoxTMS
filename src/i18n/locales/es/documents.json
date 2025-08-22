@@ -88,5 +88,45 @@
     "restore_error": "No se pudo restaurar el documento",
     "no_selection": "Selecciona al menos un documento para enviar",
     "error_title": "Error"
+  },
+  "card": {
+    "badges": {
+      "expired": "Vencido",
+      "expiring": "Por Vencer",
+      "valid": "Vigente",
+      "critical": "Crítico"
+    },
+    "dates": {
+      "issued": "Emitido",
+      "expires": "Vence",
+      "uploaded": "Subido",
+      "size": "Tamaño"
+    },
+    "menu": {
+      "download": "Descargar",
+      "edit": "Editar",
+      "restore": "Restaurar",
+      "archive": "Archivar",
+      "delete_permanently": "Eliminar permanentemente"
+    },
+    "buttons": {
+      "download": "Descargar",
+      "email": "Email"
+    },
+    "delete_dialog": {
+      "title": "¿Eliminar documento permanentemente?",
+      "description": "Esta acción no se puede deshacer. El documento será eliminado permanentemente de nuestros servidores y se registrará en el log de auditoría.",
+      "file_label": "Archivo",
+      "type_label": "Tipo",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar permanentemente"
+    },
+    "click_to_open": "Haz clic para abrir en nueva pestaña",
+    "unknown_size": "Tamaño desconocido",
+    "download_error": "Error al descargar el documento",
+    "open_error": "Error al abrir el documento",
+    "delete_error": "Hubo un error al eliminar el documento",
+    "delete_success": "Documento eliminado permanentemente",
+    "email_success": "Email enviado exitosamente"
   }
 }

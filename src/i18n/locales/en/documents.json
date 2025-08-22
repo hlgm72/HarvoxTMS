@@ -88,5 +88,45 @@
     "restore_error": "Could not restore document",
     "no_selection": "Select at least one document to send",
     "error_title": "Error"
+  },
+  "card": {
+    "badges": {
+      "expired": "Expired",
+      "expiring": "Expiring",
+      "valid": "Valid",
+      "critical": "Critical"
+    },
+    "dates": {
+      "issued": "Issued",
+      "expires": "Expires",
+      "uploaded": "Uploaded",
+      "size": "Size"
+    },
+    "menu": {
+      "download": "Download",
+      "edit": "Edit",
+      "restore": "Restore",
+      "archive": "Archive",
+      "delete_permanently": "Delete permanently"
+    },
+    "buttons": {
+      "download": "Download",
+      "email": "Email"
+    },
+    "delete_dialog": {
+      "title": "Delete document permanently?",
+      "description": "This action cannot be undone. The document will be permanently deleted from our servers and logged in the audit trail.",
+      "file_label": "File",
+      "type_label": "Type",
+      "cancel": "Cancel",
+      "confirm": "Delete permanently"
+    },
+    "click_to_open": "Click to open in new tab",
+    "unknown_size": "Unknown size",
+    "download_error": "Error downloading document",
+    "open_error": "Error opening document",
+    "delete_error": "There was an error deleting the document",
+    "delete_success": "Document deleted permanently",
+    "email_success": "Email sent successfully"
   }
 }

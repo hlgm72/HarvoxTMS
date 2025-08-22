@@ -21,6 +21,7 @@ import { formatExpiryDate, formatDateOnly } from '@/lib/dateFormatting';
 import DocumentPreview from "@/components/loads/DocumentPreview";
 import { EmailDocumentsModal } from "@/components/documents/EmailDocumentsModal";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PredefinedDocumentType {
   value: string;
@@ -65,6 +66,7 @@ export function DocumentCard({
   getExpiryStatus,
   isArchived = false
 }: DocumentCardProps) {
+  const { t } = useTranslation('documents');
   const { isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -84,18 +86,18 @@ export function DocumentCard({
   const getExpiryBadge = () => {
     switch (expiryStatus) {
       case "expired":
-        return <Badge variant="destructive">Vencido</Badge>;
+        return <Badge variant="destructive">{t('card.badges.expired')}</Badge>;
       case "expiring":
-        return <Badge variant="outline" className="border-amber-500 text-amber-600">Por Vencer</Badge>;
+        return <Badge variant="outline" className="border-amber-500 text-amber-600">{t('card.badges.expiring')}</Badge>;
       case "valid":
-        return <Badge variant="outline" className="border-green-500 text-green-600">Vigente</Badge>;
+        return <Badge variant="outline" className="border-green-500 text-green-600">{t('card.badges.valid')}</Badge>;
       default:
         return null;
     }
   };
 
   const formatFileSize = (bytes?: number) => {
-    if (!bytes) return "Tamaño desconocido";
+    if (!bytes) return t('card.unknown_size');
     const mb = bytes / 1024 / 1024;
     return `${mb.toFixed(2)} MB`;
   };
@@ -141,7 +143,7 @@ export function DocumentCard({
 
       if (urlError) {
         console.error('Error generating download URL:', urlError);
-        showError('Error al descargar el documento');
+        showError(t('card.download_error'));
         return;
       }
 
@@ -156,7 +158,7 @@ export function DocumentCard({
       }
     } catch (error) {
       console.error('Error downloading document:', error);
-      showError('Error al descargar el documento');
+      showError(t('card.download_error'));
     }
   };
 
@@ -187,7 +189,7 @@ export function DocumentCard({
 
       if (urlError) {
         console.error('Error generating document URL:', urlError);
-        showError('Error al abrir el documento');
+        showError(t('card.open_error'));
         return;
       }
 
@@ -196,7 +198,7 @@ export function DocumentCard({
       }
     } catch (error) {
       console.error('Error opening document:', error);
-      showError('Error al abrir el documento');
+      showError(t('card.open_error'));
     }
   };
 
@@ -209,23 +211,22 @@ export function DocumentCard({
       if (error) {
         console.error('Error al eliminar documento:', error);
         showError(
-          "Error",
-          "Hubo un error al eliminar el documento"
+          t('notifications.error_title'),
+          t('card.delete_error')
         );
         return;
       }
 
       if (data && typeof data === 'object' && 'success' in data && !data.success) {
         showError(
-          "Error",
-          typeof data === 'object' && 'message' in data ? String(data.message) : "Error desconocido"
+          t('notifications.error_title'),
+          typeof data === 'object' && 'message' in data ? String(data.message) : t('card.delete_error')
         );
         return;
       }
 
       showSuccess(
-        "Documento eliminado",
-        "El documento ha sido eliminado permanentemente"
+        t('card.delete_success')
       );
       
       // Refresh the parent component
@@ -233,8 +234,8 @@ export function DocumentCard({
     } catch (error) {
       console.error('Error:', error);
       showError(
-        "Error",
-        "Hubo un error al eliminar el documento"
+        t('notifications.error_title'),
+        t('card.delete_error')
       );
     }
   };
@@ -269,13 +270,13 @@ export function DocumentCard({
               <DropdownMenuContent align="end" className="z-50">
                 <DropdownMenuItem onClick={handleDownload}>
                   <Download className="h-4 w-4 mr-2" />
-                  Descargar
+                  {t('card.menu.download')}
                 </DropdownMenuItem>
                 
                 {onEdit && (
                   <DropdownMenuItem onClick={() => onEdit(document)}>
                     <Pencil className="h-4 w-4 mr-2" />
-                    Editar
+                    {t('card.menu.edit')}
                   </DropdownMenuItem>
                 )}
                 {isArchived ? (
@@ -285,7 +286,7 @@ export function DocumentCard({
                       className="text-green-600"
                     >
                       <ArchiveRestore className="h-4 w-4 mr-2" />
-                      Restaurar
+                      {t('card.menu.restore')}
                     </DropdownMenuItem>
                   )
                 ) : (
@@ -295,7 +296,7 @@ export function DocumentCard({
                       className="text-amber-600"
                     >
                       <Archive className="h-4 w-4 mr-2" />
-                      Archivar
+                      {t('card.menu.archive')}
                     </DropdownMenuItem>
                   )
                 )}
@@ -310,28 +311,27 @@ export function DocumentCard({
                           className="text-destructive focus:text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Eliminar permanentemente
+                          {t('card.menu.delete_permanently')}
                         </DropdownMenuItem>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>¿Eliminar documento permanentemente?</AlertDialogTitle>
+                          <AlertDialogTitle>{t('card.delete_dialog.title')}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Esta acción no se puede deshacer. El documento será eliminado permanentemente 
-                            de nuestros servidores y se registrará en el log de auditoría.
+                            {t('card.delete_dialog.description')}
                             <br /><br />
-                            <strong>Archivo:</strong> {document.file_name}
+                            <strong>{t('card.delete_dialog.file_label')}:</strong> {document.file_name}
                             <br />
-                            <strong>Tipo:</strong> {document.document_type}
+                            <strong>{t('card.delete_dialog.type_label')}:</strong> {document.document_type}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogCancel>{t('card.delete_dialog.cancel')}</AlertDialogCancel>
                           <AlertDialogAction 
                             onClick={handlePermanentDelete}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            Eliminar permanentemente
+                            {t('card.delete_dialog.confirm')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -346,7 +346,7 @@ export function DocumentCard({
           <div className="flex flex-wrap gap-2">
             {typeInfo.critical && (
               <Badge variant="secondary" className="text-xs">
-                Crítico
+                {t('card.badges.critical')}
               </Badge>
             )}
             {getExpiryBadge()}
@@ -363,7 +363,7 @@ export function DocumentCard({
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
                 <span>
-                  Emitido: {formatDateOnly(document.issue_date)}
+                  {t('card.dates.issued')}: {formatDateOnly(document.issue_date)}
                 </span>
               </div>
             )}
@@ -372,7 +372,7 @@ export function DocumentCard({
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
                 <span>
-                  Vence: {formatExpiryDate(document.expires_at)}
+                  {t('card.dates.expires')}: {formatExpiryDate(document.expires_at)}
                 </span>
               </div>
             )}
@@ -380,9 +380,9 @@ export function DocumentCard({
 
           {/* File Info */}
           <div className="space-y-1 text-xs text-muted-foreground">
-            <div>Tamaño: {formatFileSize(document.file_size)}</div>
+            <div>{t('card.dates.size')}: {formatFileSize(document.file_size)}</div>
             <div>
-              Subido: {formatDateOnly(document.created_at)}
+              {t('card.dates.uploaded')}: {formatDateOnly(document.created_at)}
             </div>
           </div>
         </div>
@@ -393,7 +393,7 @@ export function DocumentCard({
           <div 
             className="w-full h-36 sm:h-48 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleOpenInNewTab}
-            title="Haz clic para abrir en nueva pestaña"
+            title={t('card.click_to_open')}
           >
             <DocumentPreview
               documentUrl={document.file_url}
@@ -413,7 +413,7 @@ export function DocumentCard({
           className="flex-1 text-xs h-8"
         >
           <Download className="h-3 w-3 mr-1" />
-          Descargar
+          {t('card.buttons.download')}
         </Button>
         <Button 
           variant="outline" 
@@ -422,7 +422,7 @@ export function DocumentCard({
           className="flex-1 text-xs h-8"
         >
           <Mail className="h-3 w-3 mr-1" />
-          Email
+          {t('card.buttons.email')}
         </Button>
       </div>
 
@@ -433,7 +433,7 @@ export function DocumentCard({
         selectedDocuments={[document]}
         onSuccess={() => {
           setEmailModalOpen(false);
-          showSuccess("Email enviado exitosamente");
+          showSuccess(t('card.email_success'));
         }}
       />
 
