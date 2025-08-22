@@ -105,14 +105,56 @@ export function DocumentCard({
     return "📄";
   };
 
-  const handleDownload = () => {
-    const link = window.document.createElement('a');
-    link.href = document.file_url;
-    link.download = document.file_name;
-    link.target = '_blank';
-    window.document.body.appendChild(link);
-    link.click();
-    window.document.body.removeChild(link);
+  const handleDownload = async () => {
+    try {
+      // Handle blob URLs (temporary documents)
+      if (document.file_url.startsWith('blob:')) {
+        const link = window.document.createElement('a');
+        link.href = document.file_url;
+        link.download = document.file_name;
+        link.target = '_blank';
+        window.document.body.appendChild(link);
+        link.click();
+        window.document.body.removeChild(link);
+        return;
+      }
+
+      // Handle Supabase storage URLs - generate signed URL
+      let storageFilePath = document.file_url;
+      let bucketName = 'company-documents'; // default bucket
+      
+      if (document.file_url.includes('/load-documents/')) {
+        storageFilePath = document.file_url.split('/load-documents/')[1];
+        bucketName = 'load-documents';
+      } else if (document.file_url.includes('/company-documents/')) {
+        storageFilePath = document.file_url.split('/company-documents/')[1];
+        bucketName = 'company-documents';
+      }
+
+      // Generate signed URL for download
+      const { data: signedUrlData, error: urlError } = await supabase.storage
+        .from(bucketName)
+        .createSignedUrl(storageFilePath, 3600);
+
+      if (urlError) {
+        console.error('Error generating download URL:', urlError);
+        showError('Error al descargar el documento');
+        return;
+      }
+
+      if (signedUrlData?.signedUrl) {
+        const link = window.document.createElement('a');
+        link.href = signedUrlData.signedUrl;
+        link.download = document.file_name;
+        link.target = '_blank';
+        window.document.body.appendChild(link);
+        link.click();
+        window.document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      showError('Error al descargar el documento');
+    }
   };
 
   const handleOpenInNewTab = async () => {
