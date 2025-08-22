@@ -111,7 +111,13 @@
     "export": {
       "title": "Exportar Datos", 
       "description": "Exportar datos de cargas en diferentes formatos",
-      "export": "Exportar"
+      "export": "Exportar",
+      "pdf": "Exportar a PDF",
+      "excel": "Exportar a Excel",
+      "options_title": "Opciones de Exportación", 
+      "include_filters": "Incluir filtros aplicados",
+      "visible_only": "Solo cargas visibles",
+      "include_stats": "Incluir estadísticas"
     },
     "view": {
       "title": "Configuración de Vista",

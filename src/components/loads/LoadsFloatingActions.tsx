@@ -420,15 +420,15 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
             {activeTab === 'export' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Exportar Datos</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.export.title')}</h3>
                   <div className="space-y-3">
                     <Button variant="outline" className="w-full justify-start">
                       <FileText className="h-4 w-4 mr-2" />
-                      Exportar a PDF
+                      {t('floating_actions.export.pdf')}
                     </Button>
                     <Button variant="outline" className="w-full justify-start">
                       <FileSpreadsheet className="h-4 w-4 mr-2" />
-                      Exportar a Excel
+                      {t('floating_actions.export.excel')}
                     </Button>
                   </div>
                 </div>
@@ -436,18 +436,18 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Opciones de Exportación</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.export.options_title')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Incluir filtros aplicados</label>
+                      <label className="text-sm">{t('floating_actions.export.include_filters')}</label>
                       <Switch defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Solo cargas visibles</label>
+                      <label className="text-sm">{t('floating_actions.export.visible_only')}</label>
                       <Switch />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Incluir estadísticas</label>
+                      <label className="text-sm">{t('floating_actions.export.include_stats')}</label>
                       <Switch defaultChecked />
                     </div>
                   </div>
