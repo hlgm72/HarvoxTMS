@@ -3,28 +3,16 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with proper error handling
+// Configure PDF.js worker with reliable CDN approach
 const configurePDFWorker = () => {
   try {
-    // Method 1: Try the modern approach first
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.min.mjs',
-      import.meta.url,
-    ).toString();
-    console.log('✅ PDF worker configured with .mjs file');
+    // Use CDN approach which is more reliable in browser environments
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+    console.log('✅ PDF worker configured with CDN');
     return true;
   } catch (error) {
-    console.warn('⚠️ Failed to configure .mjs worker, trying CDN fallback:', error);
-    
-    try {
-      // Fallback to CDN
-      pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-      console.log('✅ PDF worker configured with CDN fallback');
-      return true;
-    } catch (fallbackError) {
-      console.error('❌ Failed to configure PDF worker:', fallbackError);
-      return false;
-    }
+    console.error('❌ Failed to configure PDF worker:', error);
+    return false;
   }
 };
 
@@ -160,14 +148,14 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
         );
       }
 
-      // Try to render PDF with error catching
+      // Try to render PDF with error catching and additional safety checks
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
           <Document
             file={previewUrl}
             onLoadError={(error) => {
               console.error('PDF load error:', error);
-              setPdfError(true); // Set PDF error state instead of general error
+              setPdfError(true);
             }}
             onLoadSuccess={() => {
               console.log('PDF loaded successfully');
@@ -178,11 +166,19 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             }
+            error={
+              <div className="flex flex-col items-center justify-center h-full bg-muted/20">
+                <FileText className="h-8 w-8 text-muted-foreground mb-1" />
+                <div className="text-xs text-muted-foreground text-center">
+                  Error cargando PDF
+                </div>
+              </div>
+            }
             className="w-full h-full"
             options={{
               cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
               cMapPacked: true,
-              standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+              standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`
             }}
           >
             <Page
@@ -194,8 +190,19 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               className="w-full h-full"
               onRenderError={(error) => {
                 console.error('PDF render error:', error);
-                setPdfError(true); // Set PDF error state instead of general error
+                setPdfError(true);
               }}
+              onRenderSuccess={() => {
+                console.log('PDF page rendered successfully');
+              }}
+              error={
+                <div className="flex flex-col items-center justify-center h-full bg-muted/20">
+                  <FileText className="h-8 w-8 text-muted-foreground mb-1" />
+                  <div className="text-xs text-muted-foreground text-center">
+                    Error renderizando página
+                  </div>
+                </div>
+              }
             />
           </Document>
         </div>
