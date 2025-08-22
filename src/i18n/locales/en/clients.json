@@ -68,7 +68,60 @@
     "cancel": "Cancel"
   },
   "filters": {
-    "title": "Smart Client Filters"
+    "title": "Smart Client Filters",
+    "button": "Filters",
+    "labels": {
+      "status": "Client Status",
+      "location": "Location", 
+      "email_domain": "Email Domain",
+      "logo": "Logo",
+      "alias": "Alias/Short Name",
+      "notes": "Notes/Comments",
+      "creation_date": "Creation Date"
+    },
+    "placeholders": {
+      "status": "Select status",
+      "location": "City, state or address...",
+      "email_domain": "example.com",
+      "logo": "Filter by logo",
+      "alias": "Filter by alias",
+      "notes": "Filter by notes", 
+      "date_range": "Filter by date"
+    },
+    "options": {
+      "status": {
+        "all": "All statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "logo": {
+        "all": "All",
+        "yes": "With logo",
+        "no": "Without logo"
+      },
+      "alias": {
+        "all": "All",
+        "yes": "With alias",
+        "no": "Without alias"
+      },
+      "notes": {
+        "all": "All",
+        "yes": "With notes",
+        "no": "Without notes"
+      },
+      "date_range": {
+        "all": "All dates",
+        "today": "Today",
+        "week": "This week",
+        "month": "This month",
+        "quarter": "Last 3 months",
+        "year": "This year"
+      }
+    },
+    "actions": {
+      "clear": "Clear Filters",
+      "apply": "Apply Filters"
+    }
   },
   "actions_menu": {
     "view_details": "View Details", 

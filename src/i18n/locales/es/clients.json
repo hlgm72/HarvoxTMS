@@ -68,7 +68,60 @@
     "cancel": "Cancelar"
   },
   "filters": {
-    "title": "Filtros Inteligentes de Clientes"
+    "title": "Filtros Inteligentes de Clientes",
+    "button": "Filtros",
+    "labels": {
+      "status": "Estado del Cliente",
+      "location": "Ubicación",
+      "email_domain": "Dominio de Email",
+      "logo": "Logo",
+      "alias": "Alias/Nombre Corto", 
+      "notes": "Notas/Comentarios",
+      "creation_date": "Fecha de Creación"
+    },
+    "placeholders": {
+      "status": "Seleccionar estado",
+      "location": "Ciudad, estado o dirección...",
+      "email_domain": "ejemplo.com",
+      "logo": "Filtrar por logo",
+      "alias": "Filtrar por alias",
+      "notes": "Filtrar por notas",
+      "date_range": "Filtrar por fecha"
+    },
+    "options": {
+      "status": {
+        "all": "Todos los estados",
+        "active": "Activos",
+        "inactive": "Inactivos"
+      },
+      "logo": {
+        "all": "Todos",
+        "yes": "Con logo",
+        "no": "Sin logo"
+      },
+      "alias": {
+        "all": "Todos",
+        "yes": "Con alias",
+        "no": "Sin alias"
+      },
+      "notes": {
+        "all": "Todos",
+        "yes": "Con notas",
+        "no": "Sin notas"
+      },
+      "date_range": {
+        "all": "Todas las fechas",
+        "today": "Hoy",
+        "week": "Esta semana",
+        "month": "Este mes",
+        "quarter": "Últimos 3 meses",
+        "year": "Este año"
+      }
+    },
+    "actions": {
+      "clear": "Limpiar Filtros",
+      "apply": "Aplicar Filtros"
+    }
   },
   "actions_menu": {
     "view_details": "Ver Detalles",

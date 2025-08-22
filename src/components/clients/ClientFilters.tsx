@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Filter } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ClientFiltersProps {
   filters: {
@@ -29,6 +30,7 @@ interface ClientFiltersProps {
 }
 
 export function ClientFilters({ filters, onFiltersChange, open, onOpenChange }: ClientFiltersProps) {
+  const { t } = useTranslation('clients');
   const handleFilterChange = (key: string, value: string) => {
     onFiltersChange({
       ...filters,
@@ -75,7 +77,7 @@ export function ClientFilters({ filters, onFiltersChange, open, onOpenChange }: 
           className={hasActiveFilters ? "bg-muted" : ""}
         >
           <Filter className="h-4 w-4 mr-2" />
-          Filtros
+          {t('filters.button')}
           {hasActiveFilters && (
             <span className="ml-2 bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-xs">
               {activeFilterCount}
@@ -85,33 +87,33 @@ export function ClientFilters({ filters, onFiltersChange, open, onOpenChange }: 
       </SheetTrigger>
       <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Filtros Inteligentes de Clientes</SheetTitle>
+          <SheetTitle>{t('filters.title')}</SheetTitle>
         </SheetHeader>
-        <div className="mt-6 space-y-6">{/* ... keep existing code */}
+        <div className="mt-6 space-y-6">
           {/* Estado */}
           <div className="space-y-2">
-            <Label htmlFor="status">Estado del Cliente</Label>
+            <Label htmlFor="status">{t('filters.labels.status')}</Label>
             <Select
               value={filters.status}
               onValueChange={(value) => handleFilterChange("status", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar estado" />
+                <SelectValue placeholder={t('filters.placeholders.status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="active">Activos</SelectItem>
-                <SelectItem value="inactive">Inactivos</SelectItem>
+                <SelectItem value="all">{t('filters.options.status.all')}</SelectItem>
+                <SelectItem value="active">{t('filters.options.status.active')}</SelectItem>
+                <SelectItem value="inactive">{t('filters.options.status.inactive')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Ubicación */}
           <div className="space-y-2">
-            <Label htmlFor="location">Ubicación</Label>
+            <Label htmlFor="location">{t('filters.labels.location')}</Label>
             <Input
               id="location"
-              placeholder="Ciudad, estado o dirección..."
+              placeholder={t('filters.placeholders.location')}
               value={filters.location}
               onChange={(e) => handleFilterChange("location", e.target.value)}
             />
@@ -119,10 +121,10 @@ export function ClientFilters({ filters, onFiltersChange, open, onOpenChange }: 
 
           {/* Dominio de Email */}
           <div className="space-y-2">
-            <Label htmlFor="emailDomain">Dominio de Email</Label>
+            <Label htmlFor="emailDomain">{t('filters.labels.email_domain')}</Label>
             <Input
               id="emailDomain"
-              placeholder="ejemplo.com"
+              placeholder={t('filters.placeholders.email_domain')}
               value={filters.emailDomain}
               onChange={(e) => handleFilterChange("emailDomain", e.target.value)}
             />
@@ -130,85 +132,85 @@ export function ClientFilters({ filters, onFiltersChange, open, onOpenChange }: 
 
           {/* Tiene Logo */}
           <div className="space-y-2">
-            <Label htmlFor="hasLogo">Logo</Label>
+            <Label htmlFor="hasLogo">{t('filters.labels.logo')}</Label>
             <Select
               value={filters.hasLogo}
               onValueChange={(value) => handleFilterChange("hasLogo", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por logo" />
+                <SelectValue placeholder={t('filters.placeholders.logo')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="yes">Con logo</SelectItem>
-                <SelectItem value="no">Sin logo</SelectItem>
+                <SelectItem value="all">{t('filters.options.logo.all')}</SelectItem>
+                <SelectItem value="yes">{t('filters.options.logo.yes')}</SelectItem>
+                <SelectItem value="no">{t('filters.options.logo.no')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Tiene Alias */}
           <div className="space-y-2">
-            <Label htmlFor="hasAlias">Alias/Nombre Corto</Label>
+            <Label htmlFor="hasAlias">{t('filters.labels.alias')}</Label>
             <Select
               value={filters.hasAlias}
               onValueChange={(value) => handleFilterChange("hasAlias", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por alias" />
+                <SelectValue placeholder={t('filters.placeholders.alias')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="yes">Con alias</SelectItem>
-                <SelectItem value="no">Sin alias</SelectItem>
+                <SelectItem value="all">{t('filters.options.alias.all')}</SelectItem>
+                <SelectItem value="yes">{t('filters.options.alias.yes')}</SelectItem>
+                <SelectItem value="no">{t('filters.options.alias.no')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Tiene Notas */}
           <div className="space-y-2">
-            <Label htmlFor="hasNotes">Notas/Comentarios</Label>
+            <Label htmlFor="hasNotes">{t('filters.labels.notes')}</Label>
             <Select
               value={filters.hasNotes}
               onValueChange={(value) => handleFilterChange("hasNotes", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por notas" />
+                <SelectValue placeholder={t('filters.placeholders.notes')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="yes">Con notas</SelectItem>
-                <SelectItem value="no">Sin notas</SelectItem>
+                <SelectItem value="all">{t('filters.options.notes.all')}</SelectItem>
+                <SelectItem value="yes">{t('filters.options.notes.yes')}</SelectItem>
+                <SelectItem value="no">{t('filters.options.notes.no')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Fecha de Creación */}
           <div className="space-y-2">
-            <Label htmlFor="dateRange">Fecha de Creación</Label>
+            <Label htmlFor="dateRange">{t('filters.labels.creation_date')}</Label>
             <Select
               value={filters.dateRange}
               onValueChange={(value) => handleFilterChange("dateRange", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Filtrar por fecha" />
+                <SelectValue placeholder={t('filters.placeholders.date_range')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas las fechas</SelectItem>
-                <SelectItem value="today">Hoy</SelectItem>
-                <SelectItem value="week">Esta semana</SelectItem>
-                <SelectItem value="month">Este mes</SelectItem>
-                <SelectItem value="quarter">Últimos 3 meses</SelectItem>
-                <SelectItem value="year">Este año</SelectItem>
+                <SelectItem value="all">{t('filters.options.date_range.all')}</SelectItem>
+                <SelectItem value="today">{t('filters.options.date_range.today')}</SelectItem>
+                <SelectItem value="week">{t('filters.options.date_range.week')}</SelectItem>
+                <SelectItem value="month">{t('filters.options.date_range.month')}</SelectItem>
+                <SelectItem value="quarter">{t('filters.options.date_range.quarter')}</SelectItem>
+                <SelectItem value="year">{t('filters.options.date_range.year')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={clearFilters} className="flex-1">
-              Limpiar Filtros
+              {t('filters.actions.clear')}
             </Button>
             <Button onClick={() => onOpenChange(false)} className="flex-1">
-              Aplicar Filtros
+              {t('filters.actions.apply')}
             </Button>
           </div>
         </div>
