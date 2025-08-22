@@ -50,6 +50,8 @@ export function CompanyDocumentUpload({
   const [existingDocument, setExistingDocument] = useState<any>(null);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [duplicateAction, setDuplicateAction] = useState<'replace' | 'version' | 'cancel'>('replace');
+  const [issueDateOpen, setIssueDateOpen] = useState(false);
+  const [expiryDateOpen, setExpiryDateOpen] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
 
   // Get all predefined types for the select
@@ -395,7 +397,7 @@ export function CompanyDocumentUpload({
         {/* Issue Date */}
         <div className="space-y-2">
           <Label>Fecha de Emisión (Opcional)</Label>
-          <Popover>
+          <Popover open={issueDateOpen} onOpenChange={setIssueDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -412,7 +414,10 @@ export function CompanyDocumentUpload({
               <Calendar
                 mode="single"
                 selected={issueDate}
-                onSelect={setIssueDate}
+                onSelect={(date) => {
+                  setIssueDate(date);
+                  setIssueDateOpen(false);
+                }}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
                 captionLayout="dropdown"
@@ -429,7 +434,7 @@ export function CompanyDocumentUpload({
         {/* Expiry Date */}
         <div className="space-y-2">
           <Label>Fecha de Vencimiento (Opcional)</Label>
-          <Popover>
+          <Popover open={expiryDateOpen} onOpenChange={setExpiryDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -446,7 +451,10 @@ export function CompanyDocumentUpload({
               <Calendar
                 mode="single"
                 selected={expiryDate}
-                onSelect={setExpiryDate}
+                onSelect={(date) => {
+                  setExpiryDate(date);
+                  setExpiryDateOpen(false);
+                }}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
                 captionLayout="dropdown"
