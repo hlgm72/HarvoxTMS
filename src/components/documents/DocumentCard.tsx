@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore, Trash2, Pencil } from "lucide-react";
+import { AlertCircle, Calendar, Download, FileText, MoreVertical, Archive, ArchiveRestore, Trash2, Pencil, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
@@ -421,7 +421,8 @@ export function DocumentCard({
           onClick={() => setEmailModalOpen(true)}
           className="flex-1 text-xs h-8"
         >
-          📧 Email
+          <Mail className="h-3 w-3 mr-1" />
+          Email
         </Button>
       </div>
 
