@@ -291,7 +291,7 @@ export function CompanyDocumentUpload({
           <SelectTrigger>
             <SelectValue placeholder="Selecciona el tipo de documento" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-50">
             {Object.entries(predefinedTypes).map(([categoryKey, category]) => (
               <div key={categoryKey}>
                 <div className="px-2 py-1 text-sm font-medium text-muted-foreground">
@@ -399,7 +399,7 @@ export function CompanyDocumentUpload({
               {expiryDate ? formatPrettyDate(expiryDate) : <span>Seleccionar fecha</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
+          <PopoverContent className="w-auto p-0 z-40">
             <Calendar
               mode="single"
               selected={expiryDate}
