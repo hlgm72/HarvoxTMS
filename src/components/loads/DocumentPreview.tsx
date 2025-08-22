@@ -3,21 +3,46 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with reliable CDN approach
+// Configure PDF.js worker with multiple fallback strategies
 const configurePDFWorker = () => {
   try {
-    // Use CDN approach which is more reliable in browser environments
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-    console.log('✅ PDF worker configured with CDN');
+    // Strategy 1: Try the Vite/modern approach first
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.mjs',
+      import.meta.url,
+    ).toString();
+    console.log('✅ PDF worker configured with .mjs file');
     return true;
   } catch (error) {
-    console.error('❌ Failed to configure PDF worker:', error);
-    return false;
+    console.warn('⚠️ Failed to configure .mjs worker, trying .js fallback:', error);
+    
+    try {
+      // Strategy 2: Try the .js worker
+      pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.js',
+        import.meta.url,
+      ).toString();
+      console.log('✅ PDF worker configured with .js file');
+      return true;
+    } catch (error2) {
+      console.warn('⚠️ Failed to configure .js worker, trying CDN fallback:', error2);
+      
+      try {
+        // Strategy 3: CDN fallback
+        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+        console.log('✅ PDF worker configured with CDN fallback');
+        return true;
+      } catch (fallbackError) {
+        console.error('❌ Failed to configure PDF worker with all strategies:', fallbackError);
+        return false;
+      }
+    }
   }
 };
 
-// Configure worker immediately
+// Configure worker immediately and verify
 const workerConfigured = configurePDFWorker();
+console.log('PDF Worker configured successfully:', workerConfigured);
 
 interface DocumentPreviewProps {
   documentUrl: string;
@@ -136,19 +161,9 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      // If PDF worker is not configured, show fallback
-      if (!workerConfigured || pdfError) {
-        return (
-          <div className="flex flex-col items-center justify-center h-full bg-muted/20">
-            <FileText className="h-8 w-8 text-muted-foreground mb-1" />
-            <div className="text-xs text-muted-foreground text-center">
-              PDF Document
-            </div>
-          </div>
-        );
-      }
-
-      // Try to render PDF with error catching and additional safety checks
+      console.log('Attempting to render PDF preview:', { workerConfigured, pdfError, previewUrl });
+      
+      // Always try to render PDF first, fallback only if actual error occurs
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
           <Document
@@ -164,6 +179,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
             loading={
               <div className="flex items-center justify-center w-full h-32 bg-muted/20">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-xs text-muted-foreground">Cargando PDF...</span>
               </div>
             }
             error={
@@ -183,8 +199,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           >
             <Page
               pageNumber={1}
-              width={128}
-              height={128}
+              scale={0.5}
               renderTextLayer={false}
               renderAnnotationLayer={false}
               className="w-full h-full"
