@@ -149,7 +149,7 @@ export default function Documents() {
       });
     },
     onError: (error: any) => {
-      showError("Error", error.message || t('notifications.archive_error'));
+      showError(t('notifications.error_title'), error.message || t('notifications.archive_error'));
     }
   });
 
@@ -175,7 +175,7 @@ export default function Documents() {
       });
     },
     onError: (error: any) => {
-      showError("Error", error.message || t('notifications.restore_error'));
+      showError(t('notifications.error_title'), error.message || t('notifications.restore_error'));
     }
   });
 
@@ -246,7 +246,7 @@ export default function Documents() {
 
   const handleOpenEmailModal = () => {
     if (selectedDocuments.size === 0) {
-      showError("Error", t('notifications.no_selection'));
+      showError(t('notifications.error_title'), t('notifications.no_selection'));
       return;
     }
     setEmailModalOpen(true);

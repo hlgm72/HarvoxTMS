@@ -86,6 +86,7 @@
     "restored_success": "Documento restaurado exitosamente",
     "archive_error": "No se pudo archivar el documento",
     "restore_error": "No se pudo restaurar el documento",
-    "no_selection": "Selecciona al menos un documento para enviar"
+    "no_selection": "Selecciona al menos un documento para enviar",
+    "error_title": "Error"
   }
 }

@@ -86,6 +86,7 @@
     "restored_success": "Document restored successfully",
     "archive_error": "Could not archive document",
     "restore_error": "Could not restore document",
-    "no_selection": "Select at least one document to send"
+    "no_selection": "Select at least one document to send",
+    "error_title": "Error"
   }
 }
