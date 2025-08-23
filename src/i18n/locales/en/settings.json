@@ -65,6 +65,20 @@
       "security": "Security", 
       "security_short": "Sec"
     },
+    "avatar": {
+      "title": "Avatar",
+      "change_photo": "Change Photo",
+      "remove_photo": "Remove Photo",
+      "uploading": "Uploading...",
+      "removing": "Removing...",
+      "supported_formats": "Supported formats: JPG, PNG, GIF. Maximum size: 5MB",
+      "upload_success": "Avatar updated successfully",
+      "remove_success": "Avatar removed successfully",
+      "upload_error": "Error uploading avatar",
+      "remove_error": "Error removing avatar",
+      "invalid_file": "Please select a valid image file",
+      "file_too_large": "File is too large. Maximum 5MB"
+    },
     "personal_info": {
       "title": "Personal Information",
       "description": "Update your personal information and address",

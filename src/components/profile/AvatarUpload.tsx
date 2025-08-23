@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Camera, Loader2, User, X } from 'lucide-react';
 import { useFleetNotifications } from '@/components/notifications/NotificationProvider';
+import { useTranslation } from 'react-i18next';
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -19,6 +20,7 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
   const [removing, setRemoving] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const { refreshProfile } = useUserProfile();
+  const { t } = useTranslation('settings');
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -29,13 +31,13 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        showError('Error', 'Por favor selecciona un archivo de imagen válido');
+        showError(t('error.title'), t('profile.avatar.invalid_file'));
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        showError('Error', 'El archivo es demasiado grande. Máximo 5MB');
+        showError(t('error.title'), t('profile.avatar.file_too_large'));
         return;
       }
 
@@ -81,11 +83,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
       // Refrescar el perfil para actualizar todos los componentes que usan useUserProfile
       await refreshProfile();
       
-      showSuccess('Éxito', 'Avatar actualizado correctamente');
+      showSuccess(t('profile.avatar.upload_success'), '');
 
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      showError('Error', 'Error al subir el avatar: ' + error.message);
+      showError(t('error.title'), t('profile.avatar.upload_error') + ': ' + error.message);
     } finally {
       setUploading(false);
       // Reset input
@@ -124,11 +126,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
       // Refrescar el perfil para actualizar todos los componentes que usan useUserProfile
       await refreshProfile();
       
-      showSuccess('Éxito', 'Avatar eliminado correctamente');
+      showSuccess(t('profile.avatar.remove_success'), '');
 
     } catch (error: any) {
       console.error('Error removing avatar:', error);
-      showError('Error', 'Error al eliminar el avatar: ' + error.message);
+      showError(t('error.title'), t('profile.avatar.remove_error') + ': ' + error.message);
     } finally {
       setRemoving(false);
     }
@@ -148,7 +150,7 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
     <div className="flex flex-col items-center space-y-4">
       <div className="relative group">
         <Avatar className="h-24 w-24">
-          <AvatarImage src={currentAvatarUrl || undefined} alt="Avatar" />
+          <AvatarImage src={currentAvatarUrl || undefined} alt={t('profile.avatar.title')} />
           <AvatarFallback className="text-lg">
             {getInitials(userName)}
           </AvatarFallback>
@@ -160,7 +162,7 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
             <div className="flex flex-col items-center space-y-2">
               <Loader2 className="h-6 w-6 text-white animate-spin" />
               <span className="text-xs text-white font-medium">
-                {uploading ? 'Subiendo...' : 'Eliminando...'}
+                {uploading ? t('profile.avatar.uploading') : t('profile.avatar.removing')}
               </span>
             </div>
           </div>
@@ -195,12 +197,12 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
             {uploading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Subiendo...
+                {t('profile.avatar.uploading')}
               </>
             ) : (
               <>
                 <Camera className="h-4 w-4 mr-2" />
-                Cambiar foto
+                {t('profile.avatar.change_photo')}
               </>
             )}
           </Button>
@@ -217,12 +219,12 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
             {removing ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Eliminando...
+                {t('profile.avatar.removing')}
               </>
             ) : (
               <>
                 <X className="h-4 w-4 mr-2" />
-                Eliminar foto
+                {t('profile.avatar.remove_photo')}
               </>
             )}
           </Button>
@@ -230,7 +232,7 @@ export function AvatarUpload({ currentAvatarUrl, userName, onAvatarUpdate }: Ava
       </div>
 
       <p className="text-xs text-muted-foreground text-center max-w-sm">
-        Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB
+        {t('profile.avatar.supported_formats')}
       </p>
     </div>
   );

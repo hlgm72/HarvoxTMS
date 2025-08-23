@@ -65,6 +65,20 @@
       "security": "Seguridad", 
       "security_short": "Seg"
     },
+    "avatar": {
+      "title": "Avatar",
+      "change_photo": "Cambiar foto",
+      "remove_photo": "Eliminar foto",
+      "uploading": "Subiendo...",
+      "removing": "Eliminando...",
+      "supported_formats": "Formatos soportados: JPG, PNG, GIF. Tamaño máximo: 5MB",
+      "upload_success": "Avatar actualizado correctamente",
+      "remove_success": "Avatar eliminado correctamente",
+      "upload_error": "Error al subir el avatar",
+      "remove_error": "Error al eliminar el avatar",
+      "invalid_file": "Por favor selecciona un archivo de imagen válido",
+      "file_too_large": "El archivo es demasiado grande. Máximo 5MB"
+    },
     "personal_info": {
       "title": "Información Personal",
       "description": "Actualiza tu información personal y dirección",
