@@ -59,7 +59,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Auth header present:", !!authHeader);
     
     if (!authHeader) {
-      throw new Error("No authorization header");
+      throw new Error("No se encontró la cabecera de autorización");
     }
 
     const token = authHeader.replace("Bearer ", "");
@@ -68,13 +68,13 @@ const handler = async (req: Request): Promise<Response> => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError) {
-      console.error("Authentication error:", authError);
-      throw new Error(`Authentication failed: ${authError.message}`);
+      console.error("Error de autenticación:", authError);
+      throw new Error(`Autenticación falló: ${authError.message}`);
     }
 
     if (!user) {
-      console.error("No user found");
-      throw new Error("Authentication failed: no user found");
+      console.error("Usuario no encontrado");
+      throw new Error("Autenticación falló: usuario no encontrado");
     }
 
     console.log(`Authenticated user: ${user.id}`);
@@ -89,15 +89,15 @@ const handler = async (req: Request): Promise<Response> => {
       .limit(1)
       .maybeSingle();
 
-    console.log("User role query result:", { userRole, roleError });
+    console.log("Resultado de consulta de rol de usuario:", { userRole, roleError });
 
     if (roleError) {
-      console.error("Role error details:", roleError);
+      console.error("Detalles del error de rol:", roleError);
       throw new Error(`Error al consultar roles de usuario: ${roleError.message}`);
     }
 
     if (!userRole || !userRole.company_id) {
-      console.error("No user role found for user:", user.id);
+      console.error("No se encontró rol de usuario para:", user.id);
       
       // Try to get more info about available roles for debugging
       const { data: allRoles, error: allRolesError } = await supabase
@@ -105,12 +105,11 @@ const handler = async (req: Request): Promise<Response> => {
         .select("*")
         .eq("user_id", user.id);
       
-      console.log("All user roles:", { allRoles, allRolesError });
+      console.log("Todos los roles del usuario:", { allRoles, allRolesError });
       throw new Error("No se pudo obtener información de la compañía");
     }
 
-    // Get company information separately
-    console.log("Querying company information...");
+    console.log("Consultando información de la empresa...");
     const { data: company, error: companyError } = await supabase
       .from("companies")
       .select("name, email")
@@ -118,7 +117,7 @@ const handler = async (req: Request): Promise<Response> => {
       .single();
 
     if (companyError) {
-      console.error("Company error details:", companyError);
+      console.error("Detalles del error de empresa:", companyError);
       throw new Error(`Error al consultar información de la empresa: ${companyError.message}`);
     }
 
@@ -168,7 +167,7 @@ const handler = async (req: Request): Promise<Response> => {
         const urlParts = doc.file_url.split('/');
         const bucketIndex = urlParts.findIndex(part => part === 'company-documents');
         if (bucketIndex === -1 || bucketIndex === urlParts.length - 1) {
-          console.error(`Invalid file URL format: ${doc.file_url}`);
+          console.error(`Formato de URL de archivo inválido: ${doc.file_url}`);
           failedDocuments.push({
             name: doc.file_name,
             reason: "Formato de URL inválido"
@@ -185,7 +184,7 @@ const handler = async (req: Request): Promise<Response> => {
           .download(filePath);
 
         if (downloadError) {
-          console.error(`Error downloading ${doc.file_name}:`, downloadError);
+          console.error(`Error descargando ${doc.file_name}:`, downloadError);
           failedDocuments.push({
             name: doc.file_name,
             reason: `Error de descarga: ${downloadError.message}`
@@ -230,9 +229,9 @@ const handler = async (req: Request): Promise<Response> => {
           disposition: "attachment"
         });
 
-        console.log(`Successfully prepared attachment: ${doc.file_name} (${uint8Array.length} bytes)`);
+        console.log(`Adjunto preparado exitosamente: ${doc.file_name} (${uint8Array.length} bytes)`);
       } catch (error) {
-        console.error(`Error processing document ${doc.file_name}:`, error);
+        console.error(`Error procesando documento ${doc.file_name}:`, error);
         failedDocuments.push({
           name: doc.file_name,
           reason: `Error de procesamiento: ${error.message}`
@@ -244,7 +243,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("No se pudieron preparar los documentos para envío");
     }
 
-    console.log(`Prepared ${attachments.length} attachments, total size: ${totalSize} bytes`);
+    console.log(`Preparados ${attachments.length} adjuntos, tamaño total: ${totalSize} bytes`);
 
     // Prepare email recipients
     const recipientList = recipients.split(',').map(email => email.trim()).filter(email => email.length > 0);
@@ -301,11 +300,10 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    // Send email
-    console.log(`Sending email to: ${recipientList.join(', ')}`);
+    console.log(`Enviando email a: ${recipientList.join(', ')}`);
     
     // Always use FleetNest verified email for guaranteed delivery
-    console.log(`Sending email from: ${senderName} <${senderEmail}>`);
+    console.log(`Enviando email desde: ${senderName} <${senderEmail}>`);
     
     const emailData: any = {
       from: `${senderName} <${senderEmail}>`,
@@ -318,12 +316,12 @@ const handler = async (req: Request): Promise<Response> => {
     // Add company email as reply-to if available
     if (companyEmail) {
       emailData.reply_to = companyEmail;
-      console.log(`Reply-to set to: ${companyEmail}`);
+      console.log(`Reply-to configurado a: ${companyEmail}`);
     }
     
     const emailResponse = await resend.emails.send(emailData);
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Email enviado exitosamente:", emailResponse);
 
     return new Response(
       JSON.stringify({
@@ -347,9 +345,9 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
   } catch (error: any) {
-    console.log("=== ERROR CAUGHT ===");
-    console.error("Error in send-documents-email function:", error);
-    console.error("Error stack:", error.stack);
+    console.log("=== ERROR CAPTURADO ===");
+    console.error("Error en función send-documents-email:", error);
+    console.error("Stack del error:", error.stack);
     
     return new Response(
       JSON.stringify({
