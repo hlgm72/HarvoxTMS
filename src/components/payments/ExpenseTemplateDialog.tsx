@@ -354,12 +354,12 @@ export function ExpenseTemplateDialog({
           <Alert className="mb-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Ya existe una plantilla inactiva para este conductor y tipo de gasto:
+              {t("deductions.form.inactive_template_exists")}
               <div className="mt-2 p-2 bg-muted rounded text-sm">
-                <p><strong>Conductor:</strong> {inactiveTemplate.driver_profile?.first_name} {inactiveTemplate.driver_profile?.last_name}</p>
-                <p><strong>Tipo:</strong> {inactiveTemplate.expense_types?.name}</p>
-                <p><strong>Monto:</strong> ${inactiveTemplate.amount}</p>
-                <p><strong>Frecuencia:</strong> {inactiveTemplate.frequency === 'weekly' ? 'Semanal' : inactiveTemplate.frequency === 'biweekly' ? 'Quincenal' : 'Mensual'}</p>
+                <p><strong>{t("deductions.form.driver")}:</strong> {inactiveTemplate.driver_profile?.first_name} {inactiveTemplate.driver_profile?.last_name}</p>
+                <p><strong>{t("deductions.form.type_label")}</strong> {inactiveTemplate.expense_types?.name}</p>
+                <p><strong>{t("deductions.form.amount_label")}</strong> ${inactiveTemplate.amount}</p>
+                <p><strong>{t("deductions.form.frequency_label")}</strong> {inactiveTemplate.frequency === 'weekly' ? t("deductions.form.weekly") : inactiveTemplate.frequency === 'biweekly' ? t("deductions.form.biweekly") : t("deductions.form.monthly")}</p>
               </div>
               <Button 
                 onClick={handleReactivateTemplate}
@@ -367,7 +367,7 @@ export function ExpenseTemplateDialog({
                 className="mt-2"
                 size="sm"
               >
-                Reactivar Plantilla Existente
+                {t("deductions.form.reactivate_template")}
               </Button>
             </AlertDescription>
           </Alert>
@@ -388,7 +388,7 @@ export function ExpenseTemplateDialog({
               <div className="space-y-2">
                 <Label>Rol Aplicado</Label>
                 <Input
-                  value={template?.applied_to_role === 'driver' ? 'Conductor' : template?.applied_to_role === 'dispatcher' ? 'Despachador' : 'No especificado'}
+                  value={template?.applied_to_role === 'driver' ? t("deductions.form.driver") : template?.applied_to_role === 'dispatcher' ? t("deductions.form.dispatcher") : t("deductions.form.not_specified")}
                   disabled
                   className="bg-muted"
                 />
@@ -406,7 +406,7 @@ export function ExpenseTemplateDialog({
 
           {mode === 'create' && (
             <div className="space-y-2">
-              <Label htmlFor="user">{selectedRole === 'driver' ? 'Conductor' : 'Despachador'}</Label>
+              <Label htmlFor="user">{selectedRole === 'driver' ? t("deductions.form.driver") : t("deductions.form.dispatcher")}</Label>
               <Popover open={driverSearchOpen} onOpenChange={setDriverSearchOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -418,19 +418,19 @@ export function ExpenseTemplateDialog({
                      {formData.driver_user_id 
                        ? users.find(user => user.user_id === formData.driver_user_id)?.first_name + ' ' + 
                          users.find(user => user.user_id === formData.driver_user_id)?.last_name
-                       : `Seleccionar ${selectedRole === 'driver' ? 'conductor' : 'despachador'}...`}
+                       : `${selectedRole === 'driver' ? t("deductions.form.select_driver") : t("deductions.form.select_dispatcher")}`}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
                    <Command>
                      <CommandInput 
-                       placeholder={`Buscar ${selectedRole === 'driver' ? 'conductor' : 'despachador'}...`}
+                       placeholder={selectedRole === 'driver' ? t("deductions.form.search_driver") : t("deductions.form.search_dispatcher")}
                        value={driverSearchValue}
                        onValueChange={setDriverSearchValue}
                      />
                      <CommandList>
-                       <CommandEmpty>No se encontraron {selectedRole === 'driver' ? 'conductores' : 'despachadores'}.</CommandEmpty>
+                       <CommandEmpty>{selectedRole === 'driver' ? t("deductions.form.no_drivers_found") : t("deductions.form.no_dispatchers_found")}</CommandEmpty>
                        <CommandGroup>
                          {filteredUsers && filteredUsers.map((user) => (
                            <CommandItem
@@ -461,7 +461,7 @@ export function ExpenseTemplateDialog({
 
           {mode === 'edit' ? (
             <div className="space-y-2">
-              <Label>Tipo de Gasto</Label>
+              <Label>{t("deductions.form.expense_type")}</Label>
               <Input
                 value={template?.expense_types?.name || 'Tipo no definido'}
                 disabled
@@ -470,13 +470,13 @@ export function ExpenseTemplateDialog({
             </div>
           ) : (
             <div className="space-y-2">
-              <Label htmlFor="expense-type">Tipo de Gasto</Label>
+              <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
               <Select 
                 value={formData.expenseTypeId} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, expenseTypeId: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar tipo de gasto" />
+                  <SelectValue placeholder={t("deductions.form.select_expense_type")} />
                 </SelectTrigger>
                 <SelectContent>
                   {expenseTypes.map((type) => (
@@ -491,7 +491,7 @@ export function ExpenseTemplateDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Monto ($)</Label>
+              <Label htmlFor="amount">{t("deductions.form.amount")}</Label>
               <Input
                 id="amount"
                 type="text"
@@ -507,18 +507,18 @@ export function ExpenseTemplateDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="frequency">Frecuencia</Label>
+              <Label htmlFor="frequency">{t("deductions.form.frequency")}</Label>
               <Select
                 value={formData.frequency}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, frequency: value }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar frecuencia" />
+                  <SelectValue placeholder={t("deductions.form.select_frequency")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="weekly">Semanal</SelectItem>
-                  <SelectItem value="biweekly">Quincenal</SelectItem>
-                  <SelectItem value="monthly">Mensual</SelectItem>
+                  <SelectItem value="weekly">{t("deductions.form.weekly")}</SelectItem>
+                  <SelectItem value="biweekly">{t("deductions.form.biweekly")}</SelectItem>
+                  <SelectItem value="monthly">{t("deductions.form.monthly")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -526,19 +526,19 @@ export function ExpenseTemplateDialog({
 
           {formData.frequency === 'monthly' && (
             <div className="space-y-2">
-              <Label htmlFor="month-week">Semana del Mes</Label>
+              <Label htmlFor="month-week">{t("deductions.form.month_week")}</Label>
               <Select
                 value={formData.month_week.toString()}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, month_week: parseInt(value) }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar semana" />
+                  <SelectValue placeholder={t("deductions.form.select_week")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Primera semana</SelectItem>
-                  <SelectItem value="2">Segunda semana</SelectItem>
-                  <SelectItem value="3">Tercera semana</SelectItem>
-                  <SelectItem value="4">Cuarta semana</SelectItem>
+                  <SelectItem value="1">{t("deductions.form.first_week")}</SelectItem>
+                  <SelectItem value="2">{t("deductions.form.second_week")}</SelectItem>
+                  <SelectItem value="3">{t("deductions.form.third_week")}</SelectItem>
+                  <SelectItem value="4">{t("deductions.form.fourth_week")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -557,7 +557,7 @@ export function ExpenseTemplateDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {effectiveFrom ? formatPrettyDate(effectiveFrom) : "Seleccionar fecha"}
+                    {effectiveFrom ? formatPrettyDate(effectiveFrom) : t("deductions.form.select_date")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -599,7 +599,7 @@ export function ExpenseTemplateDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {effectiveUntil ? formatPrettyDate(effectiveUntil) : "Indefinido"}
+                    {effectiveUntil ? formatPrettyDate(effectiveUntil) : t("deductions.form.indefinite")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -628,7 +628,7 @@ export function ExpenseTemplateDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas (Opcional)</Label>
+            <Label htmlFor="notes">{t("deductions.form.notes_optional")}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
@@ -640,7 +640,7 @@ export function ExpenseTemplateDialog({
 
           <div className="flex gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Cancelar
+              {t("deductions.form.cancel")}
             </Button>
             <Button 
               type="submit" 
@@ -648,8 +648,8 @@ export function ExpenseTemplateDialog({
               className="flex-1"
             >
               {isLoading 
-                ? `${mode === 'create' ? 'Creando' : 'Actualizando'}...` 
-                : `${mode === 'create' ? 'Crear' : 'Actualizar'} Deducción`
+                ? `${mode === 'create' ? t("deductions.form.creating") : t("deductions.form.updating")}...` 
+                : `${mode === 'create' ? t("deductions.form.create") : t("deductions.form.update")} ${t("deductions.form.deduction")}`
               }
             </Button>
           </div>
