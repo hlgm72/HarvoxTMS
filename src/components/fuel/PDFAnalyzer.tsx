@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { useTranslation } from 'react-i18next';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 
@@ -51,6 +52,7 @@ interface EnrichedTransaction {
 }
 
 export function PDFAnalyzer() {
+  const { t } = useTranslation('fuel');
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
@@ -69,8 +71,8 @@ export function PDFAnalyzer() {
       setAnalysisResult(null);
     } else {
       showError(
-        "Archivo no válido",
-        "Por favor selecciona un archivo PDF"
+        t('analyzer.upload.invalid_file'),
+        t('analyzer.upload.select_pdf_error')
       );
     }
   };
@@ -106,8 +108,8 @@ export function PDFAnalyzer() {
         setAnalysisResult(data.analysis);
         await enrichTransactions(data.analysis.sampleData);
         showSuccess(
-          "Análisis completado",
-          "El PDF ha sido analizado exitosamente"
+          t('analyzer.results.analysis_complete'),
+          t('analyzer.results.analysis_success')
         );
       } else {
         throw new Error(data.error || 'Error analyzing PDF');
@@ -115,8 +117,8 @@ export function PDFAnalyzer() {
     } catch (error) {
       console.error('Error analyzing PDF:', error);
       showError(
-        "Error en el análisis",
-        "No se pudo analizar el PDF. Intenta de nuevo."
+        t('analyzer.upload.analysis_error'),
+        t('analyzer.upload.analysis_retry')
       );
     } finally {
       setIsAnalyzing(false);
@@ -580,10 +582,10 @@ export function PDFAnalyzer() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Analizador de PDF
+            {t('analyzer.page.title')}
           </CardTitle>
           <CardDescription>
-            Sube un PDF de gastos de combustible para extraer automáticamente las transacciones de los conductores y sus vehículos
+            {t('analyzer.page.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -606,7 +608,7 @@ export function PDFAnalyzer() {
               ) : (
                 <Upload className="h-4 w-4" />
               )}
-              {isAnalyzing ? 'Analizando...' : 'Analizar PDF'}
+              {isAnalyzing ? t('analyzer.upload.analyzing') : t('analyzer.upload.analyze_pdf')}
             </Button>
           </div>
 
@@ -689,7 +691,7 @@ export function PDFAnalyzer() {
                     ) : (
                       <Upload className="h-4 w-4" />
                     )}
-                    {isImporting ? 'Importando...' : 'Importar Transacciones Válidas'}
+                    {isImporting ? t('analyzer.results.importing') : t('analyzer.results.import_transactions')}
                   </Button>
                 </div>
               )}
@@ -702,13 +704,13 @@ export function PDFAnalyzer() {
               <CardContent className="flex items-center justify-center p-8">
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Mapeando conductores y períodos...</span>
+                  <span>{t('analyzer.results.enriching_transactions')}</span>
                 </div>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Transacciones de Combustible</h3>
+              <h3 className="text-lg font-semibold">{t('analyzer.results.enrichment')}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {enrichedTransactions.map((transaction, index) => (
                   <Card key={index} className={`bg-white
@@ -726,16 +728,16 @@ export function PDFAnalyzer() {
                         </CardTitle>
                         <div className="flex gap-1">
                           {transaction.import_status === 'already_imported' ? (
-                            <Badge variant="secondary">Ya Importada</Badge>
+                            <Badge variant="secondary">{t('analyzer.mapping.already_imported')}</Badge>
                           ) : (
                             <>
                               <Badge variant={transaction.card_mapping_status === 'found' ? 'default' : 'destructive'}>
-                                {transaction.card_mapping_status === 'found' ? 'Conductor OK' : 
-                                 transaction.card_mapping_status === 'multiple' ? 'Múltiples' : 'Sin Conductor'}
+                                {transaction.card_mapping_status === 'found' ? t('analyzer.mapping.driver_found') : 
+                                 transaction.card_mapping_status === 'multiple' ? t('analyzer.mapping.multiple_drivers') : t('analyzer.mapping.driver_not_found')}
                               </Badge>
                               {transaction.period_mapping_status === 'found' && (
                                 <Badge variant="default">
-                                  Período OK
+                                  {t('analyzer.mapping.period_found')}
                                 </Badge>
                               )}
                             </>
@@ -749,7 +751,7 @@ export function PDFAnalyzer() {
                         <User className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">
-                            {transaction.driver_name || 'Conductor no identificado'}
+                            {transaction.driver_name || t('analyzer.mapping.driver_not_found')}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Tarjeta: {transaction.card}
@@ -784,11 +786,11 @@ export function PDFAnalyzer() {
                       {/* Detalles financieros */}
                       <div className="grid grid-cols-2 gap-4 pt-2 border-t">
                         <div>
-                          <div className="text-sm text-muted-foreground">Galones</div>
+                          <div className="text-sm text-muted-foreground">{t('analyzer.table.gallons')}</div>
                           <div className="font-medium">{transaction.qty.toFixed(2)}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Precio/Galón</div>
+                          <div className="text-sm text-muted-foreground">{t('analyzer.table.price')}</div>
                           <div className="font-medium">${transaction.gross_ppg.toFixed(3)}</div>
                         </div>
                         <div>
@@ -804,7 +806,7 @@ export function PDFAnalyzer() {
                           <div className="font-medium text-red-600">${transaction.fees.toFixed(2)}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Total</div>
+                          <div className="text-sm text-muted-foreground">{t('analyzer.table.total')}</div>
                           <div className="font-bold text-lg">${transaction.total_amt.toFixed(2)}</div>
                         </div>
                       </div>
@@ -817,11 +819,11 @@ export function PDFAnalyzer() {
                             <div className="font-medium flex items-center gap-2">
                               🚛 Camión #{transaction.vehicle_number}
                               <Badge variant="outline" className="text-xs">
-                                {transaction.equipment_mapping_method === 'assigned_to_driver' ? 'Asignado' : 'Validado PDF'}
+                                {transaction.equipment_mapping_method === 'assigned_to_driver' ? t('analyzer.mapping.vehicle_assigned') : t('analyzer.mapping.vehicle_validated')}
                               </Badge>
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              Vehículo verificado para combustible
+                            Vehículo verificado para combustible
                             </div>
                           </div>
                         </div>

@@ -215,5 +215,62 @@
       "company_error": "Error al obtener la empresa del conductor",
       "company_not_found": "No se encontró la empresa del conductor"
     }
+  },
+  "analyzer": {
+    "page": {
+      "title": "Analizador de PDF",
+      "subtitle": "Sube un PDF de gastos de combustible para extraer automáticamente las transacciones de los conductores y sus vehículos"
+    },
+    "upload": {
+      "no_file_chosen": "Ningún archivo seleccionado",
+      "analyze_pdf": "Analizar PDF",
+      "analyzing": "Analizando...",
+      "select_pdf": "Seleccionar PDF",
+      "invalid_file": "Archivo no válido",
+      "select_pdf_error": "Por favor selecciona un archivo PDF",
+      "analysis_error": "Error en el análisis",
+      "analysis_retry": "No se pudo analizar el PDF. Intenta de nuevo."
+    },
+    "results": {
+      "analysis_complete": "Análisis completado",
+      "analysis_success": "El PDF ha sido analizado exitosamente",
+      "columns_found": "Columnas encontradas",
+      "sample_data": "Datos de muestra",
+      "enrichment": "Enriquecimiento de datos",
+      "enriching_transactions": "Enriqueciendo transacciones...",
+      "transactions_enriched": "{{count}} transacciones enriquecidas",
+      "import_transactions": "Importar Transacciones",
+      "importing": "Importando...",
+      "import_success": "Transacciones importadas exitosamente",
+      "import_error": "Error al importar transacciones"
+    },
+    "mapping": {
+      "driver_found": "Conductor encontrado",
+      "driver_not_found": "Conductor no encontrado",
+      "multiple_drivers": "Múltiples conductores",
+      "period_found": "Período encontrado",
+      "period_will_create": "Período se creará",
+      "period_not_found": "Período no encontrado",
+      "vehicle_assigned": "Vehículo asignado al conductor",
+      "vehicle_validated": "Vehículo validado desde PDF",
+      "vehicle_not_found": "Vehículo no encontrado",
+      "already_imported": "Ya importado",
+      "not_imported": "No importado"
+    },
+    "table": {
+      "date": "Fecha",
+      "driver": "Conductor",
+      "card": "Tarjeta",
+      "unit": "Unidad",
+      "invoice": "Factura",
+      "location": "Ubicación",
+      "state": "Estado",
+      "gallons": "Galones",
+      "price": "Precio/Galón",
+      "total": "Total",
+      "status": "Estado",
+      "period": "Período",
+      "vehicle": "Vehículo"
+    }
   }
 }

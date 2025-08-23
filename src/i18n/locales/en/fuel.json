@@ -215,5 +215,62 @@
       "company_error": "Error getting driver's company",
       "company_not_found": "Driver's company not found"
     }
+  },
+  "analyzer": {
+    "page": {
+      "title": "PDF Analyzer",
+      "subtitle": "Upload a fuel expenses PDF to automatically extract driver and vehicle transactions"
+    },
+    "upload": {
+      "no_file_chosen": "No file chosen",
+      "analyze_pdf": "Analyze PDF",
+      "analyzing": "Analyzing...",
+      "select_pdf": "Select PDF",
+      "invalid_file": "Invalid file",
+      "select_pdf_error": "Please select a PDF file",
+      "analysis_error": "Analysis error",
+      "analysis_retry": "Could not analyze PDF. Please try again."
+    },
+    "results": {
+      "analysis_complete": "Analysis completed",
+      "analysis_success": "PDF has been analyzed successfully",
+      "columns_found": "Columns found",
+      "sample_data": "Sample data",
+      "enrichment": "Data enrichment",
+      "enriching_transactions": "Enriching transactions...",
+      "transactions_enriched": "{{count}} transactions enriched",
+      "import_transactions": "Import Transactions",
+      "importing": "Importing...",
+      "import_success": "Transactions imported successfully",
+      "import_error": "Error importing transactions"
+    },
+    "mapping": {
+      "driver_found": "Driver found",
+      "driver_not_found": "Driver not found",
+      "multiple_drivers": "Multiple drivers",
+      "period_found": "Period found", 
+      "period_will_create": "Period will be created",
+      "period_not_found": "Period not found",
+      "vehicle_assigned": "Vehicle assigned to driver",
+      "vehicle_validated": "Vehicle validated from PDF",
+      "vehicle_not_found": "Vehicle not found",
+      "already_imported": "Already imported",
+      "not_imported": "Not imported"
+    },
+    "table": {
+      "date": "Date",
+      "driver": "Driver",
+      "card": "Card",
+      "unit": "Unit",
+      "invoice": "Invoice",
+      "location": "Location",
+      "state": "State",
+      "gallons": "Gallons",
+      "price": "Price/Gallon",
+      "total": "Total",
+      "status": "Status",
+      "period": "Period",
+      "vehicle": "Vehicle"
+    }
   }
 }
