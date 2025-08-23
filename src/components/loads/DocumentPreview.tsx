@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
-
-// Configure PDF.js worker - this will be done inside the component
+import { pdfService } from '@/lib/pdfService';
 
 interface DocumentPreviewProps {
   documentUrl: string;
@@ -23,54 +22,22 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState(false);
+  const [pdfWorkerReady, setPdfWorkerReady] = useState(false);
 
-  // Configure PDF.js worker when component mounts
+  // Wait for PDF worker to be ready
   useEffect(() => {
-    const configurePDFWorker = async () => {
-      // Clear any existing worker configuration
-      delete pdfjs.GlobalWorkerOptions.workerSrc;
-      
-      const workerUrls = [
-        // Try unpkg CDN with correct file name
-        'https://unpkg.com/pdfjs-dist@5.3.93/build/pdf.worker.js',
-        // Try jsdelivr with correct file name
-        'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.93/build/pdf.worker.js',
-        // Try cdnjs as fallback
-        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-      ];
-
-      for (const url of workerUrls) {
-        try {
-          // Test if the worker URL is accessible
-          const response = await fetch(url, { method: 'HEAD' });
-          if (response.ok) {
-            pdfjs.GlobalWorkerOptions.workerSrc = url;
-            console.log(`✅ PDF worker configured successfully with: ${url}`);
-            return true;
-          }
-        } catch (error) {
-          console.warn(`❌ Failed to load worker from: ${url}`, error);
-          continue;
-        }
-      }
-      
-      // If all CDN attempts fail, disable worker (runs on main thread)
-      console.warn('⚠️ All PDF worker URLs failed, disabling worker (will run on main thread)');
-      pdfjs.GlobalWorkerOptions.workerSrc = '';
-      return false;
-    };
-
-    configurePDFWorker().catch(error => {
-      console.error('❌ PDF worker configuration failed completely:', error);
-      pdfjs.GlobalWorkerOptions.workerSrc = '';
+    pdfService.waitForReady().then(() => {
+      setPdfWorkerReady(true);
+    }).catch(() => {
+      setPdfWorkerReady(true); // Allow to proceed even if worker fails
     });
   }, []);
 
   // Memoize PDF options to prevent unnecessary reloads
   const pdfOptions = useMemo(() => ({
-    cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
+    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
     cMapPacked: true,
-    standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`
+    standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/'
   }), []);
 
   useEffect(() => {
@@ -171,9 +138,18 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      console.log('Attempting to render PDF preview:', { pdfError, previewUrl });
+      console.log('Attempting to render PDF preview:', { pdfError, previewUrl, pdfWorkerReady });
       
-      // Always try to render PDF first, fallback only if actual error occurs
+      // Don't render PDF until worker is ready
+      if (!pdfWorkerReady) {
+        return (
+          <div className="flex items-center justify-center w-full h-32 bg-muted/20">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <span className="ml-2 text-xs text-muted-foreground">Preparando visor PDF...</span>
+          </div>
+        );
+      }
+      
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
           <Document
