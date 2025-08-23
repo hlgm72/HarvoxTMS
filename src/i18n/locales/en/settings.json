@@ -16,45 +16,7 @@
     "address": "Address",
     "not_specified": "Not specified",
     "english": "English",
-    "spanish": "Spanish"
-  },
-  "system": {
-    "title": "System Configuration",
-    "security": {
-      "title": "Security & Access",
-      "description": "Security settings and access control for your company.",
-      "configure": "Configure Security"
-    },
-    "integrations": {
-      "title": "Integrations", 
-      "description": "Configure integrations with external systems like Geotab, accounting, etc.",
-      "manage": "Manage Integrations"
-    },
-    "coming_soon": {
-      "title": "Coming Soon",
-      "automatic_backups": "Automatic backup configuration",
-      "audit_config": "Audit configuration", 
-      "api_config": "API configuration"
-    }
-  },
-  "interface": {
-    "title": "Interface Customization",
-    "theme": {
-      "title": "Application Theme",
-      "description": "Choose between light, dark or automatic mode according to your preference.",
-      "light": "Light",
-      "dark": "Dark", 
-      "auto": "Automatic"
-    },
-    "coming_soon": {
-      "title": "Coming Soon",
-      "color_customization": "Color customization",
-      "dashboard_config": "Dashboard configuration",
-      "custom_widgets": "Custom widgets",
-      "language_localization": "Language and localization"
-    }
-  },
-  "profile": {
+    "spanish": "Spanish",
     "tabs": {
       "personal_info": "Personal Data",
       "personal_info_short": "Data", 
@@ -144,6 +106,42 @@
       "error_message": "Could not complete the update. Please try again.",
       "user_not_found": "User not found",
       "unknown_error": "Unknown error"
+    }
+  },
+  "system": {
+    "title": "System Configuration",
+    "security": {
+      "title": "Security & Access",
+      "description": "Security settings and access control for your company.",
+      "configure": "Configure Security"
+    },
+    "integrations": {
+      "title": "Integrations", 
+      "description": "Configure integrations with external systems like Geotab, accounting, etc.",
+      "manage": "Manage Integrations"
+    },
+    "coming_soon": {
+      "title": "Coming Soon",
+      "automatic_backups": "Automatic backup configuration",
+      "audit_config": "Audit configuration", 
+      "api_config": "API configuration"
+    }
+  },
+  "interface": {
+    "title": "Interface Customization",
+    "theme": {
+      "title": "Application Theme",
+      "description": "Choose between light, dark or automatic mode according to your preference.",
+      "light": "Light",
+      "dark": "Dark", 
+      "auto": "Automatic"
+    },
+    "coming_soon": {
+      "title": "Coming Soon",
+      "color_customization": "Color customization",
+      "dashboard_config": "Dashboard configuration",
+      "custom_widgets": "Custom widgets",
+      "language_localization": "Language and localization"
     }
   },
   "onboarding": {

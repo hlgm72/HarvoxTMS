@@ -16,45 +16,7 @@
     "address": "Dirección",
     "not_specified": "No especificado",
     "english": "English",
-    "spanish": "Español"
-  },
-  "system": {
-    "title": "Configuración del Sistema",
-    "security": {
-      "title": "Seguridad y Acceso",
-      "description": "Configuraciones de seguridad y control de acceso para tu empresa.",
-      "configure": "Configurar Seguridad"
-    },
-    "integrations": {
-      "title": "Integraciones", 
-      "description": "Configura integraciones con sistemas externos como Geotab, contabilidad, etc.",
-      "manage": "Gestionar Integraciones"
-    },
-    "coming_soon": {
-      "title": "Próximamente",
-      "automatic_backups": "Configuración de backups automáticos",
-      "audit_config": "Configuración de auditoría", 
-      "api_config": "Configuración de API"
-    }
-  },
-  "interface": {
-    "title": "Personalización de la Interfaz",
-    "theme": {
-      "title": "Tema de la Aplicación",
-      "description": "Elige entre modo claro, oscuro o automático según tu preferencia.",
-      "light": "Claro",
-      "dark": "Oscuro", 
-      "auto": "Automático"
-    },
-    "coming_soon": {
-      "title": "Próximamente",
-      "color_customization": "Personalización de colores",
-      "dashboard_config": "Configuración de dashboard",
-      "custom_widgets": "Widgets personalizados",
-      "language_localization": "Idioma y localización"
-    }
-  },
-  "profile": {
+    "spanish": "Español",
     "tabs": {
       "personal_info": "Datos Personales",
       "personal_info_short": "Datos", 
@@ -144,6 +106,42 @@
       "error_message": "No se ha podido completar la actualización. Por favor, inténtelo nuevamente.",
       "user_not_found": "Usuario no encontrado",
       "unknown_error": "Error desconocido"
+    }
+  },
+  "system": {
+    "title": "Configuración del Sistema",
+    "security": {
+      "title": "Seguridad y Acceso",
+      "description": "Configuraciones de seguridad y control de acceso para tu empresa.",
+      "configure": "Configurar Seguridad"
+    },
+    "integrations": {
+      "title": "Integraciones", 
+      "description": "Configura integraciones con sistemas externos como Geotab, contabilidad, etc.",
+      "manage": "Gestionar Integraciones"
+    },
+    "coming_soon": {
+      "title": "Próximamente",
+      "automatic_backups": "Configuración de backups automáticos",
+      "audit_config": "Configuración de auditoría", 
+      "api_config": "Configuración de API"
+    }
+  },
+  "interface": {
+    "title": "Personalización de la Interfaz",
+    "theme": {
+      "title": "Tema de la Aplicación",
+      "description": "Elige entre modo claro, oscuro o automático según tu preferencia.",
+      "light": "Claro",
+      "dark": "Oscuro", 
+      "auto": "Automático"
+    },
+    "coming_soon": {
+      "title": "Próximamente",
+      "color_customization": "Personalización de colores",
+      "dashboard_config": "Configuración de dashboard",
+      "custom_widgets": "Widgets personalizados",
+      "language_localization": "Idioma y localización"
     }
   },
   "onboarding": {
