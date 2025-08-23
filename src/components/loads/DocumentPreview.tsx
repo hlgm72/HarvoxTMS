@@ -3,12 +3,12 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with simple CDN approach to avoid postMessage issues
+// Configure PDF.js worker with working CDN version
 const configurePDFWorker = () => {
   try {
-    // Use CDN approach which avoids postMessage origin issues
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-    console.log('✅ PDF worker configured with CDN');
+    // Use a stable version that exists on the CDN
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+    console.log('✅ PDF worker configured with working CDN version');
     return true;
   } catch (error) {
     console.error('❌ Failed to configure PDF worker:', error);
