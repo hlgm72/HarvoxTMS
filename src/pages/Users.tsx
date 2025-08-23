@@ -753,7 +753,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.total_users')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.total_users', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-blue-100 rounded-full">
@@ -767,7 +767,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.active_users')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.active_users', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.activeUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-green-100 rounded-full">
@@ -781,7 +781,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.pending_invitations')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.pending_invitations', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-orange-100 rounded-full">
@@ -795,7 +795,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.recent_users')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.recent_users', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-purple-100 rounded-full">
