@@ -293,5 +293,37 @@
   "roles": {
     "driver": "conductor",
     "dispatcher": "despachador"
+  },
+  "reports": {
+    "title": "Reportes de Pago",
+    "subtitle": "Genera y administra reportes de pagos de conductores",
+    "generate_bulk": "Generar Reporte Masivo",
+    "stats": {
+      "total_reports": "Total Reportes",
+      "drivers": "Conductores",
+      "total_net_payment": "Pago Neto Total",
+      "pending": "Pendientes"
+    },
+    "available_title": "Reportes de Pago Disponibles",
+    "loading": "Cargando reportes...",
+    "no_reports": "No hay reportes disponibles",
+    "no_reports_description": "No se encontraron períodos de pago que coincidan con los filtros seleccionados.",
+    "net": "Neto:",
+    "payment": "Pago:",
+    "mark_paid": "Marcar Pagado",
+    "view_detail": "Ver Detalle",
+    "status": {
+      "pending": "Pendiente",
+      "paid": "Pagado",
+      "failed": "Pago Fallido",
+      "negative_balance": "Balance Negativo",
+      "ready_payment": "Listo para Pago"
+    },
+    "messages": {
+      "report_generated": "Reporte Generado",
+      "pdf_success": "El reporte PDF ha sido generado y descargado exitosamente",
+      "pdf_error": "No se pudo generar el reporte PDF"
+    },
+    "company_name": "Tu Empresa"
   }
 }

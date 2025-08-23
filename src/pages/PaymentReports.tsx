@@ -18,8 +18,10 @@ import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { PaymentFilters, PaymentFiltersType } from "@/components/payments/PaymentFilters";
 import { PaymentFiltersSheet } from "@/components/payments/PaymentFiltersSheet";
 import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, useNextPaymentPeriod } from "@/hooks/usePaymentPeriods";
+import { useTranslation } from 'react-i18next';
 
 export default function PaymentReports() {
+  const { t } = useTranslation(['payments', 'common']);
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   
@@ -54,7 +56,7 @@ export default function PaymentReports() {
           periodId: currentPeriod.id,
           startDate: currentPeriod.period_start_date,
           endDate: currentPeriod.period_end_date,
-          label: `Período Actual (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
+          label: `${t('period.current')} (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
         }
       }));
     }
@@ -231,15 +233,15 @@ export default function PaymentReports() {
           payment_date: calculation.company_payment_periods.payment_date
         },
         company: {
-          name: 'Tu Empresa'
+          name: t('reports.company_name')
         }
       };
 
       await generatePaymentReportPDF(reportData);
-      showSuccess("Reporte Generado", "El reporte PDF ha sido generado y descargado exitosamente");
+      showSuccess(t('reports.messages.report_generated'), t('reports.messages.pdf_success'));
     } catch (error: any) {
       console.error('Error generating report:', error);
-      showError("Error", "No se pudo generar el reporte PDF");
+      showError("Error", t('reports.messages.pdf_error'));
     } finally {
       setIsGenerating(false);
     }
@@ -252,18 +254,18 @@ export default function PaymentReports() {
 
   const getStatusBadge = (calculation: any) => {
     if (!calculation.calculated_at) {
-      return <Badge variant="outline">Pendiente</Badge>;
+      return <Badge variant="outline">{t('reports.status.pending')}</Badge>;
     }
     if (calculation.payment_status === 'paid') {
-      return <Badge variant="default" className="bg-green-100 text-green-800">Pagado</Badge>;
+      return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.paid')}</Badge>;
     }
     if (calculation.payment_status === 'failed') {
-      return <Badge variant="destructive">Pago Fallido</Badge>;
+      return <Badge variant="destructive">{t('reports.status.failed')}</Badge>;
     }
     if (calculation.has_negative_balance) {
-      return <Badge variant="destructive">Balance Negativo</Badge>;
+      return <Badge variant="destructive">{t('reports.status.negative_balance')}</Badge>;
     }
-    return <Badge variant="default" className="bg-green-100 text-green-800">Listo para Pago</Badge>;
+    return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.ready_payment')}</Badge>;
   };
 
   const handleMarkAsPaid = (calculation: any) => {
@@ -286,12 +288,12 @@ export default function PaymentReports() {
     <>
       <PageToolbar 
         icon={FileText}
-        title="Reportes de Pago"
-        subtitle="Genera y administra reportes de pagos de conductores"
+        title={t('reports.title')}
+        subtitle={t('reports.subtitle')}
         actions={
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Generar Reporte Masivo
+            {t('reports.generate_bulk')}
           </Button>
         }
       />
@@ -300,25 +302,25 @@ export default function PaymentReports() {
         {/* Stats Cards */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <StatsCard
-            title="Total Reportes"
+            title={t('reports.stats.total_reports')}
             value={totalReports}
             icon={<BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />}
             variant="default"
           />
           <StatsCard
-            title="Conductores"
+            title={t('reports.stats.drivers')}
             value={totalDrivers}
             icon={<Users className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />}
             variant="default"
           />
           <StatsCard
-            title="Pago Neto Total"
+            title={t('reports.stats.total_net_payment')}
             value={`$${formatCurrency(totalEarnings)}`}
             icon={<Wallet className="h-5 w-5 md:h-6 md:w-6 text-green-600" />}
             variant="success"
           />
           <StatsCard
-            title="Pendientes"
+            title={t('reports.stats.pending')}
             value={pendingReports}
             icon={<ClockIcon className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />}
             variant={pendingReports > 0 ? "warning" : "default"}
@@ -351,18 +353,18 @@ export default function PaymentReports() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Reportes de Pago Disponibles
+              {t('reports.available_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">Cargando reportes...</div>
+              <div className="text-center py-8">{t('reports.loading')}</div>
             ) : filteredCalculations.length === 0 ? (
               <div className="text-center py-8">
                 <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No hay reportes disponibles</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('reports.no_reports')}</h3>
                 <p className="text-muted-foreground">
-                  No se encontraron períodos de pago que coincidan con los filtros seleccionados.
+                  {t('reports.no_reports_description')}
                 </p>
               </div>
             ) : (
@@ -386,7 +388,7 @@ export default function PaymentReports() {
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-2 font-semibold text-foreground">
                             <Banknote className="h-4 w-4 text-green-600" />
-                            Neto: ${formatCurrency(calculateNetPayment(calculation))}
+                            {t('reports.net')} ${formatCurrency(calculateNetPayment(calculation))}
                           </span>
                           <span className="flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-blue-600" />
@@ -398,7 +400,7 @@ export default function PaymentReports() {
                           {calculation.company_payment_periods.payment_date && (
                             <span className="flex items-center gap-2">
                               <Timer className="h-4 w-4 text-orange-600" />
-                              Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
+                              {t('reports.payment')} {formatDateAuto(calculation.company_payment_periods.payment_date)}
                             </span>
                           )}
                         </div>
@@ -413,7 +415,7 @@ export default function PaymentReports() {
                             className="bg-green-600 hover:bg-green-700"
                           >
                             <DollarSign className="h-4 w-4 mr-2" />
-                            Marcar Pagado
+                            {t('reports.mark_paid')}
                           </Button>
                         )}
                         <Button
@@ -422,7 +424,7 @@ export default function PaymentReports() {
                           onClick={() => handleViewReport(calculation.id)}
                         >
                           <FileText className="h-4 w-4 mr-2" />
-                          Ver Detalle
+                          {t('reports.view_detail')}
                         </Button>
                       </div>
                     </div>

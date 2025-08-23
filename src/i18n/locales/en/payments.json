@@ -293,5 +293,37 @@
   "roles": {
     "driver": "driver",
     "dispatcher": "dispatcher"
+  },
+  "reports": {
+    "title": "Payment Reports",
+    "subtitle": "Generate and manage driver payment reports",
+    "generate_bulk": "Generate Bulk Report",
+    "stats": {
+      "total_reports": "Total Reports",
+      "drivers": "Drivers", 
+      "total_net_payment": "Total Net Payment",
+      "pending": "Pending"
+    },
+    "available_title": "Available Payment Reports",
+    "loading": "Loading reports...",
+    "no_reports": "No reports available", 
+    "no_reports_description": "No payment periods found matching the selected filters.",
+    "net": "Net:",
+    "payment": "Payment:",
+    "mark_paid": "Mark Paid",
+    "view_detail": "View Detail",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Payment Failed",
+      "negative_balance": "Negative Balance",
+      "ready_payment": "Ready for Payment"
+    },
+    "messages": {
+      "report_generated": "Report Generated",
+      "pdf_success": "PDF report has been generated and downloaded successfully",
+      "pdf_error": "Could not generate PDF report"
+    },
+    "company_name": "Your Company"
   }
 }
