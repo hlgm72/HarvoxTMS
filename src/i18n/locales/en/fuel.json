@@ -162,5 +162,58 @@
       "save": "Save", 
       "saving": "Saving..."
     }
+  },
+  "cards": {
+    "page": {
+      "title": "Fuel Cards",
+      "subtitle": "Manage fuel cards assigned to drivers",
+      "assign_card": "Assign Card",
+      "assign_first_card": "Assign First Card"
+    },
+    "webhook": {
+      "title": "Webhook Configuration",
+      "fleetone_url": "FleetOne Webhook URL:"
+    },
+    "list": {
+      "no_cards": "No assigned cards",
+      "no_cards_description": "Start by assigning fuel cards to your drivers",
+      "loading": "Loading cards..."
+    },
+    "card": {
+      "driver_label": "Driver:",
+      "assigned_label": "Assigned:",
+      "edit": "Edit",
+      "deactivate": "Deactivate"
+    },
+    "dialog": {
+      "create_title": "Assign New Fuel Card",
+      "edit_title": "Edit Fuel Card",
+      "create_description": "Assign a fuel card to a driver",
+      "edit_description": "Modify fuel card details",
+      "driver_field": "Driver",
+      "select_driver": "Select driver",
+      "provider_field": "Card Provider",
+      "select_provider": "Select provider",
+      "last_digits": "Last 5 digits of card",
+      "last_digits_placeholder": "12345",
+      "identifier": "Full identifier (optional)",
+      "identifier_placeholder": "For internal use",
+      "cancel": "Cancel",
+      "assign": "Assign Card",
+      "update": "Update Card",
+      "assigning": "Assigning...",
+      "updating": "Updating..."
+    },
+    "messages": {
+      "assign_success": "Card assigned successfully",
+      "update_success": "Card updated successfully", 
+      "deactivate_success": "Card deactivated",
+      "save_error": "Error saving card: ",
+      "deactivate_error": "Error deactivating card: ",
+      "deactivate_confirm": "Are you sure you want to deactivate this card?",
+      "required_fields": "Driver, provider and last 5 digits are required",
+      "company_error": "Error getting driver's company",
+      "company_not_found": "Driver's company not found"
+    }
   }
 }

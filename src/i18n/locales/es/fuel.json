@@ -162,5 +162,58 @@
       "save": "Guardar",
       "saving": "Guardando..."
     }
+  },
+  "cards": {
+    "page": {
+      "title": "Tarjetas de Combustible",
+      "subtitle": "Gestiona las tarjetas de combustible asignadas a los conductores",
+      "assign_card": "Asignar Tarjeta",
+      "assign_first_card": "Asignar Primera Tarjeta"
+    },
+    "webhook": {
+      "title": "Configuración de Webhooks",
+      "fleetone_url": "FleetOne Webhook URL:"
+    },
+    "list": {
+      "no_cards": "No hay tarjetas asignadas",
+      "no_cards_description": "Comienza asignando tarjetas de combustible a tus conductores",
+      "loading": "Cargando tarjetas..."
+    },
+    "card": {
+      "driver_label": "Conductor:",
+      "assigned_label": "Asignada:",
+      "edit": "Editar",
+      "deactivate": "Desactivar"
+    },
+    "dialog": {
+      "create_title": "Asignar Nueva Tarjeta de Combustible",
+      "edit_title": "Editar Tarjeta de Combustible",
+      "create_description": "Asigna una tarjeta de combustible a un conductor",
+      "edit_description": "Modifica los datos de la tarjeta de combustible",
+      "driver_field": "Conductor",
+      "select_driver": "Seleccionar conductor",
+      "provider_field": "Proveedor de Tarjeta",
+      "select_provider": "Seleccionar proveedor",
+      "last_digits": "Últimos 5 dígitos de la tarjeta",
+      "last_digits_placeholder": "12345",
+      "identifier": "Identificador completo (opcional)",
+      "identifier_placeholder": "Para uso interno",
+      "cancel": "Cancelar",
+      "assign": "Asignar Tarjeta",
+      "update": "Actualizar Tarjeta",
+      "assigning": "Asignando...",
+      "updating": "Actualizando..."
+    },
+    "messages": {
+      "assign_success": "Tarjeta asignada exitosamente",
+      "update_success": "Tarjeta actualizada exitosamente",
+      "deactivate_success": "Tarjeta desactivada",
+      "save_error": "Error al guardar tarjeta: ",
+      "deactivate_error": "Error al desactivar tarjeta: ",
+      "deactivate_confirm": "¿Estás seguro de que quieres desactivar esta tarjeta?",
+      "required_fields": "Conductor, proveedor y últimos 5 dígitos son requeridos",
+      "company_error": "Error al obtener la empresa del conductor",
+      "company_not_found": "No se encontró la empresa del conductor"
+    }
   }
 }
