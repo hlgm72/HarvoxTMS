@@ -113,7 +113,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Querying company information...");
     const { data: company, error: companyError } = await supabase
       .from("companies")
-      .select("name, email, owner_email, owner_name")
+      .select("name, email")
       .eq("id", userRole.company_id)
       .single();
 
@@ -124,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const companyName = company.name || "FleetNest";
     const senderName = `${companyName} (via FleetNest)`;
-    const companyEmail = company.email || company.owner_email;
+    const companyEmail = company.email;
     
     // Always use verified FleetNest email as sender for deliverability
     const senderEmail = "noreply@fleetnest.app";
