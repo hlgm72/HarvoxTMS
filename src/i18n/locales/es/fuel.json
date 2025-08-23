@@ -91,5 +91,76 @@
       "confirm": "Eliminar",
       "cancel": "Cancelar"
     }
+  },
+  "create_dialog": {
+    "title": "Registrar Gasto de Combustible",
+    "description": "Registra un nuevo gasto de combustible para un conductor.",
+    "sections": {
+      "basic_info": "Información Básica",
+      "fuel_details": "Detalles del Combustible", 
+      "additional_info": "Información Adicional"
+    },
+    "fields": {
+      "transaction_date": "Fecha de Transacción *",
+      "payment_period": "Período de Pago",
+      "driver": "Conductor *",
+      "vehicle": "Vehículo (Camión)",
+      "fuel_type": "Tipo de Combustible *",
+      "fuel_card": "Tarjeta de Combustible",
+      "gallons": "Galones *",
+      "price_per_gallon": "Precio/Galón *",
+      "gross_amount": "Monto Bruto",
+      "discounts": "Descuentos",
+      "fees": "Comisiones",
+      "total": "Total *",
+      "invoice_number": "Número de Factura",
+      "station_name": "Nombre de la Estación",
+      "state": "Estado", 
+      "notes": "Notas"
+    },
+    "placeholders": {
+      "select_date": "Seleccionar fecha",
+      "select_driver": "Seleccionar conductor",
+      "select_truck": "Seleccionar camión",
+      "select_type": "Seleccionar tipo",
+      "select_card": "Seleccionar tarjeta",
+      "gallons_amount": "0.000",
+      "money_amount": "$0.00",
+      "invoice_example": "INV-123456",
+      "station_example": "Shell, Pilot, Loves...",
+      "select_state": "Selecciona estado...",
+      "additional_notes": "Notas adicionales...",
+      "month": "Mes",
+      "year": "Año"
+    },
+    "fuel_types": {
+      "diesel": "Diésel",
+      "gasoline": "Gasolina", 
+      "def": "DEF"
+    },
+    "period_messages": {
+      "auto_select": "Se seleccionará automáticamente",
+      "will_create": "Se creará: {{start}} - {{end}}",
+      "auto_create_info": "💡 El período se creará automáticamente al guardar"
+    },
+    "months": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo",
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "Guardando..."
+    }
   }
 }

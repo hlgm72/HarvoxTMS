@@ -91,5 +91,76 @@
       "confirm": "Delete",
       "cancel": "Cancel"
     }
+  },
+  "create_dialog": {
+    "title": "Register Fuel Expense",
+    "description": "Register a new fuel expense for a driver.",
+    "sections": {
+      "basic_info": "Basic Information",
+      "fuel_details": "Fuel Details",
+      "additional_info": "Additional Information"
+    },
+    "fields": {
+      "transaction_date": "Transaction Date *",
+      "payment_period": "Payment Period",
+      "driver": "Driver *", 
+      "vehicle": "Vehicle (Truck)",
+      "fuel_type": "Fuel Type *",
+      "fuel_card": "Fuel Card",
+      "gallons": "Gallons *",
+      "price_per_gallon": "Price/Gallon *",
+      "gross_amount": "Gross Amount",
+      "discounts": "Discounts",
+      "fees": "Fees",
+      "total": "Total *",
+      "invoice_number": "Invoice Number", 
+      "station_name": "Station Name",
+      "state": "State",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "select_date": "Select date",
+      "select_driver": "Select driver",
+      "select_truck": "Select truck",
+      "select_type": "Select type",
+      "select_card": "Select card",
+      "gallons_amount": "0.000",
+      "money_amount": "$0.00",
+      "invoice_example": "INV-123456",
+      "station_example": "Shell, Pilot, Loves...",
+      "select_state": "Select state...",
+      "additional_notes": "Additional notes...",
+      "month": "Month",
+      "year": "Year"
+    },
+    "fuel_types": {
+      "diesel": "Diesel",
+      "gasoline": "Gasoline",
+      "def": "DEF"
+    },
+    "period_messages": {
+      "auto_select": "Will be selected automatically",
+      "will_create": "Will be created: {{start}} - {{end}}",
+      "auto_create_info": "💡 The period will be created automatically when saving"
+    },
+    "months": {
+      "january": "January",
+      "february": "February", 
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save", 
+      "saving": "Saving..."
+    }
   }
 }
