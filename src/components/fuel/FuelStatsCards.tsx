@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Fuel, DollarSign, BarChart3, TrendingUp, Clock, CheckCircle, AlertCircle } from 'lucide-react';
@@ -16,6 +17,7 @@ interface FuelStatsCardsProps {
 
 export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
   const { data: stats, isLoading } = useFuelStats(filters);
+  const { t } = useTranslation(['fuel', 'common']);
 
   if (isLoading) {
     return (
@@ -44,7 +46,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
       {/* Total Gastos */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Total Gastos</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium">{t('fuel:stats.total_expenses')}</CardTitle>
           <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="pt-0">
@@ -52,7 +54,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             {formatCurrency(stats?.totalAmount || 0)}
           </div>
           <p className="text-xs text-muted-foreground">
-            {stats?.totalExpenses || 0} transacciones
+            {stats?.totalExpenses || 0} {t('fuel:stats.transactions')}
           </p>
         </CardContent>
       </Card>
@@ -60,7 +62,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
       {/* Total Galones */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Total Galones</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium">{t('fuel:stats.total_gallons')}</CardTitle>
           <Fuel className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="pt-0">
@@ -68,7 +70,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             {formatGallons(stats?.totalGallons || 0)}
           </div>
           <p className="text-xs text-muted-foreground">
-            Promedio: {formatCurrency(stats?.averagePricePerGallon || 0)}/gal
+            {t('fuel:stats.average')}: {formatCurrency(stats?.averagePricePerGallon || 0)}/gal
           </p>
         </CardContent>
       </Card>
@@ -76,7 +78,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
       {/* Estado de Gastos */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Estado</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium">{t('fuel:stats.status')}</CardTitle>
           <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="pt-0">
@@ -84,7 +86,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <Clock className="h-2 w-2 sm:h-3 sm:w-3 text-yellow-500" />
-                <span className="text-xs">Pendientes</span>
+                <span className="text-xs">{t('fuel:stats.pending')}</span>
               </div>
               <Badge variant="secondary" className="text-xs px-1 sm:px-2">
                 {stats?.pending || 0}
@@ -93,7 +95,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <CheckCircle className="h-2 w-2 sm:h-3 sm:w-3 text-green-500" />
-                <span className="text-xs">Aprobados</span>
+                <span className="text-xs">{t('fuel:stats.approved')}</span>
               </div>
               <Badge variant="secondary" className="text-xs px-1 sm:px-2">
                 {stats?.approved || 0}
@@ -102,7 +104,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <AlertCircle className="h-2 w-2 sm:h-3 sm:w-3 text-blue-500" />
-                <span className="text-xs">Verificados</span>
+                <span className="text-xs">{t('fuel:stats.verified')}</span>
               </div>
               <Badge variant="secondary" className="text-xs px-1 sm:px-2">
                 {stats?.verified || 0}
@@ -115,7 +117,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
       {/* Tendencia Mensual */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-medium">Tendencia</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium">{t('fuel:stats.trend')}</CardTitle>
           <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="pt-0">
@@ -126,7 +128,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             }
           </div>
           <p className="text-xs text-muted-foreground">
-            Este mes
+            {t('fuel:stats.this_month')}
           </p>
           {stats?.monthlyData && stats.monthlyData.length > 1 && (
             <div className="text-xs text-muted-foreground mt-1">
@@ -136,7 +138,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
                 const change = previous > 0 ? ((current - previous) / previous * 100) : 0;
                 return (
                   <span className={change >= 0 ? 'text-green-600' : 'text-red-600'}>
-                    {change >= 0 ? '+' : ''}{change.toFixed(1)}% vs anterior
+                    {change >= 0 ? '+' : ''}{change.toFixed(1)}% {t('fuel:stats.vs_previous')}
                   </span>
                 );
               })()}

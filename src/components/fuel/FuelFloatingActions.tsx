@@ -18,7 +18,7 @@ interface FuelFloatingActionsProps {
 }
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'fuel']);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats' | 'sync'>('filters');
   const [syncLoading, setSyncLoading] = useState(false);
@@ -249,7 +249,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.title')}</h3>
-                  <p className="text-sm text-muted-foreground">Opciones de vista próximamente.</p>
+                  <p className="text-sm text-muted-foreground">{t('fuel:floating_actions.view_options')}</p>
                 </div>
               </div>
             )}
@@ -259,7 +259,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.title')}</h3>
-                  <p className="text-sm text-muted-foreground">Estadísticas próximamente.</p>
+                  <p className="text-sm text-muted-foreground">{t('fuel:floating_actions.stats_options')}</p>
                 </div>
               </div>
             )}

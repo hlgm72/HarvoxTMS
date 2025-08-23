@@ -1,0 +1,88 @@
+{
+  "page": {
+    "title": "Fuel Management",
+    "subtitle": "Manage and monitor fleet fuel expenses",
+    "actions": {
+      "register_fuel": "Register Fuel",
+      "new": "New"
+    },
+    "tabs": {
+      "expenses": "Expenses",
+      "expenses_full": "Fuel Expenses",
+      "cards": "Cards",
+      "fuel_cards_full": "Fuel Cards",
+      "pdf": "PDF",
+      "pdf_analyzer": "PDF Analyzer"
+    }
+  },
+  "stats": {
+    "total_expenses": "Total Expenses",
+    "transactions": "transactions",
+    "total_gallons": "Total Gallons",
+    "average": "Average",
+    "status": "Status",
+    "pending": "Pending",
+    "approved": "Approved",
+    "verified": "Verified",
+    "trend": "Trend",
+    "this_month": "This month",
+    "vs_previous": "vs previous"
+  },
+  "filters": {
+    "title": "Filters",
+    "clear": "Clear",
+    "active_filters": "Active Filters",
+    "driver": "Driver",
+    "select_driver": "Select driver",
+    "all_drivers": "All drivers",
+    "status": "Status",
+    "select_status": "Select status",
+    "all_statuses": "All statuses",
+    "pending": "Pending",
+    "approved": "Approved",
+    "verified": "Verified",
+    "vehicle": "Vehicle",
+    "select_vehicle": "Select vehicle",
+    "all_vehicles": "All vehicles",
+    "date_range": "Date Range",
+    "select_range": "Select range",
+    "select_dates": "Select dates",
+    "unknown": "Unknown"
+  },
+  "floating_actions": {
+    "view_options": "View options coming soon.",
+    "stats_options": "Statistics coming soon."
+  },
+  "expenses_list": {
+    "no_expenses": "No fuel expenses found",
+    "no_expenses_description": "No fuel expenses match the current filters. Try adjusting your search criteria or add a new fuel expense.",
+    "loading": "Loading fuel expenses...",
+    "driver_not_found": "Driver not found",
+    "actions": {
+      "view": "View Details",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "columns": {
+      "driver": "Driver",
+      "date": "Date",
+      "fuel_type": "Fuel Type",
+      "gallons": "Gallons",
+      "price_per_gallon": "Price/Gal",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "fuel_types": {
+      "diesel": "Diesel",
+      "gasoline": "Gasoline",
+      "reefer": "Reefer"
+    },
+    "delete_dialog": {
+      "title": "Delete fuel expense?",
+      "description": "This action will permanently delete this fuel expense. This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  }
+}

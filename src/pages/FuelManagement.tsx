@@ -16,7 +16,7 @@ import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 
 export default function FuelManagement() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['fuel', 'common']);
 
   // Estado de filtros
   const [filters, setFilters] = useState<FuelFiltersType>({
@@ -55,14 +55,14 @@ export default function FuelManagement() {
     <>
       {/* Header */}
       <PageToolbar
-        title="Gestión de Combustible"
-        subtitle="Administra y monitorea los gastos de combustible de la flota"
+        title={t('fuel:page.title')}
+        subtitle={t('fuel:page.subtitle')}
         icon={Fuel}
         actions={
           <Button onClick={() => setCreateDialogOpen(true)} size="sm">
             <Plus className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Registrar Combustible</span>
-            <span className="sm:hidden">Nuevo</span>
+            <span className="hidden sm:inline">{t('fuel:page.actions.register_fuel')}</span>
+            <span className="sm:hidden">{t('fuel:page.actions.new')}</span>
           </Button>
         }
       />
@@ -73,18 +73,18 @@ export default function FuelManagement() {
           <TabsList className="grid w-full grid-cols-3 h-auto gap-1">
             <TabsTrigger value="expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Gastos de Combustible</span>
-              <span className="sm:hidden">Gastos</span>
+              <span className="hidden sm:inline">{t('fuel:page.tabs.expenses_full')}</span>
+              <span className="sm:hidden">{t('fuel:page.tabs.expenses')}</span>
             </TabsTrigger>
             <TabsTrigger value="cards" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Tarjetas de Combustible</span>
-              <span className="sm:hidden">Tarjetas</span>
+              <span className="hidden sm:inline">{t('fuel:page.tabs.fuel_cards_full')}</span>
+              <span className="sm:hidden">{t('fuel:page.tabs.cards')}</span>
             </TabsTrigger>
             <TabsTrigger value="analyzer" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Analizador PDF</span>
-              <span className="sm:hidden">PDF</span>
+              <span className="hidden sm:inline">{t('fuel:page.tabs.pdf_analyzer')}</span>
+              <span className="sm:hidden">{t('fuel:page.tabs.pdf')}</span>
             </TabsTrigger>
           </TabsList>
 

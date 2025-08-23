@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,6 +32,7 @@ interface FuelFiltersProps {
 export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelFiltersProps) {
   const { drivers = [] } = useCompanyDrivers();
   const { geotabVehicles: vehicles = [] } = useGeotabVehicles();
+  const { t } = useTranslation(['fuel', 'common']);
 
   const handleFilterChange = (key: keyof FuelFiltersType, value: any) => {
     onFiltersChange({
@@ -63,16 +65,16 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
     <div className="space-y-4">
       {/* Conductor */}
       <div>
-        <label className="text-sm font-medium mb-2 block">Conductor</label>
+        <label className="text-sm font-medium mb-2 block">{t('fuel:filters.driver')}</label>
         <Select
           value={filters.driverId}
           onValueChange={(value) => handleFilterChange('driverId', value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Seleccionar conductor" />
+            <SelectValue placeholder={t('fuel:filters.select_driver')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos los conductores</SelectItem>
+            <SelectItem value="all">{t('fuel:filters.all_drivers')}</SelectItem>
             {drivers.map((driver) => (
               <SelectItem key={driver.user_id} value={driver.user_id}>
                 {driver.first_name} {driver.last_name}
@@ -84,35 +86,35 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
 
       {/* Estado */}
       <div>
-        <label className="text-sm font-medium mb-2 block">Estado</label>
+        <label className="text-sm font-medium mb-2 block">{t('fuel:filters.status')}</label>
         <Select
           value={filters.status}
           onValueChange={(value) => handleFilterChange('status', value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Seleccionar estado" />
+            <SelectValue placeholder={t('fuel:filters.select_status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos los estados</SelectItem>
-            <SelectItem value="pending">Pendiente</SelectItem>
-            <SelectItem value="approved">Aprobado</SelectItem>
-            <SelectItem value="verified">Verificado</SelectItem>
+            <SelectItem value="all">{t('fuel:filters.all_statuses')}</SelectItem>
+            <SelectItem value="pending">{t('fuel:filters.pending')}</SelectItem>
+            <SelectItem value="approved">{t('fuel:filters.approved')}</SelectItem>
+            <SelectItem value="verified">{t('fuel:filters.verified')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Vehículo */}
       <div>
-        <label className="text-sm font-medium mb-2 block">Vehículo</label>
+        <label className="text-sm font-medium mb-2 block">{t('fuel:filters.vehicle')}</label>
         <Select
           value={filters.vehicleId}
           onValueChange={(value) => handleFilterChange('vehicleId', value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Seleccionar vehículo" />
+            <SelectValue placeholder={t('fuel:filters.select_vehicle')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos los vehículos</SelectItem>
+            <SelectItem value="all">{t('fuel:filters.all_vehicles')}</SelectItem>
             {vehicles.map((vehicle) => (
               <SelectItem key={vehicle.id} value={vehicle.id}>
                 {vehicle.name}
@@ -129,7 +131,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
 
       {/* Rango de Fechas */}
       <div>
-        <label className="text-sm font-medium mb-2 block">Rango de Fechas</label>
+        <label className="text-sm font-medium mb-2 block">{t('fuel:filters.date_range')}</label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -150,7 +152,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
                   formatMediumDate(filters.dateRange.from)
                 )
               ) : (
-                <span>Seleccionar rango</span>
+                <span>{t('fuel:filters.select_range')}</span>
               )}
             </Button>
           </PopoverTrigger>
@@ -182,7 +184,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filtros
+            {t('fuel:filters.title')}
             {activeFiltersCount > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {activeFiltersCount}
@@ -192,7 +194,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           {activeFiltersCount > 0 && (
             <Button variant="outline" size="sm" onClick={clearFilters}>
               <X className="h-4 w-4 mr-1" />
-              Limpiar
+              {t('fuel:filters.clear')}
             </Button>
           )}
         </div>
@@ -203,17 +205,17 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-1">
               <User className="h-4 w-4" />
-              Conductor
+              {t('fuel:filters.driver')}
             </label>
             <Select
               value={filters.driverId}
               onValueChange={(value) => handleFilterChange('driverId', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los conductores" />
+                <SelectValue placeholder={t('fuel:filters.all_drivers')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los conductores</SelectItem>
+                <SelectItem value="all">{t('fuel:filters.all_drivers')}</SelectItem>
                 {drivers.map((driver) => (
                   <SelectItem key={driver.user_id} value={driver.user_id}>
                     {driver.first_name} {driver.last_name}
@@ -230,20 +232,20 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              Estado
+              {t('fuel:filters.status')}
             </label>
             <Select
               value={filters.status}
               onValueChange={(value) => handleFilterChange('status', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los estados" />
+                <SelectValue placeholder={t('fuel:filters.all_statuses')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="pending">Pendiente</SelectItem>
-                <SelectItem value="approved">Aprobado</SelectItem>
-                <SelectItem value="verified">Verificado</SelectItem>
+                <SelectItem value="all">{t('fuel:filters.all_statuses')}</SelectItem>
+                <SelectItem value="pending">{t('fuel:filters.pending')}</SelectItem>
+                <SelectItem value="approved">{t('fuel:filters.approved')}</SelectItem>
+                <SelectItem value="verified">{t('fuel:filters.verified')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -252,17 +254,17 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-1">
               <Car className="h-4 w-4" />
-              Vehículo
+              {t('fuel:filters.vehicle')}
             </label>
             <Select
               value={filters.vehicleId}
               onValueChange={(value) => handleFilterChange('vehicleId', value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los vehículos" />
+                <SelectValue placeholder={t('fuel:filters.all_vehicles')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los vehículos</SelectItem>
+                <SelectItem value="all">{t('fuel:filters.all_vehicles')}</SelectItem>
                 {vehicles.map((vehicle) => (
                   <SelectItem key={vehicle.id} value={vehicle.id}>
                     {vehicle.name}
@@ -281,7 +283,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-1">
               <CalendarIcon className="h-4 w-4" />
-              Rango de Fechas
+              {t('fuel:filters.date_range')}
             </label>
             <Popover>
               <PopoverTrigger asChild>
@@ -303,7 +305,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
                       formatMediumDate(filters.dateRange.from)
                     )
                   ) : (
-                    "Seleccionar fechas"
+                    t('fuel:filters.select_dates')
                   )}
                 </Button>
               </PopoverTrigger>
@@ -336,7 +338,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
             {filters.driverId !== 'all' && (
               <Badge variant="outline" className="gap-1">
                 <User className="h-3 w-3" />
-                Conductor: {drivers.find(d => d.user_id === filters.driverId)?.first_name || 'Desconocido'}
+                {t('fuel:filters.driver')}: {drivers.find(d => d.user_id === filters.driverId)?.first_name || t('fuel:filters.unknown')}
                 <button
                   onClick={() => handleFilterChange('driverId', 'all')}
                   className="ml-1 hover:bg-muted rounded-sm"
@@ -349,7 +351,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
             {filters.status !== 'all' && (
               <Badge variant="outline" className="gap-1">
                 <Clock className="h-3 w-3" />
-                Estado: {filters.status}
+                {t('fuel:filters.status')}: {filters.status}
                 <button
                   onClick={() => handleFilterChange('status', 'all')}
                   className="ml-1 hover:bg-muted rounded-sm"
@@ -362,7 +364,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
             {filters.vehicleId !== 'all' && (
               <Badge variant="outline" className="gap-1">
                 <Car className="h-3 w-3" />
-                Vehículo: {vehicles.find(v => v.id === filters.vehicleId)?.name || 'Desconocido'}
+                {t('fuel:filters.vehicle')}: {vehicles.find(v => v.id === filters.vehicleId)?.name || t('fuel:filters.unknown')}
                 <button
                   onClick={() => handleFilterChange('vehicleId', 'all')}
                   className="ml-1 hover:bg-muted rounded-sm"
@@ -375,7 +377,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
             {(filters.dateRange.from || filters.dateRange.to) && (
               <Badge variant="outline" className="gap-1">
                 <CalendarIcon className="h-3 w-3" />
-                Fechas: {filters.dateRange.from && formatShortDate(filters.dateRange.from)}
+                {t('fuel:filters.date_range')}: {filters.dateRange.from && formatShortDate(filters.dateRange.from)}
                 {filters.dateRange.to && ` - ${formatShortDate(filters.dateRange.to)}`}
                 <button
                   onClick={() => handleFilterChange('dateRange', { from: undefined, to: undefined })}

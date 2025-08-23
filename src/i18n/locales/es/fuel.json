@@ -1,0 +1,88 @@
+{
+  "page": {
+    "title": "Gestión de Combustible",
+    "subtitle": "Administra y monitorea los gastos de combustible de la flota",
+    "actions": {
+      "register_fuel": "Registrar Combustible",
+      "new": "Nuevo"
+    },
+    "tabs": {
+      "expenses": "Gastos",
+      "expenses_full": "Gastos de Combustible",
+      "cards": "Tarjetas",
+      "fuel_cards_full": "Tarjetas de Combustible",
+      "pdf": "PDF",
+      "pdf_analyzer": "Analizador PDF"
+    }
+  },
+  "stats": {
+    "total_expenses": "Total Gastos",
+    "transactions": "transacciones",
+    "total_gallons": "Total Galones",
+    "average": "Promedio",
+    "status": "Estado",
+    "pending": "Pendientes",
+    "approved": "Aprobados",
+    "verified": "Verificados",
+    "trend": "Tendencia",
+    "this_month": "Este mes",
+    "vs_previous": "vs anterior"
+  },
+  "filters": {
+    "title": "Filtros",
+    "clear": "Limpiar",
+    "active_filters": "Filtros Activos",
+    "driver": "Conductor",
+    "select_driver": "Seleccionar conductor",
+    "all_drivers": "Todos los conductores",
+    "status": "Estado",
+    "select_status": "Seleccionar estado",
+    "all_statuses": "Todos los estados",
+    "pending": "Pendiente",
+    "approved": "Aprobado",
+    "verified": "Verificado",
+    "vehicle": "Vehículo",
+    "select_vehicle": "Seleccionar vehículo",
+    "all_vehicles": "Todos los vehículos",
+    "date_range": "Rango de Fechas",
+    "select_range": "Seleccionar rango",
+    "select_dates": "Seleccionar fechas",
+    "unknown": "Desconocido"
+  },
+  "floating_actions": {
+    "view_options": "Opciones de vista próximamente.",
+    "stats_options": "Estadísticas próximamente."
+  },
+  "expenses_list": {
+    "no_expenses": "No se encontraron gastos de combustible",
+    "no_expenses_description": "No se encontraron gastos de combustible que coincidan con los filtros actuales. Intenta ajustar los criterios de búsqueda o agregar un nuevo gasto de combustible.",
+    "loading": "Cargando gastos de combustible...",
+    "driver_not_found": "Conductor no encontrado",
+    "actions": {
+      "view": "Ver Detalles",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "columns": {
+      "driver": "Conductor",
+      "date": "Fecha",
+      "fuel_type": "Tipo de Combustible",
+      "gallons": "Galones",
+      "price_per_gallon": "Precio/Gal",
+      "total": "Total",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "fuel_types": {
+      "diesel": "Diésel",
+      "gasoline": "Gasolina",
+      "reefer": "Reefer"
+    },
+    "delete_dialog": {
+      "title": "¿Eliminar gasto de combustible?",
+      "description": "Esta acción eliminará permanentemente este gasto de combustible. Esta acción no se puede deshacer.",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    }
+  }
+}
