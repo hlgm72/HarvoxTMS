@@ -117,7 +117,7 @@ export default function OwnerDashboard() {
     
     try {
       // Use secure RPC function for company financial data (owner has access)
-      const { data, error } = await supabase
+      const { data: companyData, error: companyError } = await supabase
         .rpc('get_companies_financial_data', {
           target_company_id: userRole.company_id
         })
@@ -126,8 +126,29 @@ export default function OwnerDashboard() {
           error: result.error
         }));
 
-      if (error) throw error;
-      setCompanyInfo(data);
+      if (companyError) throw companyError;
+
+      // Fetch owner details separately
+      const { data: ownerData, error: ownerError } = await supabase
+        .rpc('get_company_owner_details', {
+          target_company_id: userRole.company_id
+        })
+        .then(result => ({
+          data: result.data?.[0] || null,
+          error: result.error
+        }));
+
+      if (ownerError) {
+        console.warn('Owner details not available:', ownerError);
+      }
+
+      // Merge company data with owner details
+      const mergedData = {
+        ...companyData,
+        ...ownerData
+      };
+
+      setCompanyInfo(mergedData);
     } catch (error) {
       console.error('Error fetching company data:', error);
     }
