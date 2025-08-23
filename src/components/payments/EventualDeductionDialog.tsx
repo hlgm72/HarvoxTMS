@@ -44,7 +44,7 @@ export function EventualDeductionDialog({
   editingDeduction = null
 }: EventualDeductionDialogProps) {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   
@@ -358,12 +358,12 @@ export function EventualDeductionDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>
-            {editingDeduction ? t("payments.deductions.eventual.edit_title") : t("payments.deductions.eventual.create_title")}
+            {editingDeduction ? t("deductions.eventual.edit_title") : t("deductions.eventual.create_title")}
           </DialogTitle>
           <DialogDescription>
             {editingDeduction 
-              ? t("payments.deductions.template.edit_description")
-              : t("payments.deductions.eventual.create_description")
+              ? t("deductions.template.edit_description")
+              : t("deductions.eventual.create_description")
             }
           </DialogDescription>
         </DialogHeader>

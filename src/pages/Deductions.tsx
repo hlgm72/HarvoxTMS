@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency } from '@/lib/dateFormatting';
 
 export default function Deductions() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('payments');
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -62,31 +62,31 @@ export default function Deductions() {
   // Generar subtitle con datos reales
   const getSubtitle = () => {
     if (statsLoading || !stats) {
-      return t("payments.deductions.loadingStats");
+      return t("deductions.loadingStats");
     }
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
     
-    return `${activeTemplates} ${t("payments.deductions.activeTemplates")} • $${formatCurrency(totalMonthlyAmount)} ${t("payments.deductions.monthlyTotal")} • ${affectedDrivers} ${t("payments.deductions.affectedDrivers")}`;
+    return `${activeTemplates} ${t("deductions.activeTemplates")} • $${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
   };
 
   return (
     <>
       <PageToolbar 
         icon={DollarSign}
-        title={t("payments.deductions.title")}
+        title={t("deductions.title")}
         subtitle={getSubtitle()}
         actions={
           <div className="flex gap-2">
             <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Repeat className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("payments.deductions.recurringDeduction")}</span>
-              <span className="sm:hidden">{t("payments.deductions.recurringShort")}</span>
+              <span className="hidden sm:inline">{t("deductions.recurringDeduction")}</span>
+              <span className="sm:hidden">{t("deductions.recurringShort")}</span>
             </Button>
             <Button variant="outline" onClick={() => setIsEventualDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("payments.deductions.eventualDeduction")}</span>
-              <span className="sm:hidden">{t("payments.deductions.eventualShort")}</span>
+              <span className="hidden sm:inline">{t("deductions.eventualDeduction")}</span>
+              <span className="sm:hidden">{t("deductions.eventualShort")}</span>
             </Button>
           </div>
         }

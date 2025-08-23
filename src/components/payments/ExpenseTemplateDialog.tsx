@@ -37,7 +37,7 @@ export function ExpenseTemplateDialog({
   template 
 }: ExpenseTemplateDialogProps) {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   const [inactiveTemplate, setInactiveTemplate] = useState<any>(null);
@@ -346,7 +346,7 @@ export function ExpenseTemplateDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'create' ? t("payments.deductions.template.create_title") : t("payments.deductions.template.edit_title")}
+            {mode === 'create' ? t("deductions.template.create_title") : t("deductions.template.edit_title")}
           </DialogTitle>
         </DialogHeader>
 
