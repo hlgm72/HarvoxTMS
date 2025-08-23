@@ -292,17 +292,6 @@ const handler = async (req: Request): Promise<Response> => {
             ${attachments.map(att => `<li>${att.filename}</li>`).join('')}
           </ul>
           
-          ${companyEmail ? `
-            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
-              <p style="margin: 0; color: #856404; font-weight: bold;">
-                ⚠️ Importante: Para responder este email, utilice la dirección:
-              </p>
-              <p style="margin: 5px 0 0 0; color: #856404; font-size: 16px;">
-                <a href="mailto:${companyEmail}" style="color: #856404; font-weight: bold;">${companyEmail}</a>
-              </p>
-            </div>
-          ` : ''}
-          
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #999; font-size: 14px; margin: 0;">
               Este email fue enviado por <strong>${companyName}</strong> a través de FleetNest.
