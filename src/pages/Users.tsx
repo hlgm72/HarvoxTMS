@@ -357,8 +357,9 @@ export default function Users() {
       calculateStats(usersList, userRole?.company_id);
     } catch (error) {
       console.error('❌ Error fetching users:', error);
-      showError(t('users:messages.error_loading', { 
-        error: error instanceof Error ? error.message : 'Error desconocido' 
+      showError(t('messages.error_loading', { 
+        error: error instanceof Error ? error.message : 'Error desconocido',
+        ns: 'users'
       }));
     } finally {
       setLoading(false);
@@ -418,7 +419,7 @@ export default function Users() {
 
   const handleDeleteTestUser = async () => {
     if (!userRole?.role || !['superadmin', 'company_owner'].includes(userRole.role)) {
-      showError(t('users:messages.delete_test_user_error'));
+      showError(t('messages.delete_test_user_error', { ns: 'users' }));
       return;
     }
 
@@ -428,19 +429,19 @@ export default function Users() {
       
       if (result.success) {
         showSuccess(
-          t('users:messages.test_user_deleted'),
+          t('messages.test_user_deleted', { ns: 'users' }),
           result.alreadyDeleted 
-            ? t('users:messages.test_user_already_deleted')
-            : t('users:messages.test_user_deleted_success')
+            ? t('messages.test_user_already_deleted', { ns: 'users' })
+            : t('messages.test_user_deleted_success', { ns: 'users' })
         );
         // Recargar la lista de usuarios
         fetchUsers();
       } else {
-        showError(result.error || t('users:messages.test_user_delete_error'));
+        showError(result.error || t('messages.test_user_delete_error', { ns: 'users' }));
       }
     } catch (error: any) {
       console.error('Error deleting test user:', error);
-      showError(error.message || t('users:messages.test_user_delete_unexpected'));
+      showError(error.message || t('messages.test_user_delete_unexpected', { ns: 'users' }));
     } finally {
       setDeletingTestUser(false);
     }
@@ -525,12 +526,12 @@ export default function Users() {
     };
     
     if (!cleanedForm.email || !cleanedForm.role) {
-      showError(t('users:messages.email_required'));
+      showError(t('messages.email_required', { ns: 'users' }));
       return;
     }
 
     if (!userRole?.company_id) {
-      showError(t('users:messages.company_info_error'));
+      showError(t('messages.company_info_error', { ns: 'users' }));
       return;
     }
 
@@ -586,8 +587,8 @@ export default function Users() {
         : cleanedForm.email;
 
       showSuccess(
-        t('users:messages.invitation_sent'),
-        t('users:messages.invitation_sent_description', { name: displayName })
+        t('messages.invitation_sent', { ns: 'users' }),
+        t('messages.invitation_sent_description', { name: displayName, ns: 'users' })
       );
       setInviteDialogOpen(false);
       setInviteForm({ email: '', role: '', first_name: '', last_name: '' });
@@ -603,7 +604,7 @@ export default function Users() {
       
     } catch (error: any) {
       console.error('Error inviting user:', error);
-      showError(error.message || t('users:messages.error_inviting'));
+      showError(error.message || t('messages.error_inviting', { ns: 'users' }));
     } finally {
       setLoading(false);
     }
@@ -612,11 +613,11 @@ export default function Users() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">{t('users:status.active')}</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">{t('status.active', { ns: 'users' })}</Badge>;
       case 'pending':
-        return <Badge variant="secondary">{t('users:status.pending')}</Badge>;
+        return <Badge variant="secondary">{t('status.pending', { ns: 'users' })}</Badge>;
       case 'inactive':
-        return <Badge variant="destructive">{t('users:status.inactive')}</Badge>;
+        return <Badge variant="destructive">{t('status.inactive', { ns: 'users' })}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -696,18 +697,19 @@ export default function Users() {
       {/* Page Toolbar */}
       <PageToolbar
         icon={UsersIcon}
-        title={t('users:page.title')}
-        subtitle={t('users:page.subtitle_template', { 
+        title={t('page.title', { ns: 'users' })}
+        subtitle={t('page.subtitle_template', { 
           count: filteredUsers.length, 
           active: filteredUsers.filter(u => u.status === 'active').length,
-          roles: new Set(filteredUsers.map(u => u.role)).size 
+          roles: new Set(filteredUsers.map(u => u.role)).size,
+          ns: 'users'
         })}
         actions={
           <div className="flex items-center gap-2">
             <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
               <UserPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('users:actions.invite_user')}</span>
-              <span className="sm:hidden">{t('users:actions.invite')}</span>
+              <span className="hidden sm:inline">{t('actions.invite_user', { ns: 'users' })}</span>
+              <span className="sm:hidden">{t('actions.invite', { ns: 'users' })}</span>
             </Button>
           </div>
         }
@@ -742,7 +744,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.total_users')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.total_users', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-blue-100 rounded-full">
@@ -756,7 +758,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.active_users')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.active_users', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.activeUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-green-100 rounded-full">
@@ -770,7 +772,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.pending_invitations')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.pending_invitations', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-orange-100 rounded-full">
@@ -784,7 +786,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.recent_users')}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('stats.recent_users', { ns: 'users' })}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-purple-100 rounded-full">
@@ -805,14 +807,14 @@ export default function Users() {
             <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
               <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
                 <UserCheck className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('users:tabs.all_users')}</span>
-                <span className="sm:hidden">{t('users:tabs.all')}</span>
+                <span className="hidden sm:inline">{t('tabs.all_users', { ns: 'users' })}</span>
+                <span className="sm:hidden">{t('tabs.all', { ns: 'users' })}</span>
                 <span className="ml-1">({filteredUsers.length})</span>
               </TabsTrigger>
               <TabsTrigger value="pending" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
                 <UserX className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">{t('users:tabs.pending_activation')}</span>
-                <span className="sm:hidden">{t('users:tabs.pending')}</span>
+                <span className="hidden sm:inline">{t('tabs.pending_activation', { ns: 'users' })}</span>
+                <span className="sm:hidden">{t('tabs.pending', { ns: 'users' })}</span>
                 <span className="ml-1">({pendingUsers.length})</span>
               </TabsTrigger>
             </TabsList>
@@ -821,7 +823,7 @@ export default function Users() {
               <Card className="bg-white">
                 <CardHeader>
                   <CardDescription>
-                    {t('users:tabs.all_description')}
+                    {t('tabs.all_description', { ns: 'users' })}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -829,13 +831,13 @@ export default function Users() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>{t('users:table.headers.user')}</TableHead>
-                          <TableHead>{t('users:table.headers.email')}</TableHead>
-                          <TableHead>{t('users:table.headers.phone')}</TableHead>
-                          <TableHead>{t('users:table.headers.role')}</TableHead>
-                          <TableHead>{t('users:table.headers.status')}</TableHead>
-                          <TableHead>{t('users:table.headers.registration_date')}</TableHead>
-                          <TableHead className="text-right">{t('users:table.headers.actions')}</TableHead>
+                          <TableHead>{t('table.headers.user', { ns: 'users' })}</TableHead>
+                          <TableHead>{t('table.headers.email', { ns: 'users' })}</TableHead>
+                          <TableHead>{t('table.headers.phone', { ns: 'users' })}</TableHead>
+                          <TableHead>{t('table.headers.role', { ns: 'users' })}</TableHead>
+                          <TableHead>{t('table.headers.status', { ns: 'users' })}</TableHead>
+                          <TableHead>{t('table.headers.registration_date', { ns: 'users' })}</TableHead>
+                          <TableHead className="text-right">{t('table.headers.actions', { ns: 'users' })}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -862,13 +864,13 @@ export default function Users() {
                                <p className="font-medium">
                                  {user.first_name && user.last_name
                                    ? `${user.first_name} ${user.last_name}`
-                                   : t('users:table.no_name')}
+                                   : t('table.no_name', { ns: 'users' })}
                                </p>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.phone || t('users:table.no_phone')}</TableCell>
+                        <TableCell>{user.phone || t('table.no_phone', { ns: 'users' })}</TableCell>
                          <TableCell>
                            {user.role.split(', ').map((roleLabel, index) => {
                               // Convertir el label de vuelta al rol original para obtener el badge correcto
@@ -970,18 +972,18 @@ export default function Users() {
                              <p className="font-medium">
                                {user.first_name && user.last_name
                                  ? `${user.first_name} ${user.last_name}`
-                                 : t('users:table.no_name')}
+                                 : t('table.no_name', { ns: 'users' })}
                              </p>
                             <p className="text-sm text-muted-foreground">{user.email}</p>
                           </div>
                         </div>
                            <div className="space-y-2">
                              <div className="flex justify-between items-center">
-                               <span className="text-sm text-muted-foreground">{t('users:cards.phone')}</span>
-                               <span className="text-sm">{user.phone || t('users:table.no_phone')}</span>
+                               <span className="text-sm text-muted-foreground">{t('cards.phone', { ns: 'users' })}</span>
+                               <span className="text-sm">{user.phone || t('table.no_phone', { ns: 'users' })}</span>
                              </div>
                              <div className="flex justify-between items-center">
-                               <span className="text-sm text-muted-foreground">{t('users:cards.role')}</span>
+                               <span className="text-sm text-muted-foreground">{t('cards.role', { ns: 'users' })}</span>
                                <div className="flex flex-wrap gap-1">
                                   {user.role.split(', ').map((roleLabel, index) => {
                                     // Convertir el label de vuelta al rol original para obtener el badge correcto
@@ -999,11 +1001,11 @@ export default function Users() {
                                </div>
                              </div>
                              <div className="flex justify-between items-center">
-                               <span className="text-sm text-muted-foreground">{t('users:cards.status')}</span>
+                               <span className="text-sm text-muted-foreground">{t('cards.status', { ns: 'users' })}</span>
                                {getStatusBadge(user.status)}
                              </div>
                              <div className="flex justify-between items-center">
-                               <span className="text-sm text-muted-foreground">{t('users:cards.registration')}</span>
+                               <span className="text-sm text-muted-foreground">{t('cards.registration', { ns: 'users' })}</span>
                                <span className="text-sm">{formatDateAuto(user.created_at)}</span>
                              </div>
                            </div>
@@ -1017,7 +1019,7 @@ export default function Users() {
                               }}
                              >
                                <Eye className="h-4 w-4 mr-2" />
-                               {t('users:actions.view')}
+                               {t('actions.view', { ns: 'users' })}
                              </Button>
                             
                             {/* Botón de editar conductor para vista de tarjetas */}
@@ -1032,7 +1034,7 @@ export default function Users() {
                                 }}
                                >
                                  <Truck className="h-4 w-4 mr-2" />
-                                 {t('users:actions.driver')}
+                                 {t('actions.driver', { ns: 'users' })}
                                </Button>
                             )}
                             
@@ -1045,7 +1047,7 @@ export default function Users() {
                               }}
                              >
                                <Edit className="h-4 w-4 mr-2" />
-                               {t('users:actions.edit')}
+                               {t('actions.edit', { ns: 'users' })}
                              </Button>
                             
                             {/* Botón de acciones de usuario para vista de tarjetas */}
@@ -1067,8 +1069,8 @@ export default function Users() {
           
           <TabsContent value="pending" className="space-y-6">
             <PendingInvitationsSection 
-              title={t('users:tabs.pending_title')}
-              description={t('users:tabs.pending_description')}
+              title={t('tabs.pending_title', { ns: 'users' })}
+              description={t('tabs.pending_description', { ns: 'users' })}
               onInvitationsUpdated={fetchUsers}
             />
           </TabsContent>
@@ -1080,48 +1082,48 @@ export default function Users() {
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
         <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
           <DialogHeader>
-            <DialogTitle>{t('users:invite_dialog.title')}</DialogTitle>
+            <DialogTitle>{t('invite_dialog.title', { ns: 'users' })}</DialogTitle>
             <DialogDescription>
-              {t('users:invite_dialog.description')}
+              {t('invite_dialog.description', { ns: 'users' })}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleInviteUser} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name">{t('users:invite_dialog.form.first_name')}</Label>
+                <Label htmlFor="first_name">{t('invite_dialog.form.first_name', { ns: 'users' })}</Label>
                 <Input
                   id="first_name"
                   value={inviteForm.first_name}
                   onChange={(e) => setInviteForm({ ...inviteForm, first_name: e.target.value })}
-                  placeholder={t('users:invite_dialog.form.first_name_placeholder')}
+                  placeholder={t('invite_dialog.form.first_name_placeholder', { ns: 'users' })}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">{t('users:invite_dialog.form.last_name')}</Label>
+                <Label htmlFor="last_name">{t('invite_dialog.form.last_name', { ns: 'users' })}</Label>
                 <Input
                   id="last_name"
                   value={inviteForm.last_name}
                   onChange={(e) => setInviteForm({ ...inviteForm, last_name: e.target.value })}
-                  placeholder={t('users:invite_dialog.form.last_name_placeholder')}
+                  placeholder={t('invite_dialog.form.last_name_placeholder', { ns: 'users' })}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">{t('users:invite_dialog.form.email')}</Label>
+              <Label htmlFor="email">{t('invite_dialog.form.email', { ns: 'users' })}</Label>
               <Input
                 id="email"
                 type="email"
                 value={inviteForm.email}
                 onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
-                placeholder={t('users:invite_dialog.form.email_placeholder')}
+                placeholder={t('invite_dialog.form.email_placeholder', { ns: 'users' })}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="role">{t('users:invite_dialog.form.role')}</Label>
+              <Label htmlFor="role">{t('invite_dialog.form.role', { ns: 'users' })}</Label>
               <Select value={inviteForm.role} onValueChange={(value) => setInviteForm({ ...inviteForm, role: value })}>
                 <SelectTrigger>
-                  <SelectValue placeholder={t('users:invite_dialog.form.role_placeholder')} />
+                  <SelectValue placeholder={t('invite_dialog.form.role_placeholder', { ns: 'users' })} />
                 </SelectTrigger>
                 <SelectContent>
                   {ROLE_OPTIONS.map((option) => (
@@ -1134,10 +1136,10 @@ export default function Users() {
             </div>
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
-                {t('users:actions.cancel')}
+                {t('actions.cancel', { ns: 'users' })}
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? t('users:invite_dialog.sending') : t('users:invite_dialog.send_invitation')}
+                {loading ? t('invite_dialog.sending', { ns: 'users' }) : t('invite_dialog.send_invitation', { ns: 'users' })}
               </Button>
             </div>
           </form>
@@ -1168,7 +1170,7 @@ export default function Users() {
                 <h2 className="text-xl font-semibold">
                   {selectedUser?.first_name && selectedUser.last_name
                     ? `${selectedUser.first_name} ${selectedUser.last_name}`
-                    : t('users:view_dialog.no_name')}
+                    : t('view_dialog.no_name', { ns: 'users' })}
                 </h2>
                 <p className="text-muted-foreground">{selectedUser?.email}</p>
               </div>
