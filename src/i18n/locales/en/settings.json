@@ -1,0 +1,102 @@
+{
+  "title": "Settings",
+  "subtitle": "Manage your profile, company, and system preferences",
+  "loading": "Loading settings...",
+  "tabs": {
+    "profile": "Profile",
+    "company": "Company", 
+    "system": "System",
+    "interface": "Interface",
+    "notifications": "Notifications"
+  },
+  "profile": {
+    "phone": "Phone",
+    "language": "Language",
+    "timezone": "Timezone", 
+    "address": "Address",
+    "not_specified": "Not specified",
+    "english": "English",
+    "spanish": "Spanish"
+  },
+  "system": {
+    "title": "System Configuration",
+    "security": {
+      "title": "Security & Access",
+      "description": "Security settings and access control for your company.",
+      "configure": "Configure Security"
+    },
+    "integrations": {
+      "title": "Integrations", 
+      "description": "Configure integrations with external systems like Geotab, accounting, etc.",
+      "manage": "Manage Integrations"
+    },
+    "coming_soon": {
+      "title": "Coming Soon",
+      "automatic_backups": "Automatic backup configuration",
+      "audit_config": "Audit configuration", 
+      "api_config": "API configuration"
+    }
+  },
+  "interface": {
+    "title": "Interface Customization",
+    "theme": {
+      "title": "Application Theme",
+      "description": "Choose between light, dark or automatic mode according to your preference.",
+      "light": "Light",
+      "dark": "Dark", 
+      "auto": "Automatic"
+    },
+    "coming_soon": {
+      "title": "Coming Soon",
+      "color_customization": "Color customization",
+      "dashboard_config": "Dashboard configuration",
+      "custom_widgets": "Custom widgets",
+      "language_localization": "Language and localization"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "email": {
+      "title": "Email Notifications",
+      "description": "Receive important alerts and updates via email.",
+      "new_loads": "New loads and assignments",
+      "maintenance_alerts": "Vehicle maintenance alerts",
+      "document_expiration": "Document expiration alerts",
+      "weekly_reports": "Weekly reports"
+    },
+    "push": {
+      "title": "Push Notifications",
+      "description": "Receive real-time notifications on this device.",
+      "instant_alerts": "Instant alerts",
+      "load_updates": "Load status updates",
+      "driver_check_ins": "Driver check-ins",
+      "emergency_alerts": "Emergency alerts"
+    },
+    "coming_soon": {
+      "title": "Coming Soon",
+      "sms_notifications": "SMS notifications",
+      "custom_alerts": "Custom alert rules",
+      "notification_schedule": "Notification schedule"
+    }
+  },
+  "password": {
+    "current": "Current Password",
+    "new": "New Password", 
+    "confirm": "Confirm New Password",
+    "change": "Change Password",
+    "changing": "Changing...",
+    "updated_title": "Password Updated",
+    "updated_message": "Your password has been changed securely.",
+    "error_title": "Error changing password",
+    "error_message": "Could not change password.",
+    "current_incorrect": "The current password entered is incorrect. Please verify it.",
+    "required": "Current password is required",
+    "min_length": "New password must be at least 6 characters",
+    "confirm_required": "Confirm the new password", 
+    "no_match": "Passwords do not match"
+  },
+  "error": {
+    "title": "Error",
+    "company_load_failed": "Could not load company information."
+  }
+}

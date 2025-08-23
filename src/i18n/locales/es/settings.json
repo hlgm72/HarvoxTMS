@@ -1,0 +1,102 @@
+{
+  "title": "Configuración",
+  "subtitle": "Gestiona tu perfil, empresa y preferencias del sistema",
+  "loading": "Cargando configuración...",
+  "tabs": {
+    "profile": "Perfil",
+    "company": "Empresa", 
+    "system": "Sistema",
+    "interface": "Interfaz",
+    "notifications": "Notificaciones"
+  },
+  "profile": {
+    "phone": "Teléfono",
+    "language": "Idioma",
+    "timezone": "Zona horaria", 
+    "address": "Dirección",
+    "not_specified": "No especificado",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "system": {
+    "title": "Configuración del Sistema",
+    "security": {
+      "title": "Seguridad y Acceso",
+      "description": "Configuraciones de seguridad y control de acceso para tu empresa.",
+      "configure": "Configurar Seguridad"
+    },
+    "integrations": {
+      "title": "Integraciones", 
+      "description": "Configura integraciones con sistemas externos como Geotab, contabilidad, etc.",
+      "manage": "Gestionar Integraciones"
+    },
+    "coming_soon": {
+      "title": "Próximamente",
+      "automatic_backups": "Configuración de backups automáticos",
+      "audit_config": "Configuración de auditoría", 
+      "api_config": "Configuración de API"
+    }
+  },
+  "interface": {
+    "title": "Personalización de la Interfaz",
+    "theme": {
+      "title": "Tema de la Aplicación",
+      "description": "Elige entre modo claro, oscuro o automático según tu preferencia.",
+      "light": "Claro",
+      "dark": "Oscuro", 
+      "auto": "Automático"
+    },
+    "coming_soon": {
+      "title": "Próximamente",
+      "color_customization": "Personalización de colores",
+      "dashboard_config": "Configuración de dashboard",
+      "custom_widgets": "Widgets personalizados",
+      "language_localization": "Idioma y localización"
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "email": {
+      "title": "Notificaciones por Email",
+      "description": "Recibe alertas importantes y actualizaciones por correo electrónico.",
+      "new_loads": "Nuevas cargas y asignaciones",
+      "maintenance_alerts": "Alertas de mantenimiento de vehículos",
+      "document_expiration": "Alertas de vencimiento de documentos",
+      "weekly_reports": "Reportes semanales"
+    },
+    "push": {
+      "title": "Notificaciones Push",
+      "description": "Recibe notificaciones en tiempo real en este dispositivo.",
+      "instant_alerts": "Alertas instantáneas",
+      "load_updates": "Actualizaciones de estado de cargas",
+      "driver_check_ins": "Check-ins de conductores",
+      "emergency_alerts": "Alertas de emergencia"
+    },
+    "coming_soon": {
+      "title": "Próximamente",
+      "sms_notifications": "Notificaciones SMS",
+      "custom_alerts": "Reglas de alerta personalizadas",
+      "notification_schedule": "Horarios de notificación"
+    }
+  },
+  "password": {
+    "current": "Contraseña Actual",
+    "new": "Nueva Contraseña", 
+    "confirm": "Confirmar Nueva Contraseña",
+    "change": "Cambiar Contraseña",
+    "changing": "Cambiando...",
+    "updated_title": "Contraseña actualizada",
+    "updated_message": "Su contraseña ha sido modificada de manera segura.",
+    "error_title": "Error al cambiar contraseña",
+    "error_message": "No se pudo cambiar la contraseña.",
+    "current_incorrect": "La contraseña actual ingresada es incorrecta. Por favor, verifíquela.",
+    "required": "La contraseña actual es requerida",
+    "min_length": "La nueva contraseña debe tener al menos 6 caracteres",
+    "confirm_required": "Confirma la nueva contraseña", 
+    "no_match": "Las contraseñas no coinciden"
+  },
+  "error": {
+    "title": "Error",
+    "company_load_failed": "No se pudo cargar la información de la empresa."
+  }
+}

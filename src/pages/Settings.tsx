@@ -27,20 +27,24 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
 
-// Schema para contraseña
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'La contraseña actual es requerida'),
-  newPassword: z.string().min(6, 'La nueva contraseña debe tener al menos 6 caracteres'),
-  confirmPassword: z.string().min(1, 'Confirma la nueva contraseña'),
+// Schema para contraseña - will be created dynamically with translations
+const createPasswordSchema = (t: any) => z.object({
+  currentPassword: z.string().min(1, t('password.required')),
+  newPassword: z.string().min(6, t('password.min_length')),
+  confirmPassword: z.string().min(1, t('password.confirm_required')),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Las contraseñas no coinciden",
+  message: t('password.no_match'),
   path: ["confirmPassword"],
 });
 
-type PasswordFormData = z.infer<typeof passwordSchema>;
+type PasswordFormData = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
 
 export default function Settings() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('settings');
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, loading: profileLoading, refreshProfile } = useUserProfile();
@@ -50,6 +54,9 @@ export default function Settings() {
   const [companyInfo, setCompanyInfo] = useState<Company | null>(null);
   const [changingPassword, setChangingPassword] = useState(false);
   
+
+  // Create password schema with translations
+  const passwordSchema = createPasswordSchema(t);
 
   // Form para contraseña
   const passwordForm = useForm<PasswordFormData>({
@@ -86,8 +93,8 @@ export default function Settings() {
     } catch (error) {
       console.error('Error fetching company data:', error);
       showError(
-        "Error",
-        "No se pudo cargar la información de la empresa."
+        t('error.title'),
+        t('error.company_load_failed')
       );
     } finally {
       setLoading(false);
@@ -104,7 +111,7 @@ export default function Settings() {
       });
 
       if (signInError) {
-        throw new Error('La contraseña actual ingresada es incorrecta. Por favor, verifíquela.');
+        throw new Error(t('password.current_incorrect'));
       }
 
       // Update password
@@ -115,15 +122,15 @@ export default function Settings() {
       if (updateError) throw updateError;
 
       showSuccess(
-        "Contraseña actualizada",
-        "Su contraseña ha sido modificada de manera segura."
+        t('password.updated_title'),
+        t('password.updated_message')
       );
 
       passwordForm.reset();
     } catch (error: any) {
       showError(
-        "Error al cambiar contraseña",
-        error.message || "No se pudo cambiar la contraseña."
+        t('password.error_title'),
+        error.message || t('password.error_message')
       );
     } finally {
       setChangingPassword(false);
@@ -136,7 +143,7 @@ export default function Settings() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Cargando configuración...</p>
+            <p className="mt-2 text-muted-foreground">{t('loading')}</p>
           </div>
         </div>
       </div>
@@ -147,8 +154,8 @@ export default function Settings() {
     <div className="p-2 md:p-4">
       <PageToolbar 
         icon={SettingsIcon}
-        title={t('settings.title')}
-        subtitle={t('settings.subtitle')}
+        title={t('title')}
+        subtitle={t('subtitle')}
       />
       <div className="min-h-screen bg-gradient-subtle">
         {/* Content */}
@@ -160,40 +167,40 @@ export default function Settings() {
               className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.profile')}</span>
-              <span className="sm:hidden">Perfil</span>
+              <span className="hidden sm:inline">{t('tabs.profile')}</span>
+              <span className="sm:hidden">{t('tabs.profile')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="company"
               className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Building className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.company')}</span>
-              <span className="sm:hidden">Empresa</span>
+              <span className="hidden sm:inline">{t('tabs.company')}</span>
+              <span className="sm:hidden">{t('tabs.company')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="system"
               className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Database className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.system')}</span>
-              <span className="sm:hidden">Sistema</span>
+              <span className="hidden sm:inline">{t('tabs.system')}</span>
+              <span className="sm:hidden">{t('tabs.system')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="interface"
               className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Palette className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.interface')}</span>
-              <span className="sm:hidden">Interfaz</span>
+              <span className="hidden sm:inline">{t('tabs.interface')}</span>
+              <span className="sm:hidden">{t('tabs.interface')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="notifications"
               className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">{t('settings.tabs.notifications')}</span>
-              <span className="sm:hidden">Notif</span>
+              <span className="hidden sm:inline">{t('tabs.notifications')}</span>
+              <span className="sm:hidden">{t('tabs.notifications')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -222,21 +229,21 @@ export default function Settings() {
                   <CardContent className="space-y-4">
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-muted-foreground">Teléfono:</span>
-                        <span className="font-medium">{profile?.phone || 'No especificado'}</span>
+                        <span className="text-muted-foreground">{t('profile.phone')}:</span>
+                        <span className="font-medium">{profile?.phone || t('profile.not_specified')}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-muted-foreground">Idioma:</span>
-                        <span className="font-medium">{preferences?.preferred_language === 'es' ? 'Español' : 'English'}</span>
+                        <span className="text-muted-foreground">{t('profile.language')}:</span>
+                        <span className="font-medium">{preferences?.preferred_language === 'es' ? t('profile.spanish') : t('profile.english')}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span className="text-muted-foreground">Zona horaria:</span>
+                        <span className="text-muted-foreground">{t('profile.timezone')}:</span>
                         <span className="font-medium">{preferences?.timezone || 'America/New_York'}</span>
                       </div>
                       {(profile?.street_address || profile?.zip_code) && (
                         <div className="pt-4 border-t border-gray-200">
                           <div className="flex flex-col gap-2">
-                            <span className="text-muted-foreground font-medium">Dirección:</span>
+                            <span className="text-muted-foreground font-medium">{t('profile.address')}:</span>
                             <div className="text-foreground text-sm leading-relaxed">
                               {profile?.street_address && (
                                 <div className="mb-1">{profile.street_address}</div>
@@ -278,7 +285,7 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="h-5 w-5 text-primary" />
-                  Configuración del Sistema
+                  {t('system.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -287,13 +294,13 @@ export default function Settings() {
                   <div className="p-4 border rounded-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <Shield className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">Seguridad y Acceso</h4>
+                      <h4 className="font-semibold">{t('system.security.title')}</h4>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Configuraciones de seguridad y control de acceso para tu empresa.
+                      {t('system.security.description')}
                     </p>
                     <Button variant="outline">
-                      Configurar Seguridad
+                      {t('system.security.configure')}
                     </Button>
                   </div>
 
@@ -301,23 +308,23 @@ export default function Settings() {
                   <div className="p-4 border rounded-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <Globe className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">Integraciones</h4>
+                      <h4 className="font-semibold">{t('system.integrations.title')}</h4>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Configura integraciones con sistemas externos como Geotab, contabilidad, etc.
+                      {t('system.integrations.description')}
                     </p>
                     <Button variant="outline">
-                      Gestionar Integraciones
+                      {t('system.integrations.manage')}
                     </Button>
                   </div>
 
                   {/* Próximamente */}
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Próximamente</h4>
+                    <h4 className="font-semibold mb-2">{t('system.coming_soon.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Configuración de backups automáticos</li>
-                      <li>• Configuración de auditoría</li>
-                      <li>• Configuración de API</li>
+                      <li>• {t('system.coming_soon.automatic_backups')}</li>
+                      <li>• {t('system.coming_soon.audit_config')}</li>
+                      <li>• {t('system.coming_soon.api_config')}</li>
                     </ul>
                   </div>
                 </div>
@@ -331,7 +338,7 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="h-5 w-5 text-primary" />
-                  Personalización de la Interfaz
+                  {t('interface.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -340,36 +347,36 @@ export default function Settings() {
                   <div className="p-4 border rounded-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <Monitor className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">Tema de la Aplicación</h4>
+                      <h4 className="font-semibold">{t('interface.theme.title')}</h4>
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Elige entre modo claro, oscuro o automático según tu preferencia.
+                      {t('interface.theme.description')}
                     </p>
                     
                     <div className="grid grid-cols-3 gap-4">
                       <button className="p-4 border rounded-lg hover:border-primary transition-colors">
                         <Sun className="h-6 w-6 mx-auto mb-2 text-yellow-500" />
-                        <p className="text-sm font-medium">Claro</p>
+                        <p className="text-sm font-medium">{t('interface.theme.light')}</p>
                       </button>
                       <button className="p-4 border rounded-lg hover:border-primary transition-colors border-primary bg-primary/5">
                         <Moon className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-                        <p className="text-sm font-medium">Oscuro</p>
+                        <p className="text-sm font-medium">{t('interface.theme.dark')}</p>
                       </button>
                       <button className="p-4 border rounded-lg hover:border-primary transition-colors">
                         <Monitor className="h-6 w-6 mx-auto mb-2 text-gray-500" />
-                        <p className="text-sm font-medium">Automático</p>
+                        <p className="text-sm font-medium">{t('interface.theme.auto')}</p>
                       </button>
                     </div>
                   </div>
 
                   {/* Próximamente */}
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Próximamente</h4>
+                    <h4 className="font-semibold mb-2">{t('interface.coming_soon.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Personalización de colores</li>
-                      <li>• Configuración de dashboard</li>
-                      <li>• Widgets personalizados</li>
-                      <li>• Idioma y localización</li>
+                      <li>• {t('interface.coming_soon.color_customization')}</li>
+                      <li>• {t('interface.coming_soon.dashboard_config')}</li>
+                      <li>• {t('interface.coming_soon.custom_widgets')}</li>
+                      <li>• {t('interface.coming_soon.language_localization')}</li>
                     </ul>
                   </div>
                 </div>
@@ -383,50 +390,68 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="h-5 w-5 text-primary" />
-                  Configuración de Notificaciones
+                  {t('notifications.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   <div className="p-4 border rounded-lg">
-                    <h4 className="font-semibold mb-3">Notificaciones por Email</h4>
+                    <h4 className="font-semibold mb-3">{t('notifications.email.title')}</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {t('notifications.email.description')}
+                    </p>
                     <div className="space-y-3">
                       <label className="flex items-center space-x-3">
                         <input type="checkbox" className="rounded" defaultChecked />
-                        <span className="text-sm">Reportes financieros semanales</span>
+                        <span className="text-sm">{t('notifications.email.weekly_reports')}</span>
                       </label>
                       <label className="flex items-center space-x-3">
                         <input type="checkbox" className="rounded" defaultChecked />
-                        <span className="text-sm">Alertas de vencimiento de documentos</span>
+                        <span className="text-sm">{t('notifications.email.document_expiration')}</span>
+                      </label>
+                      <label className="flex items-center space-x-3">
+                        <input type="checkbox" className="rounded" defaultChecked />
+                        <span className="text-sm">{t('notifications.email.new_loads')}</span>
                       </label>
                       <label className="flex items-center space-x-3">
                         <input type="checkbox" className="rounded" />
-                        <span className="text-sm">Notificaciones de carga completada</span>
+                        <span className="text-sm">{t('notifications.email.maintenance_alerts')}</span>
                       </label>
                     </div>
                   </div>
 
                   <div className="p-4 border rounded-lg">
-                    <h4 className="font-semibold mb-3">Notificaciones Push</h4>
+                    <h4 className="font-semibold mb-3">{t('notifications.push.title')}</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {t('notifications.push.description')}
+                    </p>
                     <div className="space-y-3">
                       <label className="flex items-center space-x-3">
                         <input type="checkbox" className="rounded" defaultChecked />
-                        <span className="text-sm">Emergencias y alertas críticas</span>
+                        <span className="text-sm">{t('notifications.push.emergency_alerts')}</span>
+                      </label>
+                      <label className="flex items-center space-x-3">
+                        <input type="checkbox" className="rounded" defaultChecked />
+                        <span className="text-sm">{t('notifications.push.instant_alerts')}</span>
                       </label>
                       <label className="flex items-center space-x-3">
                         <input type="checkbox" className="rounded" />
-                        <span className="text-sm">Nuevos mensajes y comunicaciones</span>
+                        <span className="text-sm">{t('notifications.push.load_updates')}</span>
+                      </label>
+                      <label className="flex items-center space-x-3">
+                        <input type="checkbox" className="rounded" />
+                        <span className="text-sm">{t('notifications.push.driver_check_ins')}</span>
                       </label>
                     </div>
                   </div>
 
                   {/* Próximamente */}
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Próximamente</h4>
+                    <h4 className="font-semibold mb-2">{t('notifications.coming_soon.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Notificaciones SMS</li>
-                      <li>• Configuración de horarios</li>
-                      <li>• Notificaciones personalizadas</li>
+                      <li>• {t('notifications.coming_soon.sms_notifications')}</li>
+                      <li>• {t('notifications.coming_soon.notification_schedule')}</li>
+                      <li>• {t('notifications.coming_soon.custom_alerts')}</li>
                     </ul>
                   </div>
                 </div>
