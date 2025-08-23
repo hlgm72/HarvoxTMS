@@ -546,7 +546,7 @@ export function ExpenseTemplateDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Vigente Desde</Label>
+              <Label>{t("deductions.labels.effective_from")}</Label>
               <Popover open={isFromDatePickerOpen} onOpenChange={setIsFromDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -588,7 +588,7 @@ export function ExpenseTemplateDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Vigente Hasta (Opcional)</Label>
+              <Label>{t("deductions.labels.effective_until")} (Opcional)</Label>
               <Popover open={isUntilDatePickerOpen} onOpenChange={setIsUntilDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button

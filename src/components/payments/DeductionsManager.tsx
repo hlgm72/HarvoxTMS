@@ -500,11 +500,11 @@ export function DeductionsManager({
                 {!isInactive && (
                   <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Vigente desde: {formatDateOnly(template.start_date)}</span>
+                      <span className="text-muted-foreground">{t("deductions.labels.valid_from")} {formatDateOnly(template.start_date)}</span>
                     </div>
                     {template.end_date && (
                       <div>
-                        <span className="text-muted-foreground">Vigente hasta: {formatDateOnly(template.end_date)}</span>
+                        <span className="text-muted-foreground">{t("deductions.labels.valid_until")} {formatDateOnly(template.end_date)}</span>
                       </div>
                     )}
                   </div>
@@ -512,7 +512,7 @@ export function DeductionsManager({
                 
                 {template.notes && (
                   <div className="mt-2 text-sm text-muted-foreground">
-                    <strong>Notas:</strong> {template.notes}
+                    <strong>{t("deductions.labels.notes")}</strong> {template.notes}
                   </div>
                 )}
               </CardContent>
@@ -529,23 +529,23 @@ export function DeductionsManager({
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
           <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Plantillas Activas</span>
-            <span className="sm:hidden">Activas</span>
+            <span className="hidden sm:inline">{t("deductions.tabs.active_templates")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.active_templates_short")}</span>
           </TabsTrigger>
           <TabsTrigger value="inactive" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Plantillas Inactivas</span>
-            <span className="sm:hidden">Inactivas</span>
+            <span className="hidden sm:inline">{t("deductions.tabs.inactive_templates")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.inactive_templates_short")}</span>
           </TabsTrigger>
           <TabsTrigger value="eventual" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Deducciones Eventuales</span>
-            <span className="sm:hidden">Eventuales</span>
+            <span className="hidden sm:inline">{t("deductions.tabs.eventual_deductions")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.eventual_deductions_short")}</span>
           </TabsTrigger>
           <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <History className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Historial</span>
-            <span className="sm:hidden">Historial</span>
+            <span className="hidden sm:inline">{t("deductions.tabs.history")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.history")}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -726,7 +726,7 @@ export function DeductionsManager({
                     
                     {reactivatingTemplate.notes && (
                       <div className="mt-3 pt-2 border-t">
-                        <span className="text-muted-foreground text-sm">Notas:</span>
+                        <span className="text-muted-foreground text-sm">{t("deductions.labels.notes")}</span>
                         <div className="text-sm mt-1">{reactivatingTemplate.notes}</div>
                       </div>
                     )}
@@ -826,7 +826,7 @@ export function DeductionsManager({
                     
                     {permanentlyDeletingTemplate.notes && (
                       <div className="mt-3 pt-2 border-t">
-                        <span className="text-muted-foreground text-sm">Notas:</span>
+                        <span className="text-muted-foreground text-sm">{t("deductions.labels.notes")}</span>
                         <div className="text-sm mt-1">{permanentlyDeletingTemplate.notes}</div>
                       </div>
                     )}

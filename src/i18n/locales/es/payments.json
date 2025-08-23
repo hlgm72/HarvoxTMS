@@ -113,9 +113,21 @@
       "states_title": "Estados de Deducción",
       "history_placeholder": "Próximamente: Historial de modificaciones en plantillas de deducción"
     },
-    "notifications": {
-      "success": "Éxito",
-      "error": "Error"
+    "tabs": {
+      "active_templates": "Plantillas Activas",
+      "active_templates_short": "Activas",
+      "inactive_templates": "Plantillas Inactivas", 
+      "inactive_templates_short": "Inactivas",
+      "eventual_deductions": "Deducciones Eventuales",
+      "eventual_deductions_short": "Eventuales",
+      "history": "Historial"
+    },
+    "labels": {
+      "valid_from": "Vigente desde:",
+      "valid_until": "Vigente hasta:",
+      "notes": "Notas:",
+      "effective_from": "Vigente Desde",
+      "effective_until": "Vigente Hasta"
     },
     "placeholders": {
       "year": "Año",
