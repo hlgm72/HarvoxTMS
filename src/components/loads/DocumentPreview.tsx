@@ -3,30 +3,7 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with a reliable CDN
-const configurePDFWorker = () => {
-  try {
-    // Use unpkg CDN which is more reliable for PDF.js worker files
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.js`;
-    console.log(`✅ PDF worker configured with version ${pdfjs.version}`);
-    return true;
-  } catch (error) {
-    console.error('❌ Failed to configure PDF worker:', error);
-    // Fallback to a known working version
-    try {
-      pdfjs.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/legacy/build/pdf.worker.js';
-      console.log('✅ PDF worker configured with fallback version');
-      return true;
-    } catch (fallbackError) {
-      console.error('❌ Fallback also failed:', fallbackError);
-      return false;
-    }
-  }
-};
-
-// Configure worker immediately and verify
-const workerConfigured = configurePDFWorker();
-console.log('PDF Worker configured successfully:', workerConfigured);
+// Configure PDF.js worker - this will be done inside the component
 
 interface DocumentPreviewProps {
   documentUrl: string;
@@ -46,6 +23,33 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState(false);
+
+  // Configure PDF.js worker when component mounts
+  useEffect(() => {
+    const configurePDFWorker = () => {
+      try {
+        if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+          // Use unpkg CDN which is more reliable for PDF.js worker files
+          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.js`;
+          console.log(`✅ PDF worker configured with version ${pdfjs.version}`);
+        }
+        return true;
+      } catch (error) {
+        console.error('❌ Failed to configure PDF worker:', error);
+        // Fallback to a known working version
+        try {
+          pdfjs.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/legacy/build/pdf.worker.js';
+          console.log('✅ PDF worker configured with fallback version');
+          return true;
+        } catch (fallbackError) {
+          console.error('❌ Fallback also failed:', fallbackError);
+          return false;
+        }
+      }
+    };
+
+    configurePDFWorker();
+  }, []);
 
   // Memoize PDF options to prevent unnecessary reloads
   const pdfOptions = useMemo(() => ({
@@ -152,7 +156,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      console.log('Attempting to render PDF preview:', { workerConfigured, pdfError, previewUrl });
+      console.log('Attempting to render PDF preview:', { pdfError, previewUrl });
       
       // Always try to render PDF first, fallback only if actual error occurs
       return (
