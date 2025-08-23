@@ -39,8 +39,8 @@ import {
 } from "@/components/ui/select";
 import { 
   Users as UsersIcon, Grid, List,
-  Activity, Clock, AlertCircle, TrendingUp, Search, Filter, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
-  Truck, UserCheck, UserX
+  Activity, Clock, AlertCircle, TrendingUp, Search, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
+  Truck, UserCheck, UserX, Filter, FileDown, Settings, BarChart3
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFleetNotifications } from "@/components/notifications";
@@ -56,7 +56,8 @@ import { UserActionButton } from "@/components/users/UserActionButton";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { UsersFloatingActions } from "@/components/users/UsersFloatingActions";
+import { GenericFloatingActions, FloatingActionConfig, FloatingActionSheet } from "@/components/ui/GenericFloatingActions";
+import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { formatDateAuto, getCurrentUTC } from '@/lib/dateFormatting';
 import { UserDetailsContent } from "@/components/users/UserDetailsContent";
@@ -1248,13 +1249,86 @@ export default function Users() {
         }}
       />
 
-      <UsersFloatingActions
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        roleFilter={roleFilter}
-        setRoleFilter={setRoleFilter}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
+      <GenericFloatingActions
+        actions={[
+          {
+            icon: Filter,
+            label: 'Filtros',
+            key: 'filters',
+            variant: 'default' as const
+          },
+          {
+            icon: FileDown,
+            label: 'Exportar',
+            key: 'export',
+            variant: 'default' as const
+          },
+          {
+            icon: Settings,
+            label: 'Vista',
+            key: 'view',
+            variant: 'default' as const
+          },
+          {
+            icon: BarChart3,
+            label: 'Stats',
+            key: 'stats',
+            variant: 'default' as const
+          }
+        ]}
+        sheets={[
+          {
+            key: 'filters',
+            title: 'Filtros de usuarios',
+            content: (
+              <UserFiltersSheet
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                roleFilter={roleFilter}
+                setRoleFilter={setRoleFilter}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+              />
+            )
+          },
+          {
+            key: 'export',
+            title: 'Exportar datos',
+            content: (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Exportar lista de usuarios en diferentes formatos
+                </p>
+                {/* Aquí irían las opciones de exportación */}
+              </div>
+            )
+          },
+          {
+            key: 'view',
+            title: 'Configurar vista',
+            content: (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Configurar cómo se muestran los usuarios
+                </p>
+                {/* Aquí irían las opciones de vista */}
+              </div>
+            )
+          },
+          {
+            key: 'stats',
+            title: 'Estadísticas',
+            content: (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Estadísticas de usuarios
+                </p>
+                {/* Aquí irían las estadísticas */}
+              </div>
+            )
+          }
+        ]}
+        position="bottom-right"
       />
     </div>
   );
