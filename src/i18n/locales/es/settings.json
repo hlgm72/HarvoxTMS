@@ -54,6 +54,88 @@
       "language_localization": "Idioma y localización"
     }
   },
+  "profile": {
+    "tabs": {
+      "personal_info": "Datos Personales",
+      "personal_info_short": "Datos", 
+      "preferences": "Preferencias",
+      "preferences_short": "Pref",
+      "driver": "Conductor",
+      "driver_short": "Cond",
+      "security": "Seguridad", 
+      "security_short": "Seg"
+    },
+    "personal_info": {
+      "title": "Información Personal",
+      "description": "Actualiza tu información personal y dirección",
+      "first_name": "Nombre",
+      "first_name_placeholder": "Tu nombre",
+      "last_name": "Apellido",
+      "last_name_placeholder": "Tu apellido", 
+      "phone": "Teléfono",
+      "phone_placeholder": "(555) 123-4567",
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios",
+      "saving": "Guardando...",
+      "success_title": "Perfil actualizado exitosamente",
+      "success_message": "Su información personal ha sido guardada correctamente.",
+      "error_title": "Error en la actualización",
+      "error_message": "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente.",
+      "company_created_title": "Empresa creada automáticamente", 
+      "company_created_message": "Se ha creado la empresa \"{{companyName}}\" y se le ha asignado como propietario.",
+      "user_not_found": "Usuario no encontrado",
+      "unknown_error": "Error desconocido",
+      "validation": {
+        "first_name_required": "El nombre es requerido",
+        "last_name_required": "El apellido es requerido"
+      }
+    },
+    "security": {
+      "title": "Seguridad de la Cuenta",
+      "description": "Actualiza tu contraseña para mantener tu cuenta segura",
+      "current_password": "Contraseña Actual",
+      "current_password_placeholder": "Tu contraseña actual",
+      "new_password": "Nueva Contraseña", 
+      "new_password_placeholder": "Nueva contraseña",
+      "new_password_description": "Debe tener al menos 6 caracteres",
+      "confirm_password": "Confirmar Nueva Contraseña",
+      "confirm_password_placeholder": "Confirma la nueva contraseña",
+      "change_password": "Cambiar Contraseña",
+      "changing": "Cambiando...",
+      "cancel": "Cancelar",
+      "success_title": "Contraseña actualizada exitosamente",
+      "success_message": "Su contraseña ha sido modificada de manera segura.",
+      "error_title": "Error al cambiar contraseña",
+      "error_message": "No se ha podido completar el cambio de contraseña. Por favor, verifique la información e inténtelo nuevamente.",
+      "current_incorrect": "La contraseña actual ingresada es incorrecta. Por favor, verifíquela.",
+      "validation": {
+        "current_required": "La contraseña actual es requerida",
+        "new_min_length": "La nueva contraseña debe tener al menos 6 caracteres", 
+        "confirm_required": "Confirma la nueva contraseña",
+        "no_match": "Las contraseñas no coinciden"
+      }
+    },
+    "driver": {
+      "emergency_contact": "Contacto de Emergencia",
+      "contact_name": "Nombre del Contacto",
+      "contact_name_placeholder": "Nombre completo del contacto de emergencia",
+      "contact_phone": "Teléfono del Contacto",
+      "contact_phone_placeholder": "(555) 123-4567",
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios",
+      "saving": "Guardando...",
+      "success_title": "Información de conductor actualizada",
+      "success_message": "Sus datos personales han sido guardados correctamente.",
+      "error_title": "Error en la actualización", 
+      "error_message": "No se ha podido completar la actualización. Por favor, inténtelo nuevamente.",
+      "user_not_found": "Usuario no encontrado",
+      "unknown_error": "Error desconocido"
+    }
+  },
+  "onboarding": {
+    "title": "Tour y Configuración Inicial",
+    "description": "¿Necesitas volver a ver el tour de bienvenida o el asistente de configuración? Puedes reactivarlos aquí."
+  },
   "notifications": {
     "title": "Notificaciones",
     "email": {

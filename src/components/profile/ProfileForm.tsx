@@ -6,6 +6,7 @@ import { SecurityForm } from './SecurityForm';
 import { DriverInfoForm } from './DriverInfoForm';
 import { IdCard, Settings, Shield, Truck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileFormProps {
   onCancel?: () => void;
@@ -16,6 +17,7 @@ interface ProfileFormProps {
 export function ProfileForm({ onCancel, showCancelButton = true, className }: ProfileFormProps) {
   const [activeTab, setActiveTab] = useState('profile');
   const { isDriver } = useAuth();
+  const { t } = useTranslation('settings');
 
   return (
     <div className={className}>
@@ -26,16 +28,16 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
             <IdCard className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Datos Personales</span>
-            <span className="sm:hidden">Datos</span>
+            <span className="hidden sm:inline">{t('profile.tabs.personal_info')}</span>
+            <span className="sm:hidden">{t('profile.tabs.personal_info_short')}</span>
           </TabsTrigger>
           <TabsTrigger 
             value="preferences" 
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
             <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Preferencias</span>
-            <span className="sm:hidden">Pref</span>
+            <span className="hidden sm:inline">{t('profile.tabs.preferences')}</span>
+            <span className="sm:hidden">{t('profile.tabs.preferences_short')}</span>
           </TabsTrigger>
           {isDriver && (
             <TabsTrigger 
@@ -43,8 +45,8 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
             >
               <Truck className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Conductor</span>
-              <span className="sm:hidden">Cond</span>
+              <span className="hidden sm:inline">{t('profile.tabs.driver')}</span>
+              <span className="sm:hidden">{t('profile.tabs.driver_short')}</span>
             </TabsTrigger>
           )}
           <TabsTrigger 
@@ -52,8 +54,8 @@ export function ProfileForm({ onCancel, showCancelButton = true, className }: Pr
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
           >
             <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Seguridad</span>
-            <span className="sm:hidden">Seg</span>
+            <span className="hidden sm:inline">{t('profile.tabs.security')}</span>
+            <span className="sm:hidden">{t('profile.tabs.security_short')}</span>
           </TabsTrigger>
         </TabsList>
 

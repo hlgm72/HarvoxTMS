@@ -12,6 +12,7 @@ import { Save, RotateCcw, Truck } from 'lucide-react';
 import { BirthDateInput } from '@/components/ui/BirthDateInput';
 import { createTextHandlers } from '@/lib/textUtils';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
+import { useTranslation } from 'react-i18next';
 
 const driverInfoSchema = z.object({
   emergency_contact_name: z.string().optional(),
@@ -54,6 +55,7 @@ interface LicenseData {
 export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useAuth();
+  const { t } = useTranslation('settings');
   const [updating, setUpdating] = useState(false);
   const [driverProfile, setDriverProfile] = useState<DriverProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -168,7 +170,7 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
   }, [user, driverInfoForm]);
 
   const saveDriverInfoData = async (data: DriverInfoFormData): Promise<{ success: boolean; error?: string }> => {
-    if (!user) return { success: false, error: 'Usuario no encontrado' };
+    if (!user) return { success: false, error: t('profile.driver.user_not_found') };
 
     try {
       // Check if driver profile exists
@@ -229,7 +231,7 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
 
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message || 'Error desconocido' };
+      return { success: false, error: error.message || t('profile.driver.unknown_error') };
     }
   };
 
@@ -239,16 +241,16 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
       const result = await saveDriverInfoData(data);
       if (result.success) {
         showSuccess(
-          "Información de conductor actualizada",
-          "Sus datos personales han sido guardados correctamente."
+          t('profile.driver.success_title'),
+          t('profile.driver.success_message')
         );
       } else {
         throw new Error(result.error);
       }
     } catch (error: any) {
       showError(
-        "Error en la actualización",
-        error.message || "No se ha podido completar la actualización. Por favor, inténtelo nuevamente."
+        t('profile.driver.error_title'),
+        error.message || t('profile.driver.error_message')
       );
     } finally {
       setUpdating(false);
@@ -338,7 +340,7 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
           />
 
           <div className="space-y-4 border-t pt-4">
-            <h4 className="text-sm font-medium text-muted-foreground">Contacto de Emergencia</h4>
+            <h4 className="text-sm font-medium text-muted-foreground">{t('profile.driver.emergency_contact')}</h4>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -346,10 +348,10 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
                 name="emergency_contact_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">Nombre del Contacto</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t('profile.driver.contact_name')}</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="Nombre completo del contacto de emergencia" 
+                        placeholder={t('profile.driver.contact_name_placeholder')} 
                         {...field} 
                         value={field.value || ''}
                       />
@@ -364,10 +366,10 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
                 name="emergency_contact_phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">Teléfono del Contacto</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t('profile.driver.contact_phone')}</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="(555) 123-4567"
+                        placeholder={t('profile.driver.contact_phone_placeholder')}
                         value={field.value || ''} 
                         {...phoneHandlers}
                       />
@@ -383,12 +385,12 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
             {showCancelButton && (
               <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Cancelar
+                {t('profile.driver.cancel')}
               </Button>
             )}
             <Button type="submit" disabled={updating} className="w-full sm:w-auto">
               <Save className="mr-2 h-4 w-4" />
-              {updating ? 'Guardando...' : 'Guardar Cambios'}
+              {updating ? t('profile.driver.saving') : t('profile.driver.save')}
             </Button>
           </div>
         </form>

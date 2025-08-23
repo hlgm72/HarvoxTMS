@@ -54,6 +54,88 @@
       "language_localization": "Language and localization"
     }
   },
+  "profile": {
+    "tabs": {
+      "personal_info": "Personal Data",
+      "personal_info_short": "Data", 
+      "preferences": "Preferences",
+      "preferences_short": "Pref",
+      "driver": "Driver",
+      "driver_short": "Drv",
+      "security": "Security", 
+      "security_short": "Sec"
+    },
+    "personal_info": {
+      "title": "Personal Information",
+      "description": "Update your personal information and address",
+      "first_name": "First Name",
+      "first_name_placeholder": "Your first name",
+      "last_name": "Last Name",
+      "last_name_placeholder": "Your last name", 
+      "phone": "Phone",
+      "phone_placeholder": "(555) 123-4567",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "success_title": "Profile updated successfully",
+      "success_message": "Your personal information has been saved correctly.",
+      "error_title": "Update error",
+      "error_message": "Could not complete the profile update. Please try again.",
+      "company_created_title": "Company created automatically", 
+      "company_created_message": "The company \"{{companyName}}\" has been created and you have been assigned as owner.",
+      "user_not_found": "User not found",
+      "unknown_error": "Unknown error",
+      "validation": {
+        "first_name_required": "First name is required",
+        "last_name_required": "Last name is required"
+      }
+    },
+    "security": {
+      "title": "Account Security",
+      "description": "Update your password to keep your account secure",
+      "current_password": "Current Password",
+      "current_password_placeholder": "Your current password",
+      "new_password": "New Password", 
+      "new_password_placeholder": "New password",
+      "new_password_description": "Must be at least 6 characters",
+      "confirm_password": "Confirm New Password",
+      "confirm_password_placeholder": "Confirm the new password",
+      "change_password": "Change Password",
+      "changing": "Changing...",
+      "cancel": "Cancel",
+      "success_title": "Password updated successfully",
+      "success_message": "Your password has been changed securely.",
+      "error_title": "Error changing password",
+      "error_message": "Could not complete the password change. Please verify the information and try again.",
+      "current_incorrect": "The current password entered is incorrect. Please verify it.",
+      "validation": {
+        "current_required": "Current password is required",
+        "new_min_length": "New password must be at least 6 characters", 
+        "confirm_required": "Confirm the new password",
+        "no_match": "Passwords do not match"
+      }
+    },
+    "driver": {
+      "emergency_contact": "Emergency Contact",
+      "contact_name": "Contact Name",
+      "contact_name_placeholder": "Full name of emergency contact",
+      "contact_phone": "Contact Phone",
+      "contact_phone_placeholder": "(555) 123-4567",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "success_title": "Driver information updated",
+      "success_message": "Your personal data has been saved correctly.",
+      "error_title": "Update error", 
+      "error_message": "Could not complete the update. Please try again.",
+      "user_not_found": "User not found",
+      "unknown_error": "Unknown error"
+    }
+  },
+  "onboarding": {
+    "title": "Tour and Initial Setup",
+    "description": "Need to see the welcome tour or setup assistant again? You can reactivate them here."
+  },
   "notifications": {
     "title": "Notifications",
     "email": {

@@ -16,9 +16,9 @@ import { useTranslation } from 'react-i18next';
 import { createTextHandlers } from '@/lib/textUtils';
 import { BirthDateInput } from '@/components/ui/BirthDateInput';
 
-const personalInfoSchema = z.object({
-  first_name: z.string().min(1, 'El nombre es requerido'),
-  last_name: z.string().min(1, 'El apellido es requerido'),
+const createPersonalInfoSchema = (t: any) => z.object({
+  first_name: z.string().min(1, t('profile.personal_info.validation.first_name_required')),
+  last_name: z.string().min(1, t('profile.personal_info.validation.last_name_required')),
   phone: z.string().optional(),
   date_of_birth: z.string().optional(),
   street_address: z.string().optional(),
@@ -27,7 +27,16 @@ const personalInfoSchema = z.object({
   zip_code: z.string().optional(),
 });
 
-type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
+type PersonalInfoFormData = {
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  date_of_birth?: string;
+  street_address?: string;
+  state_id?: string;
+  city?: string;
+  zip_code?: string;
+};
 
 interface PersonalInfoFormProps {
   onCancel?: () => void;
@@ -40,11 +49,14 @@ export interface PersonalInfoFormRef {
 }
 
 export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
-  const { t, i18n } = useTranslation(['common']);
+  const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, user, refreshProfile } = useUserProfile();
   const { refreshRoles } = useAuth();
   const [updating, setUpdating] = useState(false);
+
+  // Create schema with translations
+  const personalInfoSchema = createPersonalInfoSchema(t);
 
   // Create handlers for text inputs
   const nameHandlers = createTextHandlers((value) => 
@@ -154,7 +166,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
   }, [profile, personalInfoForm]);
 
   const savePersonalInfoData = async (data: PersonalInfoFormData): Promise<{ success: boolean; error?: string }> => {
-    if (!user) return { success: false, error: 'Usuario no encontrado' };
+    if (!user) return { success: false, error: t('profile.personal_info.user_not_found') };
 
     try {
       // Check if this is the user's first time completing their profile
@@ -225,8 +237,8 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
           } else {
             console.log('🎉 Default company created successfully:', companyResult);
             showSuccess(
-              "Empresa creada automáticamente",
-              `Se ha creado la empresa "${companyName}" y se le ha asignado como propietario.`
+              t('profile.personal_info.company_created_title'),
+              t('profile.personal_info.company_created_message', { companyName })
             );
             
             // Refresh user roles to update the auth context
@@ -238,7 +250,7 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
       await refreshProfile();
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message || 'Error desconocido' };
+      return { success: false, error: error.message || t('profile.personal_info.unknown_error') };
     }
   };
 
@@ -248,16 +260,16 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
       const result = await savePersonalInfoData(data);
       if (result.success) {
         showSuccess(
-          "Perfil actualizado exitosamente",
-          "Su información personal ha sido guardada correctamente."
+          t('profile.personal_info.success_title'),
+          t('profile.personal_info.success_message')
         );
       } else {
         throw new Error(result.error);
       }
     } catch (error: any) {
       showError(
-        "Error en la actualización",
-        error.message || "No se ha podido completar la actualización del perfil. Por favor, inténtelo nuevamente."
+        t('profile.personal_info.error_title'),
+        error.message || t('profile.personal_info.error_message')
       );
     } finally {
       setUpdating(false);
@@ -291,9 +303,9 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
   return (
     <div className={className}>
       <div className="mb-4">
-        <h3 className="text-base md:text-lg font-medium">Información Personal</h3>
+        <h3 className="text-base md:text-lg font-medium">{t('profile.personal_info.title')}</h3>
         <p className="text-xs md:text-sm text-muted-foreground">
-          Actualiza tu información personal y dirección
+          {t('profile.personal_info.description')}
         </p>
       </div>
       
@@ -305,9 +317,9 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
               name="first_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Nombre</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t('profile.personal_info.first_name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tu nombre" {...field} />
+                    <Input placeholder={t('profile.personal_info.first_name_placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -319,9 +331,9 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
               name="last_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Apellido</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t('profile.personal_info.last_name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tu apellido" {...field} />
+                    <Input placeholder={t('profile.personal_info.last_name_placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -335,10 +347,10 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">Teléfono</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t('profile.personal_info.phone')}</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="(555) 123-4567" 
+                      placeholder={t('profile.personal_info.phone_placeholder')} 
                       value={field.value || ''} 
                       {...phoneHandlers}
                     />
@@ -381,12 +393,12 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
             {showCancelButton && (
               <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Cancelar
+                {t('profile.personal_info.cancel')}
               </Button>
             )}
             <Button type="submit" disabled={updating} className="w-full sm:w-auto">
               <Save className="mr-2 h-4 w-4" />
-              {updating ? 'Guardando...' : 'Guardar Cambios'}
+              {updating ? t('profile.personal_info.saving') : t('profile.personal_info.save')}
             </Button>
           </div>
         </form>

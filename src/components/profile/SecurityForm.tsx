@@ -11,16 +11,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { Save, RotateCcw, KeyRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'La contraseña actual es requerida'),
-  newPassword: z.string().min(6, 'La nueva contraseña debe tener al menos 6 caracteres'),
-  confirmPassword: z.string().min(1, 'Confirma la nueva contraseña'),
+const createPasswordSchema = (t: any) => z.object({
+  currentPassword: z.string().min(1, t('profile.security.validation.current_required')),
+  newPassword: z.string().min(6, t('profile.security.validation.new_min_length')),
+  confirmPassword: z.string().min(1, t('profile.security.validation.confirm_required')),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Las contraseñas no coinciden",
+  message: t('profile.security.validation.no_match'),
   path: ["confirmPassword"],
 });
 
-type PasswordFormData = z.infer<typeof passwordSchema>;
+type PasswordFormData = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
 
 interface SecurityFormProps {
   onCancel?: () => void;
@@ -29,10 +33,13 @@ interface SecurityFormProps {
 }
 
 export function SecurityForm({ onCancel, showCancelButton = true, className }: SecurityFormProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useUserProfile();
   const [changingPassword, setChangingPassword] = useState(false);
+
+  // Create schema with translations
+  const passwordSchema = createPasswordSchema(t);
 
   const passwordForm = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
@@ -53,7 +60,7 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
       });
 
       if (signInError) {
-        throw new Error('La contraseña actual ingresada es incorrecta. Por favor, verifíquela.');
+        throw new Error(t('profile.security.current_incorrect'));
       }
 
       // Update password
@@ -64,15 +71,15 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
       if (updateError) throw updateError;
 
       showSuccess(
-        "Contraseña actualizada exitosamente",
-        "Su contraseña ha sido modificada de manera segura."
+        t('profile.security.success_title'),
+        t('profile.security.success_message')
       );
 
       passwordForm.reset();
     } catch (error: any) {
       showError(
-        "Error al cambiar contraseña",
-        error.message || "No se ha podido completar el cambio de contraseña. Por favor, verifique la información e inténtelo nuevamente."
+        t('profile.security.error_title'),
+        error.message || t('profile.security.error_message')
       );
     } finally {
       setChangingPassword(false);
@@ -91,9 +98,9 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
   return (
     <div className={className}>
       <div className="mb-4">
-        <h3 className="text-base md:text-lg font-medium">Seguridad de la Cuenta</h3>
+        <h3 className="text-base md:text-lg font-medium">{t('profile.security.title')}</h3>
         <p className="text-xs md:text-sm text-muted-foreground">
-          Actualiza tu contraseña para mantener tu cuenta segura
+          {t('profile.security.description')}
         </p>
       </div>
 
@@ -104,9 +111,9 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
             name="currentPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">Contraseña Actual</FormLabel>
+                <FormLabel className="text-sm font-medium">{t('profile.security.current_password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Tu contraseña actual" {...field} />
+                  <Input type="password" placeholder={t('profile.security.current_password_placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -118,12 +125,12 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
             name="newPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">Nueva Contraseña</FormLabel>
+                <FormLabel className="text-sm font-medium">{t('profile.security.new_password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Nueva contraseña" {...field} />
+                  <Input type="password" placeholder={t('profile.security.new_password_placeholder')} {...field} />
                 </FormControl>
                 <FormDescription className="text-xs">
-                  Debe tener al menos 6 caracteres
+                  {t('profile.security.new_password_description')}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -135,9 +142,9 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">Confirmar Nueva Contraseña</FormLabel>
+                <FormLabel className="text-sm font-medium">{t('profile.security.confirm_password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Confirma la nueva contraseña" {...field} />
+                  <Input type="password" placeholder={t('profile.security.confirm_password_placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -148,19 +155,19 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
             {showCancelButton && (
               <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                 <RotateCcw className="mr-2 h-4 w-4" />
-                Cancelar
+                {t('profile.security.cancel')}
               </Button>
             )}
             <Button type="submit" disabled={changingPassword} variant="secondary" className="w-full sm:w-auto">
               {changingPassword ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                  Cambiando...
+                  {t('profile.security.changing')}
                 </>
               ) : (
                 <>
                   <KeyRound className="mr-2 h-4 w-4" />
-                  Cambiar Contraseña
+                  {t('profile.security.change_password')}
                 </>
               )}
             </Button>
