@@ -76,13 +76,36 @@
       "title": "View Settings",
       "description": "Customize how data is displayed",
       "view": "View",
+      "sort_by": "Sort by",
+      "group_by": "Group by", 
+      "density": "Density",
+      "visible_info": "Visible Information",
       "options": {
         "sort": {
-          "date_desc": "Recent first",
-          "date_asc": "Oldest first", 
-          "amount_desc": "Higher amount first",
-          "amount_asc": "Lower amount first",
-          "status": "By status"
+          "date_desc": "Date (most recent)",
+          "date_asc": "Date (oldest)",
+          "amount_desc": "Amount (highest first)", 
+          "amount_asc": "Amount (lowest first)",
+          "status": "Status",
+          "priority": "Priority"
+        },
+        "group": {
+          "none": "No grouping",
+          "driver": "By driver",
+          "expense_type": "By expense type",
+          "status": "By status",
+          "month": "By month"
+        },
+        "density": {
+          "compact": "Compact",
+          "normal": "Normal", 
+          "comfortable": "Comfortable"
+        },
+        "visibility": {
+          "driver_info": "Driver Information",
+          "expense_type": "Expense Type",
+          "dates": "Dates",
+          "amounts": "Amounts"
         }
       }
     },

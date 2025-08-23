@@ -392,10 +392,10 @@ export function DeductionsFloatingActions({
             {activeTab === 'view' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Configuración de Vista</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.title')}</h3>
                   
                   <div className="space-y-2 mb-4">
-                    <label className="text-sm font-medium">Ordenar por</label>
+                    <label className="text-sm font-medium">{t('floating_actions.view.sort_by')}</label>
                     <Select 
                       value={viewConfig.sortBy} 
                       onValueChange={(value) => handleViewConfigChange("sortBy", value)}
@@ -404,18 +404,18 @@ export function DeductionsFloatingActions({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="date_desc">Fecha (más reciente)</SelectItem>
-                        <SelectItem value="date_asc">Fecha (más antigua)</SelectItem>
-                        <SelectItem value="amount_desc">Monto (mayor a menor)</SelectItem>
-                        <SelectItem value="amount_asc">Monto (menor a mayor)</SelectItem>
-                        <SelectItem value="status">Estado</SelectItem>
-                        <SelectItem value="priority">Prioridad</SelectItem>
+                        <SelectItem value="date_desc">{t('floating_actions.view.options.sort.date_desc')}</SelectItem>
+                        <SelectItem value="date_asc">{t('floating_actions.view.options.sort.date_asc')}</SelectItem>
+                        <SelectItem value="amount_desc">{t('floating_actions.view.options.sort.amount_desc')}</SelectItem>
+                        <SelectItem value="amount_asc">{t('floating_actions.view.options.sort.amount_asc')}</SelectItem>
+                        <SelectItem value="status">{t('floating_actions.view.options.sort.status')}</SelectItem>
+                        <SelectItem value="priority">{t('floating_actions.view.options.sort.priority')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    <label className="text-sm font-medium">Agrupar por</label>
+                    <label className="text-sm font-medium">{t('floating_actions.view.group_by')}</label>
                     <Select 
                       value={viewConfig.groupBy} 
                       onValueChange={(value) => handleViewConfigChange("groupBy", value)}
@@ -424,17 +424,17 @@ export function DeductionsFloatingActions({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">Sin agrupar</SelectItem>
-                        <SelectItem value="driver">Por conductor</SelectItem>
-                        <SelectItem value="expense_type">Por tipo de gasto</SelectItem>
-                        <SelectItem value="status">Por estado</SelectItem>
-                        <SelectItem value="month">Por mes</SelectItem>
+                        <SelectItem value="none">{t('floating_actions.view.options.group.none')}</SelectItem>
+                        <SelectItem value="driver">{t('floating_actions.view.options.group.driver')}</SelectItem>
+                        <SelectItem value="expense_type">{t('floating_actions.view.options.group.expense_type')}</SelectItem>
+                        <SelectItem value="status">{t('floating_actions.view.options.group.status')}</SelectItem>
+                        <SelectItem value="month">{t('floating_actions.view.options.group.month')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    <label className="text-sm font-medium">Densidad</label>
+                    <label className="text-sm font-medium">{t('floating_actions.view.density')}</label>
                     <Select 
                       value={viewConfig.density} 
                       onValueChange={(value) => handleViewConfigChange("density", value)}
@@ -443,9 +443,9 @@ export function DeductionsFloatingActions({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="compact">Compacta</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="comfortable">Confortable</SelectItem>
+                        <SelectItem value="compact">{t('floating_actions.view.options.density.compact')}</SelectItem>
+                        <SelectItem value="normal">{t('floating_actions.view.options.density.normal')}</SelectItem>
+                        <SelectItem value="comfortable">{t('floating_actions.view.options.density.comfortable')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -454,31 +454,31 @@ export function DeductionsFloatingActions({
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Información Visible</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.visible_info')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Información del Conductor</label>
+                      <label className="text-sm">{t('floating_actions.view.options.visibility.driver_info')}</label>
                       <Switch 
                         checked={viewConfig.showDriverInfo}
                         onCheckedChange={(checked) => handleViewConfigChange("showDriverInfo", checked)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Tipo de Gasto</label>
+                      <label className="text-sm">{t('floating_actions.view.options.visibility.expense_type')}</label>
                       <Switch 
                         checked={viewConfig.showExpenseType}
                         onCheckedChange={(checked) => handleViewConfigChange("showExpenseType", checked)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Fechas</label>
+                      <label className="text-sm">{t('floating_actions.view.options.visibility.dates')}</label>
                       <Switch 
                         checked={viewConfig.showDates}
                         onCheckedChange={(checked) => handleViewConfigChange("showDates", checked)}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Montos</label>
+                      <label className="text-sm">{t('floating_actions.view.options.visibility.amounts')}</label>
                       <Switch 
                         checked={viewConfig.showAmounts}
                         onCheckedChange={(checked) => handleViewConfigChange("showAmounts", checked)}

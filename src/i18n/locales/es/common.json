@@ -76,13 +76,36 @@
       "title": "Configuración de Vista",
       "description": "Personalizar cómo se muestran los datos",
       "view": "Vista",
+      "sort_by": "Ordenar por",
+      "group_by": "Agrupar por",
+      "density": "Densidad", 
+      "visible_info": "Información Visible",
       "options": {
         "sort": {
-          "date_desc": "Más recientes primero",
-          "date_asc": "Más antiguos primero",
-          "amount_desc": "Mayor monto primero", 
-          "amount_asc": "Menor monto primero",
-          "status": "Por estado"
+          "date_desc": "Fecha (más reciente)",
+          "date_asc": "Fecha (más antigua)",
+          "amount_desc": "Monto (mayor a menor)", 
+          "amount_asc": "Monto (menor a mayor)",
+          "status": "Estado",
+          "priority": "Prioridad"
+        },
+        "group": {
+          "none": "Sin agrupar",
+          "driver": "Por conductor",
+          "expense_type": "Por tipo de gasto",
+          "status": "Por estado",
+          "month": "Por mes"
+        },
+        "density": {
+          "compact": "Compacta",
+          "normal": "Normal",
+          "comfortable": "Confortable"
+        },
+        "visibility": {
+          "driver_info": "Información del Conductor",
+          "expense_type": "Tipo de Gasto",
+          "dates": "Fechas",
+          "amounts": "Montos"
         }
       }
     },
