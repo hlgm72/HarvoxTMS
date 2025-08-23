@@ -67,6 +67,15 @@
     }
   },
   "deductions": {
+    "title": "Gestión de Deducciones",
+    "loadingStats": "Cargando estadísticas...",
+    "activeTemplates": "plantillas activas",
+    "monthlyTotal": "total mensual",
+    "affectedDrivers": "conductores afectados",
+    "recurringDeduction": "Deducción Recurrente",
+    "recurringShort": "Recurrente",
+    "eventualDeduction": "Deducción Eventual",
+    "eventualShort": "Eventual",
     "create": "Crear Deducción",
     "eventual": {
       "create_title": "Crear Deducción Eventual",

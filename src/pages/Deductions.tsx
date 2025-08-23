@@ -62,31 +62,31 @@ export default function Deductions() {
   // Generar subtitle con datos reales
   const getSubtitle = () => {
     if (statsLoading || !stats) {
-      return "Cargando estadísticas...";
+      return t("payments.deductions.loadingStats");
     }
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
     
-    return `${activeTemplates} plantillas activas • $${formatCurrency(totalMonthlyAmount)} total mensual • ${affectedDrivers} conductores afectados`;
+    return `${activeTemplates} ${t("payments.deductions.activeTemplates")} • $${formatCurrency(totalMonthlyAmount)} ${t("payments.deductions.monthlyTotal")} • ${affectedDrivers} ${t("payments.deductions.affectedDrivers")}`;
   };
 
   return (
     <>
       <PageToolbar 
         icon={DollarSign}
-        title={t("deductions.title", "Gestión de Deducciones")}
+        title={t("payments.deductions.title")}
         subtitle={getSubtitle()}
         actions={
           <div className="flex gap-2">
             <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Repeat className="h-4 w-4" />
-              <span className="hidden sm:inline">Deducción Recurrente</span>
-              <span className="sm:hidden">Recurrente</span>
+              <span className="hidden sm:inline">{t("payments.deductions.recurringDeduction")}</span>
+              <span className="sm:hidden">{t("payments.deductions.recurringShort")}</span>
             </Button>
             <Button variant="outline" onClick={() => setIsEventualDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">Deducción Eventual</span>
-              <span className="sm:hidden">Eventual</span>
+              <span className="hidden sm:inline">{t("payments.deductions.eventualDeduction")}</span>
+              <span className="sm:hidden">{t("payments.deductions.eventualShort")}</span>
             </Button>
           </div>
         }
