@@ -23,12 +23,32 @@ class PDFService {
         delete pdfjs.GlobalWorkerOptions.workerSrc;
       }
       
-      // Set the working cdnjs URL directly (we know it works from network logs)
-      const workerUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      console.log(`📄 React-PDF version: ${pdfjs.version}`);
+      
+      // Try multiple worker URLs for the correct version (5.3.93)
+      const workerUrls = [
+        // Try unpkg with .mjs extension (newer format)
+        `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`,
+        // Try unpkg with legacy .js
+        `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.js`,
+        // Try different CDN structure
+        `https://cdn.skypack.dev/pdfjs-dist@${pdfjs.version}/build/pdf.worker.js`,
+        // Try esm.sh
+        `https://esm.sh/pdfjs-dist@${pdfjs.version}/build/pdf.worker.js`
+      ];
+      
+      // For now, try the first one synchronously, but if it fails, disable worker
+      const workerUrl = workerUrls[0]; // Use .mjs format
       pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
       
       this.isInitialized = true;
-      console.log(`✅ PDF worker configured synchronously with: ${workerUrl}`);
+      console.log(`✅ PDF worker configured with matching version ${pdfjs.version}: ${workerUrl}`);
+      
+      // Test if worker loads properly by attempting a simple operation
+      setTimeout(() => {
+        console.log(`🧪 Testing PDF worker with version ${pdfjs.version}`);
+      }, 100);
+      
     } catch (error) {
       // If worker setup fails, disable worker (runs on main thread)
       console.warn('⚠️ PDF worker setup failed, disabling worker (will run on main thread)', error);

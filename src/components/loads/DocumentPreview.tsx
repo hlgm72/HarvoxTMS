@@ -28,11 +28,11 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     pdfService.ensureWorker();
   }, []);
 
-  // Memoize PDF options to prevent unnecessary reloads
+  // Memoize PDF options to prevent unnecessary reloads  
   const pdfOptions = useMemo(() => ({
-    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+    cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
     cMapPacked: true,
-    standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/'
+    standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`
   }), []);
 
   useEffect(() => {
