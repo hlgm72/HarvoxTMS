@@ -253,7 +253,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           <Button 
             onClick={handleSave} 
             disabled={loading || !hasChanges}
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-colors"
+            variant="default"
           >
             <Save className="h-4 w-4 mr-2" />
             {loading ? t('company.settings.buttons.saving') : t('company.settings.buttons.save')}
