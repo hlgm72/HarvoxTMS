@@ -17,6 +17,90 @@
     "profile": "Profile",
     "logout": "Sign Out"
   },
+  "floating_actions": {
+    "title": "Actions",
+    "filters": {
+      "title": "Filters",
+      "description": "Filter data by different criteria",
+      "filters": "Filters",
+      "filters_active": "Filters (active)",
+      "applied_filters": "Applied Filters",
+      "clear": "Clear",
+      "status": "Status",
+      "driver": "Driver",
+      "broker": "Broker",
+      "period": "Period",
+      "date_range": "Date Range",
+      "placeholders": {
+        "status": "Select status",
+        "driver": "Select driver",
+        "broker": "Select broker", 
+        "period": "Select period",
+        "date_range": "Select date range",
+        "loading": "Loading..."
+      },
+      "options": {
+        "status": {
+          "all": "All statuses"
+        },
+        "driver": {
+          "all": "All drivers"
+        },
+        "broker": {
+          "all": "All brokers"
+        }
+      }
+    },
+    "export": {
+      "title": "Export Data",
+      "description": "Export data in different formats",
+      "export": "Export", 
+      "pdf": "Export to PDF",
+      "excel": "Export to Excel",
+      "options_title": "Export Options",
+      "include_filters": "Include current filters",
+      "visible_only": "Only visible data",
+      "include_stats": "Include statistics"
+    },
+    "view": {
+      "title": "View Settings",
+      "description": "Customize how data is displayed",
+      "view": "View",
+      "options": {
+        "sort": {
+          "date_desc": "Recent first",
+          "date_asc": "Oldest first", 
+          "amount_desc": "Higher amount first",
+          "amount_asc": "Lower amount first",
+          "status": "By status"
+        }
+      }
+    },
+    "stats": {
+      "title": "Statistics",
+      "description": "View quick statistics",
+      "statistics": "Statistics"
+    },
+    "sync": {
+      "title": "FleetOne Sync",
+      "description": "Sync transactions directly from FleetOne API",
+      "sync": "FleetOne",
+      "sync_transactions": "Sync Transactions",
+      "syncing": "Syncing...",
+      "date_from": "Date from (optional)",
+      "date_to": "Date to (optional)",
+      "sync_notes": {
+        "default_period": "If no dates specified, last 7 days will be synced",
+        "duplicates_skipped": "Duplicate transactions will be automatically skipped",
+        "only_assigned": "Only FleetOne cards assigned in system will be synced"
+      }
+    },
+    "history": {
+      "title": "History",
+      "description": "View modification history",
+      "history": "History"
+    }
+  },
   "actions": {
     "get_started": "Get Started",
     "view_demo": "View Demo",

@@ -53,7 +53,7 @@ export function DeductionsFloatingActions({
   drivers = [], 
   expenseTypes = [] 
 }: DeductionsFloatingActionsProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'history'>('filters');
   
@@ -114,26 +114,26 @@ export function DeductionsFloatingActions({
   const floatingActions = [
     {
       icon: Filter,
-      label: hasActiveFilters ? 'Filtros (activos)' : 'Filtros',
+      label: hasActiveFilters ? t('floating_actions.filters.filters_active') : t('floating_actions.filters.filters'),
       onClick: () => openSheet('filters'),
       variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
       className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
     },
     {
       icon: Download,
-      label: 'Exportar',
+      label: t('floating_actions.export.export'),
       onClick: () => openSheet('export'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: Settings,
-      label: 'Vista',
+      label: t('floating_actions.view.view'),
       onClick: () => openSheet('view'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: History,
-      label: 'Historial',
+      label: t('floating_actions.history.history'),
       onClick: () => openSheet('history'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     }
@@ -144,7 +144,7 @@ export function DeductionsFloatingActions({
       {/* Botones Flotantes Expandibles */}
       <ExpandableFloatingActions
         actions={floatingActions}
-        mainLabel="Acciones de Deducciones"
+        mainLabel={t('floating_actions.title')}
         position="bottom-right"
       />
 
@@ -153,16 +153,16 @@ export function DeductionsFloatingActions({
         <SheetContent className="w-[400px] sm:w-[440px]">
           <SheetHeader>
             <SheetTitle>
-              {activeTab === 'filters' && 'Filtros de Deducciones'}
-              {activeTab === 'export' && 'Exportar Datos'}
-              {activeTab === 'view' && 'Configuración de Vista'}
-              {activeTab === 'history' && 'Historial de Cambios'}
+              {activeTab === 'filters' && t('floating_actions.filters.title')}
+              {activeTab === 'export' && t('floating_actions.export.title')}
+              {activeTab === 'view' && t('floating_actions.view.title')}
+              {activeTab === 'history' && t('floating_actions.history.title')}
             </SheetTitle>
             <SheetDescription>
-              {activeTab === 'filters' && 'Filtra las deducciones por estado, conductor, tipo y fechas'}
-              {activeTab === 'export' && 'Exporta los datos de deducciones en diferentes formatos'}
-              {activeTab === 'view' && 'Personaliza cómo se muestran las deducciones'}
-              {activeTab === 'history' && 'Ve el historial de cambios y auditoría'}
+              {activeTab === 'filters' && t('floating_actions.filters.description')}
+              {activeTab === 'export' && t('floating_actions.export.description')}
+              {activeTab === 'view' && t('floating_actions.view.description')}
+              {activeTab === 'history' && t('floating_actions.history.description')}
             </SheetDescription>
           </SheetHeader>
 

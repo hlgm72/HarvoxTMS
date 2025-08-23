@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface FuelFloatingActionsProps {
   filters: FuelFiltersType;
@@ -17,6 +18,7 @@ interface FuelFloatingActionsProps {
 }
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats' | 'sync'>('filters');
   const [syncLoading, setSyncLoading] = useState(false);
@@ -88,32 +90,32 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
   const floatingActions = [
     {
       icon: Filter,
-      label: hasActiveFilters ? 'Filtros (activos)' : 'Filtros',
+      label: hasActiveFilters ? t('floating_actions.filters.filters_active') : t('floating_actions.filters.filters'),
       onClick: () => openSheet('filters'),
       variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
       className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
     },
     {
       icon: RefreshCw,
-      label: 'FleetOne',
+      label: t('floating_actions.sync.sync'),
       onClick: () => openSheet('sync'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: Download,
-      label: 'Exportar',
+      label: t('floating_actions.export.export'),
       onClick: () => openSheet('export'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: Settings,
-      label: 'Vista',
+      label: t('floating_actions.view.view'),
       onClick: () => openSheet('view'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     },
     {
       icon: BarChart3,
-      label: 'Estadísticas',
+      label: t('floating_actions.stats.statistics'),
       onClick: () => openSheet('stats'),
       variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
     }
@@ -124,7 +126,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
       {/* Botones Flotantes Expandibles */}
       <ExpandableFloatingActions
         actions={floatingActions}
-        mainLabel="Acciones de Combustible"
+        mainLabel={t('floating_actions.title')}
         position="bottom-right"
       />
 
@@ -133,18 +135,18 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
         <SheetContent className="w-[400px] sm:w-[440px]">
           <SheetHeader>
             <SheetTitle>
-              {activeTab === 'filters' && 'Filtros de Combustible'}
-              {activeTab === 'sync' && 'Sincronización FleetOne'}
-              {activeTab === 'export' && 'Exportar Datos'}
-              {activeTab === 'view' && 'Configuración de Vista'}
-              {activeTab === 'stats' && 'Estadísticas'}
+              {activeTab === 'filters' && t('floating_actions.filters.title')}
+              {activeTab === 'sync' && t('floating_actions.sync.title')}
+              {activeTab === 'export' && t('floating_actions.export.title')}
+              {activeTab === 'view' && t('floating_actions.view.title')}
+              {activeTab === 'stats' && t('floating_actions.stats.title')}
             </SheetTitle>
             <SheetDescription>
-              {activeTab === 'filters' && 'Filtra los gastos de combustible por diferentes criterios'}
-              {activeTab === 'sync' && 'Sincroniza transacciones directamente desde la API de FleetOne'}
-              {activeTab === 'export' && 'Exporta los datos de combustible en diferentes formatos'}
-              {activeTab === 'view' && 'Personaliza cómo se muestran los gastos'}
-              {activeTab === 'stats' && 'Ve estadísticas rápidas de combustible'}
+              {activeTab === 'filters' && t('floating_actions.filters.description')}
+              {activeTab === 'sync' && t('floating_actions.sync.description')}
+              {activeTab === 'export' && t('floating_actions.export.description')}
+              {activeTab === 'view' && t('floating_actions.view.description')}
+              {activeTab === 'stats' && t('floating_actions.stats.description')}
             </SheetDescription>
           </SheetHeader>
 
@@ -153,11 +155,11 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
             {activeTab === 'filters' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium">Filtros Aplicados</h3>
+                  <h3 className="text-sm font-medium">{t('floating_actions.filters.applied_filters')}</h3>
                   {hasActiveFilters && (
                     <Button variant="outline" size="sm" onClick={clearAllFilters}>
                       <X className="h-3 w-3 mr-1" />
-                      Limpiar
+                      {t('floating_actions.filters.clear')}
                     </Button>
                   )}
                 </div>
@@ -174,14 +176,14 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
             {activeTab === 'sync' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Sincronización con FleetOne</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.sync.title')}</h3>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Sincroniza transacciones directamente desde la API de FleetOne para obtener datos históricos o verificar transacciones.
+                    {t('floating_actions.sync.description')}
                   </p>
                   
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="dateFrom" className="text-xs">Fecha desde (opcional)</Label>
+                      <Label htmlFor="dateFrom" className="text-xs">{t('floating_actions.sync.date_from')}</Label>
                       <Input
                         id="dateFrom"
                         type="date"
@@ -192,7 +194,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="dateTo" className="text-xs">Fecha hasta (opcional)</Label>
+                      <Label htmlFor="dateTo" className="text-xs">{t('floating_actions.sync.date_to')}</Label>
                       <Input
                         id="dateTo"
                         type="date"
@@ -209,13 +211,13 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                         className="w-full"
                       >
                         <RefreshCw className={cn("h-4 w-4 mr-2", syncLoading && "animate-spin")} />
-                        {syncLoading ? 'Sincronizando...' : 'Sincronizar Transacciones'}
+                        {syncLoading ? t('floating_actions.sync.syncing') : t('floating_actions.sync.sync_transactions')}
                       </Button>
                       
                       <div className="text-xs text-muted-foreground space-y-1">
-                        <p>• Si no especificas fechas, se sincronizarán los últimos 7 días</p>
-                        <p>• Las transacciones duplicadas serán omitidas automáticamente</p>
-                        <p>• Solo se sincronizarán las tarjetas FleetOne asignadas en el sistema</p>
+                        <p>• {t('floating_actions.sync.sync_notes.default_period')}</p>
+                        <p>• {t('floating_actions.sync.sync_notes.duplicates_skipped')}</p>
+                        <p>• {t('floating_actions.sync.sync_notes.only_assigned')}</p>
                       </div>
                     </div>
                   </div>
@@ -227,15 +229,15 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
             {activeTab === 'export' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Exportar Datos</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.export.title')}</h3>
                   <div className="space-y-3">
                     <Button variant="outline" className="w-full justify-start">
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar a PDF
+                      {t('floating_actions.export.pdf')}
                     </Button>
                     <Button variant="outline" className="w-full justify-start">
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar a Excel
+                      {t('floating_actions.export.excel')}
                     </Button>
                   </div>
                 </div>
@@ -246,7 +248,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
             {activeTab === 'view' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Configuración de Vista</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.title')}</h3>
                   <p className="text-sm text-muted-foreground">Opciones de vista próximamente.</p>
                 </div>
               </div>
@@ -256,7 +258,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
             {activeTab === 'stats' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Estadísticas</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.title')}</h3>
                   <p className="text-sm text-muted-foreground">Estadísticas próximamente.</p>
                 </div>
               </div>

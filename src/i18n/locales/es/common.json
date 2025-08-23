@@ -17,6 +17,90 @@
     "profile": "Mi Perfil", 
     "logout": "Cerrar Sesión"
   },
+  "floating_actions": {
+    "title": "Acciones",
+    "filters": {
+      "title": "Filtros",
+      "description": "Filtrar datos por diferentes criterios",
+      "filters": "Filtros",
+      "filters_active": "Filtros (activos)",
+      "applied_filters": "Filtros Aplicados",
+      "clear": "Limpiar",
+      "status": "Estado",
+      "driver": "Conductor",
+      "broker": "Broker",
+      "period": "Período",
+      "date_range": "Rango de Fechas",
+      "placeholders": {
+        "status": "Seleccionar estado",
+        "driver": "Seleccionar conductor",
+        "broker": "Seleccionar broker",
+        "period": "Seleccionar período", 
+        "date_range": "Seleccionar rango de fechas",
+        "loading": "Cargando..."
+      },
+      "options": {
+        "status": {
+          "all": "Todos los estados"
+        },
+        "driver": {
+          "all": "Todos los conductores"
+        },
+        "broker": {
+          "all": "Todos los brokers"
+        }
+      }
+    },
+    "export": {
+      "title": "Exportar Datos",
+      "description": "Exportar datos en diferentes formatos",
+      "export": "Exportar",
+      "pdf": "Exportar a PDF", 
+      "excel": "Exportar a Excel",
+      "options_title": "Opciones de Exportación",
+      "include_filters": "Incluir filtros actuales",
+      "visible_only": "Solo datos visibles",
+      "include_stats": "Incluir estadísticas"
+    },
+    "view": {
+      "title": "Configuración de Vista",
+      "description": "Personalizar cómo se muestran los datos",
+      "view": "Vista",
+      "options": {
+        "sort": {
+          "date_desc": "Más recientes primero",
+          "date_asc": "Más antiguos primero",
+          "amount_desc": "Mayor monto primero", 
+          "amount_asc": "Menor monto primero",
+          "status": "Por estado"
+        }
+      }
+    },
+    "stats": {
+      "title": "Estadísticas",
+      "description": "Ver estadísticas rápidas", 
+      "statistics": "Estadísticas"
+    },
+    "sync": {
+      "title": "Sincronización FleetOne",
+      "description": "Sincronizar transacciones directamente desde la API de FleetOne",
+      "sync": "FleetOne",
+      "sync_transactions": "Sincronizar Transacciones",
+      "syncing": "Sincronizando...",
+      "date_from": "Fecha desde (opcional)",
+      "date_to": "Fecha hasta (opcional)",
+      "sync_notes": {
+        "default_period": "Si no especificas fechas, se sincronizarán los últimos 7 días",
+        "duplicates_skipped": "Las transacciones duplicadas serán omitidas automáticamente",
+        "only_assigned": "Solo se sincronizarán las tarjetas FleetOne asignadas en el sistema"
+      }
+    },
+    "history": {
+      "title": "Historial",
+      "description": "Ver historial de modificaciones",
+      "history": "Historial"
+    }
+  },
   "actions": {
     "get_started": "Comenzar Gratis",
     "view_demo": "Ver Demo",
