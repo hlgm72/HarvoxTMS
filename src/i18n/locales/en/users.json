@@ -108,6 +108,15 @@
     "test_user_delete_error": "Error deleting test user",
     "test_user_delete_unexpected": "Unexpected error deleting test user"
   },
+  "export": {
+    "description": "Export user list in different formats"
+  },
+  "view": {
+    "description": "Configure how users are displayed"  
+  },
+  "stats": {
+    "description": "User statistics"
+  },
   "role_options": [
     { "value": "operations_manager", "label": "👨‍💼 Operations Manager" },
     { "value": "dispatcher", "label": "📋 Dispatcher" },

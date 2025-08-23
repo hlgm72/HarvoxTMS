@@ -40,7 +40,7 @@ import {
 import { 
   Users as UsersIcon, Grid, List,
   Activity, Clock, AlertCircle, TrendingUp, Search, X, UserPlus, Mail, Shield, Edit, Trash2, Eye,
-  Truck, UserCheck, UserX, Filter, FileDown, Settings, BarChart3
+  Truck, UserCheck, UserX
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFleetNotifications } from "@/components/notifications";
@@ -56,7 +56,7 @@ import { UserActionButton } from "@/components/users/UserActionButton";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { GenericFloatingActions, FloatingActionConfig, FloatingActionSheet } from "@/components/ui/GenericFloatingActions";
+import { GenericFloatingActions, StandardActionConfig, FloatingActionSheet } from "@/components/ui/GenericFloatingActions";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { formatDateAuto, getCurrentUTC } from '@/lib/dateFormatting';
@@ -1250,36 +1250,15 @@ export default function Users() {
       />
 
       <GenericFloatingActions
-        actions={[
-          {
-            icon: Filter,
-            label: 'Filtros',
-            key: 'filters',
-            variant: 'default' as const
-          },
-          {
-            icon: FileDown,
-            label: 'Exportar',
-            key: 'export',
-            variant: 'default' as const
-          },
-          {
-            icon: Settings,
-            label: 'Vista',
-            key: 'view',
-            variant: 'default' as const
-          },
-          {
-            icon: BarChart3,
-            label: 'Stats',
-            key: 'stats',
-            variant: 'default' as const
-          }
+        standardActions={[
+          { type: 'filters' },
+          { type: 'export' },
+          { type: 'view' },
+          { type: 'stats' }
         ]}
         sheets={[
           {
             key: 'filters',
-            title: 'Filtros de usuarios',
             content: (
               <UserFiltersSheet
                 searchTerm={searchTerm}
@@ -1293,11 +1272,10 @@ export default function Users() {
           },
           {
             key: 'export',
-            title: 'Exportar datos',
             content: (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Exportar lista de usuarios en diferentes formatos
+                  {t('export.description', { ns: 'users' })}
                 </p>
                 {/* Aquí irían las opciones de exportación */}
               </div>
@@ -1305,11 +1283,10 @@ export default function Users() {
           },
           {
             key: 'view',
-            title: 'Configurar vista',
             content: (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Configurar cómo se muestran los usuarios
+                  {t('view.description', { ns: 'users' })}
                 </p>
                 {/* Aquí irían las opciones de vista */}
               </div>
@@ -1317,11 +1294,10 @@ export default function Users() {
           },
           {
             key: 'stats',
-            title: 'Estadísticas',
             content: (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Estadísticas de usuarios
+                  {t('stats.description', { ns: 'users' })}
                 </p>
                 {/* Aquí irían las estadísticas */}
               </div>
@@ -1329,6 +1305,7 @@ export default function Users() {
           }
         ]}
         position="bottom-right"
+        namespace="users"
       />
     </div>
   );

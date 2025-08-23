@@ -108,6 +108,15 @@
     "test_user_delete_error": "Error al eliminar el usuario de prueba",
     "test_user_delete_unexpected": "Error inesperado al eliminar el usuario de prueba"
   },
+  "export": {
+    "description": "Exportar lista de usuarios en diferentes formatos"
+  },
+  "view": {
+    "description": "Configurar cómo se muestran los usuarios"
+  },
+  "stats": {
+    "description": "Estadísticas de usuarios"
+  },
   "role_options": [
     { "value": "operations_manager", "label": "👨‍💼 Gerente de Operaciones" },
     { "value": "dispatcher", "label": "📋 Dispatcher" },
