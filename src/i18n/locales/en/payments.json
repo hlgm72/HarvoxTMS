@@ -122,12 +122,13 @@
       "eventual_deductions_short": "Eventual",
       "history": "History"
     },
-    "labels": {
-      "valid_from": "Valid from:",
-      "valid_until": "Valid until:",
-      "notes": "Notes:",
-      "effective_from": "Effective From",
-      "effective_until": "Effective Until"
+    "groups": {
+      "driver_deductions": "Driver Deductions", 
+      "dispatcher_deductions": "Dispatcher Deductions"
+    },
+    "empty_states": {
+      "no_inactive_templates": "No inactive templates",
+      "create_first_template": "Create First Template"
     },
     "placeholders": {
       "year": "Year",

@@ -559,19 +559,19 @@ export function DeductionsManager({
                   onClick={() => setIsCreateDialogOpen(true)}
                   className="mt-4"
                 >
-                  Crear Primera Plantilla
+                  {t("deductions.empty_states.create_first_template")}
                 </Button>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-6">
               <TemplateGroup 
-                title="Descuentos a Conductores" 
+                title={t("deductions.groups.driver_deductions")}
                 templates={groupedActiveTemplates.drivers} 
                 isInactive={false} 
               />
               <TemplateGroup 
-                title="Descuentos a Despachadores" 
+                title={t("deductions.groups.dispatcher_deductions")}
                 templates={groupedActiveTemplates.dispatchers} 
                 isInactive={false} 
               />
@@ -584,18 +584,18 @@ export function DeductionsManager({
             <Card>
               <CardContent className="p-6 text-center">
                 <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No hay plantillas inactivas</p>
+                <p className="text-muted-foreground">{t("deductions.empty_states.no_inactive_templates")}</p>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-6">
               <TemplateGroup 
-                title="Descuentos a Conductores" 
+                title={t("deductions.groups.driver_deductions")}
                 templates={groupedInactiveTemplates.drivers} 
                 isInactive={true} 
               />
               <TemplateGroup 
-                title="Descuentos a Despachadores" 
+                title={t("deductions.groups.dispatcher_deductions")}
                 templates={groupedInactiveTemplates.dispatchers} 
                 isInactive={true} 
               />

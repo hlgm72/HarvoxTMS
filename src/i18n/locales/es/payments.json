@@ -122,12 +122,13 @@
       "eventual_deductions_short": "Eventuales",
       "history": "Historial"
     },
-    "labels": {
-      "valid_from": "Vigente desde:",
-      "valid_until": "Vigente hasta:",
-      "notes": "Notas:",
-      "effective_from": "Vigente Desde",
-      "effective_until": "Vigente Hasta"
+    "groups": {
+      "driver_deductions": "Descuentos a Conductores",
+      "dispatcher_deductions": "Descuentos a Despachadores"
+    },
+    "empty_states": {
+      "no_inactive_templates": "No hay plantillas inactivas",
+      "create_first_template": "Crear Primera Plantilla"
     },
     "placeholders": {
       "year": "Año",
