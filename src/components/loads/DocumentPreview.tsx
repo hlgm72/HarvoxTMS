@@ -3,16 +3,29 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with working CDN version
+// Configure PDF.js worker dynamically  
 const configurePDFWorker = () => {
   try {
-    // Use a stable version that exists on the CDN
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
-    console.log('✅ PDF worker configured with working CDN version');
+    // Reset any previous worker configuration
+    if (pdfjs.GlobalWorkerOptions.workerSrc) {
+      delete pdfjs.GlobalWorkerOptions.workerSrc;
+    }
+    
+    // Use unpkg CDN with the exact version from the package
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+    console.log(`✅ PDF worker configured with version ${pdfjs.version}`);
     return true;
   } catch (error) {
     console.error('❌ Failed to configure PDF worker:', error);
-    return false;
+    // Fallback: try without worker (will use main thread)
+    try {
+      pdfjs.GlobalWorkerOptions.workerSrc = '';
+      console.log('⚠️ Using main thread fallback for PDF processing');
+      return true;
+    } catch (fallbackError) {
+      console.error('❌ Fallback also failed:', fallbackError);
+      return false;
+    }
   }
 };
 
