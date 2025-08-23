@@ -31,13 +31,17 @@
       "broker": "Broker",
       "period": "Período",
       "date_range": "Rango de Fechas",
+      "expense_type": "Tipo de Gasto",
+      "expense_date": "Fecha del Gasto", 
+      "all_types": "Todos los tipos",
       "placeholders": {
         "status": "Seleccionar estado",
         "driver": "Seleccionar conductor",
         "broker": "Seleccionar broker",
         "period": "Seleccionar período", 
         "date_range": "Seleccionar rango de fechas",
-        "loading": "Cargando..."
+        "loading": "Cargando...",
+        "expense_type": "Seleccionar tipo"
       },
       "options": {
         "status": {
@@ -50,6 +54,12 @@
           "all": "Todos los brokers"
         }
       }
+    },
+    "status_options": {
+      "all": "Todos los estados",
+      "planned": "Planificado",
+      "applied": "Aplicado", 
+      "deferred": "Diferido"
     },
     "export": {
       "title": "Exportar Datos",

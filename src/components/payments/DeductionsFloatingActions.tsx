@@ -26,10 +26,10 @@ import { formatMediumDate, formatCurrency } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusOptions = [
-  { value: "all", label: "Todos los estados" },
-  { value: "planned", label: "Planificado" },
-  { value: "applied", label: "Aplicado" },
-  { value: "deferred", label: "Diferido" }
+  { value: "all", label: "floating_actions.status_options.all" },
+  { value: "planned", label: "floating_actions.status_options.planned" },
+  { value: "applied", label: "floating_actions.status_options.applied" },
+  { value: "deferred", label: "floating_actions.status_options.deferred" }
 ];
 
 
@@ -53,7 +53,7 @@ export function DeductionsFloatingActions({
   drivers = [], 
   expenseTypes = [] 
 }: DeductionsFloatingActionsProps) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'payments']);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'history'>('filters');
   
@@ -171,11 +171,11 @@ export function DeductionsFloatingActions({
             {activeTab === 'filters' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium">Filtros Aplicados</h3>
+                  <h3 className="text-sm font-medium">{t('floating_actions.filters.applied_filters')}</h3>
                   {hasActiveFilters && (
                     <Button variant="outline" size="sm" onClick={clearFilters}>
                       <FilterX className="h-3 w-3 mr-1" />
-                      Limpiar
+                      {t('floating_actions.filters.clear')}
                     </Button>
                   )}
                 </div>
@@ -183,18 +183,18 @@ export function DeductionsFloatingActions({
                 <div className="space-y-4">
                   {/* Status Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Estado</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.status')}</label>
                     <Select 
                       value={filters.status} 
                       onValueChange={(value) => handleFilterChange("status", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar estado" />
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.status')} />
                       </SelectTrigger>
                       <SelectContent>
                         {statusOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(option.label)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -203,16 +203,16 @@ export function DeductionsFloatingActions({
 
                   {/* Driver Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Conductor</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.driver')}</label>
                     <Select 
                       value={filters.driver} 
                       onValueChange={(value) => handleFilterChange("driver", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar conductor" />
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.driver')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos los conductores</SelectItem>
+                        <SelectItem value="all">{t('floating_actions.filters.options.driver.all')}</SelectItem>
                         {drivers.map((driver) => (
                           <SelectItem key={driver.user_id} value={driver.user_id}>
                             {driver.first_name} {driver.last_name}
@@ -224,16 +224,16 @@ export function DeductionsFloatingActions({
 
                   {/* Expense Type Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Tipo de Gasto</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.expense_type')}</label>
                     <Select 
                       value={filters.expenseType} 
                       onValueChange={(value) => handleFilterChange("expenseType", value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar tipo" />
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.expense_type')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">Todos los tipos</SelectItem>
+                        <SelectItem value="all">{t('floating_actions.filters.all_types')}</SelectItem>
                         {expenseTypes.map((type) => (
                           <SelectItem key={type.id} value={type.id}>
                             {type.name}
@@ -246,7 +246,7 @@ export function DeductionsFloatingActions({
 
                   {/* Date Range Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Fecha del Gasto</label>
+                    <label className="text-sm font-medium">{t('floating_actions.filters.expense_date')}</label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -267,7 +267,7 @@ export function DeductionsFloatingActions({
                               formatMediumDate(filters.dateRange.from)
                             )
                           ) : (
-                            "Seleccionar fechas"
+                            t('floating_actions.filters.placeholders.date_range')
                           )}
                         </Button>
                       </PopoverTrigger>
@@ -298,18 +298,18 @@ export function DeductionsFloatingActions({
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="enero">Enero</SelectItem>
-                                <SelectItem value="febrero">Febrero</SelectItem>
-                                <SelectItem value="marzo">Marzo</SelectItem>
-                                <SelectItem value="abril">Abril</SelectItem>
-                                <SelectItem value="mayo">Mayo</SelectItem>
-                                <SelectItem value="junio">Junio</SelectItem>
-                                <SelectItem value="julio">Julio</SelectItem>
-                                <SelectItem value="agosto">Agosto</SelectItem>
-                                <SelectItem value="septiembre">Septiembre</SelectItem>
-                                <SelectItem value="octubre">Octubre</SelectItem>
-                                <SelectItem value="noviembre">Noviembre</SelectItem>
-                                <SelectItem value="diciembre">Diciembre</SelectItem>
+                                <SelectItem value="enero">{t('months.january', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="febrero">{t('months.february', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="marzo">{t('months.march', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="abril">{t('months.april', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="mayo">{t('months.may', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="junio">{t('months.june', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="julio">{t('months.july', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="agosto">{t('months.august', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="septiembre">{t('months.september', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="octubre">{t('months.october', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="noviembre">{t('months.november', { ns: 'payments' })}</SelectItem>
+                                <SelectItem value="diciembre">{t('months.december', { ns: 'payments' })}</SelectItem>
                               </SelectContent>
                             </Select>
                             

@@ -31,13 +31,17 @@
       "broker": "Broker",
       "period": "Period",
       "date_range": "Date Range",
+      "expense_type": "Expense Type",
+      "expense_date": "Expense Date",
+      "all_types": "All types",
       "placeholders": {
         "status": "Select status",
         "driver": "Select driver",
         "broker": "Select broker", 
         "period": "Select period",
         "date_range": "Select date range",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "expense_type": "Select type"
       },
       "options": {
         "status": {
@@ -50,6 +54,12 @@
           "all": "All brokers"
         }
       }
+    },
+    "status_options": {
+      "all": "All statuses",
+      "planned": "Planned", 
+      "applied": "Applied",
+      "deferred": "Deferred"
     },
     "export": {
       "title": "Export Data",
