@@ -28,6 +28,9 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   useEffect(() => {
     const configurePDFWorker = () => {
       try {
+        // Force clear any existing worker configuration
+        delete pdfjs.GlobalWorkerOptions.workerSrc;
+        
         // Use the exact same version as the installed package to avoid version mismatch
         pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.93/build/pdf.worker.min.js';
         console.log('✅ PDF worker configured with matching version 5.3.93');
