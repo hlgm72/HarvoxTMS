@@ -11,8 +11,8 @@ import { pdfService } from './lib/pdfService'
 // Setup global auth error handling
 setupGlobalAuthErrorHandler();
 
-// Initialize PDF worker globally
-pdfService.initialize().catch(console.error);
+// Initialize PDF worker globally (synchronous) - pdfService is already an instance
+console.log(`📄 PDF worker initialized: ${pdfService.isReady() ? '✅' : '❌'}`)
 
 const rootElement = document.getElementById("root");
 

@@ -3,10 +3,11 @@ import { pdfjs } from 'react-pdf';
 class PDFService {
   private static instance: PDFService;
   private isInitialized = false;
-  private isInitializing = false;
-  private initPromise: Promise<boolean> | null = null;
 
-  private constructor() {}
+  private constructor() {
+    // Initialize worker synchronously on construction
+    this.initializeSync();
+  }
 
   public static getInstance(): PDFService {
     if (!PDFService.instance) {
@@ -15,47 +16,24 @@ class PDFService {
     return PDFService.instance;
   }
 
-  public async initialize(): Promise<boolean> {
-    if (this.isInitialized) {
-      return true;
-    }
-
-    if (this.isInitializing && this.initPromise) {
-      return this.initPromise;
-    }
-
-    this.isInitializing = true;
-    this.initPromise = this.configureWorker();
-    
-    const result = await this.initPromise;
-    this.isInitialized = result;
-    this.isInitializing = false;
-    
-    return result;
-  }
-
-  private async configureWorker(): Promise<boolean> {
+  private initializeSync(): void {
     try {
       // Clear any existing worker configuration
-      delete pdfjs.GlobalWorkerOptions.workerSrc;
-      
-      // Use the working cdnjs URL directly since we know it works from logs
-      const workerUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      
-      // Test if the worker URL is accessible
-      const response = await fetch(workerUrl, { method: 'HEAD' });
-      if (response.ok) {
-        pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
-        console.log(`✅ PDF worker configured globally with: ${workerUrl}`);
-        return true;
+      if (pdfjs.GlobalWorkerOptions.workerSrc) {
+        delete pdfjs.GlobalWorkerOptions.workerSrc;
       }
       
-      throw new Error('Worker URL not accessible');
+      // Set the working cdnjs URL directly (we know it works from network logs)
+      const workerUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      
+      this.isInitialized = true;
+      console.log(`✅ PDF worker configured synchronously with: ${workerUrl}`);
     } catch (error) {
-      // If worker fails, disable it (runs on main thread)
-      console.warn('⚠️ PDF worker failed, disabling worker (will run on main thread)', error);
+      // If worker setup fails, disable worker (runs on main thread)
+      console.warn('⚠️ PDF worker setup failed, disabling worker (will run on main thread)', error);
       pdfjs.GlobalWorkerOptions.workerSrc = '';
-      return false;
+      this.isInitialized = true; // Mark as initialized even if worker disabled
     }
   }
 
@@ -63,16 +41,16 @@ class PDFService {
     return this.isInitialized;
   }
 
-  public async waitForReady(): Promise<boolean> {
-    if (this.isInitialized) {
-      return true;
+  public getWorkerSrc(): string {
+    return pdfjs.GlobalWorkerOptions.workerSrc || '';
+  }
+
+  // Ensure worker is configured (call this before using PDF.js)
+  public ensureWorker(): void {
+    if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+      console.log('🔄 Re-initializing PDF worker...');
+      this.initializeSync();
     }
-    
-    if (this.isInitializing && this.initPromise) {
-      return this.initPromise;
-    }
-    
-    return this.initialize();
   }
 }
 

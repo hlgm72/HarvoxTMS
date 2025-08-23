@@ -22,15 +22,10 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState(false);
-  const [pdfWorkerReady, setPdfWorkerReady] = useState(false);
-
-  // Wait for PDF worker to be ready
+  
+  // Ensure PDF worker is configured before rendering
   useEffect(() => {
-    pdfService.waitForReady().then(() => {
-      setPdfWorkerReady(true);
-    }).catch(() => {
-      setPdfWorkerReady(true); // Allow to proceed even if worker fails
-    });
+    pdfService.ensureWorker();
   }, []);
 
   // Memoize PDF options to prevent unnecessary reloads
@@ -138,17 +133,15 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      console.log('Attempting to render PDF preview:', { pdfError, previewUrl, pdfWorkerReady });
+      console.log('Attempting to render PDF preview:', { 
+        pdfError, 
+        previewUrl, 
+        workerSrc: pdfService.getWorkerSrc(),
+        serviceReady: pdfService.isReady()
+      });
       
-      // Don't render PDF until worker is ready
-      if (!pdfWorkerReady) {
-        return (
-          <div className="flex items-center justify-center w-full h-32 bg-muted/20">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-xs text-muted-foreground">Preparando visor PDF...</span>
-          </div>
-        );
-      }
+      // Ensure worker is configured before rendering
+      pdfService.ensureWorker();
       
       return (
         <div className="w-full h-full bg-white rounded overflow-hidden">
