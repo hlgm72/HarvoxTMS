@@ -257,25 +257,25 @@ const handler = async (req: Request): Promise<Response> => {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center;">
           <h1 style="margin: 0; font-size: 24px;">${companyName}</h1>
-          <p style="margin: 10px 0 0 0; opacity: 0.9;">Documentos Adjuntos</p>
+          <p style="margin: 10px 0 0 0; opacity: 0.9;">Attached Documents</p>
         </div>
         
         ${companyEmail ? `
           <div style="background: #e8f4fd; border: 2px solid #4f9cf9; border-radius: 8px; padding: 15px; margin: 20px; text-align: center;">
             <p style="margin: 0; color: #1e40af; font-weight: bold; font-size: 16px;">
-              📧 Para responder a este mensaje, escriba a:
+              📧 To reply to this message, write to:
             </p>
             <p style="margin: 5px 0 0 0; color: #1e40af; font-size: 18px; font-weight: bold;">
               <a href="mailto:${companyEmail}" style="color: #1e40af; text-decoration: none;">${companyEmail}</a>
             </p>
             <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">
-              (No responda al remitente de este email)
+              (Do not reply to the sender of this email)
             </p>
           </div>
         ` : ''}
         
         <div style="padding: 30px 20px;">
-          <h2 style="color: #333; margin-bottom: 20px;">Documentos de ${companyName}</h2>
+          <h2 style="color: #333; margin-bottom: 20px;">Documents from ${companyName}</h2>
           
           ${message ? `
             <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -284,7 +284,7 @@ const handler = async (req: Request): Promise<Response> => {
           ` : ''}
           
           <p style="color: #666; line-height: 1.6;">
-            Se adjuntan ${attachments.length} documento(s) solicitado(s):
+            Attached are ${attachments.length} requested document(s):
           </p>
           
           <ul style="color: #666; line-height: 1.8; padding-left: 20px;">
@@ -293,7 +293,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #999; font-size: 14px; margin: 0;">
-              Este email fue enviado por <strong>${companyName}</strong> a través de FleetNest.
+              This email was sent by <strong>${companyName}</strong> through FleetNest.
             </p>
           </div>
         </div>
