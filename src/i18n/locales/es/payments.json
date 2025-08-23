@@ -140,7 +140,10 @@
       "effective_from": "Vigente desde",
       "effective_until": "Vigente hasta",
       "applied_role": "Rol Aplicado",
-      "user": "Usuario"
+      "user": "Usuario",
+      "valid_from": "Vigente desde:",
+      "valid_until": "Vigente hasta:",
+      "notes": "Notas:"
     },
     "form": {
       "driver": "Conductor",
