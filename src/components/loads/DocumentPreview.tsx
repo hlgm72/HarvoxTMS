@@ -28,9 +28,9 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   useEffect(() => {
     const configurePDFWorker = () => {
       try {
-        // Use jsDelivr CDN which is very reliable for PDF.js worker files
-        pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-        console.log('✅ PDF worker configured with stable version');
+        // Use the exact same version as the installed package to avoid version mismatch
+        pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.93/build/pdf.worker.min.js';
+        console.log('✅ PDF worker configured with matching version 5.3.93');
         return true;
       } catch (error) {
         console.error('❌ Failed to configure PDF worker:', error);
