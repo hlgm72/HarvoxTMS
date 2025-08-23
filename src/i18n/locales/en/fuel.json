@@ -54,21 +54,28 @@
     "stats_options": "Statistics coming soon."
   },
   "expenses_list": {
+    "title_full": "Fuel Expenses ({{count}})",
+    "title_short": "Expenses ({{count}})",
     "no_expenses": "No fuel expenses found",
-    "no_expenses_description": "No fuel expenses match the current filters. Try adjusting your search criteria or add a new fuel expense.",
+    "no_expenses_description": "Fuel expenses will appear here when they are registered.",
     "loading": "Loading fuel expenses...",
     "driver_not_found": "Driver not found",
+    "license": "License",
+    "state": "State",
     "actions": {
+      "menu_label": "Expense options",
       "view": "View Details",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "view_receipt": "View Receipt"
     },
     "columns": {
       "driver": "Driver",
       "date": "Date",
+      "station": "Station",
       "fuel_type": "Fuel Type",
       "gallons": "Gallons",
-      "price_per_gallon": "Price/Gal",
+      "price_per_gallon": "Price/Gallon",
       "total": "Total",
       "status": "Status",
       "actions": "Actions"

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +30,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
   const deleteMutation = useDeleteFuelExpense();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
+  const { t } = useTranslation(['fuel', 'common']);
 
   // Función para obtener el nombre del conductor
   const getDriverName = (driverUserId: string) => {
@@ -36,7 +38,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
     if (driver && driver.first_name && driver.last_name) {
       return `${driver.first_name} ${driver.last_name}`;
     }
-    return 'Conductor no encontrado';
+    return t('fuel:expenses_list.driver_not_found');
   };
 
   // Función para obtener la licencia del conductor
@@ -53,9 +55,9 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
     };
     
     const labels = {
-      pending: 'Pendiente',
-      approved: 'Aprobado',
-      verified: 'Verificado',
+      pending: t('fuel:filters.pending'),
+      approved: t('fuel:filters.approved'),
+      verified: t('fuel:filters.verified'),
     };
 
     return (
@@ -105,10 +107,10 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
           <div className="text-center py-8">
             <Fuel className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium text-muted-foreground mb-2">
-              No hay gastos de combustible
+              {t('fuel:expenses_list.no_expenses')}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Los gastos de combustible aparecerán aquí cuando se registren.
+              {t('fuel:expenses_list.no_expenses_description')}
             </p>
           </div>
         </CardContent>
@@ -122,8 +124,8 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
             <Fuel className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="hidden sm:inline">Gastos de Combustible ({expenses.length})</span>
-            <span className="sm:hidden">Gastos ({expenses.length})</span>
+            <span className="hidden sm:inline">{t('fuel:expenses_list.title_full', { count: expenses.length })}</span>
+            <span className="sm:hidden">{t('fuel:expenses_list.title_short', { count: expenses.length })}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="relative p-0 sm:p-6">
@@ -144,7 +146,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         variant="ghost" 
                         size="sm"
                         className="h-8 w-8 p-0"
-                        aria-label="Opciones del gasto"
+                        aria-label={t('fuel:expenses_list.actions.menu_label')}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -158,14 +160,14 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         className="cursor-pointer"
                       >
                         <Eye className="h-4 w-4 mr-2" />
-                        Ver detalles
+                        {t('fuel:expenses_list.actions.view')}
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => onEdit?.(expense.id)}
                         className="cursor-pointer"
                       >
                         <Edit className="h-4 w-4 mr-2" />
-                        Editar
+                        {t('fuel:expenses_list.actions.edit')}
                       </DropdownMenuItem>
                       {expense.receipt_url && (
                         <DropdownMenuItem asChild>
@@ -176,7 +178,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                             className="cursor-pointer"
                           >
                             <Receipt className="h-4 w-4 mr-2" />
-                            Ver recibo
+                            {t('fuel:expenses_list.actions.view_receipt')}
                           </a>
                         </DropdownMenuItem>
                       )}
@@ -186,7 +188,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                         className="text-destructive cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        Eliminar
+                        {t('fuel:expenses_list.actions.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -217,7 +219,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-1">
                     {getFuelTypeIcon(expense.fuel_type)}
-                    <span className="text-xs capitalize">{expense.fuel_type}</span>
+                    <span className="text-xs capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
                   </div>
                   {getStatusBadge(expense.status)}
                 </div>
@@ -230,14 +232,14 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Conductor</TableHead>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Estación</TableHead>
-                  <TableHead>Combustible</TableHead>
-                  <TableHead>Galones</TableHead>
-                  <TableHead>Precio/Galón</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Estado</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.driver')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.date')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.station')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.fuel_type')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.gallons')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.price_per_gallon')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.total')}</TableHead>
+                  <TableHead>{t('fuel:expenses_list.columns.status')}</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -253,7 +255,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                           </div>
                           {getDriverLicense(expense.driver_user_id) && (
                             <div className="text-xs text-muted-foreground">
-                              Licencia: {getDriverLicense(expense.driver_user_id)}
+                              {t('fuel:expenses_list.license')}: {getDriverLicense(expense.driver_user_id)}
                             </div>
                           )}
                         </div>
@@ -274,7 +276,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                           <div className="font-medium">{expense.station_name || 'N/A'}</div>
                           {expense.station_state && (
                             <div className="text-xs text-muted-foreground truncate max-w-[150px]">
-                              Estado: {expense.station_state}
+                              {t('fuel:expenses_list.state')}: {expense.station_state}
                             </div>
                           )}
                         </div>
@@ -283,7 +285,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {getFuelTypeIcon(expense.fuel_type)}
-                        <span className="capitalize">{expense.fuel_type}</span>
+                        <span className="capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
@@ -311,7 +313,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                             variant="ghost" 
                             size="sm"
                             className="h-8 w-8 p-0 relative z-10"
-                            aria-label="Opciones del gasto"
+                            aria-label={t('fuel:expenses_list.actions.menu_label')}
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
@@ -332,7 +334,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                             className="cursor-pointer"
                           >
                             <Eye className="h-4 w-4 mr-2" />
-                            Ver detalles
+                            {t('fuel:expenses_list.actions.view')}
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={(e) => {
@@ -342,7 +344,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                             className="cursor-pointer"
                           >
                             <Edit className="h-4 w-4 mr-2" />
-                            Editar
+                            {t('fuel:expenses_list.actions.edit')}
                           </DropdownMenuItem>
                           {expense.receipt_url && (
                             <DropdownMenuItem asChild>
@@ -354,7 +356,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <Receipt className="h-4 w-4 mr-2" />
-                                Ver recibo
+                                {t('fuel:expenses_list.actions.view_receipt')}
                               </a>
                             </DropdownMenuItem>
                           )}
@@ -367,7 +369,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                             className="text-destructive cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Eliminar
+                            {t('fuel:expenses_list.actions.delete')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -383,18 +385,18 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar gasto de combustible?</AlertDialogTitle>
+            <AlertDialogTitle>{t('fuel:expenses_list.delete_dialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El gasto de combustible será eliminado permanentemente.
+              {t('fuel:expenses_list.delete_dialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('fuel:expenses_list.delete_dialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              {t('fuel:expenses_list.delete_dialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

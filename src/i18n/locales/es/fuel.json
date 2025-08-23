@@ -54,21 +54,28 @@
     "stats_options": "Estadísticas próximamente."
   },
   "expenses_list": {
-    "no_expenses": "No se encontraron gastos de combustible",
-    "no_expenses_description": "No se encontraron gastos de combustible que coincidan con los filtros actuales. Intenta ajustar los criterios de búsqueda o agregar un nuevo gasto de combustible.",
+    "title_full": "Gastos de Combustible ({{count}})",
+    "title_short": "Gastos ({{count}})",
+    "no_expenses": "No hay gastos de combustible",
+    "no_expenses_description": "Los gastos de combustible aparecerán aquí cuando se registren.",
     "loading": "Cargando gastos de combustible...",
     "driver_not_found": "Conductor no encontrado",
+    "license": "Licencia",
+    "state": "Estado",
     "actions": {
+      "menu_label": "Opciones del gasto",
       "view": "Ver Detalles",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "view_receipt": "Ver Recibo"
     },
     "columns": {
       "driver": "Conductor",
       "date": "Fecha",
-      "fuel_type": "Tipo de Combustible",
+      "station": "Estación",
+      "fuel_type": "Combustible",
       "gallons": "Galones",
-      "price_per_gallon": "Precio/Gal",
+      "price_per_gallon": "Precio/Galón",
       "total": "Total",
       "status": "Estado",
       "actions": "Acciones"
