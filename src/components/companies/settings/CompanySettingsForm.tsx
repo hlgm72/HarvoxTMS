@@ -127,6 +127,36 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
   const handleSave = async () => {
     setLoading(true);
     try {
+      console.log('CompanySettingsForm: Starting save operation');
+      console.log('CompanySettingsForm: Form data:', formData);
+      console.log('CompanySettingsForm: Company ID:', company.id);
+      console.log('CompanySettingsForm: Company data for RPC:', {
+        name: formData.name,
+        ein: formData.ein,
+        mc_number: formData.mc_number,
+        dot_number: formData.dot_number,
+        street_address: formData.street_address,
+        state_id: formData.state_id,
+        city: formData.city,
+        zip_code: formData.zip_code,
+        phone: formData.phone,
+        email: formData.email,
+        owner_name: formData.owner_name,
+        owner_email: formData.owner_email,
+        owner_phone: formData.owner_phone,
+        owner_title: formData.owner_title,
+        payment_day: formData.payment_day,
+        default_payment_frequency: formData.default_payment_frequency,
+        payment_cycle_start_day: formData.payment_cycle_start_day,
+        max_users: formData.max_users,
+        max_vehicles: formData.max_vehicles,
+        logo_url: formData.logo_url,
+        default_factoring_percentage: formData.default_factoring_percentage,
+        default_dispatching_percentage: formData.default_dispatching_percentage,
+        default_leasing_percentage: formData.default_leasing_percentage,
+        load_assignment_criteria: formData.load_assignment_criteria
+      });
+      
       const { data, error } = await supabase
         .rpc('create_or_update_company_with_validation', {
           company_data: {
@@ -168,7 +198,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           return { data: null, error: new Error('Invalid response format') };
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('CompanySettingsForm: RPC Error:', error);
+        console.error('CompanySettingsForm: Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
       if (!data) throw new Error('No data returned from update');
 
       onUpdate(data as Company);
