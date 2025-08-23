@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Filter, X } from 'lucide-react';
 import { PaymentFilters, PaymentFiltersType } from './PaymentFilters';
+import { useTranslation } from 'react-i18next';
 
 interface PaymentFiltersSheetProps {
   filters: PaymentFiltersType;
@@ -13,6 +14,7 @@ interface PaymentFiltersSheetProps {
 }
 
 export function PaymentFiltersSheet({ filters, onFiltersChange, drivers, children }: PaymentFiltersSheetProps) {
+  const { t } = useTranslation('payments');
   const [open, setOpen] = React.useState(false);
 
   const getActiveFiltersCount = () => {
@@ -41,7 +43,7 @@ export function PaymentFiltersSheet({ filters, onFiltersChange, drivers, childre
         {children || (
           <Button variant="outline" size="sm" className="relative">
             <Filter className="h-4 w-4 mr-2" />
-            Filtros
+            {t('filters.title')}
             {activeCount > 0 && (
               <Badge 
                 variant="secondary" 
@@ -57,9 +59,9 @@ export function PaymentFiltersSheet({ filters, onFiltersChange, drivers, childre
         <SheetHeader>
           <div className="flex items-center justify-between">
             <div>
-              <SheetTitle>Filtros</SheetTitle>
+              <SheetTitle>{t('filters.title')}</SheetTitle>
               <SheetDescription>
-                Filtra los reportes de pago por diferentes criterios
+                {t('filters.sheet_description')}
               </SheetDescription>
             </div>
             {activeCount > 0 && (
@@ -70,7 +72,7 @@ export function PaymentFiltersSheet({ filters, onFiltersChange, drivers, childre
                 className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4 mr-1" />
-                Limpiar
+                {t('filters.clear')}
               </Button>
             )}
           </div>

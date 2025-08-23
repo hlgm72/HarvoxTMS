@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, X, Filter } from 'lucide-react';
 import { PeriodFilter, PeriodFilterValue } from '@/components/loads/PeriodFilter';
+import { useTranslation } from 'react-i18next';
 
 export interface PaymentFiltersType {
   search: string;
@@ -21,17 +22,18 @@ interface PaymentFiltersProps {
   compact?: boolean;
 }
 
-const statusOptions = [
-  { value: 'all', label: 'Todos los estados' },
-  { value: 'pending', label: 'Pendientes' },
-  { value: 'calculated', label: 'Calculados' },
-  { value: 'approved', label: 'Aprobados' },
-  { value: 'paid', label: 'Pagados' },
-  { value: 'failed', label: 'Fallidos' },
-  { value: 'negative', label: 'Balance Negativo' }
-];
-
 export function PaymentFilters({ filters, onFiltersChange, drivers, compact = false }: PaymentFiltersProps) {
+  const { t } = useTranslation('payments');
+  
+  const statusOptions = [
+    { value: 'all', label: t('filters.status_options.all') },
+    { value: 'pending', label: t('filters.status_options.pending') },
+    { value: 'calculated', label: t('filters.status_options.calculated') },
+    { value: 'approved', label: t('filters.status_options.approved') },
+    { value: 'paid', label: t('filters.status_options.paid') },
+    { value: 'failed', label: t('filters.status_options.failed') },
+    { value: 'negative', label: t('filters.status_options.negative') }
+  ];
   const handleFilterChange = (key: keyof PaymentFiltersType, value: any) => {
     onFiltersChange({
       ...filters,
@@ -66,7 +68,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar conductor..."
+            placeholder={t('filters.search_placeholder')}
             value={filters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
             className="pl-10"
@@ -77,10 +79,10 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select value={filters.driverId} onValueChange={(value) => handleFilterChange('driverId', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Conductor" />
+              <SelectValue placeholder={t('filters.driver_label')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los conductores</SelectItem>
+              <SelectItem value="all">{t('filters.all_drivers')}</SelectItem>
               {drivers.map((driver) => (
                 <SelectItem key={driver.user_id} value={driver.user_id}>
                   {driver.first_name} {driver.last_name}
@@ -91,7 +93,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
 
           <Select value={filters.status} onValueChange={(value) => handleFilterChange('status', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Estado" />
+              <SelectValue placeholder={t('filters.status_label')} />
             </SelectTrigger>
             <SelectContent>
               {statusOptions.map((option) => (
@@ -118,7 +120,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
             className="w-full"
           >
             <X className="h-4 w-4 mr-2" />
-            Limpiar Filtros ({activeCount})
+            {t('filters.clear_filters')} ({activeCount})
           </Button>
         )}
       </div>
@@ -131,7 +133,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filtros
+            {t('filters.title')}
             {activeCount > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {activeCount}
@@ -146,7 +148,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
               className="text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4 mr-1" />
-              Limpiar
+              {t('filters.clear')}
             </Button>
           )}
         </div>
@@ -156,7 +158,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar conductor..."
+            placeholder={t('filters.search_placeholder')}
             value={filters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
             className="pl-10"
@@ -166,13 +168,13 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         {/* Filtros principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Conductor</label>
+            <label className="text-sm font-medium">{t('filters.driver_label')}</label>
             <Select value={filters.driverId} onValueChange={(value) => handleFilterChange('driverId', value)}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar conductor" />
+                <SelectValue placeholder={t('filters.select_driver')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los conductores</SelectItem>
+                <SelectItem value="all">{t('filters.all_drivers')}</SelectItem>
                 {drivers.map((driver) => (
                   <SelectItem key={driver.user_id} value={driver.user_id}>
                     {driver.first_name} {driver.last_name}
@@ -183,10 +185,10 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Estado</label>
+            <label className="text-sm font-medium">{t('filters.status_label')}</label>
             <Select value={filters.status} onValueChange={(value) => handleFilterChange('status', value)}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar estado" />
+                <SelectValue placeholder={t('filters.select_status')} />
               </SelectTrigger>
               <SelectContent>
                 {statusOptions.map((option) => (
@@ -201,7 +203,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
 
         {/* Filtro de período */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Período</label>
+          <label className="text-sm font-medium">{t('filters.period_label')}</label>
           <PeriodFilter
             value={filters.periodFilter}
             onChange={(value) => handleFilterChange('periodFilter', value)}
@@ -211,10 +213,10 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         {/* Filtros activos */}
         {activeCount > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t">
-            <span className="text-sm text-muted-foreground">Filtros activos:</span>
+            <span className="text-sm text-muted-foreground">{t('filters.active_filters')}</span>
             {filters.search && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Búsqueda: {filters.search}
+                {t('filters.active_badges.search')} {filters.search}
                 <X
                   className="h-3 w-3 cursor-pointer"
                   onClick={() => handleFilterChange('search', '')}
@@ -223,9 +225,9 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
             )}
             {filters.driverId && filters.driverId !== 'all' && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Conductor: {(() => {
+                {t('filters.active_badges.driver')} {(() => {
                   const driver = drivers.find(d => d.user_id === filters.driverId);
-                  return driver ? `${driver.first_name} ${driver.last_name}` : 'Seleccionado';
+                  return driver ? `${driver.first_name} ${driver.last_name}` : t('filters.active_badges.selected');
                 })()}
                 <X
                   className="h-3 w-3 cursor-pointer"
@@ -235,7 +237,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
             )}
             {filters.status && filters.status !== 'all' && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Estado: {statusOptions.find(s => s.value === filters.status)?.label || filters.status}
+                {t('filters.active_badges.status')} {statusOptions.find(s => s.value === filters.status)?.label || filters.status}
                 <X
                   className="h-3 w-3 cursor-pointer"
                   onClick={() => handleFilterChange('status', 'all')}
@@ -244,7 +246,7 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
             )}
             {filters.periodFilter && filters.periodFilter.type !== 'current' && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Período: {filters.periodFilter.label || filters.periodFilter.type}
+                {t('filters.active_badges.period')} {filters.periodFilter.label || filters.periodFilter.type}
                 <X
                   className="h-3 w-3 cursor-pointer"
                   onClick={() => handleFilterChange('periodFilter', { type: 'current' })}

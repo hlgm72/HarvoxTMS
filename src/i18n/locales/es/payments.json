@@ -325,5 +325,36 @@
       "pdf_error": "No se pudo generar el reporte PDF"
     },
     "company_name": "Tu Empresa"
+  },
+  "filters": {
+    "title": "Filtros",
+    "search_placeholder": "Buscar conductor...",
+    "driver_label": "Conductor",
+    "all_drivers": "Todos los conductores",
+    "select_driver": "Seleccionar conductor",
+    "status_label": "Estado", 
+    "all_statuses": "Todos los estados",
+    "select_status": "Seleccionar estado",
+    "period_label": "Período",
+    "clear_filters": "Limpiar Filtros",
+    "clear": "Limpiar",
+    "active_filters": "Filtros activos:",
+    "sheet_description": "Filtra los reportes de pago por diferentes criterios",
+    "status_options": {
+      "all": "Todos los estados",
+      "pending": "Pendientes", 
+      "calculated": "Calculados",
+      "approved": "Aprobados",
+      "paid": "Pagados",
+      "failed": "Fallidos",
+      "negative": "Balance Negativo"
+    },
+    "active_badges": {
+      "search": "Búsqueda:",
+      "driver": "Conductor:",
+      "status": "Estado:",
+      "period": "Período:",
+      "selected": "Seleccionado"
+    }
   }
 }

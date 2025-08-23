@@ -325,5 +325,36 @@
       "pdf_error": "Could not generate PDF report"
     },
     "company_name": "Your Company"
+  },
+  "filters": {
+    "title": "Filters",
+    "search_placeholder": "Search driver...",
+    "driver_label": "Driver",
+    "all_drivers": "All drivers",
+    "select_driver": "Select driver", 
+    "status_label": "Status",
+    "all_statuses": "All statuses",
+    "select_status": "Select status",
+    "period_label": "Period",
+    "clear_filters": "Clear Filters",
+    "clear": "Clear",
+    "active_filters": "Active filters:",
+    "sheet_description": "Filter payment reports by different criteria",
+    "status_options": {
+      "all": "All statuses",
+      "pending": "Pending",
+      "calculated": "Calculated",
+      "approved": "Approved", 
+      "paid": "Paid",
+      "failed": "Failed",
+      "negative": "Negative Balance"
+    },
+    "active_badges": {
+      "search": "Search:",
+      "driver": "Driver:",
+      "status": "Status:",
+      "period": "Period:",
+      "selected": "Selected"
+    }
   }
 }
