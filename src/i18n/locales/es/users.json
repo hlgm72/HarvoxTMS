@@ -1,7 +1,11 @@
 {
   "page": {
     "title": "Usuarios de la Empresa",
-    "subtitle_template": "{count} usuarios • {active} activos • {roles} roles diferentes",
+    "subtitle": {
+      "users": "usuarios",
+      "active": "activos",
+      "roles": "roles diferentes"
+    },
     "loading": "Cargando usuarios...",
     "no_users": "No se encontraron usuarios",
     "no_users_description": "Aún no hay usuarios en tu empresa. Invita a tu primer usuario para comenzar."

@@ -692,18 +692,26 @@ export default function Users() {
     return users;
   };
 
+  // Función para construir el subtítulo
+  const getSubtitle = () => {
+    const userCount = filteredUsers.length;
+    const activeCount = filteredUsers.filter(u => u.status === 'active').length;
+    const roleCount = new Set(filteredUsers.map(u => u.role)).size;
+    
+    return [
+      `${userCount} ${t('page.subtitle.users', { ns: 'users' })}`,
+      `${activeCount} ${t('page.subtitle.active', { ns: 'users' })}`,
+      `${roleCount} ${t('page.subtitle.roles', { ns: 'users' })}`
+    ].join(' • ');
+  };
+
   return (
     <div className="p-2 md:p-4">
       {/* Page Toolbar */}
       <PageToolbar
         icon={UsersIcon}
         title={t('page.title', { ns: 'users' })}
-        subtitle={t('page.subtitle_template', { 
-          count: filteredUsers.length, 
-          active: filteredUsers.filter(u => u.status === 'active').length,
-          roles: new Set(filteredUsers.map(u => u.role)).size,
-          ns: 'users'
-        })}
+        subtitle={getSubtitle()}
         actions={
           <div className="flex items-center gap-2">
             <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">

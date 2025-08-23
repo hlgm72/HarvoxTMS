@@ -1,7 +1,11 @@
 {
   "page": {
     "title": "Company Users",
-    "subtitle_template": "{count} users • {active} active • {roles} different roles",
+    "subtitle": {
+      "users": "users",
+      "active": "active",
+      "roles": "different roles"
+    },
     "loading": "Loading users...",
     "no_users": "No users found",
     "no_users_description": "There are no users in your company yet. Invite your first user to get started."
