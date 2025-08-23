@@ -114,7 +114,7 @@
   "view": {
     "description": "Configurar cómo se muestran los usuarios"
   },
-  "stats": {
+  "stats_info": {
     "description": "Estadísticas de usuarios"
   },
   "role_options": [

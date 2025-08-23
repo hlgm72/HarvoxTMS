@@ -114,7 +114,7 @@
   "view": {
     "description": "Configure how users are displayed"  
   },
-  "stats": {
+  "stats_info": {
     "description": "User statistics"
   },
   "role_options": [
