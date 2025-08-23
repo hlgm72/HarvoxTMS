@@ -26,22 +26,44 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
   // Configure PDF.js worker when component mounts
   useEffect(() => {
-    const configurePDFWorker = () => {
-      try {
-        // Force clear any existing worker configuration
-        delete pdfjs.GlobalWorkerOptions.workerSrc;
-        
-        // Use the exact same version as the installed package to avoid version mismatch
-        pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.93/build/pdf.worker.min.js';
-        console.log('✅ PDF worker configured with matching version 5.3.93');
-        return true;
-      } catch (error) {
-        console.error('❌ Failed to configure PDF worker:', error);
-        return false;
+    const configurePDFWorker = async () => {
+      // Clear any existing worker configuration
+      delete pdfjs.GlobalWorkerOptions.workerSrc;
+      
+      const workerUrls = [
+        // Try unpkg CDN with correct file name
+        'https://unpkg.com/pdfjs-dist@5.3.93/build/pdf.worker.js',
+        // Try jsdelivr with correct file name
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.93/build/pdf.worker.js',
+        // Try cdnjs as fallback
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+      ];
+
+      for (const url of workerUrls) {
+        try {
+          // Test if the worker URL is accessible
+          const response = await fetch(url, { method: 'HEAD' });
+          if (response.ok) {
+            pdfjs.GlobalWorkerOptions.workerSrc = url;
+            console.log(`✅ PDF worker configured successfully with: ${url}`);
+            return true;
+          }
+        } catch (error) {
+          console.warn(`❌ Failed to load worker from: ${url}`, error);
+          continue;
+        }
       }
+      
+      // If all CDN attempts fail, disable worker (runs on main thread)
+      console.warn('⚠️ All PDF worker URLs failed, disabling worker (will run on main thread)');
+      pdfjs.GlobalWorkerOptions.workerSrc = '';
+      return false;
     };
 
-    configurePDFWorker();
+    configurePDFWorker().catch(error => {
+      console.error('❌ PDF worker configuration failed completely:', error);
+      pdfjs.GlobalWorkerOptions.workerSrc = '';
+    });
   }, []);
 
   // Memoize PDF options to prevent unnecessary reloads
