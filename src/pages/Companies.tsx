@@ -207,7 +207,7 @@ export default function Companies() {
       const { error } = await supabase
         .rpc('create_or_update_company_with_validation', {
           company_data: formData as any,
-          company_id: companyToEdit.id
+          target_company_id: companyToEdit.id
         });
 
       if (error) throw error;
@@ -274,7 +274,7 @@ export default function Companies() {
       const updatePromises = selectedCompanies.map(companyId =>
         supabase.rpc('create_or_update_company_with_validation', {
           company_data: { status: newStatus },
-          company_id: companyId
+          target_company_id: companyId
         })
       );
       

@@ -64,7 +64,7 @@ export const useCompanyManagementACID = () => {
 
       const { data, error } = await supabase.rpc('create_or_update_company_with_validation', {
         company_data: params.companyData,
-        company_id: params.companyId || null
+        target_company_id: params.companyId || null
       });
 
       if (error) {

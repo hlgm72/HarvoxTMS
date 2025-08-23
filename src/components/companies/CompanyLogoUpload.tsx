@@ -79,7 +79,7 @@ export function CompanyLogoUpload({
       const { error: updateError } = await supabase
         .rpc('create_or_update_company_with_validation', {
           company_data: { logo_url: publicUrl },
-          company_id: companyId
+          target_company_id: companyId
         });
 
       if (updateError) throw updateError;
@@ -122,7 +122,7 @@ export function CompanyLogoUpload({
       const { error } = await supabase
         .rpc('create_or_update_company_with_validation', {
           company_data: { logo_url: null },
-          company_id: companyId
+          target_company_id: companyId
         });
 
       if (error) throw error;

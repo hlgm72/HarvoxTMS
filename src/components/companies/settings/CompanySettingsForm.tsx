@@ -155,7 +155,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             default_leasing_percentage: formData.default_leasing_percentage,
             load_assignment_criteria: formData.load_assignment_criteria
           },
-          company_id: company.id
+          target_company_id: company.id
         })
         .then(result => {
           if (result.error) return { data: null, error: result.error };

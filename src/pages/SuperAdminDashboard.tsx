@@ -286,7 +286,7 @@ export default function SuperAdminDashboard() {
             max_users: companyToEdit.max_users,
             status: companyToEdit.status,
           },
-          company_id: companyToEdit.id
+          target_company_id: companyToEdit.id
         });
 
       if (error) throw error;
