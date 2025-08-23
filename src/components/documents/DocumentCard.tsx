@@ -114,13 +114,20 @@ export function DocumentCard({
     try {
       // Handle blob URLs (temporary documents)
       if (document.file_url.startsWith('blob:')) {
+        const response = await fetch(document.file_url);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
         const link = window.document.createElement('a');
-        link.href = document.file_url;
+        link.href = url;
         link.download = document.file_name;
-        link.target = '_blank';
+        link.style.display = 'none';
         window.document.body.appendChild(link);
         link.click();
         window.document.body.removeChild(link);
+        
+        // Clean up the object URL
+        window.URL.revokeObjectURL(url);
         return;
       }
 
@@ -148,13 +155,21 @@ export function DocumentCard({
       }
 
       if (signedUrlData?.signedUrl) {
+        // Fetch the file and create a blob for proper download
+        const response = await fetch(signedUrlData.signedUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
         const link = window.document.createElement('a');
-        link.href = signedUrlData.signedUrl;
+        link.href = url;
         link.download = document.file_name;
-        link.target = '_blank';
+        link.style.display = 'none';
         window.document.body.appendChild(link);
         link.click();
         window.document.body.removeChild(link);
+        
+        // Clean up the object URL
+        window.URL.revokeObjectURL(url);
       }
     } catch (error) {
       console.error('Error downloading document:', error);

@@ -147,14 +147,50 @@ export function DocumentTable({
     return `${mb.toFixed(2)} MB`;
   };
 
-  const handleDownload = (document: CompanyDocument) => {
-    const link = window.document.createElement('a');
-    link.href = document.file_url;
-    link.download = document.file_name;
-    link.target = '_blank';
-    window.document.body.appendChild(link);
-    link.click();
-    window.document.body.removeChild(link);
+  const handleDownload = async (document: CompanyDocument) => {
+    try {
+      // Handle Supabase storage URLs - generate signed URL for proper download
+      let storageFilePath = document.file_url;
+      let bucketName = 'company-documents'; // default bucket
+      
+      if (document.file_url.includes('/load-documents/')) {
+        storageFilePath = document.file_url.split('/load-documents/')[1];
+        bucketName = 'load-documents';
+      } else if (document.file_url.includes('/company-documents/')) {
+        storageFilePath = document.file_url.split('/company-documents/')[1];
+        bucketName = 'company-documents';
+      }
+
+      // Generate signed URL for download
+      const { data: signedUrlData, error: urlError } = await supabase.storage
+        .from(bucketName)
+        .createSignedUrl(storageFilePath, 3600);
+
+      if (urlError) {
+        console.error('Error generating download URL:', urlError);
+        return;
+      }
+
+      if (signedUrlData?.signedUrl) {
+        // Fetch the file and create a blob for proper download
+        const response = await fetch(signedUrlData.signedUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = window.document.createElement('a');
+        link.href = url;
+        link.download = document.file_name;
+        link.style.display = 'none';
+        window.document.body.appendChild(link);
+        link.click();
+        window.document.body.removeChild(link);
+        
+        // Clean up the object URL
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Error downloading document:', error);
+    }
   };
 
   const handlePermanentDelete = async (documentId: string) => {
