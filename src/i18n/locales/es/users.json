@@ -1,0 +1,113 @@
+{
+  "page": {
+    "title": "Usuarios de la Empresa",
+    "subtitle_template": "{count} usuarios • {active} activos • {roles} roles diferentes",
+    "loading": "Cargando usuarios...",
+    "no_users": "No se encontraron usuarios",
+    "no_users_description": "Aún no hay usuarios en tu empresa. Invita a tu primer usuario para comenzar."
+  },
+  "actions": {
+    "invite_user": "Invitar Usuario",
+    "invite": "Invitar",
+    "view": "Ver",
+    "edit": "Editar",
+    "driver": "Conductor",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "search_placeholder": "Buscar usuarios...",
+    "clear_filters": "Limpiar Filtros",
+    "export": "Exportar",
+    "import": "Importar"
+  },
+  "stats": {
+    "total_users": "Total de Usuarios",
+    "active_users": "Usuarios Activos",
+    "pending_invitations": "Invitaciones Pendientes",
+    "recent_users": "Nuevos esta Semana"
+  },
+  "table": {
+    "headers": {
+      "user": "Usuario",
+      "email": "Email",
+      "phone": "Teléfono",
+      "role": "Rol",
+      "status": "Estado", 
+      "registration_date": "Fecha de Registro",
+      "actions": "Acciones"
+    },
+    "no_name": "Sin nombre",
+    "no_phone": "No especificado"
+  },
+  "tabs": {
+    "all_users": "Todos los Usuarios",
+    "all": "Todos",
+    "pending_activation": "Pendientes de Activación",
+    "pending": "Pendientes",
+    "all_description": "Lista de todos los usuarios activos en tu empresa",
+    "pending_title": "Invitaciones Pendientes",
+    "pending_description": "Usuarios que han sido invitados pero aún no han aceptado su invitación"
+  },
+  "status": {
+    "active": "Activo",
+    "pending": "Pendiente", 
+    "inactive": "Inactivo"
+  },
+  "roles": {
+    "superadmin": "Super Admin",
+    "company_owner": "Propietario de Empresa",
+    "operations_manager": "Gerente de Operaciones",
+    "general_manager": "Gerente General",
+    "safety_manager": "Gerente de Seguridad",
+    "senior_dispatcher": "Dispatcher Senior", 
+    "dispatcher": "Dispatcher",
+    "driver": "Conductor",
+    "multi_company_dispatcher": "Dispatcher Multi-Empresa"
+  },
+  "invite_dialog": {
+    "title": "Invitar Nuevo Usuario",
+    "description": "Envía una invitación por email para que se una a tu empresa.",
+    "form": {
+      "first_name": "Nombre",
+      "last_name": "Apellido",
+      "email": "Email",
+      "role": "Rol",
+      "first_name_placeholder": "Nombre",
+      "last_name_placeholder": "Apellido",
+      "email_placeholder": "usuario@ejemplo.com",
+      "role_placeholder": "Selecciona un rol"
+    },
+    "sending": "Enviando...",
+    "send_invitation": "Enviar Invitación"
+  },
+  "view_dialog": {
+    "title": "Detalles del Usuario",
+    "no_name": "Sin nombre"
+  },
+  "cards": {
+    "phone": "Teléfono:",
+    "role": "Rol:",
+    "status": "Estado:",
+    "registration": "Registro:"
+  },
+  "messages": {
+    "email_required": "Email y rol son requeridos",
+    "company_info_error": "No se pudo obtener la información de la empresa",
+    "invitation_sent": "Invitación Enviada",
+    "invitation_sent_description": "Se ha enviado una invitación a {name}. Recibirá un email con instrucciones para configurar su cuenta.",
+    "error_loading": "Error al cargar usuarios: {error}",
+    "error_inviting": "Error al enviar la invitación",
+    "delete_test_user_error": "Solo los superadministradores y propietarios de empresa pueden eliminar usuarios de prueba",
+    "test_user_deleted": "Usuario de Prueba Eliminado",
+    "test_user_already_deleted": "El usuario de prueba ya había sido eliminado anteriormente",
+    "test_user_deleted_success": "El usuario de prueba ha sido eliminado permanentemente del sistema",
+    "test_user_delete_error": "Error al eliminar el usuario de prueba",
+    "test_user_delete_unexpected": "Error inesperado al eliminar el usuario de prueba"
+  },
+  "role_options": [
+    { "value": "operations_manager", "label": "👨‍💼 Gerente de Operaciones" },
+    { "value": "dispatcher", "label": "📋 Dispatcher" },
+    { "value": "driver", "label": "🚛 Conductor" },
+    { "value": "multi_company_dispatcher", "label": "🏢 Dispatcher Multi-Empresa" }
+  ]
+}

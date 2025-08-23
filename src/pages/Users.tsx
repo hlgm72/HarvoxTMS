@@ -90,7 +90,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default function Users() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['users', 'common']);
   const { user, userRole } = useAuth();
   const { showSuccess, showError, showInfo } = useFleetNotifications();
   const queryClient = useQueryClient();
@@ -357,7 +357,9 @@ export default function Users() {
       calculateStats(usersList, userRole?.company_id);
     } catch (error) {
       console.error('❌ Error fetching users:', error);
-      showError(`Error al cargar usuarios: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      showError(t('users:messages.error_loading', { 
+        error: error instanceof Error ? error.message : 'Error desconocido' 
+      }));
     } finally {
       setLoading(false);
     }
@@ -416,7 +418,7 @@ export default function Users() {
 
   const handleDeleteTestUser = async () => {
     if (!userRole?.role || !['superadmin', 'company_owner'].includes(userRole.role)) {
-      showError('Solo los superadministradores y propietarios de empresa pueden eliminar usuarios de prueba');
+      showError(t('users:messages.delete_test_user_error'));
       return;
     }
 
@@ -426,19 +428,19 @@ export default function Users() {
       
       if (result.success) {
         showSuccess(
-          'Usuario de Prueba Eliminado',
+          t('users:messages.test_user_deleted'),
           result.alreadyDeleted 
-            ? 'El usuario de prueba ya había sido eliminado anteriormente'
-            : 'El usuario de prueba ha sido eliminado permanentemente del sistema'
+            ? t('users:messages.test_user_already_deleted')
+            : t('users:messages.test_user_deleted_success')
         );
         // Recargar la lista de usuarios
         fetchUsers();
       } else {
-        showError(result.error || 'Error al eliminar el usuario de prueba');
+        showError(result.error || t('users:messages.test_user_delete_error'));
       }
     } catch (error: any) {
       console.error('Error deleting test user:', error);
-      showError(error.message || 'Error inesperado al eliminar el usuario de prueba');
+      showError(error.message || t('users:messages.test_user_delete_unexpected'));
     } finally {
       setDeletingTestUser(false);
     }
@@ -523,12 +525,12 @@ export default function Users() {
     };
     
     if (!cleanedForm.email || !cleanedForm.role) {
-      showError('Email y rol son requeridos');
+      showError(t('users:messages.email_required'));
       return;
     }
 
     if (!userRole?.company_id) {
-      showError('No se pudo obtener la información de la empresa');
+      showError(t('users:messages.company_info_error'));
       return;
     }
 
@@ -584,8 +586,8 @@ export default function Users() {
         : cleanedForm.email;
 
       showSuccess(
-        'Invitación Enviada',
-        `Se ha enviado una invitación a ${displayName}. Recibirá un email con instrucciones para configurar su cuenta.`
+        t('users:messages.invitation_sent'),
+        t('users:messages.invitation_sent_description', { name: displayName })
       );
       setInviteDialogOpen(false);
       setInviteForm({ email: '', role: '', first_name: '', last_name: '' });
@@ -601,7 +603,7 @@ export default function Users() {
       
     } catch (error: any) {
       console.error('Error inviting user:', error);
-      showError(error.message || 'Error al enviar la invitación');
+      showError(error.message || t('users:messages.error_inviting'));
     } finally {
       setLoading(false);
     }
@@ -610,11 +612,11 @@ export default function Users() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Activo</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800">{t('users:status.active')}</Badge>;
       case 'pending':
-        return <Badge variant="secondary">Pendiente</Badge>;
+        return <Badge variant="secondary">{t('users:status.pending')}</Badge>;
       case 'inactive':
-        return <Badge variant="destructive">Inactivo</Badge>;
+        return <Badge variant="destructive">{t('users:status.inactive')}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -694,14 +696,18 @@ export default function Users() {
       {/* Page Toolbar */}
       <PageToolbar
         icon={UsersIcon}
-        title="Usuarios de la Empresa"
-        subtitle={`${filteredUsers.length} usuarios • ${filteredUsers.filter(u => u.status === 'active').length} activos • ${new Set(filteredUsers.map(u => u.role)).size} roles diferentes`}
+        title={t('users:page.title')}
+        subtitle={t('users:page.subtitle_template', { 
+          count: filteredUsers.length, 
+          active: filteredUsers.filter(u => u.status === 'active').length,
+          roles: new Set(filteredUsers.map(u => u.role)).size 
+        })}
         actions={
           <div className="flex items-center gap-2">
             <Button onClick={() => setInviteDialogOpen(true)} className="gap-2">
               <UserPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Invitar Usuario</span>
-              <span className="sm:hidden">Invitar</span>
+              <span className="hidden sm:inline">{t('users:actions.invite_user')}</span>
+              <span className="sm:hidden">{t('users:actions.invite')}</span>
             </Button>
           </div>
         }
@@ -736,7 +742,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total de Usuarios</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.total_users')}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-blue-600">{stats.totalUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-blue-100 rounded-full">
@@ -750,7 +756,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Usuarios Activos</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.active_users')}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.activeUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-green-100 rounded-full">
@@ -764,7 +770,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Invitaciones Pendientes</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.pending_invitations')}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-orange-600">{stats.pendingInvitations}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-orange-100 rounded-full">
@@ -778,7 +784,7 @@ export default function Users() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Nuevos esta Semana</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">{t('users:stats.recent_users')}</p>
                   <p className="text-2xl sm:text-3xl font-bold text-purple-600">{stats.recentUsers}</p>
                 </div>
                 <div className="p-2 sm:p-3 bg-purple-100 rounded-full">
@@ -799,14 +805,14 @@ export default function Users() {
             <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
               <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
                 <UserCheck className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Todos los Usuarios</span>
-                <span className="sm:hidden">Todos</span>
+                <span className="hidden sm:inline">{t('users:tabs.all_users')}</span>
+                <span className="sm:hidden">{t('users:tabs.all')}</span>
                 <span className="ml-1">({filteredUsers.length})</span>
               </TabsTrigger>
               <TabsTrigger value="pending" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
                 <UserX className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Pendientes de Activación</span>
-                <span className="sm:hidden">Pendientes</span>
+                <span className="hidden sm:inline">{t('users:tabs.pending_activation')}</span>
+                <span className="sm:hidden">{t('users:tabs.pending')}</span>
                 <span className="ml-1">({pendingUsers.length})</span>
               </TabsTrigger>
             </TabsList>
@@ -815,7 +821,7 @@ export default function Users() {
               <Card className="bg-white">
                 <CardHeader>
                   <CardDescription>
-                    Lista de todos los usuarios activos en tu empresa
+                    {t('users:tabs.all_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -823,13 +829,13 @@ export default function Users() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Usuario</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Teléfono</TableHead>
-                          <TableHead>Rol</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead>Fecha de Registro</TableHead>
-                          <TableHead className="text-right">Acciones</TableHead>
+                          <TableHead>{t('users:table.headers.user')}</TableHead>
+                          <TableHead>{t('users:table.headers.email')}</TableHead>
+                          <TableHead>{t('users:table.headers.phone')}</TableHead>
+                          <TableHead>{t('users:table.headers.role')}</TableHead>
+                          <TableHead>{t('users:table.headers.status')}</TableHead>
+                          <TableHead>{t('users:table.headers.registration_date')}</TableHead>
+                          <TableHead className="text-right">{t('users:table.headers.actions')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -853,16 +859,16 @@ export default function Users() {
                                </div>
                             )}
                             <div>
-                              <p className="font-medium">
-                                {user.first_name && user.last_name
-                                  ? `${user.first_name} ${user.last_name}`
-                                  : 'Sin nombre'}
-                              </p>
+                               <p className="font-medium">
+                                 {user.first_name && user.last_name
+                                   ? `${user.first_name} ${user.last_name}`
+                                   : t('users:table.no_name')}
+                               </p>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.phone || 'No especificado'}</TableCell>
+                        <TableCell>{user.phone || t('users:table.no_phone')}</TableCell>
                          <TableCell>
                            {user.role.split(', ').map((roleLabel, index) => {
                               // Convertir el label de vuelta al rol original para obtener el badge correcto
@@ -961,46 +967,46 @@ export default function Users() {
                              </div>
                           )}
                           <div className="flex-1">
-                            <p className="font-medium">
-                              {user.first_name && user.last_name
-                                ? `${user.first_name} ${user.last_name}`
-                                : 'Sin nombre'}
-                            </p>
+                             <p className="font-medium">
+                               {user.first_name && user.last_name
+                                 ? `${user.first_name} ${user.last_name}`
+                                 : t('users:table.no_name')}
+                             </p>
                             <p className="text-sm text-muted-foreground">{user.email}</p>
                           </div>
                         </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Teléfono:</span>
-                              <span className="text-sm">{user.phone || 'No especificado'}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Rol:</span>
-                              <div className="flex flex-wrap gap-1">
-                                 {user.role.split(', ').map((roleLabel, index) => {
-                                   // Convertir el label de vuelta al rol original para obtener el badge correcto
-                                   const originalRole = Object.entries({
-                                       'superadmin': getRoleLabel('superadmin'),
-                                       'company_owner': getRoleLabel('company_owner'),
-                                       'operations_manager': getRoleLabel('operations_manager'),
-                                       'dispatcher': getRoleLabel('dispatcher'),
-                                       'driver': getRoleLabel('driver'),
-                                       'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
-                                     }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                                   
-                                   return getRoleBadge(originalRole);
-                                 })}
-                              </div>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Estado:</span>
-                              {getStatusBadge(user.status)}
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Registro:</span>
-                              <span className="text-sm">{formatDateAuto(user.created_at)}</span>
-                            </div>
-                          </div>
+                           <div className="space-y-2">
+                             <div className="flex justify-between items-center">
+                               <span className="text-sm text-muted-foreground">{t('users:cards.phone')}</span>
+                               <span className="text-sm">{user.phone || t('users:table.no_phone')}</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                               <span className="text-sm text-muted-foreground">{t('users:cards.role')}</span>
+                               <div className="flex flex-wrap gap-1">
+                                  {user.role.split(', ').map((roleLabel, index) => {
+                                    // Convertir el label de vuelta al rol original para obtener el badge correcto
+                                    const originalRole = Object.entries({
+                                        'superadmin': getRoleLabel('superadmin'),
+                                        'company_owner': getRoleLabel('company_owner'),
+                                        'operations_manager': getRoleLabel('operations_manager'),
+                                        'dispatcher': getRoleLabel('dispatcher'),
+                                        'driver': getRoleLabel('driver'),
+                                        'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
+                                      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                    
+                                    return getRoleBadge(originalRole);
+                                  })}
+                               </div>
+                             </div>
+                             <div className="flex justify-between items-center">
+                               <span className="text-sm text-muted-foreground">{t('users:cards.status')}</span>
+                               {getStatusBadge(user.status)}
+                             </div>
+                             <div className="flex justify-between items-center">
+                               <span className="text-sm text-muted-foreground">{t('users:cards.registration')}</span>
+                               <span className="text-sm">{formatDateAuto(user.created_at)}</span>
+                             </div>
+                           </div>
                            <div className="flex justify-end gap-2 mt-4">
                             <Button
                               variant="outline"
@@ -1009,10 +1015,10 @@ export default function Users() {
                                 setSelectedUser(user);
                                 setViewDialogOpen(true);
                               }}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              Ver
-                            </Button>
+                             >
+                               <Eye className="h-4 w-4 mr-2" />
+                               {t('users:actions.view')}
+                             </Button>
                             
                             {/* Botón de editar conductor para vista de tarjetas */}
                             {user.role.toLowerCase().includes('driver') && (
@@ -1024,10 +1030,10 @@ export default function Users() {
                                   setSelectedDriverName(`${user.first_name} ${user.last_name}` || user.email);
                                   setEditDriverModalOpen(true);
                                 }}
-                              >
-                                <Truck className="h-4 w-4 mr-2" />
-                                Conductor
-                              </Button>
+                               >
+                                 <Truck className="h-4 w-4 mr-2" />
+                                 {t('users:actions.driver')}
+                               </Button>
                             )}
                             
                             <Button
@@ -1037,10 +1043,10 @@ export default function Users() {
                                 setSelectedUser(user);
                                 setEditDialogOpen(true);
                               }}
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Editar
-                            </Button>
+                             >
+                               <Edit className="h-4 w-4 mr-2" />
+                               {t('users:actions.edit')}
+                             </Button>
                             
                             {/* Botón de acciones de usuario para vista de tarjetas */}
                             <UserActionButton
@@ -1061,8 +1067,8 @@ export default function Users() {
           
           <TabsContent value="pending" className="space-y-6">
             <PendingInvitationsSection 
-              title="Invitaciones Pendientes"
-              description="Usuarios que han sido invitados pero aún no han aceptado su invitación"
+              title={t('users:tabs.pending_title')}
+              description={t('users:tabs.pending_description')}
               onInvitationsUpdated={fetchUsers}
             />
           </TabsContent>
@@ -1074,48 +1080,48 @@ export default function Users() {
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
         <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
           <DialogHeader>
-            <DialogTitle>Invitar Nuevo Usuario</DialogTitle>
+            <DialogTitle>{t('users:invite_dialog.title')}</DialogTitle>
             <DialogDescription>
-              Envía una invitación por email para que se una a tu empresa.
+              {t('users:invite_dialog.description')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleInviteUser} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name">Nombre</Label>
+                <Label htmlFor="first_name">{t('users:invite_dialog.form.first_name')}</Label>
                 <Input
                   id="first_name"
                   value={inviteForm.first_name}
                   onChange={(e) => setInviteForm({ ...inviteForm, first_name: e.target.value })}
-                  placeholder="Nombre"
+                  placeholder={t('users:invite_dialog.form.first_name_placeholder')}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Apellido</Label>
+                <Label htmlFor="last_name">{t('users:invite_dialog.form.last_name')}</Label>
                 <Input
                   id="last_name"
                   value={inviteForm.last_name}
                   onChange={(e) => setInviteForm({ ...inviteForm, last_name: e.target.value })}
-                  placeholder="Apellido"
+                  placeholder={t('users:invite_dialog.form.last_name_placeholder')}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('users:invite_dialog.form.email')}</Label>
               <Input
                 id="email"
                 type="email"
                 value={inviteForm.email}
                 onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
-                placeholder="usuario@ejemplo.com"
+                placeholder={t('users:invite_dialog.form.email_placeholder')}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="role">Rol</Label>
+              <Label htmlFor="role">{t('users:invite_dialog.form.role')}</Label>
               <Select value={inviteForm.role} onValueChange={(value) => setInviteForm({ ...inviteForm, role: value })}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un rol" />
+                  <SelectValue placeholder={t('users:invite_dialog.form.role_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {ROLE_OPTIONS.map((option) => (
@@ -1128,10 +1134,10 @@ export default function Users() {
             </div>
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
-                Cancelar
+                {t('users:actions.cancel')}
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? 'Enviando...' : 'Enviar Invitación'}
+                {loading ? t('users:invite_dialog.sending') : t('users:invite_dialog.send_invitation')}
               </Button>
             </div>
           </form>
@@ -1162,7 +1168,7 @@ export default function Users() {
                 <h2 className="text-xl font-semibold">
                   {selectedUser?.first_name && selectedUser.last_name
                     ? `${selectedUser.first_name} ${selectedUser.last_name}`
-                    : 'Sin nombre'}
+                    : t('users:view_dialog.no_name')}
                 </h2>
                 <p className="text-muted-foreground">{selectedUser?.email}</p>
               </div>

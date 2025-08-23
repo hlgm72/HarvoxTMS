@@ -1,0 +1,113 @@
+{
+  "page": {
+    "title": "Company Users",
+    "subtitle_template": "{count} users • {active} active • {roles} different roles",
+    "loading": "Loading users...",
+    "no_users": "No users found",
+    "no_users_description": "There are no users in your company yet. Invite your first user to get started."
+  },
+  "actions": {
+    "invite_user": "Invite User",
+    "invite": "Invite",
+    "view": "View",
+    "edit": "Edit",
+    "driver": "Driver",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "search_placeholder": "Search users...",
+    "clear_filters": "Clear Filters",
+    "export": "Export",
+    "import": "Import"
+  },
+  "stats": {
+    "total_users": "Total Users",
+    "active_users": "Active Users", 
+    "pending_invitations": "Pending Invitations",
+    "recent_users": "New This Week"
+  },
+  "table": {
+    "headers": {
+      "user": "User",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "status": "Status",
+      "registration_date": "Registration Date",
+      "actions": "Actions"
+    },
+    "no_name": "No name",
+    "no_phone": "Not specified"
+  },
+  "tabs": {
+    "all_users": "All Users",
+    "all": "All",
+    "pending_activation": "Pending Activation",
+    "pending": "Pending",
+    "all_description": "List of all active users in your company",
+    "pending_title": "Pending Invitations",
+    "pending_description": "Users who have been invited but have not yet accepted their invitation"
+  },
+  "status": {
+    "active": "Active",
+    "pending": "Pending",
+    "inactive": "Inactive"
+  },
+  "roles": {
+    "superadmin": "Super Admin",
+    "company_owner": "Company Owner",
+    "operations_manager": "Operations Manager",
+    "general_manager": "General Manager",
+    "safety_manager": "Safety Manager", 
+    "senior_dispatcher": "Senior Dispatcher",
+    "dispatcher": "Dispatcher",
+    "driver": "Driver",
+    "multi_company_dispatcher": "Multi-Company Dispatcher"
+  },
+  "invite_dialog": {
+    "title": "Invite New User",
+    "description": "Send an email invitation to join your company.",
+    "form": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "role": "Role",
+      "first_name_placeholder": "First Name",
+      "last_name_placeholder": "Last Name", 
+      "email_placeholder": "user@example.com",
+      "role_placeholder": "Select a role"
+    },
+    "sending": "Sending...",
+    "send_invitation": "Send Invitation"
+  },
+  "view_dialog": {
+    "title": "User Details",
+    "no_name": "No name"
+  },
+  "cards": {
+    "phone": "Phone:",
+    "role": "Role:",
+    "status": "Status:",
+    "registration": "Registration:"
+  },
+  "messages": {
+    "email_required": "Email and role are required",
+    "company_info_error": "Could not get company information",
+    "invitation_sent": "Invitation Sent",
+    "invitation_sent_description": "An invitation has been sent to {name}. They will receive an email with instructions to set up their account.",
+    "error_loading": "Error loading users: {error}",
+    "error_inviting": "Error sending invitation",
+    "delete_test_user_error": "Only superadmins and company owners can delete test users",
+    "test_user_deleted": "Test User Deleted",
+    "test_user_already_deleted": "The test user had already been deleted previously",
+    "test_user_deleted_success": "The test user has been permanently deleted from the system",
+    "test_user_delete_error": "Error deleting test user",
+    "test_user_delete_unexpected": "Unexpected error deleting test user"
+  },
+  "role_options": [
+    { "value": "operations_manager", "label": "👨‍💼 Operations Manager" },
+    { "value": "dispatcher", "label": "📋 Dispatcher" },
+    { "value": "driver", "label": "🚛 Driver" },
+    { "value": "multi_company_dispatcher", "label": "🏢 Multi-Company Dispatcher" }
+  ]
+}
