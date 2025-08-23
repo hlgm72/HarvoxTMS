@@ -128,7 +128,9 @@
     },
     "labels": {
       "effective_from": "Vigente desde",
-      "effective_until": "Vigente hasta"
+      "effective_until": "Vigente hasta",
+      "applied_role": "Rol Aplicado",
+      "user": "Usuario"
     },
     "form": {
       "driver": "Conductor",
@@ -145,6 +147,8 @@
       "amount": "Monto ($)",
       "frequency": "Frecuencia",
       "select_frequency": "Seleccionar frecuencia",
+      "select_user_type": "Seleccionar tipo de usuario",
+      "user_type": "Tipo de Usuario",
       "weekly": "Semanal",
       "biweekly": "Quincenal", 
       "monthly": "Mensual",

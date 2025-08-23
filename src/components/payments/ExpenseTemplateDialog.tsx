@@ -386,7 +386,7 @@ export function ExpenseTemplateDialog({
           {mode === 'edit' && (
             <>
               <div className="space-y-2">
-                <Label>Rol Aplicado</Label>
+                <Label>{t("deductions.labels.applied_role")}</Label>
                 <Input
                   value={template?.applied_to_role === 'driver' ? t("deductions.form.driver") : template?.applied_to_role === 'dispatcher' ? t("deductions.form.dispatcher") : t("deductions.form.not_specified")}
                   disabled
@@ -394,7 +394,7 @@ export function ExpenseTemplateDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label>Usuario</Label>
+                <Label>{t("deductions.labels.user")}</Label>
                 <Input
                   value={`${template?.user_profile?.first_name || template?.driver_profile?.first_name || ''} ${template?.user_profile?.last_name || template?.driver_profile?.last_name || ''}`}
                   disabled

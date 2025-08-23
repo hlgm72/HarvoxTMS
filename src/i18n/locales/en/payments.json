@@ -128,7 +128,9 @@
     },
     "labels": {
       "effective_from": "Effective From",
-      "effective_until": "Effective Until"
+      "effective_until": "Effective Until",
+      "applied_role": "Applied Role",
+      "user": "User"
     },
     "form": {
       "driver": "Driver",
@@ -145,6 +147,8 @@
       "amount": "Amount ($)",
       "frequency": "Frequency",
       "select_frequency": "Select frequency",
+      "select_user_type": "Select user type",
+      "user_type": "User Type",
       "weekly": "Weekly",
       "biweekly": "Biweekly",
       "monthly": "Monthly", 
