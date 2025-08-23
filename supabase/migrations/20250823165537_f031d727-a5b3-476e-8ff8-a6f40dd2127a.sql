@@ -1,0 +1,247 @@
+-- Drop and recreate the function to fix ambiguous column reference
+DROP FUNCTION IF EXISTS public.create_or_update_company_with_validation(jsonb, uuid);
+
+CREATE OR REPLACE FUNCTION public.create_or_update_company_with_validation(company_data jsonb, target_company_id uuid DEFAULT NULL::uuid)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  current_user_id UUID;
+  result_company RECORD;
+  operation_type TEXT;
+  is_superadmin BOOLEAN := false;
+BEGIN
+  -- Get current authenticated user
+  current_user_id := auth.uid();
+  IF current_user_id IS NULL THEN
+    RAISE EXCEPTION 'Usuario no autenticado';
+  END IF;
+
+  -- Check if user is superadmin
+  SELECT EXISTS (
+    SELECT 1 FROM user_company_roles ucr
+    WHERE ucr.user_id = current_user_id
+    AND ucr.role = 'superadmin'
+    AND ucr.is_active = true
+  ) INTO is_superadmin;
+
+  -- Determine operation type
+  operation_type := CASE WHEN target_company_id IS NOT NULL THEN 'UPDATE' ELSE 'CREATE' END;
+
+  -- ================================
+  -- 1. VALIDATE PERMISSIONS
+  -- ================================
+  
+  IF operation_type = 'UPDATE' THEN
+    -- For updates, check if user is company owner or superadmin
+    IF NOT is_superadmin AND NOT EXISTS (
+      SELECT 1 FROM user_company_roles ucr
+      WHERE ucr.user_id = current_user_id
+      AND ucr.company_id = target_company_id
+      AND ucr.role IN ('company_owner', 'superadmin')
+      AND ucr.is_active = true
+    ) THEN
+      RAISE EXCEPTION 'Sin permisos para modificar esta empresa';
+    END IF;
+
+    -- Validate company exists
+    IF NOT EXISTS (SELECT 1 FROM companies c WHERE c.id = target_company_id) THEN
+      RAISE EXCEPTION 'Empresa no encontrada';
+    END IF;
+  ELSE
+    -- For creation, only superadmins can create companies
+    IF NOT is_superadmin THEN
+      RAISE EXCEPTION 'Solo los superadministradores pueden crear empresas';
+    END IF;
+  END IF;
+
+  -- ================================
+  -- 2. VALIDATE BUSINESS RULES
+  -- ================================
+  
+  -- Validate required fields
+  IF NULLIF(company_data->>'name', '') IS NULL THEN
+    RAISE EXCEPTION 'name es requerido';
+  END IF;
+
+  IF NULLIF(company_data->>'street_address', '') IS NULL THEN
+    RAISE EXCEPTION 'street_address es requerido';
+  END IF;
+
+  IF NULLIF(company_data->>'state_id', '') IS NULL THEN
+    RAISE EXCEPTION 'state_id es requerido';
+  END IF;
+
+  IF NULLIF(company_data->>'zip_code', '') IS NULL THEN
+    RAISE EXCEPTION 'zip_code es requerido';
+  END IF;
+
+  -- Check for duplicate company names (exclude current company if updating)
+  IF EXISTS (
+    SELECT 1 FROM companies c
+    WHERE LOWER(TRIM(c.name)) = LOWER(TRIM(company_data->>'name'))
+    AND (target_company_id IS NULL OR c.id != target_company_id)
+  ) THEN
+    RAISE EXCEPTION 'Ya existe una empresa con el nombre "%"', company_data->>'name';
+  END IF;
+
+  -- Validate DOT number uniqueness if provided
+  IF NULLIF(company_data->>'dot_number', '') IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1 FROM companies c
+      WHERE c.dot_number = company_data->>'dot_number'
+      AND (target_company_id IS NULL OR c.id != target_company_id)
+    ) THEN
+      RAISE EXCEPTION 'Ya existe una empresa con el número DOT "%"', company_data->>'dot_number';
+    END IF;
+  END IF;
+
+  -- Validate MC number uniqueness if provided
+  IF NULLIF(company_data->>'mc_number', '') IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1 FROM companies c
+      WHERE c.mc_number = company_data->>'mc_number'
+      AND (target_company_id IS NULL OR c.id != target_company_id)
+    ) THEN
+      RAISE EXCEPTION 'Ya existe una empresa con el número MC "%"', company_data->>'mc_number';
+    END IF;
+  END IF;
+
+  -- ================================
+  -- 3. CREATE OR UPDATE COMPANY
+  -- ================================
+  
+  IF operation_type = 'CREATE' THEN
+    INSERT INTO companies (
+      name,
+      street_address,
+      state_id,
+      zip_code,
+      city,
+      phone,
+      email,
+      dot_number,
+      mc_number,
+      ein,
+      owner_name,
+      owner_email,
+      owner_phone,
+      owner_title,
+      plan_type,
+      max_users,
+      max_vehicles,
+      default_payment_frequency,
+      payment_cycle_start_day,
+      payment_day,
+      default_leasing_percentage,
+      default_factoring_percentage,
+      default_dispatching_percentage,
+      load_assignment_criteria,
+      contract_start_date,
+      logo_url,
+      status
+    ) VALUES (
+      company_data->>'name',
+      company_data->>'street_address',
+      (company_data->>'state_id')::CHAR(2),
+      company_data->>'zip_code',
+      NULLIF(company_data->>'city', ''),
+      NULLIF(company_data->>'phone', ''),
+      NULLIF(company_data->>'email', ''),
+      NULLIF(company_data->>'dot_number', ''),
+      NULLIF(company_data->>'mc_number', ''),
+      NULLIF(company_data->>'ein', ''),
+      NULLIF(company_data->>'owner_name', ''),
+      NULLIF(company_data->>'owner_email', ''),
+      NULLIF(company_data->>'owner_phone', ''),
+      NULLIF(company_data->>'owner_title', ''),
+      COALESCE(company_data->>'plan_type', 'basic'),
+      COALESCE((company_data->>'max_users')::INTEGER, 5),
+      COALESCE((company_data->>'max_vehicles')::INTEGER, 10),
+      COALESCE(company_data->>'default_payment_frequency', 'weekly'),
+      COALESCE((company_data->>'payment_cycle_start_day')::INTEGER, 1),
+      COALESCE(company_data->>'payment_day', 'friday'),
+      COALESCE((company_data->>'default_leasing_percentage')::NUMERIC, 5.00),
+      COALESCE((company_data->>'default_factoring_percentage')::NUMERIC, 3.00),
+      COALESCE((company_data->>'default_dispatching_percentage')::NUMERIC, 5.00),
+      COALESCE(company_data->>'load_assignment_criteria', 'delivery_date'),
+      COALESCE((company_data->>'contract_start_date')::DATE, CURRENT_DATE),
+      NULLIF(company_data->>'logo_url', ''),
+      COALESCE(company_data->>'status', 'active')
+    ) RETURNING * INTO result_company;
+    
+    -- Auto-assign creator as company owner if not superadmin creating for others
+    IF NOT EXISTS (
+      SELECT 1 FROM user_company_roles ucr
+      WHERE ucr.user_id = current_user_id
+      AND ucr.company_id = result_company.id
+    ) THEN
+      INSERT INTO user_company_roles (
+        user_id,
+        company_id,
+        role,
+        is_active,
+        assigned_by,
+        assigned_at
+      ) VALUES (
+        current_user_id,
+        result_company.id,
+        'company_owner',
+        true,
+        current_user_id,
+        now()
+      );
+    END IF;
+  ELSE
+    UPDATE companies c SET
+      name = company_data->>'name',
+      street_address = company_data->>'street_address',
+      state_id = (company_data->>'state_id')::CHAR(2),
+      zip_code = company_data->>'zip_code',
+      city = NULLIF(company_data->>'city', ''),
+      phone = NULLIF(company_data->>'phone', ''),
+      email = NULLIF(company_data->>'email', ''),
+      dot_number = NULLIF(company_data->>'dot_number', ''),
+      mc_number = NULLIF(company_data->>'mc_number', ''),
+      ein = NULLIF(company_data->>'ein', ''),
+      owner_name = NULLIF(company_data->>'owner_name', ''),
+      owner_email = NULLIF(company_data->>'owner_email', ''),
+      owner_phone = NULLIF(company_data->>'owner_phone', ''),
+      owner_title = NULLIF(company_data->>'owner_title', ''),
+      plan_type = COALESCE(company_data->>'plan_type', c.plan_type),
+      max_users = COALESCE((company_data->>'max_users')::INTEGER, c.max_users),
+      max_vehicles = COALESCE((company_data->>'max_vehicles')::INTEGER, c.max_vehicles),
+      default_payment_frequency = COALESCE(company_data->>'default_payment_frequency', c.default_payment_frequency),
+      payment_cycle_start_day = COALESCE((company_data->>'payment_cycle_start_day')::INTEGER, c.payment_cycle_start_day),
+      payment_day = COALESCE(company_data->>'payment_day', c.payment_day),
+      default_leasing_percentage = COALESCE((company_data->>'default_leasing_percentage')::NUMERIC, c.default_leasing_percentage),
+      default_factoring_percentage = COALESCE((company_data->>'default_factoring_percentage')::NUMERIC, c.default_factoring_percentage),
+      default_dispatching_percentage = COALESCE((company_data->>'default_dispatching_percentage')::NUMERIC, c.default_dispatching_percentage),
+      load_assignment_criteria = COALESCE(company_data->>'load_assignment_criteria', c.load_assignment_criteria),
+      contract_start_date = COALESCE((company_data->>'contract_start_date')::DATE, c.contract_start_date),
+      logo_url = COALESCE(NULLIF(company_data->>'logo_url', ''), c.logo_url),
+      status = COALESCE(company_data->>'status', c.status),
+      updated_at = now()
+    WHERE c.id = target_company_id
+    RETURNING * INTO result_company;
+  END IF;
+
+  -- Return success result
+  RETURN jsonb_build_object(
+    'success', true,
+    'operation', operation_type,
+    'message', CASE 
+      WHEN operation_type = 'CREATE' THEN 'Empresa creada exitosamente'
+      ELSE 'Empresa actualizada exitosamente'
+    END,
+    'company', row_to_json(result_company),
+    'processed_by', current_user_id,
+    'processed_at', now()
+  );
+
+EXCEPTION WHEN OTHERS THEN
+  RAISE EXCEPTION 'Error en operación ACID de empresa: %', SQLERRM;
+END;
+$function$;

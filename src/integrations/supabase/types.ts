@@ -3164,7 +3164,7 @@ export type Database = {
         Returns: Json
       }
       create_or_update_company_with_validation: {
-        Args: { company_data: Json; company_id?: string }
+        Args: { company_data: Json; target_company_id?: string }
         Returns: Json
       }
       create_or_update_document_with_validation: {
