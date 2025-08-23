@@ -17,6 +17,7 @@ import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useConsolidatedDispatchers } from "@/hooks/useConsolidatedDispatchers";
 import { useATMInput } from "@/hooks/useATMInput";
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
+import { useTranslation } from 'react-i18next';
 
 interface UnifiedOtherIncomeFormProps {
   onClose: () => void;
@@ -34,6 +35,7 @@ interface UnifiedOtherIncomeFormProps {
 }
 
 export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData }: UnifiedOtherIncomeFormProps) {
+  const { t } = useTranslation(['payments', 'common']);
   const isEditing = !!editData;
   
   const [description, setDescription] = useState(editData?.description || "");
@@ -99,14 +101,14 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   };
 
   const incomeTypes = [
-    "Bonus",
-    "Commission", 
-    "Overtime",
-    "Fuel Bonus",
-    "Safety Bonus",
-    "Referral Bonus",
-    "Holiday Pay",
-    "Other"
+    { key: "Bonus", label: t('income.form.income_types.bonus') },
+    { key: "Commission", label: t('income.form.income_types.commission') }, 
+    { key: "Overtime", label: t('income.form.income_types.overtime') },
+    { key: "Fuel Bonus", label: t('income.form.income_types.fuel_bonus') },
+    { key: "Safety Bonus", label: t('income.form.income_types.safety_bonus') },
+    { key: "Referral Bonus", label: t('income.form.income_types.referral_bonus') },
+    { key: "Holiday Pay", label: t('income.form.income_types.holiday_pay') },
+    { key: "Other", label: t('income.form.income_types.other') }
   ];
 
   const currentUsers = userType === "driver" ? drivers : dispatchers;
@@ -117,17 +119,17 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
         <UserTypeSelector
           value={userType}
           onChange={setUserType}
-          label="Aplicar Ingreso a"
+          label={t('income.form.apply_to')}
         />
       )}
 
       <div className="space-y-2">
         <Label htmlFor="user">
-          {userType === "driver" ? "Conductor" : "Despachador"}
+          {userType === "driver" ? t('income.form.driver') : t('income.form.dispatcher')}
         </Label>
         <Select value={selectedUser} onValueChange={setSelectedUser} disabled={isEditing}>
           <SelectTrigger>
-            <SelectValue placeholder={`Seleccionar ${userType === "driver" ? "conductor" : "despachador"}`} />
+            <SelectValue placeholder={`${t(userType === "driver" ? 'income.form.select_driver' : 'income.form.select_dispatcher')}`} />
           </SelectTrigger>
           <SelectContent>
             {currentUsers.map((user) => (
@@ -143,15 +145,15 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="income-type">Tipo de Ingreso</Label>
+        <Label htmlFor="income-type">{t('income.form.income_type')}</Label>
         <Select value={incomeType} onValueChange={setIncomeType}>
           <SelectTrigger>
-            <SelectValue placeholder="Seleccionar tipo de ingreso" />
+            <SelectValue placeholder={t('income.form.select_income_type')} />
           </SelectTrigger>
           <SelectContent>
             {incomeTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
+              <SelectItem key={type.key} value={type.key}>
+                {type.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -159,7 +161,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="date">Fecha del Ingreso</Label>
+        <Label htmlFor="date">{t('income.form.income_date')}</Label>
         <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -170,7 +172,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? formatPrettyDate(date) : <span>Seleccionar fecha</span>}
+              {date ? formatPrettyDate(date) : <span>{t('income.form.select_date')}</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -193,42 +195,42 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="amount">Monto</Label>
+        <Label htmlFor="amount">{t('income.form.amount')}</Label>
         <Input
           id="amount"
           value={atmInput.displayValue}
           onChange={(e) => atmInput.setValue(parseFloat(e.target.value) || 0)}
           onKeyDown={atmInput.handleKeyDown}
           onPaste={atmInput.handlePaste}
-          placeholder="$0.00"
+          placeholder={t('income.form.amount_placeholder')}
           required
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="reference-number">Número de Referencia (Opcional)</Label>
+        <Label htmlFor="reference-number">{t('income.form.reference_number')}</Label>
         <Input
           id="reference-number"
           value={referenceNumber}
           onChange={(e) => setReferenceNumber(e.target.value)}
-          placeholder="Ej: REF-001"
+          placeholder={t('income.form.reference_placeholder')}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">{t('income.form.description')}</Label>
         <Input
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Descripción del ingreso adicional"
+          placeholder={t('income.form.description_placeholder')}
           required
         />
       </div>
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onClose}>
-          Cancelar
+          {t('income.form.cancel')}
         </Button>
         <Button 
           type="submit" 
@@ -236,8 +238,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
                    !selectedUser || !description || atmInput.numericValue <= 0 || !date}
         >
           {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
-           (isEditing ? "Actualizando..." : "Creando...") : 
-           (isEditing ? "Actualizar Ingreso" : "Crear Ingreso")}
+           (isEditing ? t('income.form.updating') : t('income.form.creating')) : 
+           (isEditing ? t('income.form.update') : t('income.form.create'))}
         </Button>
       </div>
     </form>
