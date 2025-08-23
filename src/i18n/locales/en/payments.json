@@ -82,6 +82,7 @@
       "edit_title": "Edit Eventual Deduction",
       "create_description": "Create a one-time deduction for a specific driver in a given payment period.",
       "creating": "Creating...",
+      "updating": "Updating...",
       "create_button": "Create Eventual Deduction", 
       "update_button": "Update Deduction",
       "delete_title": "Delete eventual deduction?",
@@ -93,7 +94,16 @@
       "error_delete": "Could not delete deduction",
       "placeholder": "Describe the reason for this eventual deduction (e.g., Speeding fine, Tire repair, etc.)",
       "no_records_title": "No eventual deductions",
-      "no_records_description": "Eventual deductions you create will appear here"
+      "no_records_description": "Eventual deductions you create will appear here",
+      "expense_date": "Expense Date",
+      "expense_date_required": "Expense Date *",
+      "description_label": "Description/Reason",
+      "atm_helper": "Enter numbers as you would in an ATM",
+      "checking_period": "Checking payment period for selected date...",
+      "no_period_found": "No open payment period found for date {date}.",
+      "select_period_date": "Select a date within an open payment period.",
+      "period_found": "✓ Period found: {start} - {end}",
+      "month": "Month"
     },
     "template": {
       "create_title": "Create New Deduction",
@@ -172,6 +182,20 @@
       "create": "Create",
       "update": "Update",
       "deduction": "Deduction"
+    },
+    "months": {
+      "january": "January",
+      "february": "February", 
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
     },
     "placeholders": {
       "year": "Year",

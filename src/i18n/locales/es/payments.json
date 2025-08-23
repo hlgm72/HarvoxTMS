@@ -82,6 +82,7 @@
       "edit_title": "Editar Deducción Eventual", 
       "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado.",
       "creating": "Creando...",
+      "updating": "Actualizando...",
       "create_button": "Crear Deducción Eventual",
       "update_button": "Actualizar Deducción",
       "delete_title": "¿Eliminar deducción eventual?",
@@ -93,7 +94,16 @@
       "error_delete": "No se pudo eliminar la deducción",
       "placeholder": "Describe el motivo de esta deducción eventual (ej: Multa por exceso de velocidad, Reparación de neumático, etc.)",
       "no_records_title": "No hay deducciones eventuales",
-      "no_records_description": "Las deducciones eventuales que crees aparecerán aquí"
+      "no_records_description": "Las deducciones eventuales que crees aparecerán aquí",
+      "expense_date": "Fecha del Gasto",
+      "expense_date_required": "Fecha del Gasto *",
+      "description_label": "Descripción/Motivo",
+      "atm_helper": "Introduce los números como en un cajero automático",
+      "checking_period": "Verificando período de pago para la fecha seleccionada...",
+      "no_period_found": "No hay un período de pago abierto para la fecha {date}.",
+      "select_period_date": "Selecciona una fecha que esté dentro de un período de pago abierto.",
+      "period_found": "✓ Período encontrado: {start} - {end}",
+      "month": "Mes"
     },
     "template": {
       "create_title": "Crear Nueva Deducción",
@@ -172,6 +182,20 @@
       "create": "Crear",
       "update": "Actualizar",
       "deduction": "Deducción"
+    },
+    "months": {
+      "january": "Enero",
+      "february": "Febrero",
+      "march": "Marzo", 
+      "april": "Abril",
+      "may": "Mayo",
+      "june": "Junio",
+      "july": "Julio",
+      "august": "Agosto",
+      "september": "Septiembre",
+      "october": "Octubre",
+      "november": "Noviembre",
+      "december": "Diciembre"
     },
     "placeholders": {
       "year": "Año",

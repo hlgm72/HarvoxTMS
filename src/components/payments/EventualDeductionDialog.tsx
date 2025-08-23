@@ -379,7 +379,7 @@ export function EventualDeductionDialog({
           />
 
           <div className="space-y-2">
-            <Label htmlFor="user">{selectedRole === "driver" ? "Conductor" : "Despachador"}</Label>
+            <Label htmlFor="user">{selectedRole === "driver" ? t("deductions.form.driver") : t("deductions.form.dispatcher")}</Label>
             <Popover open={driverComboboxOpen} onOpenChange={setDriverComboboxOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -390,14 +390,14 @@ export function EventualDeductionDialog({
                 >
                   {formData.user_id
                     ? users.find((user) => user.user_id === formData.user_id)?.first_name + " " + users.find((user) => user.user_id === formData.user_id)?.last_name
-                    : `Seleccionar ${selectedRole === "driver" ? "conductor" : "despachador"}...`}
+                    : `${selectedRole === "driver" ? t("deductions.form.select_driver") : t("deductions.form.select_dispatcher")}`}
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full p-0" align="start">
                 <Command>
-                  <CommandInput placeholder={`Buscar ${selectedRole === "driver" ? "conductor" : "despachador"}...`} />
-                  <CommandEmpty>No se encontró {selectedRole === "driver" ? "conductor" : "despachador"}.</CommandEmpty>
+                  <CommandInput placeholder={selectedRole === "driver" ? t("deductions.form.search_driver") : t("deductions.form.search_dispatcher")} />
+                  <CommandEmpty>{selectedRole === "driver" ? t("deductions.form.no_drivers_found") : t("deductions.form.no_dispatchers_found")}</CommandEmpty>
                   <CommandList>
                     <CommandGroup>
                       {users.map((user) => (
@@ -429,7 +429,7 @@ export function EventualDeductionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Fecha del Gasto <span className="text-red-500">*</span></Label>
+            <Label>{t("deductions.eventual.expense_date_required")}</Label>
             <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -440,7 +440,7 @@ export function EventualDeductionDialog({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expenseDate ? formatPrettyDate(expenseDate) : "Seleccionar fecha"}
+                  {expenseDate ? formatPrettyDate(expenseDate) : t("deductions.form.select_date")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -461,21 +461,21 @@ export function EventualDeductionDialog({
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Mes" />
+                        <SelectValue placeholder={t("deductions.eventual.month")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="enero">Enero</SelectItem>
-                        <SelectItem value="febrero">Febrero</SelectItem>
-                        <SelectItem value="marzo">Marzo</SelectItem>
-                        <SelectItem value="abril">Abril</SelectItem>
-                        <SelectItem value="mayo">Mayo</SelectItem>
-                        <SelectItem value="junio">Junio</SelectItem>
-                        <SelectItem value="julio">Julio</SelectItem>
-                        <SelectItem value="agosto">Agosto</SelectItem>
-                        <SelectItem value="septiembre">Septiembre</SelectItem>
-                        <SelectItem value="octubre">Octubre</SelectItem>
-                        <SelectItem value="noviembre">Noviembre</SelectItem>
-                        <SelectItem value="diciembre">Diciembre</SelectItem>
+                        <SelectItem value="enero">{t("deductions.months.january")}</SelectItem>
+                        <SelectItem value="febrero">{t("deductions.months.february")}</SelectItem>
+                        <SelectItem value="marzo">{t("deductions.months.march")}</SelectItem>
+                        <SelectItem value="abril">{t("deductions.months.april")}</SelectItem>
+                        <SelectItem value="mayo">{t("deductions.months.may")}</SelectItem>
+                        <SelectItem value="junio">{t("deductions.months.june")}</SelectItem>
+                        <SelectItem value="julio">{t("deductions.months.july")}</SelectItem>
+                        <SelectItem value="agosto">{t("deductions.months.august")}</SelectItem>
+                        <SelectItem value="septiembre">{t("deductions.months.september")}</SelectItem>
+                        <SelectItem value="octubre">{t("deductions.months.october")}</SelectItem>
+                        <SelectItem value="noviembre">{t("deductions.months.november")}</SelectItem>
+                        <SelectItem value="diciembre">{t("deductions.months.december")}</SelectItem>
                       </SelectContent>
                     </Select>
                     
@@ -519,7 +519,7 @@ export function EventualDeductionDialog({
             {formData.user_id && expenseDate && isLoadingPeriods && (
               <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-800">
-                  Verificando período de pago para la fecha seleccionada...
+                  {t("deductions.eventual.checking_period")}
                 </p>
               </div>
             )}
@@ -527,10 +527,10 @@ export function EventualDeductionDialog({
             {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
               <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
                 <p className="text-sm text-orange-800">
-                  No hay un período de pago abierto para la fecha {formatPrettyDate(expenseDate)}.
+                  {t("deductions.eventual.no_period_found", { date: formatPrettyDate(expenseDate) })}
                 </p>
                 <p className="text-xs text-orange-600 mt-1">
-                  Selecciona una fecha que esté dentro de un período de pago abierto.
+                  {t("deductions.eventual.select_period_date")}
                 </p>
               </div>
             )}
@@ -538,20 +538,23 @@ export function EventualDeductionDialog({
             {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && (
               <div className="p-3 border border-green-200 bg-green-50 rounded-md">
                 <p className="text-sm text-green-800">
-                  ✓ Período encontrado: {formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date)} - {formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date)}
+                  {t("deductions.eventual.period_found", { 
+                    start: formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date),
+                    end: formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date)
+                  })}
                 </p>
               </div>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="expense-type">Tipo de Gasto</Label>
+            <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
             <Select 
               value={formData.expense_type_id} 
               onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar tipo de gasto" />
+                <SelectValue placeholder={t("deductions.form.select_expense_type")} />
               </SelectTrigger>
               <SelectContent>
                 {expenseTypes.map((type) => (
@@ -564,7 +567,7 @@ export function EventualDeductionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Monto ($) <span className="text-red-500">*</span></Label>
+            <Label htmlFor="amount">{t("deductions.form.amount")} <span className="text-red-500">*</span></Label>
             <Input
               id="amount"
               type="text"
@@ -581,12 +584,12 @@ export function EventualDeductionDialog({
               required
             />
             <div className="text-xs text-muted-foreground text-center">
-              Introduce los números como en un cajero automático
+              {t("deductions.eventual.atm_helper")}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción/Motivo</Label>
+            <Label htmlFor="description">{t("deductions.eventual.description_label")}</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -599,7 +602,7 @@ export function EventualDeductionDialog({
 
           <div className="flex gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Cancelar
+              {t("deductions.form.cancel")}
             </Button>
             <Button 
               type="submit" 
@@ -607,7 +610,7 @@ export function EventualDeductionDialog({
               className="flex-1"
             >
               {isLoading 
-                ? (editingDeduction ? "Actualizando..." : "Creando...") 
+                ? (editingDeduction ? t("deductions.eventual.updating") : t("deductions.eventual.creating")) 
                 : (editingDeduction ? t("deductions.eventual.update_button") : t("deductions.eventual.create_button"))
               }
             </Button>
