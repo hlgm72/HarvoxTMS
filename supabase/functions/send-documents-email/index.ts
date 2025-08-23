@@ -293,7 +293,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #999; font-size: 14px; margin: 0;">
-              This email was sent by <strong>${companyName}</strong> through FleetNest.
+              This email was sent by <strong>${companyName}</strong> through FleetNest TMS.
             </p>
           </div>
         </div>
