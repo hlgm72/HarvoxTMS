@@ -1,42 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 
-// Configure PDF.js worker with multiple fallback strategies
+// Configure PDF.js worker with simple CDN approach to avoid postMessage issues
 const configurePDFWorker = () => {
   try {
-    // Strategy 1: Try the Vite/modern approach first
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.min.mjs',
-      import.meta.url,
-    ).toString();
-    console.log('✅ PDF worker configured with .mjs file');
+    // Use CDN approach which avoids postMessage origin issues
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+    console.log('✅ PDF worker configured with CDN');
     return true;
   } catch (error) {
-    console.warn('⚠️ Failed to configure .mjs worker, trying .js fallback:', error);
-    
-    try {
-      // Strategy 2: Try the .js worker
-      pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-        'pdfjs-dist/build/pdf.worker.min.js',
-        import.meta.url,
-      ).toString();
-      console.log('✅ PDF worker configured with .js file');
-      return true;
-    } catch (error2) {
-      console.warn('⚠️ Failed to configure .js worker, trying CDN fallback:', error2);
-      
-      try {
-        // Strategy 3: CDN fallback
-        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-        console.log('✅ PDF worker configured with CDN fallback');
-        return true;
-      } catch (fallbackError) {
-        console.error('❌ Failed to configure PDF worker with all strategies:', fallbackError);
-        return false;
-      }
-    }
+    console.error('❌ Failed to configure PDF worker:', error);
+    return false;
   }
 };
 
@@ -62,6 +38,13 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState(false);
+
+  // Memoize PDF options to prevent unnecessary reloads
+  const pdfOptions = useMemo(() => ({
+    cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
+    cMapPacked: true,
+    standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`
+  }), []);
 
   useEffect(() => {
     const loadPreview = async () => {
@@ -191,11 +174,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               </div>
             }
             className="w-full h-full"
-            options={{
-              cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
-              cMapPacked: true,
-              standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/standard_fonts/`
-            }}
+            options={pdfOptions}
           >
             <Page
               pageNumber={1}
