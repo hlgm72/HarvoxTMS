@@ -126,6 +126,10 @@
       "driver_deductions": "Descuentos a Conductores",
       "dispatcher_deductions": "Descuentos a Despachadores"
     },
+    "labels": {
+      "effective_from": "Vigente desde",
+      "effective_until": "Vigente hasta"
+    },
     "form": {
       "driver": "Conductor",
       "dispatcher": "Despachador", 

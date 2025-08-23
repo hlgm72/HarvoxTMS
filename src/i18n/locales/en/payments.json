@@ -126,6 +126,10 @@
       "driver_deductions": "Driver Deductions", 
       "dispatcher_deductions": "Dispatcher Deductions"
     },
+    "labels": {
+      "effective_from": "Effective From",
+      "effective_until": "Effective Until"
+    },
     "form": {
       "driver": "Driver",
       "dispatcher": "Dispatcher",
