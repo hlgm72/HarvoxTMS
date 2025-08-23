@@ -98,5 +98,40 @@
   "error": {
     "title": "Error",
     "company_load_failed": "No se pudo cargar la información de la empresa."
+  },
+  "roles": {
+    "title": "Mis Roles en la Compañía",
+    "description": "Como propietario, puedes asignarte roles adicionales para acceder a diferentes funcionalidades del sistema.",
+    "current_roles": "Roles Actuales",
+    "add_role": "Agregar Rol",
+    "assign_additional": "Asignar Rol Adicional",
+    "dialog_title": "Asignar Rol Adicional",
+    "dialog_description": "Selecciona un rol adicional que quieras ejercer en tu compañía.",
+    "select_placeholder": "Selecciona un rol",
+    "cancel": "Cancelar",
+    "assign": "Asignar Rol",
+    "assigning": "Asignando...",
+    "remove_title": "Remover rol",
+    "role_assigned": "Rol Asignado",
+    "role_assigned_message": "Te has asignado el rol de {{role}}",
+    "role_removed": "Rol Removido", 
+    "role_removed_message": "Has removido el rol de {{role}}",
+    "assign_error": "No se pudo asignar el rol",
+    "remove_error": "No se pudo remover el rol",
+    "tip_title": "Consejo Útil",
+    "tip_description": "Usa el selector de roles en la parte superior derecha para cambiar entre tus diferentes roles y acceder a las funcionalidades correspondientes.",
+    "types": {
+      "company_owner": "Propietario",
+      "operations_manager": "Gerente de Operaciones",
+      "dispatcher": "Dispatcher", 
+      "multi_company_dispatcher": "Dispatcher Multi-Compañía",
+      "driver": "Conductor"
+    },
+    "descriptions": {
+      "operations_manager": "Gestión administrativa y operacional",
+      "dispatcher": "Coordinación de cargas y conductores",
+      "multi_company_dispatcher": "Gestión de despacho para múltiples compañías", 
+      "driver": "Operación directa de vehículos"
+    }
   }
 }

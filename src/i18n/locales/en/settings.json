@@ -98,5 +98,40 @@
   "error": {
     "title": "Error",
     "company_load_failed": "Could not load company information."
+  },
+  "roles": {
+    "title": "My Company Roles",
+    "description": "As owner, you can assign yourself additional roles to access different system functionalities.",
+    "current_roles": "Current Roles",
+    "add_role": "Add Role",
+    "assign_additional": "Assign Additional Role",
+    "dialog_title": "Assign Additional Role",
+    "dialog_description": "Select an additional role you want to exercise in your company.",
+    "select_placeholder": "Select a role",
+    "cancel": "Cancel",
+    "assign": "Assign Role",
+    "assigning": "Assigning...",
+    "remove_title": "Remove role",
+    "role_assigned": "Role Assigned",
+    "role_assigned_message": "You have been assigned the role of {{role}}",
+    "role_removed": "Role Removed", 
+    "role_removed_message": "You have removed the role of {{role}}",
+    "assign_error": "Could not assign role",
+    "remove_error": "Could not remove role",
+    "tip_title": "Helpful Tip",
+    "tip_description": "Use the role selector in the top right to switch between your different roles and access the corresponding functionalities.",
+    "types": {
+      "company_owner": "Owner",
+      "operations_manager": "Operations Manager",
+      "dispatcher": "Dispatcher", 
+      "multi_company_dispatcher": "Multi-Company Dispatcher",
+      "driver": "Driver"
+    },
+    "descriptions": {
+      "operations_manager": "Administrative and operational management",
+      "dispatcher": "Load and driver coordination",
+      "multi_company_dispatcher": "Dispatch management for multiple companies", 
+      "driver": "Direct vehicle operation"
+    }
   }
 }

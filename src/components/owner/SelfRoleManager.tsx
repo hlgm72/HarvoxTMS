@@ -3,6 +3,7 @@ import { Plus, Trash2, User, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   CardContent,
@@ -33,36 +34,37 @@ import { getRoleConfig, getRoleLabel as getRoleUtilLabel } from '@/lib/roleUtils
 // Usar string literal temporalmente hasta que se regeneren los tipos de Supabase
 type UserRole = string; // Database['public']['Enums']['user_role'];
 
-const availableRoles: { value: UserRole; label: string; description: string }[] = [
-  {
-    value: 'operations_manager',
-    label: 'Gerente de Operaciones',
-    description: 'Gestión administrativa y operacional'
-  },
-  {
-    value: 'dispatcher',
-    label: 'Dispatcher',
-    description: 'Coordinación de cargas y conductores'
-  },
-  {
-    value: 'multi_company_dispatcher',
-    label: 'Dispatcher Multi-Compañía',
-    description: 'Gestión de despacho para múltiples compañías'
-  },
-  {
-    value: 'driver',
-    label: 'Conductor',
-    description: 'Operación directa de vehículos'
-  },
-];
-
-
 export const SelfRoleManager = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const { availableRoles: userRoles, isCompanyOwner, hasMultipleRoles } = useAuth();
   const { assignSelfRole, removeSelfRole, loading } = useUserRoles();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('settings');
+
+  // Create availableRoles with translations
+  const availableRoles: { value: UserRole; label: string; description: string }[] = [
+    {
+      value: 'operations_manager',
+      label: t('roles.types.operations_manager'),
+      description: t('roles.descriptions.operations_manager')
+    },
+    {
+      value: 'dispatcher',
+      label: t('roles.types.dispatcher'),
+      description: t('roles.descriptions.dispatcher')
+    },
+    {
+      value: 'multi_company_dispatcher',
+      label: t('roles.types.multi_company_dispatcher'),
+      description: t('roles.descriptions.multi_company_dispatcher')
+    },
+    {
+      value: 'driver',
+      label: t('roles.types.driver'),
+      description: t('roles.descriptions.driver')
+    },
+  ];
 
   if (!isCompanyOwner) {
     return null;
@@ -80,13 +82,15 @@ export const SelfRoleManager = () => {
     
     if (result.success) {
       showSuccess(
-        'Rol Asignado',
-        `Te has asignado el rol de ${availableRoles.find(r => r.value === selectedRole)?.label}`
+        t('roles.role_assigned'),
+        t('roles.role_assigned_message', { 
+          role: availableRoles.find(r => r.value === selectedRole)?.label 
+        })
       );
       setDialogOpen(false);
       setSelectedRole('');
     } else {
-      showError('Error', result.error || 'No se pudo asignar el rol');
+      showError(t('error.title'), result.error || t('roles.assign_error'));
     }
   };
 
@@ -95,16 +99,18 @@ export const SelfRoleManager = () => {
     
     if (result.success) {
       showSuccess(
-        'Rol Removido',
-        `Has removido el rol de ${availableRoles.find(r => r.value === role)?.label}`
+        t('roles.role_removed'),
+        t('roles.role_removed_message', { 
+          role: availableRoles.find(r => r.value === role)?.label 
+        })
       );
     } else {
-      showError('Error', result.error || 'No se pudo remover el rol');
+      showError(t('error.title'), result.error || t('roles.remove_error'));
     }
   };
 
   const getRoleLabel = (role: UserRole) => {
-    if (role === 'company_owner') return 'Propietario';
+    if (role === 'company_owner') return t('roles.types.company_owner');
     return availableRoles.find(r => r.value === role)?.label || getRoleUtilLabel(role, false);
   };
 
@@ -113,15 +119,15 @@ export const SelfRoleManager = () => {
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-3 text-lg">
           <Shield className="h-5 w-5 text-blue-600" />
-          Mis Roles en la Compañía
+          {t('roles.title')}
         </CardTitle>
         <CardDescription className="text-base leading-relaxed">
-          Como propietario, puedes asignarte roles adicionales para acceder a diferentes funcionalidades del sistema.
+          {t('roles.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Roles Actuales</h4>
+          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('roles.current_roles')}</h4>
           <div className="flex flex-wrap gap-3">
             {userRoles.map((userRole) => (
               <div key={userRole.id} className="flex items-center gap-2 bg-white rounded-lg p-2 border border-gray-200 shadow-sm">
@@ -139,7 +145,7 @@ export const SelfRoleManager = () => {
                     className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full"
                     onClick={() => handleRemoveRole(userRole.role as UserRole)}
                     disabled={loading}
-                    title="Remover rol"
+                    title={t('roles.remove_title')}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -151,19 +157,19 @@ export const SelfRoleManager = () => {
 
         {availableToAdd.length > 0 && (
           <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Agregar Rol</h4>
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('roles.add_role')}</h4>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full">
                   <Plus className="h-4 w-4 mr-2" />
-                  Asignar Rol Adicional
+                  {t('roles.assign_additional')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Asignar Rol Adicional</DialogTitle>
+                  <DialogTitle>{t('roles.dialog_title')}</DialogTitle>
                   <DialogDescription>
-                    Selecciona un rol adicional que quieras ejercer en tu compañía.
+                    {t('roles.dialog_description')}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
@@ -172,7 +178,7 @@ export const SelfRoleManager = () => {
                     onValueChange={(value) => setSelectedRole(value as UserRole)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un rol" />
+                      <SelectValue placeholder={t('roles.select_placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       {availableToAdd.map((role) => (
@@ -195,13 +201,13 @@ export const SelfRoleManager = () => {
                         setSelectedRole('');
                       }}
                     >
-                      Cancelar
+                      {t('roles.cancel')}
                     </Button>
                     <Button
                       onClick={handleAssignRole}
                       disabled={!selectedRole || loading}
                     >
-                      {loading ? 'Asignando...' : 'Asignar Rol'}
+                      {loading ? t('roles.assigning') : t('roles.assign')}
                     </Button>
                   </div>
                 </div>
@@ -215,9 +221,9 @@ export const SelfRoleManager = () => {
             <div className="flex items-start gap-3">
               <div className="text-amber-600 text-lg">💡</div>
               <div>
-                <p className="text-sm text-amber-800 font-medium mb-1">Consejo Útil</p>
+                <p className="text-sm text-amber-800 font-medium mb-1">{t('roles.tip_title')}</p>
                 <p className="text-sm text-amber-700 leading-relaxed">
-                  Usa el selector de roles en la parte superior derecha para cambiar entre tus diferentes roles y acceder a las funcionalidades correspondientes.
+                  {t('roles.tip_description')}
                 </p>
               </div>
             </div>
