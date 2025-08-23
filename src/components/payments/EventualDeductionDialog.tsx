@@ -20,6 +20,7 @@ import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
+import { useTranslation } from 'react-i18next';
 
 interface EventualDeductionDialogProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ export function EventualDeductionDialog({
   editingDeduction = null
 }: EventualDeductionDialogProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   
@@ -356,12 +358,12 @@ export function EventualDeductionDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>
-            {editingDeduction ? "Editar Deducción Eventual" : "Crear Deducción Eventual"}
+            {editingDeduction ? t("payments.deductions.eventual.edit_title") : t("payments.deductions.eventual.create_title")}
           </DialogTitle>
           <DialogDescription>
             {editingDeduction 
-              ? "Modifica la deducción eventual seleccionada."
-              : "Crea una deducción única para un conductor específico en un período de pago determinado."
+              ? t("payments.deductions.template.edit_description")
+              : t("payments.deductions.eventual.create_description")
             }
           </DialogDescription>
         </DialogHeader>

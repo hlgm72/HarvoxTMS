@@ -79,6 +79,7 @@
     "create": "Create Deduction",
     "eventual": {
       "create_title": "Create Eventual Deduction",
+      "edit_title": "Edit Eventual Deduction",
       "create_description": "Create a one-time deduction for a specific driver in a given payment period.",
       "creating": "Creating...",
       "create_button": "Create Eventual Deduction",

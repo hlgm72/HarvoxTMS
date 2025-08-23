@@ -79,6 +79,7 @@
     "create": "Crear Deducción",
     "eventual": {
       "create_title": "Crear Deducción Eventual",
+      "edit_title": "Editar Deducción Eventual",
       "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado.",
       "creating": "Creando...",
       "create_button": "Crear Deducción Eventual",
@@ -93,6 +94,7 @@
     "template": {
       "create_title": "Crear Nueva Deducción",
       "edit_title": "Editar Deducción",
+      "edit_description": "Modifica la deducción eventual seleccionada.",
       "create_button": "Crear Deducción",
       "update_button": "Actualizar Deducción",
       "success_created": "Plantilla de deducción creada exitosamente",
