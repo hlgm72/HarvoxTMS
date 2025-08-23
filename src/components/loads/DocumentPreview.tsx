@@ -28,23 +28,13 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   useEffect(() => {
     const configurePDFWorker = () => {
       try {
-        if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-          // Use unpkg CDN which is more reliable for PDF.js worker files
-          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.js`;
-          console.log(`✅ PDF worker configured with version ${pdfjs.version}`);
-        }
+        // Use jsDelivr CDN which is very reliable for PDF.js worker files
+        pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        console.log('✅ PDF worker configured with stable version');
         return true;
       } catch (error) {
         console.error('❌ Failed to configure PDF worker:', error);
-        // Fallback to a known working version
-        try {
-          pdfjs.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/legacy/build/pdf.worker.js';
-          console.log('✅ PDF worker configured with fallback version');
-          return true;
-        } catch (fallbackError) {
-          console.error('❌ Fallback also failed:', fallbackError);
-          return false;
-        }
+        return false;
       }
     };
 
