@@ -82,29 +82,65 @@
       "edit_title": "Edit Eventual Deduction",
       "create_description": "Create a one-time deduction for a specific driver in a given payment period.",
       "creating": "Creating...",
-      "create_button": "Create Eventual Deduction",
+      "create_button": "Create Eventual Deduction", 
+      "update_button": "Update Deduction",
       "delete_title": "Delete eventual deduction?",
       "delete_description": "This action cannot be undone. The eventual deduction will be permanently deleted.",
       "success_created": "Eventual deduction created successfully",
+      "success_updated": "Eventual deduction updated successfully",
       "success_deleted": "Eventual deduction deleted successfully",
       "error_create": "Could not create eventual deduction",
       "error_delete": "Could not delete deduction",
-      "placeholder": "Describe the reason for this eventual deduction (e.g., Speeding fine, Tire repair, etc.)"
+      "placeholder": "Describe the reason for this eventual deduction (e.g., Speeding fine, Tire repair, etc.)",
+      "no_records_title": "No eventual deductions",
+      "no_records_description": "Eventual deductions you create will appear here"
     },
     "template": {
       "create_title": "Create New Deduction",
       "edit_title": "Edit Deduction",
+      "edit_description": "Modify the selected eventual deduction.",
       "create_button": "Create Deduction",
       "update_button": "Update Deduction",
       "success_created": "Deduction template created successfully",
       "success_updated": "Deduction template updated successfully",
       "success_reactivated": "Deduction template reactivated successfully",
+      "success_deactivated": "Template deactivated successfully",
+      "success_deleted": "Template permanently deleted",
       "error": "Could not {{action}} deduction template",
       "delete_title": "Delete deduction template?",
       "placeholder": "Additional information about this deduction...",
       "apply_to": "Apply Deduction to",
       "states_title": "Deduction States",
       "history_placeholder": "Coming soon: Modification history in deduction templates"
+    },
+    "notifications": {
+      "success": "Success",
+      "error": "Error"
+    },
+    "placeholders": {
+      "year": "Year",
+      "description": "Income description",
+      "reference_number": "Reference number (optional)",
+      "additional_info": "Additional information...",
+      "payment_method": "Select payment method",
+      "payment_info": "Additional information about payment..."
+    },
+    "frequency": {
+      "weekly": "Weekly",
+      "biweekly": "Biweekly",
+      "monthly": "Monthly",
+      "weekly_1": "1st week",
+      "weekly_2": "2nd week",
+      "weekly_3": "3rd week",
+      "weekly_4": "4th week",
+      "weekly_last": "Last week"
+    },
+    "status": {
+      "no_description": "No description",
+      "undefined_type": "Type not defined",
+      "closing": "Closing...",
+      "close_period": "Close Period",
+      "station": "Station"
     }
   },
   "income": {

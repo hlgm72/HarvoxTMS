@@ -287,7 +287,7 @@ export function EventualDeductionDialog({
           .eq('id', editingDeduction.id);
 
         if (error) throw error;
-        showSuccess("Éxito", "Deducción eventual actualizada exitosamente");
+        showSuccess(t("deductions.notifications.success"), t("deductions.eventual.success_updated"));
       } else {
         // Create new deduction
         const { error } = await supabase
@@ -307,14 +307,14 @@ export function EventualDeductionDialog({
           });
 
         if (error) throw error;
-        showSuccess("Éxito", "Deducción eventual creada exitosamente");
+        showSuccess(t("deductions.notifications.success"), t("deductions.eventual.success_created"));
       }
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error('Error creating eventual deduction:', error);
-      showError("Error", error.message || "No se pudo crear la deducción eventual");
+      showError(t("deductions.notifications.error"), error.message || t("deductions.eventual.error_create"));
     } finally {
       setIsLoading(false);
     }
@@ -375,7 +375,7 @@ export function EventualDeductionDialog({
               setSelectedRole(role);
               setFormData(prev => ({ ...prev, user_id: '' }));
             }}
-            label="Aplicar Deducción a"
+            label={t("deductions.template.apply_to")}
           />
 
           <div className="space-y-2">
@@ -488,7 +488,7 @@ export function EventualDeductionDialog({
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Año" />
+                        <SelectValue placeholder={t("deductions.placeholders.year")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="2024">2024</SelectItem>
@@ -591,7 +591,7 @@ export function EventualDeductionDialog({
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Describe el motivo de esta deducción eventual (ej: Multa por exceso de velocidad, Reparación de neumático, etc.)"
+              placeholder={t("deductions.eventual.placeholder")}
               rows={3}
               required
             />
@@ -608,7 +608,7 @@ export function EventualDeductionDialog({
             >
               {isLoading 
                 ? (editingDeduction ? "Actualizando..." : "Creando...") 
-                : (editingDeduction ? "Actualizar Deducción" : "Crear Deducción Eventual")
+                : (editingDeduction ? t("deductions.eventual.update_button") : t("deductions.eventual.create_button"))
               }
             </Button>
           </div>

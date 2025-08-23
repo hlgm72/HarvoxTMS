@@ -10,6 +10,7 @@ import { formatPaymentPeriod, formatDeductionDate, formatDateInUserTimeZone, con
 import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2 } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
+import { useTranslation } from 'react-i18next';
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -32,6 +33,7 @@ interface EventualDeductionsListProps {
 
 export function EventualDeductionsList({ onRefresh, filters, viewConfig }: EventualDeductionsListProps) {
   const { user } = useAuth();
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
   const [editingExpense, setEditingExpense] = useState<any>(null);
@@ -159,13 +161,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
       if (error) throw error;
 
-      showSuccess("Éxito", "Deducción eventual eliminada exitosamente");
+      showSuccess(t("deductions.notifications.success"), t("deductions.eventual.success_deleted"));
 
       refetch();
       setDeletingExpense(null);
     } catch (error: any) {
       console.error('Error deleting expense:', error);
-      showError("Error", error.message || "No se pudo eliminar la deducción");
+      showError(t("deductions.notifications.error"), error.message || t("deductions.eventual.error_delete"));
     }
   };
 
@@ -205,10 +207,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       <div className="text-center py-8">
         <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <h3 className="text-lg font-medium text-muted-foreground mb-2">
-          No hay deducciones eventuales
+          {t("deductions.eventual.no_records_title", "No hay deducciones eventuales")}
         </h3>
         <p className="text-sm text-muted-foreground">
-          Las deducciones eventuales que crees aparecerán aquí
+          {t("deductions.eventual.no_records_description", "Las deducciones eventuales que crees aparecerán aquí")}
         </p>
       </div>
     );
@@ -303,9 +305,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       <AlertDialog open={!!deletingExpense} onOpenChange={() => setDeletingExpense(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar deducción eventual?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deductions.eventual.delete_title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. La deducción eventual será eliminada permanentemente.
+              {t("deductions.eventual.delete_description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

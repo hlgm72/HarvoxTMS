@@ -275,7 +275,7 @@ export function ExpenseTemplateDialog({
 
       if (error) throw error;
 
-      showSuccess("Éxito", "Plantilla de deducción reactivada exitosamente");
+      showSuccess(t("deductions.notifications.success"), t("deductions.template.success_reactivated"));
 
       onSuccess();
       onClose();
@@ -312,7 +312,7 @@ export function ExpenseTemplateDialog({
 
         if (error) throw error;
 
-        showSuccess("Éxito", "Plantilla de deducción creada exitosamente");
+        showSuccess(t("deductions.notifications.success"), t("deductions.template.success_created"));
       } else {
         const { error } = await supabase
           .from('expense_recurring_templates')
@@ -321,7 +321,7 @@ export function ExpenseTemplateDialog({
 
         if (error) throw error;
 
-        showSuccess("Éxito", "Plantilla de deducción actualizada exitosamente");
+        showSuccess(t("deductions.notifications.success"), t("deductions.template.success_updated"));
       }
 
       onSuccess();
@@ -378,7 +378,7 @@ export function ExpenseTemplateDialog({
             <UserTypeSelector
               value={selectedRole}
               onChange={setSelectedRole}
-              label="Aplicar Deducción a"
+              label={t("deductions.template.apply_to")}
               disabled={false}
             />
           )}
@@ -633,7 +633,7 @@ export function ExpenseTemplateDialog({
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-              placeholder="Información adicional sobre esta deducción..."
+              placeholder={t("deductions.template.placeholder")}
               rows={3}
             />
           </div>

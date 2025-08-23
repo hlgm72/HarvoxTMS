@@ -79,17 +79,21 @@
     "create": "Crear Deducción",
     "eventual": {
       "create_title": "Crear Deducción Eventual",
-      "edit_title": "Editar Deducción Eventual",
+      "edit_title": "Editar Deducción Eventual", 
       "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado.",
       "creating": "Creando...",
       "create_button": "Crear Deducción Eventual",
+      "update_button": "Actualizar Deducción",
       "delete_title": "¿Eliminar deducción eventual?",
       "delete_description": "Esta acción no se puede deshacer. La deducción eventual será eliminada permanentemente.",
       "success_created": "Deducción eventual creada exitosamente",
+      "success_updated": "Deducción eventual actualizada exitosamente",
       "success_deleted": "Deducción eventual eliminada exitosamente",
       "error_create": "No se pudo crear la deducción eventual",
       "error_delete": "No se pudo eliminar la deducción",
-      "placeholder": "Describe el motivo de esta deducción eventual (ej: Multa por exceso de velocidad, Reparación de neumático, etc.)"
+      "placeholder": "Describe el motivo de esta deducción eventual (ej: Multa por exceso de velocidad, Reparación de neumático, etc.)",
+      "no_records_title": "No hay deducciones eventuales",
+      "no_records_description": "Las deducciones eventuales que crees aparecerán aquí"
     },
     "template": {
       "create_title": "Crear Nueva Deducción",
@@ -100,12 +104,43 @@
       "success_created": "Plantilla de deducción creada exitosamente",
       "success_updated": "Plantilla de deducción actualizada exitosamente",
       "success_reactivated": "Plantilla de deducción reactivada exitosamente",
+      "success_deactivated": "Plantilla desactivada exitosamente",
+      "success_deleted": "Plantilla eliminada definitivamente",
       "error": "No se pudo {{action}} la plantilla de deducción",
       "delete_title": "¿Eliminar plantilla de deducción?",
       "placeholder": "Información adicional sobre esta deducción...",
       "apply_to": "Aplicar Deducción a",
       "states_title": "Estados de Deducción",
       "history_placeholder": "Próximamente: Historial de modificaciones en plantillas de deducción"
+    },
+    "notifications": {
+      "success": "Éxito",
+      "error": "Error"
+    },
+    "placeholders": {
+      "year": "Año",
+      "description": "Descripción del ingreso",
+      "reference_number": "Número de referencia (opcional)",
+      "additional_info": "Información adicional...",
+      "payment_method": "Seleccionar método de pago",
+      "payment_info": "Información adicional sobre el pago..."
+    },
+    "frequency": {
+      "weekly": "Semanal",
+      "biweekly": "Quincenal",
+      "monthly": "Mensual",
+      "weekly_1": "1era semana",
+      "weekly_2": "2da semana", 
+      "weekly_3": "3era semana",
+      "weekly_4": "4ta semana",
+      "weekly_last": "Última semana"
+    },
+    "status": {
+      "no_description": "Sin descripción",
+      "undefined_type": "Tipo no definido",
+      "closing": "Cerrando...",
+      "close_period": "Cerrar Período",
+      "station": "Estación"
     }
   },
   "income": {

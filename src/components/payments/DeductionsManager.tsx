@@ -13,6 +13,7 @@ import { EventualDeductionsList } from "./EventualDeductionsList";
 import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
 import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History, X } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
+import { useTranslation } from 'react-i18next';
 
 interface DeductionsManagerProps {
   isCreateDialogOpen?: boolean;
@@ -43,6 +44,7 @@ export function DeductionsManager({
 }: DeductionsManagerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
@@ -297,7 +299,7 @@ export function DeductionsManager({
       if (error) throw error;
     },
     onSuccess: () => {
-      showSuccess("Éxito", "Plantilla desactivada exitosamente");
+      showSuccess(t("deductions.notifications.success"), t("deductions.template.success_deactivated"));
       handleCreateSuccess();
     },
     onError: (error: any) => {
@@ -319,7 +321,7 @@ export function DeductionsManager({
       if (error) throw error;
     },
     onSuccess: () => {
-      showSuccess("Éxito", "Plantilla reactivada exitosamente");
+      showSuccess(t("deductions.notifications.success"), t("deductions.template.success_reactivated"));
       handleCreateSuccess();
     },
     onError: (error: any) => {
@@ -338,7 +340,7 @@ export function DeductionsManager({
       if (error) throw error;
     },
     onSuccess: () => {
-      showSuccess("Éxito", "Plantilla eliminada definitivamente");
+      showSuccess(t("deductions.notifications.success"), t("deductions.template.success_deleted"));
       handleCreateSuccess();
     },
     onError: (error: any) => {
@@ -436,15 +438,15 @@ export function DeductionsManager({
                         template.frequency === 'weekly' ? "success" :
                         template.frequency === 'biweekly' ? "warning" : "default"
                       }>
-                        {isInactive && 'Inactiva • '}
-                        {template.frequency === 'weekly' ? 'Semanal' : 
-                         template.frequency === 'biweekly' ? 'Quincenal' : 
-                         template.frequency === 'monthly' ? 
-                           `Mensual - ${template.month_week === 1 ? '1era' : 
-                                        template.month_week === 2 ? '2da' : 
-                                        template.month_week === 3 ? '3era' : 
-                                        template.month_week === 4 ? '4ta' : 'Última'} semana` : 
-                         'Mensual'}
+                         {isInactive && 'Inactiva • '}
+                         {template.frequency === 'weekly' ? t("deductions.frequency.weekly") : 
+                          template.frequency === 'biweekly' ? t("deductions.frequency.biweekly") : 
+                          template.frequency === 'monthly' ? 
+                            `${t("deductions.frequency.monthly")} - ${template.month_week === 1 ? t("deductions.frequency.weekly_1") : 
+                                         template.month_week === 2 ? t("deductions.frequency.weekly_2") : 
+                                         template.month_week === 3 ? t("deductions.frequency.weekly_3") : 
+                                         template.month_week === 4 ? t("deductions.frequency.weekly_4") : t("deductions.frequency.weekly_last")}` : 
+                          t("deductions.frequency.monthly")}
                       </Badge>
                     </div>
                     
@@ -710,14 +712,14 @@ export function DeductionsManager({
                       <div>
                         <span className="text-muted-foreground">Frecuencia:</span>
                         <div className="font-medium">
-                          {reactivatingTemplate.frequency === 'weekly' ? 'Semanal' : 
-                           reactivatingTemplate.frequency === 'biweekly' ? 'Quincenal' : 
-                           reactivatingTemplate.frequency === 'monthly' ? 
-                             `Mensual - ${reactivatingTemplate.month_week === 1 ? '1era' : 
-                                          reactivatingTemplate.month_week === 2 ? '2da' : 
-                                          reactivatingTemplate.month_week === 3 ? '3era' : 
-                                          reactivatingTemplate.month_week === 4 ? '4ta' : 'Última'} semana` : 
-                           'Mensual'}
+                           {reactivatingTemplate.frequency === 'weekly' ? t("deductions.frequency.weekly") : 
+                            reactivatingTemplate.frequency === 'biweekly' ? t("deductions.frequency.biweekly") : 
+                            reactivatingTemplate.frequency === 'monthly' ? 
+                              `${t("deductions.frequency.monthly")} - ${reactivatingTemplate.month_week === 1 ? t("deductions.frequency.weekly_1") : 
+                                           reactivatingTemplate.month_week === 2 ? t("deductions.frequency.weekly_2") : 
+                                           reactivatingTemplate.month_week === 3 ? t("deductions.frequency.weekly_3") : 
+                                           reactivatingTemplate.month_week === 4 ? t("deductions.frequency.weekly_4") : t("deductions.frequency.weekly_last")}` : 
+                            t("deductions.frequency.monthly")}
                         </div>
                       </div>
                     </div>
@@ -810,14 +812,14 @@ export function DeductionsManager({
                       <div>
                         <span className="text-muted-foreground">Frecuencia:</span>
                         <div className="font-medium">
-                          {permanentlyDeletingTemplate.frequency === 'weekly' ? 'Semanal' : 
-                           permanentlyDeletingTemplate.frequency === 'biweekly' ? 'Quincenal' : 
-                           permanentlyDeletingTemplate.frequency === 'monthly' ? 
-                             `Mensual - ${permanentlyDeletingTemplate.month_week === 1 ? '1era' : 
-                                          permanentlyDeletingTemplate.month_week === 2 ? '2da' : 
-                                          permanentlyDeletingTemplate.month_week === 3 ? '3era' : 
-                                          permanentlyDeletingTemplate.month_week === 4 ? '4ta' : 'Última'} semana` : 
-                           'Mensual'}
+                           {permanentlyDeletingTemplate.frequency === 'weekly' ? t("deductions.frequency.weekly") : 
+                            permanentlyDeletingTemplate.frequency === 'biweekly' ? t("deductions.frequency.biweekly") : 
+                            permanentlyDeletingTemplate.frequency === 'monthly' ? 
+                              `${t("deductions.frequency.monthly")} - ${permanentlyDeletingTemplate.month_week === 1 ? t("deductions.frequency.weekly_1") : 
+                                           permanentlyDeletingTemplate.month_week === 2 ? t("deductions.frequency.weekly_2") : 
+                                           permanentlyDeletingTemplate.month_week === 3 ? t("deductions.frequency.weekly_3") : 
+                                           permanentlyDeletingTemplate.month_week === 4 ? t("deductions.frequency.weekly_4") : t("deductions.frequency.weekly_last")}` : 
+                            t("deductions.frequency.monthly")}
                         </div>
                       </div>
                     </div>
