@@ -442,7 +442,7 @@ export default function Documents() {
           
           {documents.length > 0 && (
             viewMode === "cards" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-white rounded-lg shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-lg shadow-sm">
                 {documents.map((document) => (
                   <div key={document.id} className="relative">
                     <div className="absolute top-2 left-2 z-10">
@@ -514,7 +514,7 @@ export default function Documents() {
             
             {getDocumentsByCategory(categoryKey).length > 0 && (
               viewMode === "cards" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-white rounded-lg shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-lg shadow-sm">
                   {getDocumentsByCategory(categoryKey).map((document) => (
                     <div key={document.id} className="relative">
                       <div className="absolute top-2 left-2 z-10">
@@ -591,7 +591,7 @@ export default function Documents() {
             .flatMap(cat => cat.types.map(t => t.value))
             .includes(doc.document_type)).length > 0 && (
             viewMode === "cards" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-white rounded-lg shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-lg shadow-sm">
                 {documents
                   .filter(doc => !Object.values(PREDEFINED_DOCUMENT_TYPES)
                     .flatMap(cat => cat.types.map(t => t.value))
