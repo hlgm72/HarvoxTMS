@@ -106,6 +106,29 @@
       "error_message": "No se ha podido completar la actualización. Por favor, inténtelo nuevamente.",
       "user_not_found": "Usuario no encontrado",
       "unknown_error": "Error desconocido"
+    },
+    "preferences": {
+      "title": "Preferencias",
+      "description": "Configura tu idioma preferido y zona horaria",
+      "preferred_language": "Idioma Preferido",
+      "language_placeholder": "Selecciona un idioma",
+      "timezone": "Zona Horaria",
+      "timezone_placeholder": "Selecciona zona horaria",
+      "english": "English",
+      "spanish": "Español",
+      "timezones": {
+        "eastern": "Este (Nueva York)",
+        "central": "Central (Chicago)",
+        "mountain": "Montaña (Denver)",
+        "pacific": "Pacífico (Los Ángeles)"
+      },
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios",
+      "saving": "Guardando...",
+      "success_title": "Preferencias actualizadas exitosamente",
+      "success_message": "Su configuración de idioma y zona horaria ha sido guardada correctamente.",
+      "error_title": "Error en la actualización",
+      "error_message": "No se ha podido completar la actualización de las preferencias. Por favor, inténtelo nuevamente."
     }
   },
   "system": {
@@ -146,7 +169,23 @@
   },
   "onboarding": {
     "title": "Tour y Configuración Inicial",
-    "description": "¿Necesitas volver a ver el tour de bienvenida o el asistente de configuración? Puedes reactivarlos aquí."
+    "description": "¿Necesitas volver a ver el tour de bienvenida o el asistente de configuración? Puedes reactivarlos aquí.",
+    "note": "Los cambios se aplicarán cuando recargues la página. El tour y la configuración inicial solo se muestran una vez por defecto.",
+    "note_label": "Nota:",
+    "actions": {
+      "view_tour": "Ver Tour de Bienvenida",
+      "view_setup": "Ver Asistente de Configuración",
+      "resetting": "Reiniciando...",
+      "tour_reset_title": "Onboarding reiniciado",
+      "tour_reset_message": "El tour de bienvenida se mostrará la próxima vez que recargues la página.",
+      "setup_reset_title": "Configuración reiniciada",
+      "setup_reset_message": "El asistente de configuración se mostrará la próxima vez que recargues la página.",
+      "error_title": "Error",
+      "error_message": "No se pudo identificar el usuario.",
+      "reset_error_title": "Error al reiniciar",
+      "tour_reset_error": "No se pudo reiniciar el onboarding.",
+      "setup_reset_error": "No se pudo reiniciar la configuración."
+    }
   },
   "notifications": {
     "title": "Notificaciones",

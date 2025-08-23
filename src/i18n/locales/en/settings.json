@@ -106,6 +106,29 @@
       "error_message": "Could not complete the update. Please try again.",
       "user_not_found": "User not found",
       "unknown_error": "Unknown error"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Configure your preferred language and timezone",
+      "preferred_language": "Preferred Language",
+      "language_placeholder": "Select a language",
+      "timezone": "Timezone",
+      "timezone_placeholder": "Select timezone",
+      "english": "English",
+      "spanish": "Spanish",
+      "timezones": {
+        "eastern": "Eastern (New York)",
+        "central": "Central (Chicago)",
+        "mountain": "Mountain (Denver)",
+        "pacific": "Pacific (Los Angeles)"
+      },
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "success_title": "Preferences updated successfully",
+      "success_message": "Your language and timezone configuration has been saved correctly.",
+      "error_title": "Update error",
+      "error_message": "Could not complete the preferences update. Please try again."
     }
   },
   "system": {
@@ -146,7 +169,23 @@
   },
   "onboarding": {
     "title": "Tour and Initial Setup",
-    "description": "Need to see the welcome tour or setup assistant again? You can reactivate them here."
+    "description": "Need to see the welcome tour or setup assistant again? You can reactivate them here.",
+    "note": "Note: Changes will apply when you reload the page. The tour and initial setup are only shown once by default.",
+    "note_label": "Note:",
+    "actions": {
+      "view_tour": "View Welcome Tour",
+      "view_setup": "View Setup Assistant",
+      "resetting": "Resetting...",
+      "tour_reset_title": "Onboarding reset",
+      "tour_reset_message": "The welcome tour will be shown the next time you reload the page.",
+      "setup_reset_title": "Setup reset",
+      "setup_reset_message": "The setup assistant will be shown the next time you reload the page.",
+      "error_title": "Error",
+      "error_message": "Could not identify the user.",
+      "reset_error_title": "Reset error",
+      "tour_reset_error": "Could not reset the onboarding.",
+      "setup_reset_error": "Could not reset the setup."
+    }
   },
   "notifications": {
     "title": "Notifications",

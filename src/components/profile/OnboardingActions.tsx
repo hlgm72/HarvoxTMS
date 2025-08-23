@@ -5,6 +5,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { useSetupWizard } from '@/hooks/useSetupWizard';
 import { Play, Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 interface OnboardingActionsProps {
   className?: string;
@@ -16,10 +17,11 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
   const { resetSetup } = useSetupWizard();
   const { user, currentRole } = useAuth();
   const [resetting, setResetting] = useState(false);
+  const { t } = useTranslation('settings');
 
   const handleResetOnboarding = async () => {
     if (!user || !currentRole) {
-      showError("Error", "No se pudo identificar el usuario.");
+      showError(t('onboarding.actions.error_title'), t('onboarding.actions.error_message'));
       return;
     }
 
@@ -27,13 +29,13 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
     try {
       resetOnboarding();
       showSuccess(
-        "Onboarding reiniciado",
-        "El tour de bienvenida se mostrará la próxima vez que recargues la página."
+        t('onboarding.actions.tour_reset_title'),
+        t('onboarding.actions.tour_reset_message')
       );
     } catch (error: any) {
       showError(
-        "Error al reiniciar",
-        error.message || "No se pudo reiniciar el onboarding."
+        t('onboarding.actions.reset_error_title'),
+        error.message || t('onboarding.actions.tour_reset_error')
       );
     } finally {
       setResetting(false);
@@ -42,7 +44,7 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
 
   const handleResetSetup = async () => {
     if (!user || !currentRole) {
-      showError("Error", "No se pudo identificar el usuario.");
+      showError(t('onboarding.actions.error_title'), t('onboarding.actions.error_message'));
       return;
     }
 
@@ -50,13 +52,13 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
     try {
       resetSetup();
       showSuccess(
-        "Configuración reiniciada",
-        "El asistente de configuración se mostrará la próxima vez que recargues la página."
+        t('onboarding.actions.setup_reset_title'),
+        t('onboarding.actions.setup_reset_message')
       );
     } catch (error: any) {
       showError(
-        "Error al reiniciar",
-        error.message || "No se pudo reiniciar la configuración."
+        t('onboarding.actions.reset_error_title'),
+        error.message || t('onboarding.actions.setup_reset_error')
       );
     } finally {
       setResetting(false);
@@ -74,7 +76,7 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
             className="flex-1"
           >
             <Play className="mr-2 h-4 w-4" />
-            {resetting ? 'Reiniciando...' : 'Ver Tour de Bienvenida'}
+            {resetting ? t('onboarding.actions.resetting') : t('onboarding.actions.view_tour')}
           </Button>
           
           <Button
@@ -84,12 +86,12 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
             className="flex-1"
           >
             <Settings className="mr-2 h-4 w-4" />
-            {resetting ? 'Reiniciando...' : 'Ver Asistente de Configuración'}
+            {resetting ? t('onboarding.actions.resetting') : t('onboarding.actions.view_setup')}
           </Button>
         </div>
         
         <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-          <strong>Nota:</strong> Los cambios se aplicarán cuando recargues la página. El tour y la configuración inicial solo se muestran una vez por defecto.
+          <strong>{t('onboarding.note_label')}</strong> {t('onboarding.note')}
         </div>
       </div>
     </div>

@@ -33,7 +33,7 @@ export interface PreferencesFormRef {
 }
 
 export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, className, showOnboardingSection = false }, ref) => {
-  const { t, i18n } = useTranslation(['common']);
+  const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useUserProfile();
   const { preferences, updatePreferences } = useUserPreferences();
@@ -57,7 +57,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   }, [preferences, preferencesForm]);
 
   const savePreferencesData = async (data: PreferencesFormData): Promise<{ success: boolean; error?: string }> => {
-    if (!user) return { success: false, error: 'Usuario no encontrado' };
+    if (!user) return { success: false, error: t('profile.personal_info.user_not_found') };
 
     try {
       const result = await updatePreferences({
@@ -76,7 +76,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
 
       return { success: true };
     } catch (error: any) {
-      return { success: false, error: error.message || 'Error desconocido' };
+      return { success: false, error: error.message || t('profile.personal_info.unknown_error') };
     }
   };
 
@@ -86,16 +86,16 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
       const result = await savePreferencesData(data);
       if (result.success) {
         showSuccess(
-          "Preferencias actualizadas exitosamente",
-          "Su configuración de idioma y zona horaria ha sido guardada correctamente."
+          t('profile.preferences.success_title'),
+          t('profile.preferences.success_message')
         );
       } else {
         throw new Error(result.error);
       }
     } catch (error: any) {
       showError(
-        "Error en la actualización",
-        error.message || "No se ha podido completar la actualización de las preferencias. Por favor, inténtelo nuevamente."
+        t('profile.preferences.error_title'),
+        error.message || t('profile.preferences.error_message')
       );
     } finally {
       setUpdating(false);
@@ -123,9 +123,9 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Preferencias</CardTitle>
+        <CardTitle>{t('profile.preferences.title')}</CardTitle>
         <CardDescription>
-          Configura tu idioma preferido y zona horaria
+          {t('profile.preferences.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -137,16 +137,16 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
                 name="preferred_language"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">Idioma Preferido</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t('profile.preferences.preferred_language')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona un idioma" />
+                          <SelectValue placeholder={t('profile.preferences.language_placeholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Español</SelectItem>
+                        <SelectItem value="en">{t('profile.preferences.english')}</SelectItem>
+                        <SelectItem value="es">{t('profile.preferences.spanish')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -159,18 +159,18 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
                 name="timezone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">Zona Horaria</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t('profile.preferences.timezone')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona zona horaria" />
+                          <SelectValue placeholder={t('profile.preferences.timezone_placeholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="America/New_York">Este (Nueva York)</SelectItem>
-                        <SelectItem value="America/Chicago">Central (Chicago)</SelectItem>
-                        <SelectItem value="America/Denver">Montaña (Denver)</SelectItem>
-                        <SelectItem value="America/Los_Angeles">Pacífico (Los Ángeles)</SelectItem>
+                        <SelectItem value="America/New_York">{t('profile.preferences.timezones.eastern')}</SelectItem>
+                        <SelectItem value="America/Chicago">{t('profile.preferences.timezones.central')}</SelectItem>
+                        <SelectItem value="America/Denver">{t('profile.preferences.timezones.mountain')}</SelectItem>
+                        <SelectItem value="America/Los_Angeles">{t('profile.preferences.timezones.pacific')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -183,11 +183,11 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
               <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  Cancelar
+                  {t('profile.preferences.cancel')}
                 </Button>
                 <Button type="submit" disabled={updating} className="w-full sm:w-auto">
                   <Save className="mr-2 h-4 w-4" />
-                  {updating ? 'Guardando...' : 'Guardar Cambios'}
+                  {updating ? t('profile.preferences.saving') : t('profile.preferences.save')}
                 </Button>
               </div>
             )}
@@ -199,10 +199,10 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
             <div className="mb-4">
               <h4 className="text-base font-medium flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Tour y Configuración Inicial
+                {t('onboarding.title')}
               </h4>
               <p className="text-sm text-muted-foreground mt-1">
-                ¿Necesitas volver a ver el tour de bienvenida o el asistente de configuración? Puedes reactivarlos aquí.
+                {t('onboarding.description')}
               </p>
             </div>
             <OnboardingActions />
