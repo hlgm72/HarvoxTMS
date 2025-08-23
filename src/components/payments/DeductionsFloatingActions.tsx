@@ -493,23 +493,23 @@ export function DeductionsFloatingActions({
             {activeTab === 'history' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Estadísticas Rápidas</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.history.quick_stats')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-primary">{mockStats.totalDeductions}</div>
-                      <div className="text-xs text-muted-foreground">Total Deducciones</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.history.total_deductions')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalAmount)}</div>
-                      <div className="text-xs text-muted-foreground">Monto Total</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.history.total_amount')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-blue-600">{mockStats.planned}</div>
-                      <div className="text-xs text-muted-foreground">Planificadas</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.history.planned')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
                       <div className="text-2xl font-bold text-orange-600">{mockStats.applied}</div>
-                      <div className="text-xs text-muted-foreground">Aplicadas</div>
+                      <div className="text-xs text-muted-foreground">{t('floating_actions.history.applied')}</div>
                     </div>
                   </div>
                 </div>
@@ -517,22 +517,22 @@ export function DeductionsFloatingActions({
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Estados de Deducción</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.history.deduction_states')}</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Planificadas</span>
+                      <span className="text-sm">{t('floating_actions.history.planned')}</span>
                       <Badge variant="outline" className="bg-blue-100 text-blue-700">
                         {mockStats.planned}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Aplicadas</span>
+                      <span className="text-sm">{t('floating_actions.history.applied')}</span>
                       <Badge variant="outline" className="bg-green-100 text-green-700">
                         {mockStats.applied}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Diferidas</span>
+                      <span className="text-sm">{t('floating_actions.history.deferred')}</span>
                       <Badge variant="outline" className="bg-orange-100 text-orange-700">
                         {mockStats.deferred}
                       </Badge>
@@ -543,9 +543,9 @@ export function DeductionsFloatingActions({
                 <Separator />
 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Historial de Cambios</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.history.change_history')}</h3>
                   <div className="text-sm text-muted-foreground text-center py-8">
-                    Funcionalidad del historial próximamente...
+                    {t('floating_actions.history.coming_soon')}
                   </div>
                 </div>
               </div>

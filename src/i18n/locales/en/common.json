@@ -131,7 +131,16 @@
     "history": {
       "title": "History",
       "description": "View modification history",
-      "history": "History"
+      "history": "History",
+      "quick_stats": "Quick Statistics",
+      "total_deductions": "Total Deductions",
+      "total_amount": "Total Amount",
+      "planned": "Planned",
+      "applied": "Applied",
+      "deferred": "Deferred",
+      "deduction_states": "Deduction States",
+      "change_history": "Change History",
+      "coming_soon": "History functionality coming soon..."
     }
   },
   "actions": {

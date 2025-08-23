@@ -131,7 +131,16 @@
     "history": {
       "title": "Historial",
       "description": "Ver historial de modificaciones",
-      "history": "Historial"
+      "history": "Historial",
+      "quick_stats": "Estadísticas Rápidas",
+      "total_deductions": "Total Deducciones",
+      "total_amount": "Monto Total",
+      "planned": "Planificadas",
+      "applied": "Aplicadas",
+      "deferred": "Diferidas",
+      "deduction_states": "Estados de Deducción",
+      "change_history": "Historial de Cambios",
+      "coming_soon": "Funcionalidad del historial próximamente..."
     }
   },
   "actions": {
