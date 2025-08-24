@@ -68,6 +68,9 @@ interface CompanyOption {
   href: string;
   dotNumber?: string;
   mcNumber?: string;
+  city?: string;
+  state?: string;
+  physicalAddress?: string;
 }
 
 interface FMCSALookupModalProps {
@@ -336,18 +339,42 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                 Se encontraron {companies.length} empresas. Selecciona la que corresponde:
               </p>
               
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+              <div className="space-y-3 max-h-80 overflow-y-auto">
                 {companies.map((company, index) => (
-                  <Button
+                  <div
                     key={index}
-                    variant="outline"
-                    className="w-full justify-between p-4 h-auto"
+                    className="border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => handleSelectCompany(company)}
-                    disabled={loading}
                   >
-                    <span className="text-left">{company.name}</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm mb-1">{company.name}</h4>
+                        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                          {company.dotNumber && (
+                            <Badge variant="outline" className="text-xs">
+                              DOT: {company.dotNumber}
+                            </Badge>
+                          )}
+                          {company.mcNumber && (
+                            <Badge variant="outline" className="text-xs">
+                              MC: {company.mcNumber}
+                            </Badge>
+                          )}
+                          {company.city && company.state && (
+                            <Badge variant="secondary" className="text-xs">
+                              {company.city}, {company.state}
+                            </Badge>
+                          )}
+                        </div>
+                        {company.physicalAddress && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                            {company.physicalAddress}
+                          </p>
+                        )}
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground ml-2" />
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
