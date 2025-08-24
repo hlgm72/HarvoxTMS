@@ -40,13 +40,13 @@ export function CityCombobox({
   const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const { showError } = useFleetNotifications();
-  const { t, ready } = useTranslation('common');
+  const { t, ready, i18n } = useTranslation('common');
 
-  // Helper function to get translated text with fallbacks
-  const getTranslation = (key: string, fallback: string) => {
-    if (!ready) return fallback;
+  // Helper function to get translated text with fallbacks based on current language
+  const getTranslation = (key: string, enFallback: string, esFallback: string) => {
+    if (!ready) return i18n.language === 'es' ? esFallback : enFallback;
     const translation = t(key);
-    return translation === key ? fallback : translation;
+    return translation === key ? (i18n.language === 'es' ? esFallback : enFallback) : translation;
   };
 
   // Debounce search term to avoid too many API calls
@@ -105,7 +105,7 @@ export function CityCombobox({
       console.log(`🔍 Loaded ${newCities.length} cities for "${term}" (page ${page})`);
     } catch (error) {
       console.error('Error searching cities:', error);
-      showError(getTranslation('address.error_loading', 'Error al cargar datos'));
+      showError(getTranslation('address.error_loading', 'Error loading data', 'Error al cargar datos'));
       setCities([]);
       setHasMore(false);
     } finally {
@@ -122,9 +122,9 @@ export function CityCombobox({
   const selectedCity = cities.find((city) => city.name === value);
 
   const getPlaceholderText = () => {
-    if (loading) return getTranslation('address.loading', 'Cargando...');
-    if (!stateId) return getTranslation('address.state_select_placeholder', 'Selecciona estado...');
-    return placeholder || getTranslation('address.city_select_placeholder', 'Selecciona ciudad...');
+    if (loading) return getTranslation('address.loading', 'Loading...', 'Cargando...');
+    if (!stateId) return getTranslation('address.state_select_placeholder', 'Select state...', 'Selecciona estado...');
+    return placeholder || getTranslation('address.city_select_placeholder', 'Select city...', 'Selecciona ciudad...');
   };
 
   const getDisplayText = () => {
@@ -172,7 +172,7 @@ export function CityCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder={getTranslation('address.search', 'Buscar...')} 
+            placeholder={getTranslation('address.search', 'Search...', 'Buscar...')} 
             className="h-9"
             value={searchTerm}
             onValueChange={handleSearchChange}
@@ -180,10 +180,10 @@ export function CityCombobox({
           <CommandList>
             <CommandEmpty>
               {loading 
-                ? getTranslation('address.loading', 'Cargando...') 
+                ? getTranslation('address.loading', 'Loading...', 'Cargando...') 
                 : searchTerm 
-                  ? getTranslation('address.no_results', 'No se encontraron resultados.') 
-                  : getTranslation('address.search', 'Buscar...')
+                  ? getTranslation('address.no_results', 'No results found.', 'No se encontraron resultados.') 
+                  : getTranslation('address.search', 'Search...', 'Buscar...')
               }
             </CommandEmpty>
             <ScrollArea className="h-60">
@@ -202,7 +202,7 @@ export function CityCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {getTranslation('address.city_select_placeholder', 'Selecciona ciudad...')}
+                  {getTranslation('address.city_select_placeholder', 'Select city...', 'Selecciona ciudad...')}
                 </CommandItem>
                 {cities.map((city) => (
                   <CommandItem
@@ -234,7 +234,7 @@ export function CityCombobox({
                     onSelect={loadMoreCities}
                     className="text-center text-primary cursor-pointer"
                   >
-                    {loading ? getTranslation('address.loading', 'Cargando...') : getTranslation('address.load_more', 'Cargar más...')}
+                    {loading ? getTranslation('address.loading', 'Loading...', 'Cargando...') : getTranslation('address.load_more', 'Load more...', 'Cargar más...')}
                   </CommandItem>
                 )}
               </CommandGroup>
