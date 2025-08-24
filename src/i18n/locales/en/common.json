@@ -440,6 +440,10 @@
     }
   },
   "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and account settings",
+    "personal_info": "Personal Information",
+    "personal_info_description": "Update your personal and contact information",
     "phone": "Phone",
     "language": "Language",
     "timezone": "Timezone", 
