@@ -474,7 +474,52 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
         });
         
         if (carrierLinks.length > 1) {
-          // Multiple companies found - return list for user selection
+          // Multiple companies found - filter for exact matches first
+          const searchQueryLower = searchQuery.toLowerCase().trim();
+          
+          // Look for exact matches
+          const exactMatches = carrierLinks.filter(link => 
+            link.text.toLowerCase().trim() === searchQueryLower
+          );
+          
+          console.log(`🎯 Found ${exactMatches.length} exact matches for "${searchQuery}"`);
+          
+          if (exactMatches.length > 0) {
+            // Use only exact matches
+            const companies = exactMatches.map(link => ({
+              name: link.text,
+              href: link.href.startsWith('http') 
+                ? link.href 
+                : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`
+            }));
+            
+            console.log(`📋 Returning ${companies.length} exact matches for user selection`);
+            return { companies };
+          }
+          
+          // If no exact matches, look for close matches (contains all words from search)
+          const searchWords = searchQueryLower.split(/\s+/).filter(word => word.length > 2);
+          const closeMatches = carrierLinks.filter(link => {
+            const linkText = link.text.toLowerCase().trim();
+            return searchWords.every(word => linkText.includes(word));
+          });
+          
+          console.log(`🎯 Found ${closeMatches.length} close matches containing all words`);
+          
+          if (closeMatches.length > 0 && closeMatches.length < carrierLinks.length) {
+            // Use close matches instead of all results
+            const companies = closeMatches.map(link => ({
+              name: link.text,
+              href: link.href.startsWith('http') 
+                ? link.href 
+                : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`
+            }));
+            
+            console.log(`📋 Returning ${companies.length} close matches for user selection`);
+            return { companies };
+          }
+          
+          // Fall back to all results if no better filtering worked
           const companies = carrierLinks.map(link => ({
             name: link.text,
             href: link.href.startsWith('http') 
@@ -482,7 +527,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
               : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`
           }));
           
-          console.log(`📋 Returning ${companies.length} companies for user selection`);
+          console.log(`📋 Returning all ${companies.length} companies for user selection`);
           return { companies };
         }
         
