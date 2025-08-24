@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Trash2, UserX, MoreVertical, Eraser } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
+import { useFleetNotifications } from "@/components/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDriversCount } from "@/hooks/useDriversCount";
 
@@ -64,6 +64,7 @@ export function UserActionButton({
   const { userRole, user: currentUser } = useAuth();
   const { invalidateCount } = useDriversCount();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useFleetNotifications();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [permanentDeleteDialogOpen, setPermanentDeleteDialogOpen] = useState(false);
@@ -95,7 +96,7 @@ export function UserActionButton({
       }
     } catch (error: any) {
       console.error('Error analyzing user deletion:', error);
-      toast.error("Error al analizar la eliminación del usuario");
+      showError("Error al analizar la eliminación del usuario");
     } finally {
       setLoading(false);
     }
@@ -115,7 +116,7 @@ export function UserActionButton({
 
       if (error) throw error;
 
-      toast.success(`${user.first_name} ${user.last_name} ha sido desactivado exitosamente`);
+      showSuccess(`${user.first_name} ${user.last_name} ha sido desactivado exitosamente`);
       
       // Invalidar contadores cuando se desactiva un usuario
       invalidateCount();
@@ -126,7 +127,7 @@ export function UserActionButton({
       onUserUpdated?.();
     } catch (error: any) {
       console.error('Error deactivating user:', error);
-      toast.error(error.message || "Error al desactivar el usuario");
+      showError(error.message || "Error al desactivar el usuario");
     } finally {
       setLoading(false);
     }
@@ -136,7 +137,7 @@ export function UserActionButton({
     const targetEmail = (deletionAnalysis as any)?.user_email || user.email;
     
     if (confirmationEmail !== targetEmail) {
-      toast.error("El email de confirmación no coincide");
+      showError("El email de confirmación no coincide");
       return;
     }
 
@@ -155,7 +156,7 @@ export function UserActionButton({
 
         if (error) throw error;
 
-        toast.success("La invitación ha sido eliminada permanentemente");
+        showSuccess("La invitación ha sido eliminada permanentemente");
       } else {
         // For real users, use the edge function
         const { data, error } = await supabase.functions.invoke('permanently-delete-user', {
@@ -168,9 +169,9 @@ export function UserActionButton({
         if (error) throw error;
 
         if (data?.success) {
-          toast.success("El usuario ha sido eliminado permanentemente del sistema");
+          showSuccess("El usuario ha sido eliminado permanentemente del sistema");
         } else {
-          toast.error(data?.message || "El usuario no puede ser eliminado");
+          showError(data?.message || "El usuario no puede ser eliminado");
           return;
         }
       }
@@ -188,7 +189,7 @@ export function UserActionButton({
       onUserUpdated?.();
     } catch (error: any) {
       console.error('Error deleting user permanently:', error);
-      toast.error(error.message || "Error al eliminar el usuario");
+      showError(error.message || "Error al eliminar el usuario");
     } finally {
       setLoading(false);
     }
@@ -211,7 +212,7 @@ export function UserActionButton({
         const totalDeleted = cleanupData.total_deleted || 0;
         const calculationsDeleted = cleanupData.deleted_counts?.driver_period_calculations || 0;
         
-        toast.success(
+        showSuccess(
           `Datos limpiados exitosamente: ${totalDeleted} registros eliminados` + 
           (calculationsDeleted > 0 ? ` (${calculationsDeleted} cálculos de pago)` : '')
         );
@@ -224,11 +225,11 @@ export function UserActionButton({
         // Recargar análisis de eliminación
         await loadDeletionAnalysis();
       } else {
-        toast.error((data as unknown as CleanupResult)?.message || "Error en la limpieza de datos");
+        showError((data as unknown as CleanupResult)?.message || "Error en la limpieza de datos");
       }
     } catch (error: any) {
       console.error('Error cleaning up user data:', error);
-      toast.error(error.message || "Error al limpiar datos del usuario");
+      showError(error.message || "Error al limpiar datos del usuario");
     } finally {
       setLoading(false);
     }
