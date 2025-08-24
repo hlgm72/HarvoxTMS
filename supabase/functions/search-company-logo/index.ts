@@ -163,6 +163,11 @@ function cleanDomain(input: string): string {
   // Remove @ if present
   domain = domain.replace(/^@/, '');
   
+  // If domain is empty after removing @, return empty string
+  if (!domain || domain.length === 0) {
+    return '';
+  }
+  
   // Remove www. prefix
   domain = domain.replace(/^www\./, '');
   
@@ -203,13 +208,23 @@ serve(async (req) => {
     }
 
     // Try to get domain from email domain first, then from company name
-    const domain = cleanDomain(emailDomain || companyName);
+    let domain = '';
     
-    if (!domain) {
+    // Only use emailDomain if it's not just "@" 
+    if (emailDomain && emailDomain.trim() !== '@' && emailDomain.trim().length > 1) {
+      domain = cleanDomain(emailDomain);
+    }
+    
+    // If no valid domain from email, try company name
+    if (!domain && companyName) {
+      domain = cleanDomain(companyName);
+    }
+    
+    if (!domain || domain.length === 0) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Could not extract valid domain' 
+          error: 'Could not extract valid domain from company name or email domain' 
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
