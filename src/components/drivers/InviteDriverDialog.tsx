@@ -54,8 +54,8 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     // Validación adicional antes de enviar
     if (!isFormValid) {
       showError(
-        "Error de validación",
-        "Por favor complete todos los campos correctamente"
+        t("users:driver_invite_dialog.validation.validation_error"),
+        t("users:driver_invite_dialog.validation.complete_all_fields")
       );
       return;
     }
@@ -66,7 +66,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
       const { data: sessionData } = await supabase.auth.getSession();
       const session = sessionData?.session;
       if (!session) {
-        throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        throw new Error(t("users:driver_invite_dialog.validation.session_expired"));
       }
       const { data, error } = await supabase.functions.invoke('send-driver-invitation', {
         body: {
@@ -82,17 +82,17 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
 
       // Handle Supabase function errors (network/connection issues)
       if (error) {
-        throw new Error('Error de conexión al enviar invitación');
+        throw new Error(t("users:driver_invite_dialog.errors.connection_error"));
       }
 
       // Check if the function returned an error response
       if (data && !data.success) {
-        throw new Error(data.error || 'Error al enviar invitación');
+        throw new Error(data.error || t("users:driver_invite_dialog.errors.send_error"));
       }
 
       showSuccess(
-        "Invitación enviada",
-        `Se ha enviado la invitación al conductor a ${formData.email}`
+        t("users:driver_invite_dialog.success.invitation_sent"),
+        `${t("users:driver_invite_dialog.success.invitation_sent_to")} ${formData.email}`
       );
 
       // Invalidar queries relacionadas para actualizar contadores y listas
@@ -119,8 +119,8 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     } catch (error: any) {
       console.error('Error sending driver invitation:', error);
       
-      const errorMessage = error.message || "No se pudo enviar la invitación";
-      showError("Error", errorMessage);
+      const errorMessage = error.message || t("users:driver_invite_dialog.errors.general_error");
+      showError(t("common:error"), errorMessage);
     } finally {
       setLoading(false);
     }
@@ -130,48 +130,48 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
         <DialogHeader>
-          <DialogTitle>Invitar Nuevo Conductor</DialogTitle>
+          <DialogTitle>{t("users:driver_invite_dialog.title")}</DialogTitle>
           <DialogDescription>
-            Envía una invitación por email a un nuevo conductor para que se una a tu empresa.
+            {t("users:driver_invite_dialog.description")}
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-3">
-              <Label htmlFor="firstName">Nombre *</Label>
+              <Label htmlFor="firstName">{t("users:driver_invite_dialog.form.first_name")} *</Label>
               <Input
                 id="firstName"
                 value={formData.firstName}
                 onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                placeholder="Nombre del conductor"
+                placeholder={t("users:driver_invite_dialog.form.first_name_placeholder")}
               />
             </div>
             
             <div className="space-y-3">
-              <Label htmlFor="lastName">Apellido *</Label>
+              <Label htmlFor="lastName">{t("users:driver_invite_dialog.form.last_name")} *</Label>
               <Input
                 id="lastName"
                 value={formData.lastName}
                 onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                placeholder="Apellido del conductor"
+                placeholder={t("users:driver_invite_dialog.form.last_name_placeholder")}
               />
             </div>
           </div>
 
           <div className="space-y-3">
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email">{t("users:driver_invite_dialog.form.email")} *</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="conductor@email.com"
+              placeholder={t("users:driver_invite_dialog.form.email_placeholder")}
             />
           </div>
 
           <div className="space-y-3">
-            <Label>Fecha de contratación *</Label>
+            <Label>{t("users:driver_invite_dialog.form.hire_date")} *</Label>
             <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -182,7 +182,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.hireDate ? formatPrettyDate(formData.hireDate) : <span>Seleccionar fecha</span>}
+                  {formData.hireDate ? formatPrettyDate(formData.hireDate) : <span>{t("users:driver_invite_dialog.form.select_date")}</span>}
                 </Button>
               </PopoverTrigger>
                <PopoverContent className="w-auto p-0 bg-background border-border">
@@ -224,7 +224,7 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
                           }
                         }}
                         className="w-20 text-center"
-                        placeholder="Año"
+                        placeholder={t("common:year")}
                       />
                     </div>
                   </div>
@@ -251,11 +251,11 @@ export function InviteDriverDialog({ isOpen, onClose, onSuccess }: InviteDriverD
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancelar
+              {t("users:driver_invite_dialog.buttons.cancel")}
             </Button>
             <Button type="submit" disabled={loading || !isFormValid}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Enviar Invitación
+              {t("users:driver_invite_dialog.buttons.send_invitation")}
             </Button>
           </div>
         </form>

@@ -84,6 +84,38 @@
     "sending": "Sending...",
     "send_invitation": "Send Invitation"
   },
+  "driver_invite_dialog": {
+    "title": "Invite New Driver",
+    "description": "Send an email invitation to a new driver to join your company.",
+    "form": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "hire_date": "Hire Date",
+      "first_name_placeholder": "Driver's first name",
+      "last_name_placeholder": "Driver's last name",
+      "email_placeholder": "driver@email.com",
+      "select_date": "Select date"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "send_invitation": "Send Invitation"
+    },
+    "validation": {
+      "validation_error": "Validation Error",
+      "complete_all_fields": "Please complete all fields correctly",
+      "session_expired": "Your session has expired. Please log in again."
+    },
+    "success": {
+      "invitation_sent": "Invitation sent",
+      "invitation_sent_to": "The invitation has been sent to the driver at"
+    },
+    "errors": {
+      "connection_error": "Connection error while sending invitation",
+      "send_error": "Error sending invitation",
+      "general_error": "Could not send invitation"
+    }
+  },
   "view_dialog": {
     "title": "User Details",
     "no_name": "No name"
