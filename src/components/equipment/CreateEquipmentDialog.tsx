@@ -162,14 +162,23 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="basic">
+              <TabsList className="grid w-full grid-cols-3 gap-1 p-1 min-h-[60px] bg-muted/30">
+                <TabsTrigger 
+                  value="basic" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+                >
                   {t("create.tabs.basic", "Información Básica")}
                 </TabsTrigger>
-                <TabsTrigger value="documents">
+                <TabsTrigger 
+                  value="documents" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+                >
                   {t("create.tabs.documents", "Documentos")}
                 </TabsTrigger>
-                <TabsTrigger value="financial">
+                <TabsTrigger 
+                  value="financial" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+                >
                   {t("create.tabs.financial", "Información Financiera")}
                 </TabsTrigger>
               </TabsList>
