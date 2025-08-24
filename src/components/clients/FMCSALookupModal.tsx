@@ -356,9 +356,6 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                           {company.mcNumber && (
                             <span>MC: {company.mcNumber}</span>
                           )}
-                          {company.city && company.state && (
-                            <span>{company.city}, {company.state}</span>
-                          )}
                         </div>
                         {company.physicalAddress && (
                           <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
