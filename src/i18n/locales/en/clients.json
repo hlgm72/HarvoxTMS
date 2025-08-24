@@ -250,19 +250,23 @@
         "usdot_status": "USDOT Status:"
       },
       "no_data": "Not available",
-      "no_dba": "Not applicable / empty"
+      "no_dba": "Not applicable / empty",
+      "companies_found": "Companies Found"
     },
     "buttons": {
       "search": "Search",
       "apply_data": "Apply data to form",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "back": "Back"
     },
     "messages": {
       "no_search_term": "Please enter a search term",
       "search_error": "Error searching FMCSA",
       "no_info_found": "No information found in FMCSA",
       "info_found": "Information found in FMCSA",
-      "data_applied": "Information applied to form"
+      "data_applied": "Information applied to form",
+      "companies_found_toast": "Found {{count}} companies. Select the correct one.",
+      "companies_found_message": "Found {{count}} companies. Select the one that corresponds:"
     },
     "disclaimer": "Data is obtained from the public FMCSA database. Always verify the accuracy of information before saving."
   }
