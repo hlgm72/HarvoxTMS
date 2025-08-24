@@ -33,7 +33,14 @@ export function StateCombobox({
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { showError } = useFleetNotifications();
-  const { t } = useTranslation('common');
+  const { t, ready } = useTranslation('common');
+
+  // Helper function to get translated text with fallbacks
+  const getTranslation = (key: string, fallback: string) => {
+    if (!ready) return fallback;
+    const translation = t(key);
+    return translation === key ? fallback : translation;
+  };
 
   useEffect(() => {
     loadStates();
@@ -51,7 +58,7 @@ export function StateCombobox({
       setStates(data || []);
     } catch (error) {
       console.error('Error loading states:', error);
-      showError(t('address.error_loading'));
+      showError(getTranslation('address.error_loading', 'Error al cargar datos'));
     } finally {
       setLoading(false);
     }
@@ -75,7 +82,7 @@ export function StateCombobox({
           disabled={disabled || loading}
         >
           <div className="flex items-center">
-            {selectedState ? selectedState.name : (placeholder || t('address.state_select_placeholder'))}
+            {selectedState ? selectedState.name : (placeholder || getTranslation('address.state_select_placeholder', 'Selecciona estado...'))}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -83,14 +90,19 @@ export function StateCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder={t('address.search')} 
+            placeholder={getTranslation('address.search', 'Buscar...')} 
             className="h-9"
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? t('address.loading') : searchTerm ? t('address.no_results') : t('address.search')}
+              {loading 
+                ? getTranslation('address.loading', 'Cargando...') 
+                : searchTerm 
+                  ? getTranslation('address.no_results', 'No se encontraron resultados.') 
+                  : getTranslation('address.search', 'Buscar...')
+              }
             </CommandEmpty>
             <ScrollArea className="h-60 overflow-auto"  onWheel={(e) => e.stopPropagation()}>
               <CommandGroup>
@@ -108,7 +120,7 @@ export function StateCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {t('address.state_select_placeholder')}
+                  {getTranslation('address.state_select_placeholder', 'Selecciona estado...')}
                 </CommandItem>
                 {filteredStates.map((state) => (
                   <CommandItem

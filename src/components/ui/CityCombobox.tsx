@@ -40,7 +40,14 @@ export function CityCombobox({
   const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const { showError } = useFleetNotifications();
-  const { t } = useTranslation('common');
+  const { t, ready } = useTranslation('common');
+
+  // Helper function to get translated text with fallbacks
+  const getTranslation = (key: string, fallback: string) => {
+    if (!ready) return fallback;
+    const translation = t(key);
+    return translation === key ? fallback : translation;
+  };
 
   // Debounce search term to avoid too many API calls
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -98,7 +105,7 @@ export function CityCombobox({
       console.log(`🔍 Loaded ${newCities.length} cities for "${term}" (page ${page})`);
     } catch (error) {
       console.error('Error searching cities:', error);
-      showError(t('address.error'), t('address.error_loading'));
+      showError(getTranslation('address.error_loading', 'Error al cargar datos'));
       setCities([]);
       setHasMore(false);
     } finally {
@@ -115,9 +122,9 @@ export function CityCombobox({
   const selectedCity = cities.find((city) => city.name === value);
 
   const getPlaceholderText = () => {
-    if (loading) return t('address.loading');
-    if (!stateId) return t('address.state_select_placeholder');
-    return placeholder || t('address.city_select_placeholder');
+    if (loading) return getTranslation('address.loading', 'Cargando...');
+    if (!stateId) return getTranslation('address.state_select_placeholder', 'Selecciona estado...');
+    return placeholder || getTranslation('address.city_select_placeholder', 'Selecciona ciudad...');
   };
 
   const getDisplayText = () => {
@@ -165,14 +172,19 @@ export function CityCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder={t('address.search')} 
+            placeholder={getTranslation('address.search', 'Buscar...')} 
             className="h-9"
             value={searchTerm}
             onValueChange={handleSearchChange}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? t('address.loading') : searchTerm ? t('address.no_results') : t('address.search')}
+              {loading 
+                ? getTranslation('address.loading', 'Cargando...') 
+                : searchTerm 
+                  ? getTranslation('address.no_results', 'No se encontraron resultados.') 
+                  : getTranslation('address.search', 'Buscar...')
+              }
             </CommandEmpty>
             <ScrollArea className="h-60">
               <CommandGroup>
@@ -190,7 +202,7 @@ export function CityCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {t('address.city_select_placeholder')}
+                  {getTranslation('address.city_select_placeholder', 'Selecciona ciudad...')}
                 </CommandItem>
                 {cities.map((city) => (
                   <CommandItem
@@ -222,7 +234,7 @@ export function CityCombobox({
                     onSelect={loadMoreCities}
                     className="text-center text-primary cursor-pointer"
                   >
-                    {loading ? t('address.loading') : t('address.load_more')}
+                    {loading ? getTranslation('address.loading', 'Cargando...') : getTranslation('address.load_more', 'Cargar más...')}
                   </CommandItem>
                 )}
               </CommandGroup>
