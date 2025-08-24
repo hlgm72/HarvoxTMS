@@ -96,7 +96,40 @@
       },
       "assignment": {
         "title": "Assignment",
-        "description": "Driver and activation"
+        "description": "Driver and activation",
+        "card_title": "Driver Assignment",
+        "card_description": "Select the driver who will perform this load. The assigned driver will be able to see the load information in their portal.",
+        "driver_section": {
+          "title": "Driver (Required)",
+          "placeholder": "Select a driver...",
+          "no_drivers": "No drivers available",
+          "contact_admin": "Contact administrator to add drivers.",
+          "selected_label": "Driver:"
+        },
+        "dispatcher_section": {
+          "title": "Internal Dispatcher (Optional)",
+          "placeholder": "Select a dispatcher (optional)...",
+          "no_dispatchers": "No dispatchers available",
+          "no_assignment": "No dispatcher assigned",
+          "selected_label": "Dispatcher:"
+        },
+        "owner_operator": {
+          "badge": "Owner Operator",
+          "percentages_title": "Owner Operator Percentages",
+          "percentages_description": "These percentages will be applied specifically to this load. You can modify them as needed.",
+          "leasing_label": "Leasing (%)",
+          "factoring_label": "Factoring (%)",
+          "dispatching_label": "Dispatching (%)",
+          "loading": "Loading Owner Operator data..."
+        },
+        "important_info": {
+          "title": "ℹ️ Important Information",
+          "notifications": "The selected driver will receive notification of the assignment",
+          "portal_access": "They will be able to see load details in their portal",
+          "dispatcher_optional": "The internal dispatcher is optional and helps with tracking",
+          "active_only": "Only active drivers and dispatchers can receive assignments",
+          "changeable": "You can change assignments after creating the load"
+        }
       },
       "documents": {
         "title": "Documents",

@@ -96,7 +96,40 @@
       },
       "assignment": {
         "title": "Asignación",
-        "description": "Conductor y activación"
+        "description": "Conductor y activación",
+        "card_title": "Asignación de Conductor",
+        "card_description": "Selecciona el conductor que realizará esta carga. El conductor asignado podrá ver la información de la carga en su portal.",
+        "driver_section": {
+          "title": "Conductor (Requerido)",
+          "placeholder": "Selecciona un conductor...",
+          "no_drivers": "No hay conductores disponibles",
+          "contact_admin": "Contacta al administrador para agregar conductores.",
+          "selected_label": "Conductor:"
+        },
+        "dispatcher_section": {
+          "title": "Dispatcher Interno (Opcional)",
+          "placeholder": "Selecciona un dispatcher (opcional)...",
+          "no_dispatchers": "No hay dispatchers disponibles",
+          "no_assignment": "Sin dispatcher asignado",
+          "selected_label": "Dispatcher:"
+        },
+        "owner_operator": {
+          "badge": "Owner Operator",
+          "percentages_title": "Porcentajes del Owner Operator",
+          "percentages_description": "Estos porcentajes se aplicarán específicamente a esta carga. Puedes modificarlos según sea necesario.",
+          "leasing_label": "Leasing (%)",
+          "factoring_label": "Factoring (%)",
+          "dispatching_label": "Dispatching (%)",
+          "loading": "Cargando datos del Owner Operator..."
+        },
+        "important_info": {
+          "title": "ℹ️ Información importante",
+          "notifications": "El conductor seleccionado recibirá notificación de la asignación",
+          "portal_access": "Podrá ver los detalles de la carga en su portal",
+          "dispatcher_optional": "El dispatcher interno es opcional y ayuda con el seguimiento",
+          "active_only": "Solo conductores y dispatchers activos pueden recibir asignaciones",
+          "changeable": "Puedes cambiar las asignaciones después de crear la carga"
+        }
       },
       "documents": {
         "title": "Documentos",

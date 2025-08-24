@@ -9,6 +9,7 @@ import { User, Users, CheckCircle, Settings, DollarSign } from "lucide-react";
 import { CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { CompanyDispatcher } from "@/hooks/useCompanyDispatchers";
 import { useOwnerOperator } from "@/hooks/useOwnerOperator";
+import { useTranslation } from 'react-i18next';
 
 
 interface LoadAssignmentSectionProps {
@@ -41,6 +42,7 @@ export function LoadAssignmentSection({
   onFactoringPercentageChange,
   onDispatchingPercentageChange
 }: LoadAssignmentSectionProps) {
+  const { t } = useTranslation();
   const activeDrivers = drivers.filter(driver => driver.is_active);
   
   // Get owner operator data for selected driver
@@ -93,10 +95,10 @@ export function LoadAssignmentSection({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5 text-primary" />
-          Asignación de Conductor
+          {t("loads:create_wizard.phases.assignment.card_title")}
         </CardTitle>
         <CardDescription>
-          Selecciona el conductor que realizará esta carga. El conductor asignado podrá ver la información de la carga en su portal.
+          {t("loads:create_wizard.phases.assignment.card_description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -105,15 +107,15 @@ export function LoadAssignmentSection({
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
             <h4 className="text-sm font-medium">
-              Conductor (Requerido)
+              {t("loads:create_wizard.phases.assignment.driver_section.title")}
             </h4>
           </div>
 
           {activeDrivers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="font-medium">No hay conductores disponibles</p>
-              <p className="text-sm">Contacta al administrador para agregar conductores.</p>
+              <p className="font-medium">{t("loads:create_wizard.phases.assignment.driver_section.no_drivers")}</p>
+              <p className="text-sm">{t("loads:create_wizard.phases.assignment.driver_section.contact_admin")}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -129,7 +131,7 @@ export function LoadAssignmentSection({
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un conductor..." />
+                  <SelectValue placeholder={t("loads:create_wizard.phases.assignment.driver_section.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {activeDrivers.map((driver) => (
@@ -159,93 +161,93 @@ export function LoadAssignmentSection({
 
               {selectedDriver && (
                 <div className="space-y-3">
-                  <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-primary" />
-                      <span className="text-sm font-medium">
-                        Conductor: {selectedDriver.first_name} {selectedDriver.last_name}
-                      </span>
-                      {selectedDriver.phone && (
-                        <span className="text-sm text-muted-foreground">
-                          📞 {selectedDriver.phone}
+                    <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium">
+                          {t("loads:create_wizard.phases.assignment.driver_section.selected_label")} {selectedDriver.first_name} {selectedDriver.last_name}
                         </span>
-                      )}
-                      {isOwnerOperator && (
-                        <Badge variant="secondary" className="ml-2">
-                          Owner Operator
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  {isOwnerOperator && (
-                    <Card className="border-amber-200 bg-amber-50/50">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm">
-                          <DollarSign className="h-4 w-4 text-amber-600" />
-                          Porcentajes del Owner Operator
-                        </CardTitle>
-                        <CardDescription className="text-xs">
-                          Estos porcentajes se aplicarán específicamente a esta carga. Puedes modificarlos según sea necesario.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="grid grid-cols-3 gap-3">
-                          <div>
-                            <Label htmlFor="leasing-percentage" className="text-xs font-medium">
-                              Leasing (%)
-                            </Label>
-                            <Input
-                              id="leasing-percentage"
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              value={leasingPercentage !== undefined && leasingPercentage !== null ? leasingPercentage.toFixed(2) : ''}
-                              onChange={(e) => onLeasingPercentageChange?.(parseFloat(e.target.value) || 0)}
-                              placeholder="0.00"
-                              className="text-xs h-8"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="factoring-percentage" className="text-xs font-medium">
-                              Factoring (%)
-                            </Label>
-                            <Input
-                              id="factoring-percentage"
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              value={factoringPercentage !== undefined && factoringPercentage !== null ? factoringPercentage.toFixed(2) : ''}
-                              onChange={(e) => onFactoringPercentageChange?.(parseFloat(e.target.value) || 0)}
-                              placeholder="3.00"
-                              className="text-xs h-8"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="dispatching-percentage" className="text-xs font-medium">
-                              Dispatching (%)
-                            </Label>
-                            <Input
-                              id="dispatching-percentage"
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              value={dispatchingPercentage !== undefined && dispatchingPercentage !== null ? dispatchingPercentage.toFixed(2) : ''}
-                              onChange={(e) => onDispatchingPercentageChange?.(parseFloat(e.target.value) || 0)}
-                              placeholder="5.00"
-                              className="text-xs h-8"
-                            />
-                          </div>
-                        </div>
-                        {ownerOperatorLoading && (
-                          <div className="text-xs text-muted-foreground">
-                            Cargando datos del Owner Operator...
-                          </div>
+                        {selectedDriver.phone && (
+                          <span className="text-sm text-muted-foreground">
+                            📞 {selectedDriver.phone}
+                          </span>
                         )}
-                      </CardContent>
-                    </Card>
+                        {isOwnerOperator && (
+                          <Badge variant="secondary" className="ml-2">
+                            {t("loads:create_wizard.phases.assignment.owner_operator.badge")}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  {isOwnerOperator && (
+                      <Card className="border-amber-200 bg-amber-50/50">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-sm">
+                            <DollarSign className="h-4 w-4 text-amber-600" />
+                            {t("loads:create_wizard.phases.assignment.owner_operator.percentages_title")}
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            {t("loads:create_wizard.phases.assignment.owner_operator.percentages_description")}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="grid grid-cols-3 gap-3">
+                            <div>
+                              <Label htmlFor="leasing-percentage" className="text-xs font-medium">
+                                {t("loads:create_wizard.phases.assignment.owner_operator.leasing_label")}
+                              </Label>
+                              <Input
+                                id="leasing-percentage"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value={leasingPercentage !== undefined && leasingPercentage !== null ? leasingPercentage.toFixed(2) : ''}
+                                onChange={(e) => onLeasingPercentageChange?.(parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                                className="text-xs h-8"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="factoring-percentage" className="text-xs font-medium">
+                                {t("loads:create_wizard.phases.assignment.owner_operator.factoring_label")}
+                              </Label>
+                              <Input
+                                id="factoring-percentage"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value={factoringPercentage !== undefined && factoringPercentage !== null ? factoringPercentage.toFixed(2) : ''}
+                                onChange={(e) => onFactoringPercentageChange?.(parseFloat(e.target.value) || 0)}
+                                placeholder="3.00"
+                                className="text-xs h-8"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="dispatching-percentage" className="text-xs font-medium">
+                                {t("loads:create_wizard.phases.assignment.owner_operator.dispatching_label")}
+                              </Label>
+                              <Input
+                                id="dispatching-percentage"
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value={dispatchingPercentage !== undefined && dispatchingPercentage !== null ? dispatchingPercentage.toFixed(2) : ''}
+                                onChange={(e) => onDispatchingPercentageChange?.(parseFloat(e.target.value) || 0)}
+                                placeholder="5.00"
+                                className="text-xs h-8"
+                              />
+                            </div>
+                          </div>
+                          {ownerOperatorLoading && (
+                            <div className="text-xs text-muted-foreground">
+                              {t("loads:create_wizard.phases.assignment.owner_operator.loading")}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
                   )}
                 </div>
               )}
@@ -258,14 +260,14 @@ export function LoadAssignmentSection({
           <div className="flex items-center gap-2">
             <Settings className="h-4 w-4 text-muted-foreground" />
             <h4 className="text-sm font-medium">
-              Dispatcher Interno (Opcional)
+              {t("loads:create_wizard.phases.assignment.dispatcher_section.title")}
             </h4>
           </div>
 
           {dispatchers.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               <Settings className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No hay dispatchers disponibles</p>
+              <p className="text-sm">{t("loads:create_wizard.phases.assignment.dispatcher_section.no_dispatchers")}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -281,11 +283,11 @@ export function LoadAssignmentSection({
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un dispatcher (opcional)..." />
+                  <SelectValue placeholder={t("loads:create_wizard.phases.assignment.dispatcher_section.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">
-                    <span className="text-muted-foreground">Sin dispatcher asignado</span>
+                    <span className="text-muted-foreground">{t("loads:create_wizard.phases.assignment.dispatcher_section.no_assignment")}</span>
                   </SelectItem>
                   {dispatchers.filter(dispatcher => dispatcher.user_id && dispatcher.user_id.trim() !== '').map((dispatcher) => (
                     <SelectItem key={dispatcher.user_id} value={dispatcher.user_id}>
@@ -312,7 +314,7 @@ export function LoadAssignmentSection({
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium">
-                      Dispatcher: {selectedDispatcher.first_name} {selectedDispatcher.last_name}
+                      {t("loads:create_wizard.phases.assignment.dispatcher_section.selected_label")} {selectedDispatcher.first_name} {selectedDispatcher.last_name}
                     </span>
                     {selectedDispatcher.phone && (
                       <span className="text-sm text-muted-foreground">
@@ -328,13 +330,13 @@ export function LoadAssignmentSection({
 
         {/* Instructions */}
         <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="text-sm font-medium mb-2">ℹ️ Información importante</h4>
+          <h4 className="text-sm font-medium mb-2">{t("loads:create_wizard.phases.assignment.important_info.title")}</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• El conductor seleccionado recibirá notificación de la asignación</li>
-            <li>• Podrá ver los detalles de la carga en su portal</li>
-            <li>• El dispatcher interno es opcional y ayuda con el seguimiento</li>
-            <li>• Solo conductores y dispatchers activos pueden recibir asignaciones</li>
-            <li>• Puedes cambiar las asignaciones después de crear la carga</li>
+            <li>• {t("loads:create_wizard.phases.assignment.important_info.notifications")}</li>
+            <li>• {t("loads:create_wizard.phases.assignment.important_info.portal_access")}</li>
+            <li>• {t("loads:create_wizard.phases.assignment.important_info.dispatcher_optional")}</li>
+            <li>• {t("loads:create_wizard.phases.assignment.important_info.active_only")}</li>
+            <li>• {t("loads:create_wizard.phases.assignment.important_info.changeable")}</li>
           </ul>
         </div>
       </CardContent>
