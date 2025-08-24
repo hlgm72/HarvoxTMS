@@ -122,12 +122,18 @@
       "update": "Update Load"
     },
     "validation": {
+      "stops_minimum": "Must have at least 2 stops",
+      "first_pickup": "First stop must be a pickup",
+      "last_delivery": "Last stop must be a delivery",
+      "chronological_error": "Dates must be in chronological order. Stop {{current}} is before stop {{previous}}",
+      "date_range_error": "Dates cannot be more than 30 days apart",
+      "future_date_error": "Stop {{number}}: Date cannot be more than 6 months in the future",
       "stops_missing_company": "Company",
       "stops_missing_address": "Address", 
       "stops_missing_city": "City",
       "stops_missing_state": "State",
       "stops_missing_date": "Scheduled Date",
-      "stops_missing_fields": "{{stopType}}{{number}}: Missing Company, Address, City, State, Scheduled Date"
+      "stops_missing_fields": "{{stopType}}{{number}}: Missing {{fields}}"
     }
   },
   "load_info": {

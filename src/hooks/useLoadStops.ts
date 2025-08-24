@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { format, isAfter, isBefore, isValid, differenceInDays } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 export interface LoadStop {
   id: string;
@@ -25,6 +26,7 @@ export interface LoadStopsValidation {
 }
 
 export function useLoadStops(initialStops?: LoadStop[]) {
+  const { t } = useTranslation();
   const getDefaultStops = (): LoadStop[] => [
     {
       id: 'stop-1',
@@ -69,18 +71,18 @@ export function useLoadStops(initialStops?: LoadStop[]) {
 
     // Minimum 2 stops
     if (stops.length < 2) {
-      errors.push('Debe haber al menos 2 paradas');
+      errors.push(t("loads:create_wizard.validation.stops_minimum"));
       return { isValid: false, errors };
     }
 
     // First stop must be pickup
     if (stops[0].stop_type !== 'pickup') {
-      errors.push('La primera parada debe ser una recogida (pickup)');
+      errors.push(t("loads:create_wizard.validation.first_pickup"));
     }
 
     // Last stop must be delivery
     if (stops[stops.length - 1].stop_type !== 'delivery') {
-      errors.push('La última parada debe ser una entrega (delivery)');
+      errors.push(t("loads:create_wizard.validation.last_delivery"));
     }
 
     // Validate each stop has required fields (only if showFieldValidations is true)
@@ -90,21 +92,21 @@ export function useLoadStops(initialStops?: LoadStop[]) {
         const fieldsErrors: string[] = [];
         
         if (!stop.company_name.trim()) {
-          fieldsErrors.push('Empresa');
+          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_company"));
         }
         if (!stop.address.trim()) {
-          fieldsErrors.push('Dirección');
+          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_address"));
         }
         if (!stop.city.trim()) {
-          fieldsErrors.push('Ciudad');
+          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_city"));
         }
         if (!stop.state.trim()) {
-          fieldsErrors.push('Estado');
+          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_state"));
         }
 
         // Validación obligatoria de fecha para todas las paradas
         if (!stop.scheduled_date) {
-          fieldsErrors.push('Fecha programada');
+          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_date"));
         }
 
         if (fieldsErrors.length > 0) {
@@ -115,7 +117,11 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       // Convertir errores agrupados en mensajes compactos
       Object.entries(stopErrors).forEach(([stopNum, fieldErrors]) => {
         const stopType = stops[parseInt(stopNum) - 1]?.stop_type === 'pickup' ? 'P' : 'D';
-        errors.push(`${stopType}${stopNum}: Faltan ${fieldErrors.join(', ')}`);
+        errors.push(t("loads:create_wizard.validation.stops_missing_fields", { 
+          stopType, 
+          number: stopNum, 
+          fields: fieldErrors.join(', ') 
+        }));
       });
     }
 
@@ -131,7 +137,10 @@ export function useLoadStops(initialStops?: LoadStop[]) {
         if (prevStop.scheduled_date && currentStop.scheduled_date) {
           // Same day is allowed, but if different days, must be chronological
           if (isBefore(currentStop.scheduled_date, prevStop.scheduled_date)) {
-            errors.push(`Las fechas deben estar en orden cronológico. Parada ${currentStop.stop_number} es anterior a parada ${prevStop.stop_number}`);
+            errors.push(t("loads:create_wizard.validation.chronological_error", {
+              current: currentStop.stop_number,
+              previous: prevStop.stop_number
+            }));
           }
         }
       }
@@ -141,7 +150,7 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       const lastDate = stopsWithDates[stopsWithDates.length - 1].scheduled_date!;
       
       if (differenceInDays(lastDate, firstDate) > 30) {
-        errors.push('Las fechas no deben estar separadas por más de 30 días');
+        errors.push(t("loads:create_wizard.validation.date_range_error"));
       }
 
       // Check dates are not too far in the future (allow any past date for historical loads)
@@ -152,7 +161,9 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       stopsWithDates.forEach((stop, index) => {
         if (stop.scheduled_date) {
           if (isAfter(stop.scheduled_date, maxFutureDate)) {
-            errors.push(`Parada ${stop.stop_number}: Fecha no puede ser más de 6 meses en el futuro`);
+            errors.push(t("loads:create_wizard.validation.future_date_error", {
+              number: stop.stop_number
+            }));
           }
         }
       });

@@ -122,12 +122,18 @@
       "update": "Actualizar Carga"
     },
     "validation": {
+      "stops_minimum": "Debe haber al menos 2 paradas",
+      "first_pickup": "La primera parada debe ser una recogida (pickup)",
+      "last_delivery": "La última parada debe ser una entrega (delivery)",
+      "chronological_error": "Las fechas deben estar en orden cronológico. Parada {{current}} es anterior a parada {{previous}}",
+      "date_range_error": "Las fechas no deben estar separadas por más de 30 días",
+      "future_date_error": "Parada {{number}}: Fecha no puede ser más de 6 meses en el futuro",
       "stops_missing_company": "Empresa",
       "stops_missing_address": "Dirección",
       "stops_missing_city": "Ciudad", 
       "stops_missing_state": "Estado",
       "stops_missing_date": "Fecha programada",
-      "stops_missing_fields": "{{stopType}}{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada"
+      "stops_missing_fields": "{{stopType}}{{number}}: Faltan {{fields}}"
     }
   },
   "load_info": {
