@@ -112,7 +112,31 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('✅ Invitaciones eliminadas');
     }
 
-    // 6. Eliminar perfil de conductor
+    // 6. Eliminar cálculos de pago del conductor
+    const { error: calculationsError } = await supabase
+      .from('driver_period_calculations')
+      .delete()
+      .eq('driver_user_id', userId);
+
+    if (calculationsError) {
+      console.error('Error eliminando cálculos de pago:', calculationsError);
+    } else {
+      console.log('✅ Cálculos de pago eliminados');
+    }
+
+    // 7. Eliminar instancias de gastos del conductor
+    const { error: expenseInstancesError } = await supabase
+      .from('expense_instances')
+      .delete()
+      .eq('user_id', userId);
+
+    if (expenseInstancesError) {
+      console.error('Error eliminando instancias de gastos:', expenseInstancesError);
+    } else {
+      console.log('✅ Instancias de gastos eliminadas');
+    }
+
+    // 8. Eliminar perfil de conductor
     const { error: profileError } = await supabase
       .from('driver_profiles')
       .delete()
@@ -124,7 +148,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('✅ Perfil de conductor eliminado');
     }
 
-    // 7. Finalmente, eliminar el usuario de auth.users
+    // 9. Finalmente, eliminar el usuario de auth.users
     const { error: authError } = await supabase.auth.admin.deleteUser(userId);
 
     if (authError) {
