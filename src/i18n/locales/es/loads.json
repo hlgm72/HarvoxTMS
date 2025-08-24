@@ -369,6 +369,22 @@
       "title": "Fotos de la Carga",
       "description": "Fotografías del pickup y delivery (máx. 4 por categoría)",
       "upload_button": "Subir Foto",
+      "categories": {
+        "pickup_label": "Recogida",
+        "delivery_label": "Entrega",
+        "pickup_spanish": "recogida",
+        "delivery_spanish": "entrega"
+      },
+      "error_messages": {
+        "limit_reached": "Límite de fotos alcanzado",
+        "limit_category": "No se pueden subir más fotos de {{category}} (4/4)",
+        "invalid_file_type": "Tipo de archivo inválido",
+        "accepted_formats": "Solo se aceptan imágenes JPG, PNG y WEBP"
+      },
+      "success_messages": {
+        "uploaded": "Foto subida exitosamente",
+        "uploaded_category": "Foto de {{category}} subida exitosamente"
+      },
       "empty_state": {
         "no_photos": "No hay fotos de la carga",
         "instruction": "Las fotos aparecerán aquí cuando las subas usando el botón \"Subir foto\""

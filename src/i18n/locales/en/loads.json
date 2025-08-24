@@ -369,6 +369,22 @@
       "title": "Load Photos",
       "description": "Photographs of pickup and delivery (max 4 per category)",
       "upload_button": "Upload Photo",
+      "categories": {
+        "pickup_label": "Pickup",
+        "delivery_label": "Delivery",
+        "pickup_spanish": "pickup",
+        "delivery_spanish": "delivery"
+      },
+      "error_messages": {
+        "limit_reached": "Photo limit reached",
+        "limit_category": "Cannot upload more {{category}} photos (4/4)",
+        "invalid_file_type": "Invalid file type",
+        "accepted_formats": "Only JPG, PNG, and WEBP images are accepted"
+      },
+      "success_messages": {
+        "uploaded": "Photo uploaded successfully",
+        "uploaded_category": "{{category}} photo uploaded successfully"
+      },
       "empty_state": {
         "no_photos": "No load photos",
         "instruction": "Photos will appear here when you upload them using the 'Upload Photo' button"
