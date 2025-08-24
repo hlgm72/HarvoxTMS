@@ -137,5 +137,79 @@
     "description": "Esta acción no se puede deshacer. Se eliminará permanentemente el cliente \"{clientName}\" y todos sus datos asociados.",
     "cancel": "Cancelar",
     "delete": "Eliminar"
+  },
+  "create_client_dialog": {
+    "title": "Crear Nuevo Cliente",
+    "description": "Agrega un nuevo cliente al sistema y opcionalmente sus contactos",
+    "steps": {
+      "client_info": "Información del Cliente",
+      "contacts": "Contactos (Opcional)"
+    },
+    "form": {
+      "logo_section": "Logo del Cliente",
+      "fmcsa_lookup": "Buscar en FMCSA",
+      "client_name": "Nombre del Cliente",
+      "client_name_required": "Nombre del Cliente *",
+      "alias": "Alias / Nombre Corto",
+      "phone": "Teléfono Principal",
+      "email_domain": "Dominio de Email",
+      "dot_number": "Número DOT",
+      "mc_number": "Número MC",
+      "address": "Dirección",
+      "notes": "Notas"
+    },
+    "placeholders": {
+      "client_name": "ABC Logistics Inc.",
+      "alias": "ABC",
+      "phone": "(555) 123-4567",
+      "email_domain": "@abclogistics.com",
+      "dot_number": "1234567",
+      "mc_number": "MC-123456",
+      "address": "123 Main St, Ciudad, Estado 12345",
+      "notes": "Información adicional sobre el cliente..."
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "next": "Siguiente",
+      "create_client": "Crear Cliente",
+      "creating": "Creando...",
+      "add_contact": "Agregar Contacto",
+      "previous": "Anterior"
+    },
+    "contact_label": "Contacto {index}",
+    "dispatcher_section": {
+      "title": "Contactos Despachadores",
+      "description": "Agrega contactos que manejen cargas para este cliente",
+      "no_contacts": "Aún no se han agregado contactos",
+      "add_first": "Agrega tu primer contacto usando el botón de arriba"
+    },
+    "dispatcher_form": {
+      "name": "Nombre",
+      "email": "Email",
+      "phone_office": "Teléfono Oficina",
+      "phone_mobile": "Teléfono Móvil",
+      "extension": "Extensión",
+      "notes": "Notas"
+    },
+    "dispatcher_placeholders": {
+      "name": "Juan Pérez",
+      "email": "juan@empresa.com",
+      "phone_office": "(555) 123-4567",
+      "phone_mobile": "(555) 987-6543",
+      "extension": "123",
+      "notes": "Notas adicionales sobre este contacto..."
+    },
+    "messages": {
+      "success_title": "Cliente creado exitosamente",
+      "success_description": "{clientName} ha sido agregado al sistema",
+      "error_title": "Error",
+      "error_description": "No se pudo crear el cliente. Intenta nuevamente.",
+      "user_not_found": "Usuario o compañía no encontrados"
+    },
+    "validation": {
+      "name_required": "Nombre requerido",
+      "email_invalid": "Email inválido",
+      "client_name_required": "Nombre del cliente requerido"
+    }
   }
 }

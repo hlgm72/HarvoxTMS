@@ -137,5 +137,79 @@
     "description": "This action cannot be undone. Client \"{clientName}\" and all associated data will be permanently deleted.",
     "cancel": "Cancel",
     "delete": "Delete"
+  },
+  "create_client_dialog": {
+    "title": "Create New Client",
+    "description": "Add a new client to the system and optionally their contacts",
+    "steps": {
+      "client_info": "Client Information",
+      "contacts": "Contacts (Optional)"
+    },
+    "form": {
+      "logo_section": "Client Logo",
+      "fmcsa_lookup": "Search FMCSA",
+      "client_name": "Client Name",
+      "client_name_required": "Client Name *",
+      "alias": "Alias / Short Name",
+      "phone": "Primary Phone",
+      "email_domain": "Email Domain",
+      "dot_number": "DOT Number",
+      "mc_number": "MC Number",
+      "address": "Address",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "client_name": "ABC Logistics Inc.",
+      "alias": "ABC",
+      "phone": "(555) 123-4567",
+      "email_domain": "@abclogistics.com",
+      "dot_number": "1234567",
+      "mc_number": "MC-123456",
+      "address": "123 Main St, City, State 12345",
+      "notes": "Additional client information..."
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "next": "Next",
+      "create_client": "Create Client",
+      "creating": "Creating...",
+      "add_contact": "Add Contact",
+      "previous": "Previous"
+    },
+    "contact_label": "Contact {index}",
+    "dispatcher_section": {
+      "title": "Dispatcher Contacts",
+      "description": "Add contacts who manage loads for this client",
+      "no_contacts": "No contacts added yet",
+      "add_first": "Add your first contact using the button above"
+    },
+    "dispatcher_form": {
+      "name": "Name",
+      "email": "Email",
+      "phone_office": "Office Phone",
+      "phone_mobile": "Mobile Phone",
+      "extension": "Extension",
+      "notes": "Notes"
+    },
+    "dispatcher_placeholders": {
+      "name": "John Doe",
+      "email": "john@company.com",
+      "phone_office": "(555) 123-4567",
+      "phone_mobile": "(555) 987-6543",
+      "extension": "123",
+      "notes": "Additional notes about this contact..."
+    },
+    "messages": {
+      "success_title": "Client created successfully",
+      "success_description": "{clientName} has been added to the system",
+      "error_title": "Error",
+      "error_description": "Could not create client. Please try again.",
+      "user_not_found": "User or company not found"
+    },
+    "validation": {
+      "name_required": "Name required",
+      "email_invalid": "Invalid email",
+      "client_name_required": "Client name required"
+    }
   }
 }

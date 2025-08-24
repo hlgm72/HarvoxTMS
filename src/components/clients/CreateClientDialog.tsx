@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
@@ -21,30 +22,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Building2, User, Plus, Trash2, Phone, Mail, Search } from 'lucide-react';
 
-const dispatcherSchema = z.object({
-  name: z.string().min(1, "Nombre requerido"),
-  email: z.string().email("Email inválido").optional().or(z.literal("")),
-  phone_office: z.string().optional(),
-  phone_mobile: z.string().optional(),
-  extension: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-const createClientSchema = z.object({
-  name: z.string().min(1, "Nombre del cliente requerido"),
-  alias: z.string().optional(),
-  phone: z.string().optional(),
-  dot_number: z.string().optional(),
-  mc_number: z.string().optional(),
-  address: z.string().optional(),
-  email_domain: z.string().optional(),
-  logo_url: z.string().optional(),
-  notes: z.string().optional(),
-  dispatchers: z.array(dispatcherSchema).optional(),
-});
-
-type CreateClientForm = z.infer<typeof createClientSchema>;
-
 interface CreateClientDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -52,12 +29,37 @@ interface CreateClientDialogProps {
 }
 
 export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientDialogProps) {
+  const { t } = useTranslation('clients');
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [showFMCSAModal, setShowFMCSAModal] = useState(false);
+
+  const dispatcherSchema = z.object({
+    name: z.string().min(1, t('create_client_dialog.validation.name_required')),
+    email: z.string().email(t('create_client_dialog.validation.email_invalid')).optional().or(z.literal("")),
+    phone_office: z.string().optional(),
+    phone_mobile: z.string().optional(),
+    extension: z.string().optional(),
+    notes: z.string().optional(),
+  });
+
+  const createClientSchema = z.object({
+    name: z.string().min(1, t('create_client_dialog.validation.client_name_required')),
+    alias: z.string().optional(),
+    phone: z.string().optional(),
+    dot_number: z.string().optional(),
+    mc_number: z.string().optional(),
+    address: z.string().optional(),
+    email_domain: z.string().optional(),
+    logo_url: z.string().optional(),
+    notes: z.string().optional(),
+    dispatchers: z.array(dispatcherSchema).optional(),
+  });
+
+  type CreateClientForm = z.infer<typeof createClientSchema>;
 
   const form = useForm<CreateClientForm>({
     resolver: zodResolver(createClientSchema),
@@ -83,7 +85,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
   const createClientMutation = useMutation({
     mutationFn: async (data: CreateClientForm) => {
       if (!user || !userCompany) {
-        throw new Error('Usuario o compañía no encontrados');
+        throw new Error(t('create_client_dialog.messages.user_not_found'));
       }
 
       // 1. Crear el cliente
@@ -146,8 +148,8 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
       });
       
       showSuccess(
-        "Cliente creado exitosamente",
-        `${client.name} ha sido agregado al sistema`
+        t('create_client_dialog.messages.success_title'),
+        t('create_client_dialog.messages.success_description', { clientName: client.name })
       );
 
       // Resetear formulario y cerrar
@@ -159,8 +161,8 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
     onError: (error: any) => {
       console.error('Error creando cliente:', error);
       showError(
-        "Error",
-        "No se pudo crear el cliente. Intenta nuevamente."
+        t('create_client_dialog.messages.error_title'),
+        t('create_client_dialog.messages.error_description')
       );
     },
   });
@@ -196,10 +198,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Crear Nuevo Cliente
+            {t('create_client_dialog.title')}
           </DialogTitle>
           <DialogDescription>
-            Agrega un nuevo cliente al sistema y opcionalmente sus contactos
+            {t('create_client_dialog.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -211,7 +213,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
             }`}>
               1
             </div>
-            <span className="text-sm font-medium">Información del Cliente</span>
+            <span className="text-sm font-medium">{t('create_client_dialog.steps.client_info')}</span>
           </div>
           
           <div className="w-8 h-px bg-border" />
@@ -222,18 +224,18 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
             }`}>
               2
             </div>
-            <span className="text-sm font-medium">Contactos (Opcional)</span>
+            <span className="text-sm font-medium">{t('create_client_dialog.steps.contacts')}</span>
           </div>
         </div>
 
         <Form {...form}>
           {currentStep === 1 && (
             <div className="space-y-6">
-              {/* Step 1: Broker Information */}
+              {/* Step 1: Client Information */}
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Información del Cliente</CardTitle>
+                    <CardTitle className="text-lg">{t('create_client_dialog.steps.client_info')}</CardTitle>
                     <Button
                       type="button"
                       variant="outline"
@@ -242,7 +244,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                       className="gap-2"
                     >
                       <Search className="h-4 w-4" />
-                      Buscar en FMCSA
+                      {t('create_client_dialog.form.fmcsa_lookup')}
                     </Button>
                   </div>
                 </CardHeader>
@@ -253,7 +255,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                     name="logo_url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Logo del Cliente</FormLabel>
+                        <FormLabel>{t('create_client_dialog.form.logo_section')}</FormLabel>
                         <FormControl>
                           <ClientLogoUpload
                             logoUrl={field.value || undefined}
@@ -276,10 +278,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                          const handlers = createTextHandlers(field.onChange, 'text');
                          return (
                            <FormItem>
-                             <FormLabel>Nombre del Cliente *</FormLabel>
+                             <FormLabel>{t('create_client_dialog.form.client_name_required')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="ABC Logistics Inc." 
+                                 placeholder={t('create_client_dialog.placeholders.client_name')} 
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onBlur={handlers.onBlur}
@@ -299,10 +301,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                          const handlers = createTextHandlers(field.onChange, 'text');
                          return (
                            <FormItem>
-                             <FormLabel>Alias / Nombre Corto</FormLabel>
+                             <FormLabel>{t('create_client_dialog.form.alias')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="ABC" 
+                                 placeholder={t('create_client_dialog.placeholders.alias')} 
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onBlur={handlers.onBlur}
@@ -322,10 +324,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                          const handlers = createPhoneHandlers(field.onChange);
                          return (
                            <FormItem>
-                             <FormLabel>Teléfono Principal</FormLabel>
+                             <FormLabel>{t('create_client_dialog.form.phone')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="(555) 123-4567" 
+                                 placeholder={t('create_client_dialog.placeholders.phone')} 
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onKeyPress={handlers.onKeyPress}
@@ -364,10 +366,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
 
                          return (
                            <FormItem>
-                             <FormLabel>Dominio de Email</FormLabel>
+                             <FormLabel>{t('create_client_dialog.form.email_domain')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="@abclogistics.com" 
+                                 placeholder={t('create_client_dialog.placeholders.email_domain')} 
                                  value={field.value}
                                  onChange={handleEmailDomainChange}
                                  onKeyDown={handleKeyDown}
@@ -387,10 +389,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                          const handlers = createDOTHandlers(field.onChange);
                          return (
                            <FormItem>
-                             <FormLabel>Número DOT</FormLabel>
+                             <FormLabel>{t('create_client_dialog.form.dot_number')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="1234567" 
+                                 placeholder={t('create_client_dialog.placeholders.dot_number')} 
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onKeyPress={handlers.onKeyPress}
@@ -410,10 +412,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                          const handlers = createMCHandlers(field.onChange);
                          return (
                            <FormItem>
-                             <FormLabel>Número MC</FormLabel>
+                             <FormLabel>{t('create_client_dialog.form.mc_number')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder="MC-123456" 
+                                 placeholder={t('create_client_dialog.placeholders.mc_number')} 
                                  value={field.value}
                                  onChange={handlers.onChange}
                                  onKeyPress={handlers.onKeyPress}
@@ -434,10 +436,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                        const handlers = createTextHandlers(field.onChange, 'text');
                        return (
                          <FormItem>
-                           <FormLabel>Dirección</FormLabel>
+                           <FormLabel>{t('create_client_dialog.form.address')}</FormLabel>
                            <FormControl>
                              <Input 
-                               placeholder="123 Main St, Ciudad, Estado 12345" 
+                               placeholder={t('create_client_dialog.placeholders.address')} 
                                value={field.value}
                                onChange={handlers.onChange}
                                onBlur={handlers.onBlur}
@@ -455,10 +457,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                     name="notes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Notas</FormLabel>
+                        <FormLabel>{t('create_client_dialog.form.notes')}</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Información adicional sobre el cliente..."
+                            placeholder={t('create_client_dialog.placeholders.notes')}
                             className="min-h-[80px]"
                             tabIndex={8}
                             {...field} 
@@ -476,14 +478,14 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                 <div></div>
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={handleClose}>
-                    Cancelar
+                    {t('create_client_dialog.buttons.cancel')}
                   </Button>
                   
                   <Button
                     type="button"
                     onClick={handleNextStep}
                   >
-                    Siguiente
+                    {t('create_client_dialog.buttons.next')}
                   </Button>
                 </div>
               </div>
@@ -498,7 +500,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <User className="h-5 w-5" />
-                       Contactos de Cliente
+                      {t('create_client_dialog.dispatcher_section.title')}
                     </span>
                     <Button
                       type="button"
@@ -508,7 +510,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                       className="gap-2"
                     >
                       <Plus className="h-4 w-4" />
-                      Agregar Contacto
+                      {t('create_client_dialog.buttons.add_contact')}
                     </Button>
                   </CardTitle>
                 </CardHeader>
@@ -516,14 +518,14 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                   {fields.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <User className="mx-auto h-8 w-8 mb-2" />
-                       <p>No hay contactos agregados</p>
-                       <p className="text-sm">Puedes agregar contactos o continuar sin ellos</p>
+                      <p>{t('create_client_dialog.dispatcher_section.no_contacts')}</p>
+                      <p className="text-sm">{t('create_client_dialog.dispatcher_section.add_first')}</p>
                     </div>
                   ) : (
                     fields.map((field, index) => (
                       <Card key={field.id} className="p-4">
                         <div className="flex items-center justify-between mb-4">
-                          <h4 className="font-medium">Contacto {index + 1}</h4>
+                          <h4 className="font-medium">{t('create_client_dialog.contact_label', { index: index + 1 })}</h4>
                           <Button
                             type="button"
                             variant="ghost"
@@ -543,10 +545,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                               const handlers = createTextHandlers(field.onChange, 'text');
                               return (
                                 <FormItem>
-                                  <FormLabel>Nombre *</FormLabel>
+                                  <FormLabel>{t('create_client_dialog.dispatcher_form.name')} *</FormLabel>
                                   <FormControl>
                                      <Input
-                                       placeholder="Juan Pérez"
+                                       placeholder={t('create_client_dialog.dispatcher_placeholders.name')}
                                        value={field.value}
                                        onChange={handlers.onChange}
                                        onBlur={handlers.onBlur}
@@ -566,13 +568,13 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                const handlers = createTextHandlers(field.onChange, 'email');
                                return (
                                  <FormItem>
-                                   <FormLabel>Email</FormLabel>
+                                   <FormLabel>{t('create_client_dialog.dispatcher_form.email')}</FormLabel>
                                    <FormControl>
                                      <div className="flex">
                                        <Mail className="mr-2 h-4 w-4 self-center text-muted-foreground" />
                                        <Input
                                          type="email"
-                                         placeholder="juan@empresa.com"
+                                         placeholder={t('create_client_dialog.dispatcher_placeholders.email')}
                                          value={field.value}
                                         onChange={handlers.onChange}
                                         onBlur={handlers.onBlur}
@@ -593,12 +595,12 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                               const handlers = createPhoneHandlers(field.onChange);
                               return (
                                 <FormItem>
-                                  <FormLabel>Teléfono Oficina</FormLabel>
+                                  <FormLabel>{t('create_client_dialog.dispatcher_form.phone_office')}</FormLabel>
                                   <FormControl>
                                     <div className="flex">
                                       <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
                                       <Input
-                                        placeholder="(555) 123-4567"
+                                        placeholder={t('create_client_dialog.dispatcher_placeholders.phone_office')}
                                         value={field.value}
                                         onChange={handlers.onChange}
                                         onKeyPress={handlers.onKeyPress}
@@ -619,12 +621,12 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                               const handlers = createPhoneHandlers(field.onChange);
                               return (
                                 <FormItem>
-                                  <FormLabel>Teléfono Móvil</FormLabel>
+                                  <FormLabel>{t('create_client_dialog.dispatcher_form.phone_mobile')}</FormLabel>
                                   <FormControl>
                                     <div className="flex">
                                       <Phone className="mr-2 h-4 w-4 self-center text-muted-foreground" />
                                       <Input
-                                        placeholder="(555) 987-6543"
+                                        placeholder={t('create_client_dialog.dispatcher_placeholders.phone_mobile')}
                                         value={field.value}
                                         onChange={handlers.onChange}
                                         onKeyPress={handlers.onKeyPress}
@@ -643,10 +645,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                             name={`dispatchers.${index}.extension`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Extensión</FormLabel>
+                                <FormLabel>{t('create_client_dialog.dispatcher_form.extension')}</FormLabel>
                                 <FormControl>
                                   <Input
-                                    placeholder="123"
+                                    placeholder={t('create_client_dialog.dispatcher_placeholders.extension')}
                                     {...field}
                                   />
                                 </FormControl>
@@ -660,10 +662,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                             name={`dispatchers.${index}.notes`}
                             render={({ field }) => (
                               <FormItem className="md:col-span-2">
-                                <FormLabel>Notas</FormLabel>
+                                <FormLabel>{t('create_client_dialog.dispatcher_form.notes')}</FormLabel>
                                 <FormControl>
                                   <Textarea
-                                    placeholder="Información adicional..."
+                                    placeholder={t('create_client_dialog.dispatcher_placeholders.notes')}
                                     className="min-h-[60px]"
                                     {...field}
                                   />
@@ -686,19 +688,19 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                   variant="outline"
                   onClick={() => setCurrentStep(1)}
                 >
-                  Anterior
+                  {t('create_client_dialog.buttons.previous')}
                 </Button>
 
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={handleClose}>
-                    Cancelar
+                    {t('create_client_dialog.buttons.cancel')}
                   </Button>
                   
                   <Button 
                     type="submit" 
                     disabled={createClientMutation.isPending}
                   >
-                    {createClientMutation.isPending ? 'Creando...' : 'Crear Cliente'}
+                    {createClientMutation.isPending ? t('create_client_dialog.buttons.creating') : t('create_client_dialog.buttons.create_client')}
                   </Button>
                 </div>
               </div>
