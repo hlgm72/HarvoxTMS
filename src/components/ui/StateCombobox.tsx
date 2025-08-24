@@ -75,7 +75,7 @@ export function StateCombobox({
           disabled={disabled || loading}
         >
           <div className="flex items-center">
-            {selectedState ? selectedState.name : (placeholder || t('address.state_select_placeholder', 'Selecciona estado...'))}
+            {selectedState ? selectedState.name : (placeholder || t('address.state_select_placeholder'))}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -83,14 +83,14 @@ export function StateCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder={t('address.search', 'Buscar...')} 
+            placeholder={t('address.search')} 
             className="h-9"
             value={searchTerm}
             onValueChange={setSearchTerm}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? t('address.loading', 'Cargando...') : searchTerm ? t('address.no_results', 'No se encontraron resultados.') : t('address.search', 'Buscar...')}
+              {loading ? t('address.loading') : searchTerm ? t('address.no_results') : t('address.search')}
             </CommandEmpty>
             <ScrollArea className="h-60 overflow-auto"  onWheel={(e) => e.stopPropagation()}>
               <CommandGroup>
@@ -108,7 +108,7 @@ export function StateCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {t('address.state_select_placeholder', 'Selecciona estado...')}
+                  {t('address.state_select_placeholder')}
                 </CommandItem>
                 {filteredStates.map((state) => (
                   <CommandItem
