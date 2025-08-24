@@ -349,6 +349,7 @@
       "supported_formats": "PDF, DOC, DOCX, JPG, PNG (Max 10MB)",
       "upload_button": "Upload Document",
       "uploading": "Uploading...",
+      "uploading_photo": "Uploading Photo...",
       "all_categories_complete": "All categories complete (4/4)"
     },
     "photo_categories": {
