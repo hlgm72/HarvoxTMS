@@ -44,7 +44,7 @@ export const EmailFooter = () => (
         </Section>
         
         <Text style={copyrightText}>
-          © 2024 FleetNest. Todos los derechos reservados.
+          © 2024 FleetNest TMS. Todos los derechos reservados.
         </Text>
         
         <Text style={disclaimerText}>
