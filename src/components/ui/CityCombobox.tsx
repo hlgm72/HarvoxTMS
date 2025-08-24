@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Check, ChevronsUpDown, Building } from 'lucide-react';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -163,7 +163,6 @@ export function CityCombobox({
           disabled={disabled || !stateId}
         >
           <div className="flex items-center">
-            <Building className="mr-2 h-4 w-4 text-muted-foreground" />
             {getDisplayText()}
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
