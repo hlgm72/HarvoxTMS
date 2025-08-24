@@ -548,16 +548,25 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="personal" className="flex items-center gap-2">
+            <TabsList className="grid w-full grid-cols-3 gap-1 p-1 min-h-[60px] bg-muted/30">
+              <TabsTrigger 
+                value="personal" 
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+              >
                 <User className="h-4 w-4" />
                 Personal
               </TabsTrigger>
-              <TabsTrigger value="employment-license" className="flex items-center gap-2">
+              <TabsTrigger 
+                value="employment-license" 
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+              >
                 <IdCard className="h-4 w-4" />
                 Employment & License
               </TabsTrigger>
-              <TabsTrigger value="owner" className="flex items-center gap-2">
+              <TabsTrigger 
+                value="owner" 
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+              >
                 <Truck className="h-4 w-4" />
                 Owner Operator
               </TabsTrigger>
@@ -754,9 +763,19 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 {/* Sub-tabs cuando es Owner Operator */}
                 {driverData.is_owner_operator && (
                   <Tabs value={activeOwnerTab} onValueChange={setActiveOwnerTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="business">Business Data</TabsTrigger>
-                      <TabsTrigger value="finance">Financial Configuration</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-2 gap-1 p-1 min-h-[60px] bg-muted/30">
+                      <TabsTrigger 
+                        value="business" 
+                        className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+                      >
+                        Business Data
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="finance" 
+                        className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary"
+                      >
+                        Financial Configuration
+                      </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="business" className="space-y-6">
