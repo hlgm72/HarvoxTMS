@@ -480,6 +480,17 @@
       "title": "Opciones de Vista",
       "description": "Personalizar cómo se muestran las cargas",
       "view": "Vista",
+      "density": "Densidad de Visualización",
+      "density_options": {
+        "normal": "Normal"
+      },
+      "visible_columns": "Columnas Visibles",
+      "columns": {
+        "broker_info": "Información del Broker",
+        "driver_info": "Información del Conductor",
+        "dates": "Fechas", 
+        "amounts": "Montos"
+      },
       "options": {
         "sort": {
           "date_desc": "Fecha (Más Reciente Primero)",

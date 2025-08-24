@@ -480,6 +480,17 @@
       "title": "View Options",
       "description": "Customize how loads are displayed",
       "view": "View",
+      "density": "Display Density",
+      "density_options": {
+        "normal": "Normal"
+      },
+      "visible_columns": "Visible Columns",
+      "columns": {
+        "broker_info": "Broker Information",
+        "driver_info": "Driver Information", 
+        "dates": "Dates",
+        "amounts": "Amounts"
+      },
       "options": {
         "sort": {
           "date_desc": "Date (Newest First)",
