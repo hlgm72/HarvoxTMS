@@ -54,9 +54,9 @@ export default function Index() {
       
       // Si el usuario está autenticado pero no tiene rol asignado
       if (userRoles.length === 0 || !userRole) {
-        // No role assigned, redirecting to profile
+        // No role assigned, redirecting to no-access page
         hasProcessedRedirect.current = true;
-        navigate('/profile');
+        navigate('/no-access');
         return;
       }
       

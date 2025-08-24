@@ -1,87 +1,66 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Mail, ArrowLeft } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { AlertTriangle, Mail, Phone } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 export default function NoAccess() {
-  const navigate = useNavigate();
+  const { t } = useTranslation(['common']);
   const { user, signOut } = useAuth();
 
-  // If no user, redirect to auth
-  useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-    }
-  }, [user, navigate]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
-
-  const handleBackToAuth = () => {
-    navigate('/auth');
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/20 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center">
-            <Shield className="w-8 h-8 text-warning" />
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
+            <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-500" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">Acceso Restringido</h1>
-            <p className="text-muted-foreground">
-              Tu cuenta no tiene permisos para acceder a esta aplicación
+          <CardTitle className="text-xl font-semibold">
+            Acceso Pendiente
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground">
+            Tu cuenta ha sido creada exitosamente
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-center space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Hola <strong>{user?.email}</strong>
+            </p>
+            <p className="text-sm">
+              Tu cuenta está registrada pero necesitas ser invitado a una empresa por un administrador para acceder al sistema.
             </p>
           </div>
-        </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {user && (
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Cuenta actual:</p>
-              <p className="font-medium break-all">{user.email}</p>
-            </div>
-          )}
           
-          <div className="space-y-4">
-            <div className="text-sm text-muted-foreground space-y-2">
-              <p>Para obtener acceso, necesitas:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                <li>Recibir una invitación del administrador de tu empresa</li>
-                <li>Contactar al administrador del sistema</li>
-                <li>Verificar que estés usando el email correcto</li>
-              </ul>
-            </div>
-            
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Mail className="w-4 h-4" />
-              <span>¿Necesitas ayuda? Contacta al administrador</span>
-            </div>
+          <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+              ¿Qué hacer ahora?
+            </h4>
+            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <li>• Contacta al administrador de tu empresa</li>
+              <li>• Solicita una invitación a FleetNest</li>
+              <li>• Una vez invitado, podrás acceder al dashboard</li>
+            </ul>
           </div>
-          
+
           <div className="space-y-3">
-            <Button 
-              onClick={handleSignOut}
-              className="w-full"
-              variant="outline"
-            >
-              Cerrar Sesión y Cambiar Cuenta
-            </Button>
-            
-            <Button
-              onClick={handleBackToAuth}
-              variant="ghost"
-              className="w-full"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver al Login
-            </Button>
+            <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+              <Mail className="h-4 w-4" />
+              <span>soporte@fleetnest.com</span>
+            </div>
+            <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+              <Phone className="h-4 w-4" />
+              <span>+1 (555) 123-4567</span>
+            </div>
           </div>
+          
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={signOut}
+          >
+            Cerrar Sesión
+          </Button>
         </CardContent>
       </Card>
     </div>
