@@ -32,12 +32,12 @@
     "phases": {
       "essential_info": {
         "title": "Información Esencial",
-        "description": "Detalles básicos de la carga e información del cliente",
+        "description": "Detalles básicos y cliente",
         "card_description": "Ingresa los detalles fundamentales para esta carga"
       },
       "route_details": {
         "title": "Detalles de Ruta", 
-        "description": "Ubicaciones de recogida y entrega con horarios",
+        "description": "Ubicaciones y horarios",
         "card_description": "Configura las ubicaciones de recogida y entrega",
         "card_title": "Configura las ubicaciones de recogida y entrega",
         "stop_number": "Parada {{number}}",
@@ -53,7 +53,7 @@
       },
       "assignment": {
         "title": "Asignación",
-        "description": "Selecciona conductor y dispatcher interno para esta carga",
+        "description": "Conductor y dispatcher",
         "card_description": "Asigna personal para manejar esta carga",
         "card_title": "Asigna personal para manejar esta carga",
         "driver_section": {
@@ -76,7 +76,7 @@
       },
       "documents": {
         "title": "Documentos",
-        "description": "Sube y gestiona todos los documentos relacionados con la carga",
+        "description": "Gestión de documentos",
         "card_description": "Gestiona la documentación para esta carga"
       }
     },

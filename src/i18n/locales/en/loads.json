@@ -32,12 +32,12 @@
     "phases": {
       "essential_info": {
         "title": "Essential Information",
-        "description": "Basic load details and client information",
+        "description": "Basic details and client",
         "card_description": "Enter the fundamental details for this load"
       },
       "route_details": {
         "title": "Route Details", 
-        "description": "Pickup and delivery locations with schedules",
+        "description": "Locations and schedules",
         "card_description": "Configure pickup and delivery locations",
         "card_title": "Configure pickup and delivery locations",
         "stop_number": "Stop {{number}}",
@@ -53,7 +53,7 @@
       },
       "assignment": {
         "title": "Assignment",
-        "description": "Select driver and internal dispatcher for this load",
+        "description": "Driver and dispatcher",
         "card_description": "Assign personnel to handle this load",
         "card_title": "Assign personnel to handle this load",
         "driver_section": {
@@ -76,7 +76,7 @@
       },
       "documents": {
         "title": "Documents",
-        "description": "Upload and manage all load-related documents",
+        "description": "Document management",
         "card_description": "Manage documentation for this load"
       }
     },
