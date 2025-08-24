@@ -389,6 +389,104 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
   };
 }
 
+// Function to get basic company info for selection list
+async function getBasicCompanyInfo(link: { href: string; text: string }): Promise<CompanyOption> {
+  try {
+    // Extract DOT number from URL if present
+    const dotMatch = link.href.match(/query_string=(\d+)/);
+    const dotNumber = dotMatch ? dotMatch[1] : undefined;
+    
+    console.log(`🔍 Getting basic info for: ${link.text} (DOT: ${dotNumber})`);
+    
+    // Make quick request to get basic details
+    const fullUrl = link.href.startsWith('http') 
+      ? link.href 
+      : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`;
+    
+    const response = await fetch(fullUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+    
+    if (response.ok) {
+      const html = await response.text();
+      const companyData = parseFMCSA_HTML(html);
+      
+      // Extract city and state from physical address
+      let city = '';
+      let state = '';
+      
+      if (companyData.physicalAddress) {
+        // Try to extract city and state from address like "CITY, STATE ZIP"
+        const addressMatch = companyData.physicalAddress.match(/([^,]+),\s*([A-Z]{2})\s+\d+/);
+        if (addressMatch) {
+          city = addressMatch[1].trim();
+          state = addressMatch[2].trim();
+        }
+      }
+      
+      console.log(`✅ Retrieved info for ${link.text}: MC-${companyData.mcNumber}, ${city}, ${state}`);
+      
+      return {
+        name: link.text,
+        href: fullUrl,
+        dotNumber: companyData.dotNumber || dotNumber,
+        mcNumber: companyData.mcNumber,
+        city,
+        state,
+        physicalAddress: companyData.physicalAddress
+      };
+    } else {
+      console.log(`⚠️ Failed to get details for ${link.text}, using URL DOT number only`);
+      return {
+        name: link.text,
+        href: fullUrl,
+        dotNumber
+      };
+    }
+  } catch (error) {
+    console.error(`❌ Error getting basic info for ${link.text}:`, error);
+    return {
+      name: link.text,
+      href: link.href.startsWith('http') 
+        ? link.href 
+        : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`,
+      dotNumber: link.href.match(/query_string=(\d+)/)?.[1]
+    };
+  }
+}
+
+// Function to get company details from a specific URL
+async function getCompanyDetails(companyUrl: string): Promise<FMCSACompanyData | null> {
+  try {
+    console.log(`🔍 Getting company details from: ${companyUrl}`);
+    
+    const response = await fetch(companyUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+    
+    if (!response.ok) {
+      console.error(`❌ Failed to fetch company details: ${response.status}`);
+      return null;
+    }
+    
+    const html = await response.text();
+    console.log(`📄 Received company details HTML (${html.length} characters)`);
+    
+    (globalThis as any).lastHtml = html;
+    const companyData = parseFMCSA_HTML(html);
+    
+    console.log('📊 Company details extracted:', companyData);
+    return companyData;
+  } catch (error) {
+    console.error('❌ Error getting company details:', error);
+    return null;
+  }
+}
+
 // Enhanced FMCSA search function
 async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME'): Promise<FMCSACompanyData | { companies: CompanyOption[] } | null> {
   try {
@@ -534,15 +632,12 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
           
           // Fall back to all results if no better filtering worked
           console.log(`⚠️ No exact or close matches found. Returning all ${carrierLinks.length} results`);
-          const companies = carrierLinks.map(link => ({
-            name: link.text,
-            href: link.href.startsWith('http') 
-              ? link.href 
-              : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`
-          }));
+          const companiesWithInfo = await Promise.all(
+            carrierLinks.slice(0, 10).map(link => getBasicCompanyInfo(link)) // Limit to 10 for performance
+          );
           
-          console.log(`📋 Returning all ${companies.length} companies for user selection`);
-          return { companies };
+          console.log(`📋 Returning all ${companiesWithInfo.length} companies with additional info`);
+          return { companies: companiesWithInfo };
         }
         
         if (carrierLinks.length === 1) {
@@ -584,102 +679,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     return companyData;
   } catch (error) {
     console.error('❌ Error searching FMCSA:', error);
-    return null;
-  }
-}
-
-// Function to get basic company info for selection list
-async function getBasicCompanyInfo(link: { href: string; text: string }): Promise<CompanyOption> {
-  try {
-    // Extract DOT number from URL if present
-    const dotMatch = link.href.match(/query_string=(\d+)/);
-    const dotNumber = dotMatch ? dotMatch[1] : undefined;
-    
-    console.log(`🔍 Getting basic info for: ${link.text} (DOT: ${dotNumber})`);
-    
-    // Make quick request to get basic details
-    const fullUrl = link.href.startsWith('http') 
-      ? link.href 
-      : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`;
-    
-    const response = await fetch(fullUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
-    });
-    
-    if (response.ok) {
-      const html = await response.text();
-      const companyData = parseFMCSA_HTML(html);
-      
-      // Extract city and state from physical address
-      let city = '';
-      let state = '';
-      
-      if (companyData.physicalAddress) {
-        // Try to extract city and state from address like "CITY, STATE ZIP"
-        const addressMatch = companyData.physicalAddress.match(/([^,]+),\s*([A-Z]{2})\s+\d+/);
-        if (addressMatch) {
-          city = addressMatch[1].trim();
-          state = addressMatch[2].trim();
-        }
-      }
-      
-      console.log(`✅ Retrieved info for ${link.text}: MC-${companyData.mcNumber}, ${city}, ${state}`);
-      
-      return {
-        name: link.text,
-        href: fullUrl,
-        dotNumber: companyData.dotNumber || dotNumber,
-        mcNumber: companyData.mcNumber,
-        city,
-        state,
-        physicalAddress: companyData.physicalAddress
-      };
-    } else {
-      console.log(`⚠️ Failed to get details for ${link.text}, using URL DOT number only`);
-      return {
-        name: link.text,
-        href: fullUrl,
-        dotNumber
-      };
-    }
-  } catch (error) {
-    console.error(`❌ Error getting basic info for ${link.text}:`, error);
-    return {
-      name: link.text,
-      href: link.href.startsWith('http') 
-        ? link.href 
-        : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`,
-      dotNumber: link.href.match(/query_string=(\d+)/)?.[1]
-    };
-  }
-}
-async function getCompanyDetails(companyUrl: string): Promise<FMCSACompanyData | null> {
-  try {
-    console.log(`🔍 Getting company details from: ${companyUrl}`);
-    
-    const response = await fetch(companyUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
-    });
-    
-    if (!response.ok) {
-      console.error(`❌ Failed to fetch company details: ${response.status}`);
-      return null;
-    }
-    
-    const html = await response.text();
-    console.log(`📄 Received company details HTML (${html.length} characters)`);
-    
-    (globalThis as any).lastHtml = html;
-    const companyData = parseFMCSA_HTML(html);
-    
-    console.log('📊 Company details extracted:', companyData);
-    return companyData;
-  } catch (error) {
-    console.error('❌ Error getting company details:', error);
     return null;
   }
 }
