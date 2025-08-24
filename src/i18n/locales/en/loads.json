@@ -432,21 +432,63 @@
     "filters": {
       "title": "Load Filters",
       "description": "Filter loads by status, driver, broker and dates",
+      "filters": "Filters",
+      "filters_active": "Filters (active)",
+      "applied_filters": "Applied Filters",
       "status": "Status",
       "driver": "Driver",
       "broker": "Broker",
+      "period": "Period",
       "date_range": "Date Range",
       "from": "From",
       "to": "To",
       "clear": "Clear Filters",
-      "apply": "Apply"
+      "apply": "Apply",
+      "placeholders": {
+        "status": "Select status...",
+        "driver": "Select driver...",
+        "broker": "Select broker...",
+        "period": "Select period...",
+        "loading": "Loading..."
+      },
+      "options": {
+        "status": {
+          "all": "All Statuses"
+        },
+        "driver": {
+          "all": "All Drivers"
+        },
+        "broker": {
+          "all": "All Brokers"
+        }
+      }
     },
     "export": {
       "title": "Export Loads",
       "description": "Export load data in different formats",
+      "export": "Export",
       "excel": "Export to Excel",
       "pdf": "Export to PDF",
       "csv": "Export to CSV"
+    },
+    "view": {
+      "title": "View Options",
+      "description": "Customize how loads are displayed",
+      "view": "View",
+      "options": {
+        "sort": {
+          "date_desc": "Date (Newest First)",
+          "date_asc": "Date (Oldest First)",
+          "amount_desc": "Amount (High to Low)",
+          "amount_asc": "Amount (Low to High)",
+          "status": "Status"
+        }
+      }
+    },
+    "stats": {
+      "title": "Load Statistics",
+      "description": "View detailed analytics and reports",
+      "statistics": "Statistics"
     },
     "import": {
       "title": "Import Loads", 

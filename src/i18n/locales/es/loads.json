@@ -432,21 +432,63 @@
     "filters": {
       "title": "Filtros de Carga",
       "description": "Filtrar cargas por estado, conductor, broker y fechas",
+      "filters": "Filtros",
+      "filters_active": "Filtros (activos)",
+      "applied_filters": "Filtros Aplicados",
       "status": "Estado",
       "driver": "Conductor",
       "broker": "Broker",
+      "period": "Período",
       "date_range": "Rango de Fechas",
       "from": "Desde",
       "to": "Hasta",
       "clear": "Limpiar Filtros",
-      "apply": "Aplicar"
+      "apply": "Aplicar",
+      "placeholders": {
+        "status": "Seleccionar estado...",
+        "driver": "Seleccionar conductor...",
+        "broker": "Seleccionar broker...",
+        "period": "Seleccionar período...",
+        "loading": "Cargando..."
+      },
+      "options": {
+        "status": {
+          "all": "Todos los Estados"
+        },
+        "driver": {
+          "all": "Todos los Conductores"
+        },
+        "broker": {
+          "all": "Todos los Brokers"
+        }
+      }
     },
     "export": {
       "title": "Exportar Cargas",
       "description": "Exportar datos de cargas en diferentes formatos",
+      "export": "Exportar",
       "excel": "Exportar a Excel",
       "pdf": "Exportar a PDF",
       "csv": "Exportar a CSV"
+    },
+    "view": {
+      "title": "Opciones de Vista",
+      "description": "Personalizar cómo se muestran las cargas",
+      "view": "Vista",
+      "options": {
+        "sort": {
+          "date_desc": "Fecha (Más Reciente Primero)",
+          "date_asc": "Fecha (Más Antigua Primero)",
+          "amount_desc": "Monto (Alto a Bajo)",
+          "amount_asc": "Monto (Bajo a Alto)",
+          "status": "Estado"
+        }
+      }
+    },
+    "stats": {
+      "title": "Estadísticas de Cargas",
+      "description": "Ver análisis detallados y reportes",
+      "statistics": "Estadísticas"
     },
     "import": {
       "title": "Importar Cargas", 
