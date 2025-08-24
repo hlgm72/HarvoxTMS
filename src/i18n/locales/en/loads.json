@@ -120,6 +120,14 @@
       "saving": "Saving...",
       "save_draft": "Save Draft",
       "update": "Update Load"
+    },
+    "validation": {
+      "stops_missing_company": "Company",
+      "stops_missing_address": "Address", 
+      "stops_missing_city": "City",
+      "stops_missing_state": "State",
+      "stops_missing_date": "Scheduled Date",
+      "stops_missing_fields": "{{stopType}}{{number}}: Missing Company, Address, City, State, Scheduled Date"
     }
   },
   "load_info": {

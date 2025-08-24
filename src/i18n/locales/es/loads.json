@@ -120,6 +120,14 @@
       "saving": "Guardando...",
       "save_draft": "Guardar Borrador",
       "update": "Actualizar Carga"
+    },
+    "validation": {
+      "stops_missing_company": "Empresa",
+      "stops_missing_address": "Dirección",
+      "stops_missing_city": "Ciudad", 
+      "stops_missing_state": "Estado",
+      "stops_missing_date": "Fecha programada",
+      "stops_missing_fields": "{{stopType}}{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada"
     }
   },
   "load_info": {
