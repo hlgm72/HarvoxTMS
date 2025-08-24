@@ -68,9 +68,10 @@ const logoSection = {
   textAlign: 'center' as const,
   marginBottom: '24px',
   display: 'flex',
+  flexDirection: 'column' as const,
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '20px',
+  gap: '12px',
   width: '100%',
 };
 
