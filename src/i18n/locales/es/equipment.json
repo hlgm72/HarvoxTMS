@@ -131,6 +131,10 @@
       "financial": "Información Financiera"
     }
   },
+  "created": {
+    "title": "Equipo creado",
+    "description": "El equipo se ha registrado exitosamente"
+  },
   "tracking": {
     "fleet_tracking": "Seguimiento de Flota",
     "real_time_locations": "Ubicaciones en Tiempo Real",

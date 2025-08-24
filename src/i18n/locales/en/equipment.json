@@ -131,6 +131,10 @@
       "financial": "Financial Information"
     }
   },
+  "created": {
+    "title": "Equipment Created",
+    "description": "Equipment has been registered successfully"
+  },
   "tracking": {
     "fleet_tracking": "Fleet Tracking",
     "real_time_locations": "Real-time Locations",
