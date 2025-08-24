@@ -468,6 +468,10 @@
       "title": "Exportar Cargas",
       "description": "Exportar datos de cargas en diferentes formatos",
       "export": "Exportar",
+      "options_title": "Opciones de Exportación",
+      "include_filters": "Incluir filtros aplicados",
+      "visible_only": "Exportar solo registros visibles",
+      "include_stats": "Incluir resumen estadístico",
       "excel": "Exportar a Excel",
       "pdf": "Exportar a PDF",
       "csv": "Exportar a CSV"

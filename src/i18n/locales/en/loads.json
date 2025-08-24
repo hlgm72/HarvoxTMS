@@ -468,6 +468,10 @@
       "title": "Export Loads",
       "description": "Export load data in different formats",
       "export": "Export",
+      "options_title": "Export Options",
+      "include_filters": "Include applied filters",
+      "visible_only": "Export visible records only",
+      "include_stats": "Include statistics summary",
       "excel": "Export to Excel",
       "pdf": "Export to PDF",
       "csv": "Export to CSV"
