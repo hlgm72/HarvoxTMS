@@ -38,7 +38,18 @@
       "route_details": {
         "title": "Detalles de Ruta", 
         "description": "Ubicaciones de recogida y entrega con horarios",
-        "card_description": "Configura las ubicaciones de recogida y entrega"
+        "card_description": "Configura las ubicaciones de recogida y entrega",
+        "card_title": "Configura las ubicaciones de recogida y entrega",
+        "stop_number": "Parada {{number}}",
+        "pickup": "Recogida",
+        "delivery": "Entrega", 
+        "incomplete_address": "Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
+        "add_intermediate_stop": "Agregar Parada Intermedia",
+        "instructions": {
+          "click_edit": "Haz clic en cualquier parada para editar sus detalles",
+          "drag_reorder": "Arrastra las paradas para reordenarlas",
+          "chronological_dates": "Asegúrate de que las fechas estén en orden cronológico"
+        }
       },
       "assignment": {
         "title": "Asignación",

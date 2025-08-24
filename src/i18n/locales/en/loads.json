@@ -38,7 +38,18 @@
       "route_details": {
         "title": "Route Details", 
         "description": "Pickup and delivery locations with schedules",
-        "card_description": "Configure pickup and delivery locations"
+        "card_description": "Configure pickup and delivery locations",
+        "card_title": "Configure pickup and delivery locations",
+        "stop_number": "Stop {{number}}",
+        "pickup": "Pickup",
+        "delivery": "Delivery",
+        "incomplete_address": "Missing Company, Address, City, State, Scheduled Date",
+        "add_intermediate_stop": "Add Intermediate Stop",
+        "instructions": {
+          "click_edit": "Click on any stop to edit its details",
+          "drag_reorder": "Drag stops to reorder them",
+          "chronological_dates": "Make sure dates are in chronological order"
+        }
       },
       "assignment": {
         "title": "Assignment",
