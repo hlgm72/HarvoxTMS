@@ -123,11 +123,41 @@
           "generate_load_order": "Generar Orden de Carga"
         },
         "document_types": {
-          "rate_confirmation": "Confirmación de Tarifa",
-          "driver_license": "Licencia de Conductor",
-          "bill_of_lading": "Conocimiento de Embarque",
-          "purchase_order": "Orden de Compra", 
-          "load_order": "Orden de Carga"
+          "rate_confirmation": {
+            "label": "Confirmación de Tarifa",
+            "short_label": "RC",
+            "description": "Documento de confirmación de tarifa"
+          },
+          "driver_instructions": {
+            "label": "Instrucciones para Conductor", 
+            "short_label": "IC",
+            "description": "Instrucciones para el conductor"
+          },
+          "bol": {
+            "label": "Conocimiento de Embarque",
+            "short_label": "CE", 
+            "description": "Documento de conocimiento de embarque"
+          },
+          "pod": {
+            "label": "Prueba de Entrega",
+            "short_label": "PE",
+            "description": "Documento de prueba de entrega"
+          },
+          "load_invoice": {
+            "label": "Factura de Carga",
+            "short_label": "FC",
+            "description": "Factura de la carga"
+          },
+          "load_order": {
+            "label": "Orden de Carga",
+            "short_label": "OC", 
+            "description": "Documento de orden de carga"
+          },
+          "load_photos": {
+            "label": "Fotos de Carga",
+            "short_label": "Fotos",
+            "description": "Fotos de la carga"
+          }
         },
         "empty_state": {
           "no_documents": "Aún no se han subido documentos",
