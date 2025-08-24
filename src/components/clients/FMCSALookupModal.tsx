@@ -135,7 +135,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
       if (responseData.multipleResults && responseData.companies) {
         setCompanies(responseData.companies);
         setShowCompanies(true);
-        showSuccess(`Se encontraron ${responseData.companies.length} empresas. Selecciona la correcta.`);
+        showSuccess(t('fmcsa_lookup_modal.messages.companies_found_toast', { count: responseData.companies.length }));
         setLoading(false);
         return;
       }
@@ -330,13 +330,13 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
           {showCompanies && companies.length > 0 && (
             <div className="p-6 bg-muted rounded-lg">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg">Empresas Encontradas</h3>
+                <h3 className="font-semibold text-lg">{t('fmcsa_lookup_modal.results.companies_found')}</h3>
                 <Button variant="outline" size="sm" onClick={handleBackToSearch}>
-                  Volver
+                  {t('fmcsa_lookup_modal.buttons.back')}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Se encontraron {companies.length} empresas. Selecciona la que corresponde:
+                {t('fmcsa_lookup_modal.messages.companies_found_message', { count: companies.length })}
               </p>
               
               <div className="space-y-3 max-h-80 overflow-y-auto">

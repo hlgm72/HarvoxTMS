@@ -250,19 +250,23 @@
         "usdot_status": "USDOT Status:"
       },
       "no_data": "No disponible",
-      "no_dba": "No aplica / vacío"
+      "no_dba": "No aplica / vacío",
+      "companies_found": "Empresas Encontradas"
     },
     "buttons": {
       "search": "Buscar",
       "apply_data": "Aplicar datos al formulario",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "back": "Volver"
     },
     "messages": {
       "no_search_term": "Por favor ingresa un término de búsqueda",
       "search_error": "Error al buscar en FMCSA",
       "no_info_found": "No se encontró información en FMCSA",
       "info_found": "Información encontrada en FMCSA",
-      "data_applied": "Información aplicada al formulario"
+      "data_applied": "Información aplicada al formulario",
+      "companies_found_toast": "Se encontraron {{count}} empresas. Selecciona la correcta.",
+      "companies_found_message": "Se encontraron {{count}} empresas. Selecciona la que corresponde:"
     },
     "disclaimer": "Los datos se obtienen de la base de datos pública del FMCSA. Verifica siempre la exactitud de la información antes de guardar."
   }
