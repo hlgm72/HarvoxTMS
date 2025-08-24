@@ -517,6 +517,7 @@
     "no_history": "No hay historial de estados disponible para esta carga"
   },
   "validation": {
+    "stops_missing_fields": "{{stopType}}{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
     "missing_docs": "Documentos Faltantes",
     "pending_doc": "Documento Pendiente",
     "missing_required_single": "Documento requerido faltante: {{docs}}",
