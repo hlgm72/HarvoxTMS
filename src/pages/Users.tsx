@@ -881,24 +881,24 @@ export default function Users() {
                         <TableCell>{user.email}</TableCell>
                         <TableCell>{user.phone || t('table.no_phone', { ns: 'users' })}</TableCell>
                          <TableCell>
-                           {user.role.split(', ').map((roleLabel, index) => {
-                              // Convertir el label de vuelta al rol original para obtener el badge correcto
-                               const originalRole = Object.entries({
-                                 'superadmin': getRoleLabel('superadmin'),
-                                 'company_owner': getRoleLabel('company_owner'),
-                                 'operations_manager': getRoleLabel('operations_manager'),
-                                 'dispatcher': getRoleLabel('dispatcher'),
-                                 'driver': getRoleLabel('driver'),
-                                 'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
-                               }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                             
-                             return (
-                               <span key={index} className="inline-flex items-center mr-1">
-                                 {getRoleBadge(originalRole)}
-                                 {index < user.role.split(', ').length - 1 && <span className="mx-1">•</span>}
-                               </span>
-                             );
-                           })}
+                            {user.role.split(', ').map((roleLabel, index) => {
+                               // Convertir el label de vuelta al rol original para obtener el badge correcto
+                                const originalRole = Object.entries({
+                                  'superadmin': getRoleLabel('superadmin'),
+                                  'company_owner': getRoleLabel('company_owner'),
+                                  'operations_manager': getRoleLabel('operations_manager'),
+                                  'dispatcher': getRoleLabel('dispatcher'),
+                                  'driver': getRoleLabel('driver'),
+                                  'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
+                                }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+
+                              return (
+                                <span key={`${user.id}-role-${index}`} className="inline-flex items-center mr-1">
+                                  {getRoleBadge(originalRole)}
+                                  {index < user.role.split(', ').length - 1 && <span className="mx-1">•</span>}
+                                </span>
+                              );
+                            })}
                          </TableCell>
                         <TableCell>{getStatusBadge(user.status)}</TableCell>
                         <TableCell>
@@ -994,19 +994,19 @@ export default function Users() {
                              <div className="flex justify-between items-center">
                                <span className="text-sm text-muted-foreground">{t('cards.role', { ns: 'users' })}</span>
                                <div className="flex flex-wrap gap-1">
-                                  {user.role.split(', ').map((roleLabel, index) => {
-                                    // Convertir el label de vuelta al rol original para obtener el badge correcto
-                                    const originalRole = Object.entries({
-                                        'superadmin': getRoleLabel('superadmin'),
-                                        'company_owner': getRoleLabel('company_owner'),
-                                        'operations_manager': getRoleLabel('operations_manager'),
-                                        'dispatcher': getRoleLabel('dispatcher'),
-                                        'driver': getRoleLabel('driver'),
-                                        'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
-                                      }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
-                                    
-                                    return getRoleBadge(originalRole);
-                                  })}
+                                   {user.role.split(', ').map((roleLabel, index) => {
+                                     // Convertir el label de vuelta al rol original para obtener el badge correcto
+                                     const originalRole = Object.entries({
+                                         'superadmin': getRoleLabel('superadmin'),
+                                         'company_owner': getRoleLabel('company_owner'),
+                                         'operations_manager': getRoleLabel('operations_manager'),
+                                         'dispatcher': getRoleLabel('dispatcher'),
+                                         'driver': getRoleLabel('driver'),
+                                         'multi_company_dispatcher': getRoleLabel('multi_company_dispatcher')
+                                       }).find(([key, value]) => value === roleLabel)?.[0] || 'driver';
+                                     
+                                     return <span key={`${user.id}-card-role-${index}`}>{getRoleBadge(originalRole)}</span>;
+                                   })}
                                </div>
                              </div>
                              <div className="flex justify-between items-center">
