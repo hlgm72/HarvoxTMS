@@ -3055,7 +3055,7 @@ export type Database = {
         Returns: boolean
       }
       can_access_customer_contacts: {
-        Args: { target_client_id: string }
+        Args: { client_id_param: string }
         Returns: boolean
       }
       can_access_driver_operational_data: {
