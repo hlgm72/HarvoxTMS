@@ -32,11 +32,11 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
   const [currentEquipmentType, setCurrentEquipmentType] = useState(defaultEquipmentType);
 
   const equipmentSchema = z.object({
-    equipment_number: z.string().min(1, t("equipment.validation.equipmentNumberRequired")),
-    equipment_type: z.string().min(1, t("equipment.validation.typeRequired")),
+    equipment_number: z.string().min(1, t("validation.equipmentNumberRequired")),
+    equipment_type: z.string().min(1, t("validation.typeRequired")),
     make: z.string().optional(),
     model: z.string().optional(),
-    year: z.number().min(1990, t("equipment.validation.yearMinimum")).max(new Date().getFullYear() + 1, t("equipment.validation.yearMaximum", { year: new Date().getFullYear() + 1 })).optional(),
+    year: z.number().min(1990, t("validation.yearMinimum")).max(new Date().getFullYear() + 1, t("validation.yearMaximum", { year: new Date().getFullYear() + 1 })).optional(),
     vin_number: z.string().optional(),
     license_plate: z.string().optional(),
     license_plate_expiry_date: z.string().optional(),
@@ -128,23 +128,23 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
   };
 
   const equipmentTypes = [
-    { value: "truck", label: t("equipment.type.truck", "Camión") },
-    { value: "trailer", label: t("equipment.type.trailer", "Remolque") },
-    { value: "van", label: t("equipment.type.van", "Camioneta") },
-    { value: "car", label: t("equipment.type.car", "Automóvil") },
+    { value: "truck", label: t("type.truck", "Camión") },
+    { value: "trailer", label: t("type.trailer", "Remolque") },
+    { value: "van", label: t("type.van", "Camioneta") },
+    { value: "car", label: t("type.car", "Automóvil") },
   ];
 
   const fuelTypes = [
-    { value: "diesel", label: t("equipment.fuel.diesel", "Diésel") },
-    { value: "gasoline", label: t("equipment.fuel.gasoline", "Gasolina") },
-    { value: "hybrid", label: t("equipment.fuel.hybrid", "Híbrido") },
-    { value: "electric", label: t("equipment.fuel.electric", "Eléctrico") },
+    { value: "diesel", label: t("fuel.diesel", "Diésel") },
+    { value: "gasoline", label: t("fuel.gasoline", "Gasolina") },
+    { value: "hybrid", label: t("fuel.hybrid", "Híbrido") },
+    { value: "electric", label: t("fuel.electric", "Eléctrico") },
   ];
 
   const statusOptions = [
-    { value: "active", label: t("equipment.status.active", "Activo") },
-    { value: "maintenance", label: t("equipment.status.maintenance", "Mantenimiento") },
-    { value: "inactive", label: t("equipment.status.inactive", "Inactivo") },
+    { value: "active", label: t("status.active", "Activo") },
+    { value: "maintenance", label: t("status.maintenance", "Mantenimiento") },
+    { value: "inactive", label: t("status.inactive", "Inactivo") },
   ];
 
   return (
@@ -152,10 +152,10 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>
-            {t("equipment.create.title", "Agregar Nuevo Equipo")}
+            {t("create.title", "Agregar Nuevo Equipo")}
           </DialogTitle>
           <DialogDescription>
-            {t("equipment.create.description", "Complete la información del nuevo equipo para agregarlo a la flota.")}
+            {t("create.description", "Complete la información del nuevo equipo para agregarlo a la flota.")}
           </DialogDescription>
         </DialogHeader>
 
@@ -164,13 +164,13 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="basic">
-                  {t("equipment.create.tabs.basic", "Información Básica")}
+                  {t("create.tabs.basic", "Información Básica")}
                 </TabsTrigger>
                 <TabsTrigger value="documents">
-                  {t("equipment.create.tabs.documents", "Documentos")}
+                  {t("create.tabs.documents", "Documentos")}
                 </TabsTrigger>
                 <TabsTrigger value="financial">
-                  {t("equipment.create.tabs.financial", "Información Financiera")}
+                  {t("create.tabs.financial", "Información Financiera")}
                 </TabsTrigger>
               </TabsList>
 
@@ -181,7 +181,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="equipment_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.equipmentNumber")} *</FormLabel>
+                        <FormLabel>{t("fields.equipmentNumber")} *</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -195,7 +195,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="equipment_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.type")} *</FormLabel>
+                        <FormLabel>{t("fields.type")} *</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -220,15 +220,15 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="make"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.make")}</FormLabel>
+                        <FormLabel>{t("fields.make")}</FormLabel>
                          <ComboboxField
                           options={availableBrands}
                           value={field.value || ""}
                           onValueChange={field.onChange}
                           placeholder=""
-                          emptyText={t("equipment.actions.noMakesFound")}
-                          allowCustom={true}
-                          customText={t("equipment.actions.addCustomMake")}
+                           emptyText={t("actions.noMakesFound")}
+                           allowCustom={true}
+                           customText={t("actions.addCustomMake")}
                         />
                         <FormMessage />
                       </FormItem>
@@ -240,7 +240,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="model"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.model")}</FormLabel>
+                        <FormLabel>{t("fields.model")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -254,7 +254,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="year"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.year")}</FormLabel>
+                        <FormLabel>{t("fields.year")}</FormLabel>
                          <FormControl>
                            <Input 
                              type="number" 
@@ -285,7 +285,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="vin_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.vin")}</FormLabel>
+                        <FormLabel>{t("fields.vin")}</FormLabel>
                         <FormControl>
                           <Input 
                              {...field}
@@ -312,7 +312,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="license_plate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.licensePlate")}</FormLabel>
+                        <FormLabel>{t("fields.licensePlate")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -326,7 +326,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="fuel_type"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.fuelType")}</FormLabel>
+                        <FormLabel>{t("fields.fuelType")}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -351,7 +351,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.status")}</FormLabel>
+                        <FormLabel>{t("fields.status")}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -376,7 +376,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="current_mileage"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.currentMileage")}</FormLabel>
+                        <FormLabel>{t("fields.currentMileage")}</FormLabel>
                         <FormControl>
                            <Input 
                              type="number" 
@@ -396,7 +396,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                   name="notes"
                   render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("equipment.fields.notes")}</FormLabel>
+                    <FormLabel>{t("fields.notes")}</FormLabel>
                       <FormControl>
                          <Textarea {...field} />
                       </FormControl>
@@ -413,7 +413,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="license_plate_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.licensePlateExpiry")}</FormLabel>
+                        <FormLabel>{t("fields.licensePlateExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -427,7 +427,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="registration_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.registrationExpiry")}</FormLabel>
+                        <FormLabel>{t("fields.registrationExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -441,7 +441,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="insurance_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.insuranceExpiry")}</FormLabel>
+                        <FormLabel>{t("fields.insuranceExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -455,7 +455,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="annual_inspection_expiry_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.annualInspectionExpiry")}</FormLabel>
+                        <FormLabel>{t("fields.annualInspectionExpiry")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -473,7 +473,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="purchase_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.purchaseDate")}</FormLabel>
+                        <FormLabel>{t("fields.purchaseDate")}</FormLabel>
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
@@ -487,7 +487,7 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
                     name="purchase_price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("equipment.fields.purchasePrice")}</FormLabel>
+                        <FormLabel>{t("fields.purchasePrice")}</FormLabel>
                         <FormControl>
                            <Input 
                              type="number" 
@@ -507,10 +507,10 @@ export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType
 
             <div className="flex justify-end space-x-2 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t("common.cancel")}
-              </Button>
-              <Button type="submit" disabled={isCreating}>
-                {isCreating ? t("common.creating") : t("common.create")}
+                 {t("common:cancel")}
+               </Button>
+               <Button type="submit" disabled={isCreating}>
+                 {isCreating ? t("common:creating") : t("common:create")}
               </Button>
             </div>
           </form>
