@@ -67,16 +67,13 @@ const headerContainer = {
 const logoSection = {
   textAlign: 'center' as const,
   marginBottom: '24px',
-  display: 'flex',
-  flexDirection: 'column' as const,
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '12px',
   width: '100%',
 };
 
 const logoStyle = {
   filter: 'brightness(0) invert(1)',
+  display: 'block',
+  margin: '0 auto 12px auto',
 };
 
 const brandName = {
@@ -85,6 +82,8 @@ const brandName = {
   fontWeight: '700',
   margin: '0',
   fontFamily: 'Inter, Helvetica, Arial, sans-serif',
+  textAlign: 'center' as const,
+  display: 'block',
 };
 
 const gradientLine = {
@@ -100,7 +99,7 @@ const titleSection = {
 
 const mainTitle = {
   color: '#ffffff',
-  fontSize: '32px',
+  fontSize: '28px',
   fontWeight: '800',
   margin: '0 0 8px 0',
   lineHeight: '1.2',
