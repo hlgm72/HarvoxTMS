@@ -246,8 +246,53 @@
           "download_document": "No se pudo descargar el documento",
           "delete_document": "Error al eliminar el documento"
         },
-        "load_order_tooltip": "Faltan datos de la carga o paradas para generar el Load Order"
-      }
+        "photos": {
+          "title": "Fotos de la Carga",
+          "description": "Fotografías del pickup y delivery (máx. 4 por categoría)",
+          "empty_state": {
+            "title": "No hay fotos de la carga",
+            "description": "Las fotos aparecerán aquí cuando las subas usando el botón \"Subir foto\""
+          },
+          "upload_photo": "Subir Foto",
+          "upload_category": "Subir {{category}}",
+          "photo_count": "{{count}}/8 fotos",
+          "category_count": "{{count}}/4",
+          "pickup_photos": "Fotos de Recogida",
+          "delivery_photos": "Fotos de Entrega",
+          "delete_photo_title": "¿Eliminar foto?",
+          "delete_photo_description": "Esta acción eliminará permanentemente esta foto. No se puede deshacer.",
+          "delete_confirm": "Eliminar",
+          "cancel": "Cancelar",
+          "error_messages": {
+            "limit_reached": "Límite alcanzado",
+            "limit_category": "Ya tienes 4 fotos en la categoría {{category}}",
+            "invalid_file_type": "Tipo de archivo no válido",
+            "accepted_formats": "Solo se permiten archivos JPG, PNG y WEBP",
+            "file_too_large": "Archivo muy grande",
+            "max_size": "El archivo no puede ser mayor a 10MB",
+            "upload_failed": "No se pudo subir la foto",
+            "delete_failed": "No se pudo eliminar la foto",
+            "view_failed": "No se pudo generar el enlace para ver la foto",
+            "open_failed": "No se pudo abrir la foto",
+            "save_failed": "No se pudo guardar la información de la foto",
+            "unexpected_upload": "Error inesperado al subir la foto",
+            "unexpected_delete": "Error inesperado al eliminar la foto"
+          },
+          "success_messages": {
+            "uploaded": "Foto subida",
+            "uploaded_category": "Foto de {{category}} subida correctamente",
+            "deleted": "Foto eliminada",
+            "deleted_success": "La foto se eliminó correctamente"
+          },
+          "categories": {
+            "pickup": "pickup",
+            "delivery": "delivery",
+            "pickup_label": "Pickup",
+            "delivery_label": "Delivery",
+            "pickup_spanish": "recogida",
+            "delivery_spanish": "entrega"
+          }
+        },
     },
     "form": {
       "load_number": "Número de Carga",

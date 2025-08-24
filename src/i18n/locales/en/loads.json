@@ -246,8 +246,53 @@
           "download_document": "Could not download document",
           "delete_document": "Error deleting document"
         },
-        "load_order_tooltip": "Missing load data or stops to generate Load Order"
-      }
+        "photos": {
+          "title": "Load Photos",
+          "description": "Pickup and delivery photographs (max. 4 per category)",
+          "empty_state": {
+            "title": "No load photos",
+            "description": "Photos will appear here when you upload them using the \"Upload photo\" button"
+          },
+          "upload_photo": "Upload Photo",
+          "upload_category": "Upload {{category}}",
+          "photo_count": "{{count}}/8 photos",
+          "category_count": "{{count}}/4",
+          "pickup_photos": "Pickup Photos",
+          "delivery_photos": "Delivery Photos",
+          "delete_photo_title": "Delete photo?",
+          "delete_photo_description": "This action will permanently delete this photo. This cannot be undone.",
+          "delete_confirm": "Delete",
+          "cancel": "Cancel",
+          "error_messages": {
+            "limit_reached": "Limit reached",
+            "limit_category": "You already have 4 photos in the {{category}} category",
+            "invalid_file_type": "Invalid file type",
+            "accepted_formats": "Only JPG, PNG and WEBP files are allowed",
+            "file_too_large": "File too large",
+            "max_size": "File cannot be larger than 10MB",
+            "upload_failed": "Could not upload photo",
+            "delete_failed": "Could not delete photo",
+            "view_failed": "Could not generate link to view photo",
+            "open_failed": "Could not open photo",
+            "save_failed": "Could not save photo information",
+            "unexpected_upload": "Unexpected error uploading photo",
+            "unexpected_delete": "Unexpected error deleting photo"
+          },
+          "success_messages": {
+            "uploaded": "Photo uploaded",
+            "uploaded_category": "{{category}} photo uploaded successfully",
+            "deleted": "Photo deleted",
+            "deleted_success": "Photo was deleted successfully"
+          },
+          "categories": {
+            "pickup": "pickup",
+            "delivery": "delivery",
+            "pickup_label": "Pickup",
+            "delivery_label": "Delivery",
+            "pickup_spanish": "pickup",
+            "delivery_spanish": "delivery"
+          }
+        },
     },
     "form": {
       "load_number": "Load Number",

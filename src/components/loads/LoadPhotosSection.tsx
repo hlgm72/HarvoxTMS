@@ -38,7 +38,7 @@ export function LoadPhotosSection({
   user,
   onReloadDocuments
 }: LoadPhotosSectionProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState<string | null>(null);
   const [removing, setRemoving] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState<'pickup' | 'delivery'>('pickup');
@@ -93,21 +93,33 @@ export function LoadPhotosSection({
 
   const handleFileUpload = async (file: File, category: 'pickup' | 'delivery') => {
     if (!canUploadMorePhotos(category)) {
-      showError("Límite alcanzado", `Ya tienes 4 fotos en la categoría ${category === 'pickup' ? 'Pickup' : 'Delivery'}`);
+      const categoryLabel = category === 'pickup' 
+        ? t("loads:create_wizard.phases.documents.photos.categories.pickup_label")
+        : t("loads:create_wizard.phases.documents.photos.categories.delivery_label");
+      showError(
+        t("loads:create_wizard.phases.documents.photos.error_messages.limit_reached"), 
+        t("loads:create_wizard.phases.documents.photos.error_messages.limit_category", { category: categoryLabel })
+      );
       return;
     }
 
     // Validate file type
     const acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!acceptedTypes.includes(file.type)) {
-      showError("Tipo de archivo no válido", "Solo se permiten archivos JPG, PNG y WEBP");
+      showError(
+        t("loads:create_wizard.phases.documents.photos.error_messages.invalid_file_type"), 
+        t("loads:create_wizard.phases.documents.photos.error_messages.accepted_formats")
+      );
       return;
     }
 
     // Validate file size (max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      showError("Archivo muy grande", "El archivo no puede ser mayor a 10MB");
+      showError(
+        t("loads:create_wizard.phases.documents.photos.error_messages.file_too_large"), 
+        t("loads:create_wizard.phases.documents.photos.error_messages.max_size")
+      );
       return;
     }
 
@@ -129,7 +141,7 @@ export function LoadPhotosSection({
 
       if (error) {
         console.error('Error uploading photo:', error);
-        showError("Error", "No se pudo subir la foto");
+        showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.upload_failed"));
         return;
       }
 
@@ -151,15 +163,21 @@ export function LoadPhotosSection({
       } catch (error) {
         console.error('Error saving photo to database:', error);
         await supabase.storage.from('load-documents').remove([filePath]);
-        showError("Error", "No se pudo guardar la información de la foto");
+        showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.save_failed"));
         return;
       }
 
       await onReloadDocuments?.();
-      showSuccess("Foto subida", `Foto de ${category === 'pickup' ? 'pickup' : 'delivery'} subida correctamente`);
+      const categoryLabel = category === 'pickup' 
+        ? t("loads:create_wizard.phases.documents.photos.categories.pickup_spanish")
+        : t("loads:create_wizard.phases.documents.photos.categories.delivery_spanish");
+      showSuccess(
+        t("loads:create_wizard.phases.documents.photos.success_messages.uploaded"), 
+        t("loads:create_wizard.phases.documents.photos.success_messages.uploaded_category", { category: categoryLabel })
+      );
     } catch (error) {
       console.error('Error uploading photo:', error);
-      showError("Error", "Error inesperado al subir la foto");
+      showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.unexpected_upload"));
     } finally {
       setUploading(null);
     }
@@ -180,7 +198,7 @@ export function LoadPhotosSection({
 
       if (dbError) {
         console.error('Error removing photo from database:', dbError);
-        showError("Error", "No se pudo eliminar la foto");
+        showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.delete_failed"));
         return;
       }
 
@@ -201,10 +219,13 @@ export function LoadPhotosSection({
       }
 
       await onReloadDocuments?.();
-      showSuccess("Foto eliminada", "La foto se eliminó correctamente");
+      showSuccess(
+        t("loads:create_wizard.phases.documents.photos.success_messages.deleted"), 
+        t("loads:create_wizard.phases.documents.photos.success_messages.deleted_success")
+      );
     } catch (error) {
       console.error('Error removing photo:', error);
-      showError("Error", "Error inesperado al eliminar la foto");
+      showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.unexpected_delete"));
     } finally {
       setRemoving(prev => {
         const newSet = new Set(prev);
@@ -231,7 +252,7 @@ export function LoadPhotosSection({
         .createSignedUrl(storageFilePath, 3600);
 
       if (error) {
-        showError("Error", "No se pudo generar el enlace para ver la foto");
+        showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.view_failed"));
         return;
       }
 
@@ -239,7 +260,7 @@ export function LoadPhotosSection({
         window.open(signedUrlData.signedUrl, '_blank');
       }
     } catch (error) {
-      showError("Error", "No se pudo abrir la foto");
+      showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.open_failed"));
     }
   };
 
@@ -298,9 +319,9 @@ export function LoadPhotosSection({
                         <Eye className="h-3 w-3" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{t('common:loads.tooltips.view_photo')}</p>
-                    </TooltipContent>
+                     <TooltipContent>
+                       <p>{t('common:common.view')}</p>
+                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 
@@ -319,28 +340,28 @@ export function LoadPhotosSection({
                           </Button>
                         </AlertDialogTrigger>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{t('common:loads.tooltips.delete_photo')}</p>
-                      </TooltipContent>
+                       <TooltipContent>
+                         <p>{t('common:common.delete')}</p>
+                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>¿Eliminar foto?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta acción eliminará permanentemente esta foto. No se puede deshacer.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleRemovePhoto(photo.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Eliminar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
+                   <AlertDialogContent>
+                     <AlertDialogHeader>
+                       <AlertDialogTitle>{t("loads:create_wizard.phases.documents.photos.delete_photo_title")}</AlertDialogTitle>
+                       <AlertDialogDescription>
+                         {t("loads:create_wizard.phases.documents.photos.delete_photo_description")}
+                       </AlertDialogDescription>
+                     </AlertDialogHeader>
+                     <AlertDialogFooter>
+                       <AlertDialogCancel>{t("loads:create_wizard.phases.documents.photos.cancel")}</AlertDialogCancel>
+                       <AlertDialogAction
+                         onClick={() => handleRemovePhoto(photo.id)}
+                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                       >
+                         {t("loads:create_wizard.phases.documents.photos.delete_confirm")}
+                       </AlertDialogAction>
+                     </AlertDialogFooter>
+                   </AlertDialogContent>
                 </AlertDialog>
                 </div>
               </div>
@@ -357,7 +378,7 @@ export function LoadPhotosSection({
             key={`empty-${index}`} 
             className="aspect-square border border-dashed border-border/40 rounded-lg flex items-center justify-center bg-muted/10 group cursor-pointer hover:bg-muted/20 transition-colors"
             onClick={() => triggerFileUpload(category)}
-            title={t('common:loads.tooltips.upload_photo', { category: category === 'pickup' ? 'recogida' : 'entrega' })}
+            title={t('loads:create_wizard.phases.documents.photos.upload_photo')}
           >
             <div className="flex items-center justify-center">
               <ImageIcon className="h-6 w-6 text-muted-foreground group-hover:hidden" />
@@ -380,18 +401,18 @@ export function LoadPhotosSection({
       <div className="p-6 border rounded-lg bg-white">
         <div className="flex items-center gap-2 mb-2">
           <Camera className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium text-sm">Fotos de la Carga</span>
+          <span className="font-medium text-sm">{t("loads:create_wizard.phases.documents.photos.title")}</span>
         </div>
         <p className="text-xs text-muted-foreground mb-4">
-          Fotografías del pickup y delivery (máx. 4 por categoría)
+          {t("loads:create_wizard.phases.documents.photos.description")}
         </p>
         <div className="text-center py-8">
           <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
           <p className="text-sm text-muted-foreground mb-2">
-            No hay fotos de la carga
+            {t("loads:create_wizard.phases.documents.photos.empty_state.title")}
           </p>
           <p className="text-xs text-muted-foreground">
-            Las fotos aparecerán aquí cuando las subas usando el botón "Subir foto"
+            {t("loads:create_wizard.phases.documents.photos.empty_state.description")}
           </p>
         </div>
       </div>
@@ -405,14 +426,14 @@ export function LoadPhotosSection({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Camera className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium text-sm">Fotos de la Carga</span>
+            <span className="font-medium text-sm">{t("loads:create_wizard.phases.documents.photos.title")}</span>
           </div>
           <Badge variant="outline" className="text-xs">
-            {loadPhotos.length}/8 fotos
+            {t("loads:create_wizard.phases.documents.photos.photo_count", { count: loadPhotos.length })}
           </Badge>
         </div>
         <p className="text-xs text-muted-foreground">
-          Fotografías del pickup y delivery (máx. 4 por categoría)
+          {t("loads:create_wizard.phases.documents.photos.description")}
         </p>
       </div>
 
@@ -421,9 +442,9 @@ export function LoadPhotosSection({
         <div className="p-3 border rounded-lg bg-white">
           <div className="flex items-center gap-2 mb-3">
             <Camera className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium text-sm">Fotos de Recogida</span>
+            <span className="font-medium text-sm">{t("loads:create_wizard.phases.documents.photos.pickup_photos")}</span>
             <Badge variant="outline" className="text-xs">
-              {pickupPhotos.length}/4
+              {t("loads:create_wizard.phases.documents.photos.category_count", { count: pickupPhotos.length })}
             </Badge>
           </div>
           {renderPhotoGrid(pickupPhotos, 'pickup')}
@@ -435,9 +456,9 @@ export function LoadPhotosSection({
         <div className="p-3 border rounded-lg bg-white">
           <div className="flex items-center gap-2 mb-3">
             <Camera className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium text-sm">Fotos de Entrega</span>
+            <span className="font-medium text-sm">{t("loads:create_wizard.phases.documents.photos.delivery_photos")}</span>
             <Badge variant="outline" className="text-xs">
-              {deliveryPhotos.length}/4
+              {t("loads:create_wizard.phases.documents.photos.category_count", { count: deliveryPhotos.length })}
             </Badge>
           </div>
           {renderPhotoGrid(deliveryPhotos, 'delivery')}
