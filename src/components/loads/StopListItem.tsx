@@ -7,6 +7,7 @@ import { LoadStop } from '@/hooks/useLoadStops';
 import { format } from 'date-fns';
 import { formatMediumDate } from '@/lib/dateFormatting';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface StopListItemProps {
   stop: LoadStop;
@@ -23,6 +24,7 @@ export function StopListItem({
   isLast = false, 
   hasDateError = false 
 }: StopListItemProps) {
+  const { t } = useTranslation();
   const [cityName, setCityName] = useState<string>('');
 
   useEffect(() => {
@@ -54,9 +56,9 @@ export function StopListItem({
   }, [stop.city]);
 
   const getStopTypeLabel = () => {
-    if (isFirst) return 'Recogida';
-    if (isLast) return 'Entrega';
-    return stop.stop_type === 'pickup' ? 'Recogida' : 'Entrega';
+    if (isFirst) return t("loads:create_wizard.phases.route_details.pickup");
+    if (isLast) return t("loads:create_wizard.phases.route_details.delivery");
+    return stop.stop_type === 'pickup' ? t("loads:create_wizard.phases.route_details.pickup") : t("loads:create_wizard.phases.route_details.delivery");
   };
 
   const getStopTypeColor = () => {
@@ -89,7 +91,7 @@ export function StopListItem({
       parts.push(stop.zip_code);
     }
     
-    return parts.join(', ') || 'Dirección incompleta';
+    return parts.join(', ') || t("loads:create_wizard.phases.route_details.incomplete_address");
   };
 
   return (
@@ -101,14 +103,14 @@ export function StopListItem({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">Parada #{stop.stop_number}</span>
+            <span className="font-medium">{t("loads:create_wizard.phases.route_details.stop_number", { number: stop.stop_number })}</span>
           </div>
           <Badge className={cn("text-xs", getStopTypeColor())}>
             {getStopTypeLabel()}
           </Badge>
           {hasDateError && (
             <Badge variant="destructive" className="text-xs">
-              Error de fecha
+              {t("loads:create_wizard.phases.route_details.date_error")}
             </Badge>
           )}
         </div>
@@ -183,7 +185,7 @@ export function StopListItem({
         {/* Special Instructions */}
         {stop.special_instructions && (
           <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
-            <strong>Instrucciones:</strong> {stop.special_instructions}
+            <strong>{t("loads:create_wizard.phases.route_details.instructions_label")}</strong> {stop.special_instructions}
           </div>
         )}
       </div>

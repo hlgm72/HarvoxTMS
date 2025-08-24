@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useLoadStops, LoadStop } from '@/hooks/useLoadStops';
+import { useTranslation } from 'react-i18next';
 
 interface LoadStopsManagerProps {
   onStopsChange?: (stops: any[]) => void;
@@ -18,6 +19,7 @@ interface LoadStopsManagerProps {
 }
 
 export function LoadStopsManager({ onStopsChange, showValidation = false, initialStops }: LoadStopsManagerProps) {
+  const { t } = useTranslation();
   const {
     stops,
     setStops,
@@ -76,7 +78,7 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
         reorderStops(oldIndex, newIndex);
       } else {
         // Could show a toast notification here about invalid order
-        console.warn('No se puede reordenar: las fechas deben estar en orden cronológico');
+        console.warn(t("loads:create_wizard.phases.route_details.reorder_warning"));
       }
     }
   };
@@ -137,10 +139,10 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
       <CardHeader>
         <div className="flex items-center gap-2">
           <MapPin className="h-5 w-5 text-primary" />
-          <CardTitle>Paradas de la Carga</CardTitle>
+          <CardTitle>{t("loads:create_wizard.phases.route_details.card_title")}</CardTitle>
         </div>
         <CardDescription>
-          Define las paradas de recogida y entrega. La primera debe ser pickup y la última delivery.
+          {t("loads:create_wizard.phases.route_details.card_description")}
         </CardDescription>
         
         {/* Validation Summary - Solo mostrar si hay errores Y showValidation es true */}
@@ -161,7 +163,7 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
           <Alert>
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>
-              ✅ Configuración de paradas válida. 
+              ✅ {t("loads:create_wizard.phases.route_details.valid_configuration")} 
               {pickupDate && deliveryDate && (
                 <>
                   {' '}Pickup: {formatDateAuto(pickupDate)}, Delivery: {formatDateAuto(deliveryDate)}
@@ -204,15 +206,15 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
             className="w-full max-w-sm"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Agregar Parada Intermedia
+            {t("loads:create_wizard.phases.route_details.add_intermediate_stop")}
           </Button>
         </div>
 
         {/* Info */}
         <div className="text-sm text-muted-foreground text-center space-y-1">
-          <p>• Haz clic en una parada para editarla</p>
-          <p>• Arrastra las paradas para reordenarlas</p>
-          <p>• Las fechas deben estar en orden cronológico</p>
+          <p>• {t("loads:create_wizard.phases.route_details.instructions.click_edit")}</p>
+          <p>• {t("loads:create_wizard.phases.route_details.instructions.drag_reorder")}</p>
+          <p>• {t("loads:create_wizard.phases.route_details.instructions.chronological_dates")}</p>
         </div>
       </CardContent>
 

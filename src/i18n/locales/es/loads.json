@@ -52,6 +52,10 @@
         "delivery": "Entrega",
         "incomplete_address": "Dirección incompleta",
         "add_intermediate_stop": "Agregar Parada Intermedia",
+        "date_error": "Error de fecha",
+        "reorder_warning": "No se puede reordenar: las fechas deben estar en orden cronológico",
+        "valid_configuration": "Configuración de paradas válida.",
+        "instructions_label": "Instrucciones:",
         "instructions": {
           "click_edit": "Haz clic en una parada para editarla",
           "drag_reorder": "Arrastra las paradas para reordenarlas",

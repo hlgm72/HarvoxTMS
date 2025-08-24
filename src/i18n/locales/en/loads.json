@@ -52,6 +52,10 @@
         "delivery": "Delivery",
         "incomplete_address": "Incomplete address",
         "add_intermediate_stop": "Add Intermediate Stop",
+        "date_error": "Date error",
+        "reorder_warning": "Cannot reorder: dates must be in chronological order",
+        "valid_configuration": "Valid stops configuration.",
+        "instructions_label": "Instructions:",
         "instructions": {
           "click_edit": "Click on a stop to edit it",
           "drag_reorder": "Drag stops to reorder them",
