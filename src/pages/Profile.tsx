@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useStateInfo } from '@/hooks/useStateInfo';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PreferencesForm } from '@/components/profile/PreferencesForm';
@@ -22,6 +23,7 @@ export default function Profile() {
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, loading, user, refreshProfile } = useUserProfile();
   const { preferences } = useUserPreferences();
+  const { stateName } = useStateInfo(profile?.state_id);
 
   // Función para obtener la ruta del dashboard según el rol del usuario
   const getDashboardRoute = () => {
@@ -95,8 +97,10 @@ export default function Profile() {
                         {profile?.street_address && (
                           <div>{profile.street_address}</div>
                         )}
-                        {profile?.zip_code && (
-                          <div>{profile.zip_code}</div>
+                        {(profile?.city || stateName || profile?.zip_code) && (
+                          <div>
+                            {[profile?.city, stateName, profile?.zip_code].filter(Boolean).join(', ')}
+                          </div>
                         )}
                       </div>
                     </div>
