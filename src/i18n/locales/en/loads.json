@@ -167,6 +167,16 @@
           "no_documents": "No documents uploaded yet",
           "use_selector": "Use the buttons above to add documents"
         },
+        "photo_categories": {
+          "pickup": {
+            "label": "Pickup ({{count}}/4)",
+            "description": "Photographs at pickup"
+          },
+          "delivery": {
+            "label": "Delivery ({{count}}/4)",
+            "description": "Photographs at delivery"
+          }
+        },
         "photos": {
           "title": "Photos",
           "description": "Load photos and images",

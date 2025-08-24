@@ -167,6 +167,16 @@
           "no_documents": "Aún no se han subido documentos",
           "use_selector": "Usa los botones de arriba para agregar documentos"
         },
+        "photo_categories": {
+          "pickup": {
+            "label": "Recogida ({{count}}/4)",
+            "description": "Fotografías en la recogida"
+          },
+          "delivery": {
+            "label": "Entrega ({{count}}/4)",
+            "description": "Fotografías en la entrega"
+          }
+        },
         "photos": {
           "title": "Fotos",
           "description": "Fotos e imágenes de la carga",
