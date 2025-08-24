@@ -54,7 +54,24 @@
       "assignment": {
         "title": "Assignment",
         "description": "Select driver and internal dispatcher for this load",
-        "card_description": "Assign personnel to handle this load"
+        "card_description": "Assign personnel to handle this load",
+        "card_title": "Assign personnel to handle this load",
+        "driver_section": {
+          "title": "Driver (Required)",
+          "placeholder": "Select a driver..."
+        },
+        "dispatcher_section": {
+          "title": "Internal Dispatcher (Optional)",
+          "placeholder": "Select a dispatcher (optional)..."
+        },
+        "important_info": {
+          "title": "ℹ️ Important Information",
+          "notifications": "The selected driver will receive notification of the assignment",
+          "portal_access": "They will be able to see load details in their portal",
+          "dispatcher_optional": "The internal dispatcher is optional and helps with tracking",
+          "active_only": "Only active drivers and dispatchers can receive assignments",
+          "changeable": "You can change assignments after creating the load"
+        }
       },
       "documents": {
         "title": "Documents",

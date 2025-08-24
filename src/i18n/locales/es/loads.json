@@ -54,7 +54,24 @@
       "assignment": {
         "title": "Asignación",
         "description": "Selecciona conductor y dispatcher interno para esta carga",
-        "card_description": "Asigna personal para manejar esta carga"
+        "card_description": "Asigna personal para manejar esta carga",
+        "card_title": "Asigna personal para manejar esta carga",
+        "driver_section": {
+          "title": "Conductor (Requerido)",
+          "placeholder": "Selecciona un conductor..."
+        },
+        "dispatcher_section": {
+          "title": "Dispatcher Interno (Opcional)",
+          "placeholder": "Selecciona un dispatcher (opcional)..."
+        },
+        "important_info": {
+          "title": "ℹ️ Información importante",
+          "notifications": "El conductor seleccionado recibirá notificación de la asignación",
+          "portal_access": "Podrá ver los detalles de la carga en su portal",
+          "dispatcher_optional": "El dispatcher interno es opcional y ayuda con el seguimiento",
+          "active_only": "Solo conductores y dispatchers activos pueden recibir asignaciones",
+          "changeable": "Puedes cambiar las asignaciones después de crear la carga"
+        }
       },
       "documents": {
         "title": "Documentos",
