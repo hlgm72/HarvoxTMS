@@ -20,6 +20,7 @@ import { useLoadDocuments } from "@/contexts/LoadDocumentsContext";
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
+import { useTranslation } from 'react-i18next';
 
 interface LoadDocument {
   id: string;
@@ -221,6 +222,72 @@ export function LoadDocumentsSection({
   showGenerateButton = false,
   userRole = 'owner'
 }: LoadDocumentsSectionProps) {
+  const { t } = useTranslation();
+  
+  // Dynamic function to get document types with translations
+  const getDocumentTypes = () => [
+    {
+      type: 'rate_confirmation' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.rate_confirmation.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.rate_confirmation.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.rate_confirmation.description"),
+      required: true,
+      generated: false,
+    },
+    {
+      type: 'driver_instructions' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.driver_instructions.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.driver_instructions.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.driver_instructions.description"),
+      required: false,
+      generated: false,
+    },
+    {
+      type: 'bol' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.bol.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.bol.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.bol.description"),
+      required: false,
+      generated: false,
+    },
+    {
+      type: 'pod' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.pod.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.pod.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.pod.description"),
+      required: true,
+      generated: false,
+    },
+    {
+      type: 'load_invoice' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.load_invoice.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.load_invoice.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.load_invoice.description"),
+      required: false,
+      generated: false,
+    },
+    {
+      type: 'load_order' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.load_order.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.load_order.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.load_order.description"),
+      required: false,
+      generated: true,
+    },
+    {
+      type: 'load_photos' as const,
+      label: t("loads:create_wizard.phases.documents.document_types.load_photos.label"),
+      shortLabel: t("loads:create_wizard.phases.documents.document_types.load_photos.short_label"),
+      description: t("loads:create_wizard.phases.documents.document_types.load_photos.description"),
+      required: false,
+      generated: false,
+      allowMultiple: true,
+      maxFiles: 8,
+      acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+      categories: ['pickup', 'delivery']
+    }
+  ];
+
   const [documents, setDocuments] = useState<LoadDocument[]>(propDocuments);
   const [uploadingDocuments, setUploadingDocuments] = useState<Set<string>>(new Set());
   const [removingDocuments, setRemovingDocuments] = useState<Set<string>>(new Set());
@@ -266,6 +333,21 @@ const [uploading, setUploading] = useState<string | null>(null);
     }
   }, [propDocuments.length]);
 
+  // Filtrar documentos disponibles para subir (excluyendo load_photos que tiene su propia sección)
+  const getUploadableDocumentTypes = (userRole?: string) => {
+    let filteredTypes = getDocumentTypes().filter(doc => doc.type !== 'load_photos' && !doc.generated);
+    
+    // Restricciones para conductores: no pueden subir RC ni DI
+    if (userRole === 'driver') {
+      filteredTypes = filteredTypes.filter(doc => 
+        doc.type !== 'rate_confirmation' && 
+        doc.type !== 'driver_instructions'
+      );
+    }
+    
+    return filteredTypes;
+  };
+
   const loadDocuments = async () => {
     if (!loadId || loadId === 'temp') return;
 
@@ -300,7 +382,7 @@ const [uploading, setUploading] = useState<string | null>(null);
         return {
           id: doc.id,
           type: doc.document_type as LoadDocument['type'],
-          name: documentTypes.find(dt => dt.type === doc.document_type)?.label || doc.document_type,
+          name: getDocumentTypes().find(dt => dt.type === doc.document_type)?.label || doc.document_type,
           fileName: doc.file_name,
           fileSize: doc.file_size || undefined,
           uploadedAt: doc.created_at,
@@ -314,7 +396,7 @@ const [uploading, setUploading] = useState<string | null>(null);
       onDocumentsChange?.(formattedDocuments);
     } catch (error) {
       console.error('Error loading documents:', error);
-      showError("Error", "No se pudieron cargar los documentos");
+      showError("Error", t("loads:create_wizard.phases.documents.error_messages.load_documents"));
     }
   };
 
@@ -336,7 +418,7 @@ const [uploading, setUploading] = useState<string | null>(null);
 
       if (error) {
         console.error('Error uploading photo:', error);
-        showError("Error", "No se pudo subir la foto");
+        showError("Error", t("loads:create_wizard.phases.documents.error_messages.upload_photo"));
         return;
       }
 
@@ -352,10 +434,10 @@ const [uploading, setUploading] = useState<string | null>(null);
       });
       
       await loadDocuments();
-      showSuccess("Foto subida", `Foto de ${category} subida correctamente`);
+      showSuccess(t("loads:create_wizard.phases.documents.success_messages.photo_uploaded"), t("loads:create_wizard.phases.documents.success_messages.photo_uploaded_category", { category }));
     } catch (error) {
       console.error('Error uploading photo:', error);
-      showError("Error", "Error inesperado al subir la foto");
+      showError("Error", t("loads:create_wizard.phases.documents.error_messages.unexpected_photo"));
     } finally {
       setUploadingPhoto(null);
     }
@@ -408,7 +490,7 @@ const [uploading, setUploading] = useState<string | null>(null);
 
       if (error) {
         console.error('Error uploading file:', error);
-        showError("Error", "No se pudo subir el archivo");
+        showError("Error", t("loads:create_wizard.phases.documents.error_messages.upload_document"));
         return;
       }
 
@@ -443,10 +525,10 @@ const [uploading, setUploading] = useState<string | null>(null);
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
       queryClient.refetchQueries({ queryKey: ['load-documents'] });
       
-      showSuccess("Documento subido", `${file.name} se subió correctamente`);
+      showSuccess(t("loads:create_wizard.phases.documents.success_messages.document_uploaded"), t("loads:create_wizard.phases.documents.success_messages.document_uploaded_filename", { fileName: file.name }));
     } catch (error) {
       console.error('Error uploading document:', error);
-      showError("Error", "Error inesperado al subir el documento");
+      showError("Error", t("loads:create_wizard.phases.documents.error_messages.unexpected_upload"));
     } finally {
       setUploading(null);
       setUploadingDocuments(prev => {
@@ -464,8 +546,7 @@ const [uploading, setUploading] = useState<string | null>(null);
   // Get available document types (not uploaded yet)
   const getAvailableDocumentTypes = () => {
     const uploadedTypes = [...documents, ...temporaryDocuments].map(doc => doc.type);
-    const uploadableTypes = getUploadableDocumentTypes(userRole);
-    return uploadableTypes.filter(docType => !uploadedTypes.includes(docType.type));
+    return getUploadableDocumentTypes(userRole).filter(docType => !uploadedTypes.includes(docType.type));
   };
 
   // Get photo counts by category
@@ -485,14 +566,14 @@ const [uploading, setUploading] = useState<string | null>(null);
     return [
       { 
         value: 'pickup', 
-        label: `Recogida (${getPhotoCount('pickup')}/4)`,
-        description: 'Fotografías en la recogida',
+        label: t("loads:create_wizard.phases.documents.photo_categories.pickup.label", { count: getPhotoCount('pickup') }),
+        description: t("loads:create_wizard.phases.documents.photo_categories.pickup.description"),
         disabled: !isPhotoCategoryAvailable('pickup')
       },
       { 
         value: 'delivery', 
-        label: `Entrega (${getPhotoCount('delivery')}/4)`,
-        description: 'Fotografías en la entrega',
+        label: t("loads:create_wizard.phases.documents.photo_categories.delivery.label", { count: getPhotoCount('delivery') }),
+        description: t("loads:create_wizard.phases.documents.photo_categories.delivery.description"),
         disabled: !isPhotoCategoryAvailable('delivery')
       }
     ].filter(category => !category.disabled);
@@ -592,10 +673,10 @@ const [uploading, setUploading] = useState<string | null>(null);
       queryClient.refetchQueries({ queryKey: ['load-documents'] });
       
       console.log('🎉 handleRemoveDocument - Process completed');
-      showSuccess("Documento eliminado", `${document.fileName} se eliminó correctamente`);
+      showSuccess(t("loads:create_wizard.phases.documents.success_messages.document_deleted"), t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: document.fileName }));
     } catch (error) {
       console.error('Error removing document:', error);
-      showError("Error", "Error inesperado al eliminar el documento");
+      showError("Error", t("loads:create_wizard.phases.documents.error_messages.delete_document"));
     } finally {
       setRemovingDocuments(prev => {
         const newSet = new Set(prev);
@@ -616,12 +697,12 @@ const [uploading, setUploading] = useState<string | null>(null);
       await handleFileSelect(file, 'load_order');
       
       setHasLoadOrder(true);
-      showSuccess("Load Order generado", "El Load Order se ha generado y guardado exitosamente");
+      showSuccess(t("loads:create_wizard.phases.documents.success_messages.load_order_generated"), t("loads:create_wizard.phases.documents.success_messages.load_order_success"));
       
       console.log('🎉 handleLoadOrderGenerated - Process completed successfully');
     } catch (error) {
       console.error('❌ handleLoadOrderGenerated - Error:', error);
-      showError("Error", "Error al generar o guardar el Load Order. Intenta nuevamente.");
+      showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_load_order"));
     }
   };
 
@@ -642,8 +723,8 @@ const [uploading, setUploading] = useState<string | null>(null);
                 <span className="font-medium text-sm sm:text-base truncate">{docType.label}</span>
               </div>
               <div className="flex items-center gap-0.5 flex-shrink-0">
-                {docType.required && <Badge variant="destructive" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">Requerido</Badge>}
-                {docType.generated && <Badge variant="secondary" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">Generado</Badge>}
+                {docType.required && <Badge variant="destructive" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">{t("loads:create_wizard.phases.documents.badges.required")}</Badge>}
+                {docType.generated && <Badge variant="secondary" className="text-[8px] sm:text-[10px] h-3 sm:h-4 px-0.5 sm:px-1">{t("loads:create_wizard.phases.documents.badges.generated")}</Badge>}
               </div>
             </div>
 
@@ -661,7 +742,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 variant="outline" 
                 size="sm" 
                 disabled={isRemoving} 
-                title="Ver documento" 
+                title={t("loads:create_wizard.phases.documents.tooltips.view_document")}
                 className="h-7 w-7 p-0 sm:w-auto sm:px-2 text-xs"
                 onClick={async () => {
                   try {
@@ -684,19 +765,19 @@ const [uploading, setUploading] = useState<string | null>(null);
                       .from('load-documents')
                       .createSignedUrl(storageFilePath, 3600);
                     if (urlError) {
-                      showError("Error", "No se pudo generar el enlace para ver el documento");
+                      showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_view_link"));
                       return;
                     }
                     if (signedUrlData?.signedUrl) {
                       window.open(signedUrlData.signedUrl, '_blank');
                     }
                   } catch (error) {
-                    showError("Error", "No se pudo abrir el documento");
+                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.open_document"));
                   }
                 }}
               >
                 <Eye className="h-3 w-3" />
-                <span className="hidden sm:inline ml-1">Ver</span>
+                <span className="hidden sm:inline ml-1">{t("loads:create_wizard.phases.documents.buttons.view")}</span>
               </Button>
               <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={async () => {
                 try {
@@ -711,7 +792,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                     link.click();
                     window.document.body.removeChild(link);
                     window.URL.revokeObjectURL(blobUrl);
-                    showSuccess("Descarga iniciada", `${document.fileName} se está descargando`);
+                    showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
                     return;
                   }
                   let downloadStoragePath = document.url;
@@ -722,11 +803,11 @@ const [uploading, setUploading] = useState<string | null>(null);
                     .from('load-documents')
                     .createSignedUrl(downloadStoragePath, 3600);
                   if (urlError) {
-                    showError("Error", "No se pudo generar el enlace de descarga");
+                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_download_link"));
                     return;
                   }
                   if (!signedUrlData?.signedUrl) {
-                    showError("Error", "No se pudo obtener la URL firmada");
+                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.signed_url"));
                     return;
                   }
                   const response = await fetch(signedUrlData.signedUrl);
@@ -740,13 +821,13 @@ const [uploading, setUploading] = useState<string | null>(null);
                   link.click();
                   window.document.body.removeChild(link);
                   window.URL.revokeObjectURL(blobUrl);
-                  showSuccess("Descarga iniciada", `${document.fileName} se está descargando`);
+                  showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
                 } catch (error) {
-                  showError("Error", "No se pudo descargar el documento");
+                  showError("Error", t("loads:create_wizard.phases.documents.error_messages.download_document"));
                 }
-              }} disabled={isRemoving} title="Descargar documento">
+              }} disabled={isRemoving} title={t("loads:create_wizard.phases.documents.tooltips.download_document")}>
                 <Download className="h-3 w-3" />
-                <span className="hidden sm:inline ml-1">Descargar</span>
+                <span className="hidden sm:inline ml-1">{t("loads:create_wizard.phases.documents.buttons.download")}</span>
               </Button>
               <input
                 type="file"
@@ -764,7 +845,7 @@ const [uploading, setUploading] = useState<string | null>(null);
               {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
                 <Button variant="outline" size="sm" className="h-7 w-7 p-0" onClick={() => {
                   window.document.getElementById(`replace-${document.id}`)?.click();
-                }} disabled={isUploading || isRemoving} title="Reemplazar documento">
+                }} disabled={isUploading || isRemoving} title={t("loads:create_wizard.phases.documents.tooltips.replace_document")}>
                   <RotateCcw className="h-3 w-3" />
                 </Button>
               )}
@@ -778,7 +859,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                     size="sm"
                     disabled={isRemoving}
                     className="text-destructive hover:text-destructive h-7 w-7 p-0"
-                    title="Eliminar documento"
+                    title={t("loads:create_wizard.phases.documents.tooltips.delete_document")}
                   >
                     {isRemoving ? (
                       <Loader2 className="h-3 w-3 animate-spin" />
@@ -789,21 +870,20 @@ const [uploading, setUploading] = useState<string | null>(null);
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("loads:create_wizard.phases.documents.delete_dialog.title")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esta acción eliminará permanentemente "{document.fileName}". 
-                      No se puede deshacer.
+                      {t("loads:create_wizard.phases.documents.delete_dialog.description", { fileName: document.fileName })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogCancel>{t("loads:create_wizard.phases.documents.delete_dialog.cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
                         handleRemoveDocument(document.id);
                       }}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      Eliminar
+                      {t("loads:create_wizard.phases.documents.delete_dialog.delete")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                   </AlertDialogContent>
@@ -819,35 +899,35 @@ const [uploading, setUploading] = useState<string | null>(null);
               fileName={document.fileName}
               className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32"
               onClick={async () => {
-                try {
-                  if (document.url.startsWith('blob:')) {
-                    window.open(document.url, '_blank');
-                    return;
-                  }
-                  if (document.url.includes('supabase.co/storage/v1/object/public/')) {
-                    window.open(document.url, '_blank');
-                    return;
-                  }
+                  try {
+                    if (document.url.startsWith('blob:')) {
+                      window.open(document.url, '_blank');
+                      return;
+                    }
+                    if (document.url.includes('supabase.co/storage/v1/object/public/')) {
+                      window.open(document.url, '_blank');
+                      return;
+                    }
 
-                  let storageFilePath = document.url;
-                  if (document.url.includes('/load-documents/')) {
-                    storageFilePath = document.url.split('/load-documents/')[1];
-                  }
+                    let storageFilePath = document.url;
+                    if (document.url.includes('/load-documents/')) {
+                      storageFilePath = document.url.split('/load-documents/')[1];
+                    }
 
-                  const { data: signedUrlData, error: urlError } = await supabase.storage
-                    .from('load-documents')
-                    .createSignedUrl(storageFilePath, 3600);
-                  if (urlError) {
-                    showError("Error", "No se pudo generar el enlace para ver el documento");
-                    return;
+                    const { data: signedUrlData, error: urlError } = await supabase.storage
+                      .from('load-documents')
+                      .createSignedUrl(storageFilePath, 3600);
+                    if (urlError) {
+                      showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_view_link"));
+                      return;
+                    }
+                    if (signedUrlData?.signedUrl) {
+                      window.open(signedUrlData.signedUrl, '_blank');
+                    }
+                  } catch (error) {
+                    console.error('Error opening document:', error);
+                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.open_document"));
                   }
-                  if (signedUrlData?.signedUrl) {
-                    window.open(signedUrlData.signedUrl, '_blank');
-                  }
-                } catch (error) {
-                  console.error('Error opening document:', error);
-                  showError("Error", "Error inesperado al abrir el documento");
-                }
               }}
             />
           </div>
@@ -917,14 +997,14 @@ const [uploading, setUploading] = useState<string | null>(null);
                     <Upload className="h-4 w-4" />
                     <span className="hidden sm:inline">
                       {getAvailableDocumentTypes().length === 0 
-                        ? 'Todos los documentos han sido subidos' 
-                        : 'Subir documento'
+                        ? t("loads:create_wizard.phases.documents.upload.all_documents_uploaded")
+                        : t("loads:create_wizard.phases.documents.buttons.upload_document")
                       }
                     </span>
                     <span className="sm:hidden">
                       {getAvailableDocumentTypes().length === 0 
-                        ? 'Completado' 
-                        : 'Documento'
+                        ? t("loads:create_wizard.phases.documents.buttons.completed")
+                        : "Documento"
                       }
                     </span>
                   </div>
@@ -943,7 +1023,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                         <span className="font-medium">{docType.label}</span>
                         {docType.required && (
                           <Badge variant="destructive" className="text-[10px] h-4 px-1">
-                            Requerido
+                            {t("loads:create_wizard.phases.documents.badges.required")}
                           </Badge>
                         )}
                       </div>
@@ -957,7 +1037,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 {getAvailableDocumentTypes().length === 0 && (
                   <DropdownMenuItem disabled>
                     <span className="text-muted-foreground">
-                      No hay documentos disponibles para subir
+                      {t("loads:create_wizard.phases.documents.upload.no_documents_available")}
                     </span>
                   </DropdownMenuItem>
                 )}
@@ -976,13 +1056,13 @@ const [uploading, setUploading] = useState<string | null>(null);
                   {uploadingPhoto ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="hidden sm:inline">Subiendo foto...</span>
-                      <span className="sm:hidden">Subiendo...</span>
+                      <span className="hidden sm:inline">{t("loads:create_wizard.phases.documents.upload.uploading_photo")}</span>
+                      <span className="sm:hidden">{t("loads:create_wizard.phases.documents.upload.uploading")}</span>
                     </>
                   ) : (
                     <>
                       <Upload className="h-4 w-4" />
-                      <span className="hidden sm:inline">Subir foto</span>
+                      <span className="hidden sm:inline">{t("loads:create_wizard.phases.documents.buttons.upload_photo")}</span>
                       <span className="sm:hidden">Foto</span>
                       <ChevronDown className="h-4 w-4" />
                     </>
@@ -1008,7 +1088,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 ))}
                 {getAvailablePhotoCategories().length === 0 && (
                   <DropdownMenuItem disabled>
-                    Todas las categorías completas (4/4)
+                    {t("loads:create_wizard.phases.documents.upload.all_categories_complete")}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -1027,10 +1107,10 @@ const [uploading, setUploading] = useState<string | null>(null);
                 }}
                 disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600 text-sm"
-                title={canGenerateLoadOrder(loadData) ? "Generar Load Order" : "Faltan datos de la carga o paradas para generar el Load Order"}
+                title={canGenerateLoadOrder(loadData) ? t("loads:create_wizard.phases.documents.buttons.generate_load_order") : t("loads:create_wizard.phases.documents.load_order_tooltip")}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Generar Load Order</span>
+                <span className="hidden sm:inline">{t("loads:create_wizard.phases.documents.buttons.generate_load_order")}</span>
                 <span className="sm:hidden">Load Order</span>
               </Button>
             </div>
@@ -1042,7 +1122,7 @@ const [uploading, setUploading] = useState<string | null>(null);
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {sortedDocumentTypes.map(docType => {
               const docs = documentGroups[docType];
-              const documentTypeDef = documentTypes.find(dt => dt.type === docType);
+              const documentTypeDef = getDocumentTypes().find(dt => dt.type === docType);
               
               return docs.map((doc, index) => (
                 <div key={`${docType}-${index}`}>
@@ -1054,8 +1134,8 @@ const [uploading, setUploading] = useState<string | null>(null);
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No hay documentos subidos aún</p>
-            <p className="text-sm">Usa el selector arriba para subir documentos</p>
+            <p>{t("loads:create_wizard.phases.documents.empty_state.no_documents")}</p>
+            <p className="text-sm">{t("loads:create_wizard.phases.documents.empty_state.use_selector")}</p>
           </div>
         )}
 
@@ -1085,7 +1165,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <span>
-                  Documentos de la Carga {loadData?.load_number ? `#${loadData.load_number}` : ''}
+                  {t("loads:create_wizard.phases.documents.card_title")} {loadData?.load_number ? `#${loadData.load_number}` : ''}
                 </span>
                 {loadData?.id && (
                   <LoadDocumentValidationIndicator 
@@ -1116,7 +1196,7 @@ const [uploading, setUploading] = useState<string | null>(null);
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Documentos de la Carga
+            {t("loads:create_wizard.phases.documents.card_title")}
             {loadData?.id && (
               <LoadDocumentValidationIndicator 
                 loadId={loadData.id} 
@@ -1126,7 +1206,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             )}
           </CardTitle>
           <CardDescription>
-            Gestiona todos los documentos relacionados con esta carga
+            {t("loads:create_wizard.phases.documents.card_description")}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -133,7 +133,120 @@
       },
       "documents": {
         "title": "Documents",
-        "description": "Rate confirmation and Load Order"
+        "description": "Rate confirmation and Load Order",
+        "card_title": "Load Documents",
+        "card_description": "Manage all documents related to this load",
+        "document_types": {
+          "rate_confirmation": {
+            "label": "Rate Confirmation (RC)",
+            "short_label": "RC",
+            "description": "Broker's rate confirmation"
+          },
+          "driver_instructions": {
+            "label": "Driver Instructions (DI)",
+            "short_label": "DI",
+            "description": "Specific instructions for the driver"
+          },
+          "bol": {
+            "label": "Bill of Lading (BOL)",
+            "short_label": "BOL",
+            "description": "Shipping document"
+          },
+          "pod": {
+            "label": "Proof of Delivery (POD)",
+            "short_label": "POD",
+            "description": "Delivery confirmation"
+          },
+          "load_invoice": {
+            "label": "Load Invoice (LI)",
+            "short_label": "LI",
+            "description": "Load invoice"
+          },
+          "load_order": {
+            "label": "Load Order",
+            "short_label": "Load Order",
+            "description": "Available load order"
+          },
+          "load_photos": {
+            "label": "Load Photos",
+            "short_label": "Photos",
+            "description": "Pickup and delivery photographs (max. 4 per category)"
+          }
+        },
+        "badges": {
+          "required": "Required",
+          "generated": "Generated"
+        },
+        "buttons": {
+          "view": "View",
+          "download": "Download",
+          "replace": "Replace",
+          "delete": "Delete",
+          "upload_document": "Upload document",
+          "upload_photo": "Upload photo",
+          "generate_load_order": "Generate Load Order",
+          "completed": "Completed"
+        },
+        "tooltips": {
+          "view_document": "View document",
+          "download_document": "Download document",
+          "replace_document": "Replace document",
+          "delete_document": "Delete document"
+        },
+        "upload": {
+          "all_documents_uploaded": "All documents have been uploaded",
+          "no_documents_available": "No documents available to upload",
+          "uploading_photo": "Uploading photo...",
+          "uploading": "Uploading...",
+          "all_categories_complete": "All categories complete (4/4)"
+        },
+        "photo_categories": {
+          "pickup": {
+            "label": "Pickup ({{count}}/4)",
+            "description": "Photographs at pickup"
+          },
+          "delivery": {
+            "label": "Delivery ({{count}}/4)",
+            "description": "Photographs at delivery"
+          }
+        },
+        "empty_state": {
+          "no_documents": "No documents uploaded yet",
+          "use_selector": "Use the selector above to upload documents"
+        },
+        "delete_dialog": {
+          "title": "Delete document?",
+          "description": "This action will permanently delete \"{{fileName}}\". This cannot be undone.",
+          "cancel": "Cancel",
+          "delete": "Delete"
+        },
+        "success_messages": {
+          "photo_uploaded": "Photo uploaded",
+          "photo_uploaded_category": "{{category}} photo uploaded successfully",
+          "document_uploaded": "Document uploaded",
+          "document_uploaded_filename": "{{fileName}} was uploaded successfully",
+          "load_order_generated": "Load Order generated",
+          "load_order_success": "The Load Order has been generated and saved successfully",
+          "download_started": "Download started",
+          "download_filename": "{{fileName}} is being downloaded",
+          "document_deleted": "Document deleted",
+          "document_deleted_filename": "{{fileName}} has been deleted successfully"
+        },
+        "error_messages": {
+          "load_documents": "Could not load documents",
+          "upload_photo": "Could not upload photo",
+          "upload_document": "Could not upload file",
+          "unexpected_upload": "Unexpected error uploading document",
+          "unexpected_photo": "Unexpected error uploading photo",
+          "generate_load_order": "Error generating or saving Load Order. Please try again.",
+          "generate_view_link": "Could not generate link to view document",
+          "open_document": "Could not open document",
+          "generate_download_link": "Could not generate download link",
+          "signed_url": "Could not get signed URL",
+          "download_document": "Could not download document",
+          "delete_document": "Error deleting document"
+        },
+        "load_order_tooltip": "Missing load data or stops to generate Load Order"
       }
     },
     "form": {
