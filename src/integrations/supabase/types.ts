@@ -3118,6 +3118,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      cleanup_user_data_with_validation: {
+        Args: { user_id_param: string }
+        Returns: Json
+      }
       close_payment_period_when_complete: {
         Args: { period_id: string }
         Returns: Json

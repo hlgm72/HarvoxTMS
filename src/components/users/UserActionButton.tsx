@@ -36,6 +36,25 @@ interface UserActionButtonProps {
   variant?: "default" | "outline" | "ghost" | "destructive";
 }
 
+interface CleanupResult {
+  success: boolean;
+  message: string;
+  user_id: string;
+  deleted_counts: {
+    driver_period_calculations: number;
+    expense_instances: number;
+    equipment_assignments: number;
+    driver_fuel_cards: number;
+    owner_operators: number;
+    user_company_roles: number;
+    user_invitations: number;
+    driver_profiles: number;
+  };
+  total_deleted: number;
+  cleaned_by: string;
+  cleaned_at: string;
+}
+
 export function UserActionButton({ 
   user, 
   onUserUpdated, 
@@ -162,18 +181,23 @@ export function UserActionButton({
     try {
       setLoading(true);
       
-      const { data, error } = await supabase.functions.invoke('cleanup-user-data', {
-        body: {
-          userId: user.id,
-          userEmail: user.email
-        }
-      });
+      const { data, error } = await supabase
+        .rpc('cleanup_user_data_with_validation', {
+          user_id_param: user.id
+        });
 
       if (error) throw error;
 
-      if (data?.success) {
-        setCleanupResult(data);
-        toast.success(`Datos limpiados: ${data.totalDeleted} registros eliminados`);
+      if ((data as unknown as CleanupResult)?.success) {
+        const cleanupData = data as unknown as CleanupResult;
+        setCleanupResult(cleanupData);
+        const totalDeleted = cleanupData.total_deleted || 0;
+        const calculationsDeleted = cleanupData.deleted_counts?.driver_period_calculations || 0;
+        
+        toast.success(
+          `Datos limpiados exitosamente: ${totalDeleted} registros eliminados` + 
+          (calculationsDeleted > 0 ? ` (${calculationsDeleted} cálculos de pago)` : '')
+        );
         
         // Invalidar queries y reanalizar para eliminación
         queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
@@ -183,7 +207,7 @@ export function UserActionButton({
         // Recargar análisis de eliminación
         await loadDeletionAnalysis();
       } else {
-        toast.error(data?.message || "Error en la limpieza de datos");
+        toast.error((data as unknown as CleanupResult)?.message || "Error en la limpieza de datos");
       }
     } catch (error: any) {
       console.error('Error cleaning up user data:', error);
