@@ -55,6 +55,13 @@ export function StopListItem({
     fetchCityName();
   }, [stop.city]);
 
+  const getStopPrefix = () => {
+    const prefix = isFirst || stop.stop_type === 'pickup' 
+      ? t("loads:create_wizard.phases.route_details.stop_prefix.pickup", { number: stop.stop_number })
+      : t("loads:create_wizard.phases.route_details.stop_prefix.delivery", { number: stop.stop_number });
+    return prefix;
+  };
+
   const getStopTypeLabel = () => {
     if (isFirst) return t("loads:create_wizard.phases.route_details.pickup");
     if (isLast) return t("loads:create_wizard.phases.route_details.delivery");
@@ -94,6 +101,22 @@ export function StopListItem({
     return parts.join(', ') || t("loads:create_wizard.phases.route_details.incomplete_address");
   };
 
+  // Check if the stop has complete information
+  const isStopComplete = () => {
+    return stop.company_name && stop.address && cityName && stop.state && stop.scheduled_date;
+  };
+
+  // Get the incomplete stop message with prefix
+  const getIncompleteMessage = () => {
+    if (isStopComplete()) return null;
+    
+    const prefix = isFirst || stop.stop_type === 'pickup' 
+      ? `P${stop.stop_number}:`
+      : `D${stop.stop_number}:`;
+    
+    return `${prefix} ${t("loads:create_wizard.phases.route_details.incomplete_address")}`;
+  };
+
   return (
     <div className={cn(
       "border rounded-lg p-4 bg-background transition-colors",
@@ -103,7 +126,7 @@ export function StopListItem({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{t("loads:create_wizard.phases.route_details.stop_number", { number: stop.stop_number })}</span>
+            <span className="font-medium">{getStopPrefix()}</span>
           </div>
           <Badge className={cn("text-xs", getStopTypeColor())}>
             {getStopTypeLabel()}
@@ -127,6 +150,13 @@ export function StopListItem({
       </div>
 
       <div className="space-y-2 text-sm">
+        {/* Show incomplete message if stop is not complete */}
+        {!isStopComplete() && (
+          <div className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+            {getIncompleteMessage()}
+          </div>
+        )}
+
         {/* Company */}
         {stop.company_name && (
           <div className="flex items-center gap-2">
