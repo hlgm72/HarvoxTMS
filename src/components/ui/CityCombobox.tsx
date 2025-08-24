@@ -115,9 +115,9 @@ export function CityCombobox({
   const selectedCity = cities.find((city) => city.name === value);
 
   const getPlaceholderText = () => {
-    if (loading) return t('address.loading');
-    if (!stateId) return t('address.state_select_placeholder');
-    return placeholder || t('address.city_select_placeholder');
+    if (loading) return t('address.loading', 'Cargando...');
+    if (!stateId) return t('address.state_select_placeholder', 'Selecciona estado...');
+    return placeholder || t('address.city_select_placeholder', 'Selecciona ciudad...');
   };
 
   const getDisplayText = () => {
@@ -165,14 +165,14 @@ export function CityCombobox({
       <PopoverContent className="w-full p-0 bg-popover border shadow-md" style={{ zIndex: 10000 }}>
         <Command shouldFilter={false}>
           <CommandInput 
-            placeholder={t('address.search')} 
+            placeholder={t('address.search', 'Buscar...')} 
             className="h-9"
             value={searchTerm}
             onValueChange={handleSearchChange}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? t('address.loading') : searchTerm ? t('address.no_results') : t('address.search')}
+              {loading ? t('address.loading', 'Cargando...') : searchTerm ? t('address.no_results', 'No se encontraron resultados.') : t('address.search', 'Buscar...')}
             </CommandEmpty>
             <ScrollArea className="h-60">
               <CommandGroup>
@@ -190,7 +190,7 @@ export function CityCombobox({
                       !value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {t('address.city_select_placeholder')}
+                  {t('address.city_select_placeholder', 'Selecciona ciudad...')}
                 </CommandItem>
                 {cities.map((city) => (
                   <CommandItem
