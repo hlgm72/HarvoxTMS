@@ -548,13 +548,55 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
           return null;
         }
         
-        // Tomar el primer enlace que parece más relevante
-        const firstLink = carrierLinks[0];
-        const snapshotUrl = firstLink.href.startsWith('http') 
-          ? firstLink.href 
-          : `https://safer.fmcsa.dot.gov${firstLink.href.startsWith('/') ? '' : '/'}${firstLink.href}`;
+        // Find exact match or best match
+        const searchQuery = params.get('searchQuery')?.toLowerCase().trim() || '';
+        console.log(`🎯 Looking for exact match for: "${searchQuery}"`);
         
-        console.log(`🔗 Navigating to first carrier result: ${snapshotUrl}`);
+        // Look for exact name match first
+        let bestMatch = carrierLinks.find(link => 
+          link.text.toLowerCase().trim() === searchQuery
+        );
+        
+        if (!bestMatch) {
+          // If no exact match, look for closest match (starts with search query)
+          bestMatch = carrierLinks.find(link => 
+            link.text.toLowerCase().trim().startsWith(searchQuery)
+          );
+        }
+        
+        if (!bestMatch) {
+          // If still no good match, try to find one that contains most words from the search
+          const searchWords = searchQuery.split(/\s+/).filter(word => word.length > 2);
+          let bestScore = 0;
+          
+          for (const link of carrierLinks) {
+            const linkText = link.text.toLowerCase().trim();
+            const matchedWords = searchWords.filter(word => linkText.includes(word));
+            const score = matchedWords.length / searchWords.length;
+            
+            if (score > bestScore && score > 0.5) { // At least 50% word match
+              bestScore = score;
+              bestMatch = link;
+            }
+          }
+        }
+        
+        if (!bestMatch) {
+          // If still no good match, use first result but log all options
+          console.log(`⚠️ No exact match found for "${searchQuery}". Available companies:`);
+          carrierLinks.forEach((link, index) => {
+            console.log(`  ${index + 1}. ${link.text}`);
+          });
+          bestMatch = carrierLinks[0];
+        }
+        
+        console.log(`🎯 Selected best match: "${bestMatch.text}" for search "${searchQuery}"`);
+        
+        const snapshotUrl = bestMatch.href.startsWith('http') 
+          ? bestMatch.href 
+          : `https://safer.fmcsa.dot.gov${bestMatch.href.startsWith('/') ? '' : '/'}${bestMatch.href}`;
+        
+        console.log(`🔗 Navigating to selected result: ${snapshotUrl}`);
         
         // Hacer una nueva petición al snapshot directo
         const snapshotResponse = await fetch(snapshotUrl, {
