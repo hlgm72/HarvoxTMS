@@ -17,6 +17,7 @@ import { AddressForm } from '@/components/ui/AddressForm';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
+import { useTranslation } from 'react-i18next';
 
 interface StopEditModalProps {
   stop: LoadStop | null;
@@ -43,6 +44,7 @@ export function StopEditModal({
   isFirst = false, 
   isLast = false 
 }: StopEditModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<LoadStop>>({});
   const [isDateOpen, setIsDateOpen] = useState(false);
 
@@ -66,9 +68,9 @@ export function StopEditModal({
   };
 
   const getStopTypeLabel = () => {
-    if (isFirst) return 'Recogida (Pickup)';
-    if (isLast) return 'Entrega (Delivery)';
-    return stop.stop_type === 'pickup' ? 'Recogida (Pickup)' : 'Entrega (Delivery)';
+    if (isFirst) return t("loads:create_wizard.phases.route_details.edit_modal.pickup_label");
+    if (isLast) return t("loads:create_wizard.phases.route_details.edit_modal.delivery_label");
+    return stop.stop_type === 'pickup' ? t("loads:create_wizard.phases.route_details.edit_modal.pickup_label") : t("loads:create_wizard.phases.route_details.edit_modal.delivery_label");
   };
 
   const getStopTypeColor = () => {
@@ -111,10 +113,10 @@ export function StopEditModal({
             <MapPin className="h-5 w-5 text-primary" />
             <div>
               <h2 className="text-lg font-semibold leading-none tracking-tight">
-                Parada #{stop.stop_number}
+                {t("loads:create_wizard.phases.route_details.edit_modal.title", { number: stop.stop_number })}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Complete la información de la parada
+                {t("loads:create_wizard.phases.route_details.edit_modal.description")}
               </p>
             </div>
             <Badge className={cn("text-xs ml-auto", getStopTypeColor())}>
@@ -128,12 +130,12 @@ export function StopEditModal({
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              Programación
+              {t("loads:create_wizard.phases.route_details.edit_modal.scheduling")}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="scheduled-date">Fecha Programada *</Label>
+                <Label htmlFor="scheduled-date">{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_date_required")}</Label>
                 <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -144,7 +146,7 @@ export function StopEditModal({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.scheduled_date ? formatPrettyDate(formData.scheduled_date) : "Seleccionar fecha"}
+                      {formData.scheduled_date ? formatPrettyDate(formData.scheduled_date) : t("loads:create_wizard.phases.route_details.edit_modal.select_date")}
                     </Button>
                   </PopoverTrigger>
                    <PopoverContent className="w-auto p-0 bg-background border-border">
@@ -186,7 +188,7 @@ export function StopEditModal({
                               }
                             }}
                             className="w-20 text-center"
-                            placeholder="Año"
+                            placeholder={t("loads:create_wizard.phases.route_details.edit_modal.year_placeholder")}
                           />
                         </div>
                       </div>
@@ -209,13 +211,13 @@ export function StopEditModal({
               </div>
 
               <div className="space-y-2">
-                <Label>Hora Programada</Label>
+                <Label>{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_time")}</Label>
                 <Select 
                   value={formData.scheduled_time || ''} 
                   onValueChange={(value) => updateField('scheduled_time', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar hora" />
+                    <SelectValue placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")} />
                   </SelectTrigger>
                   <SelectContent>
                     {TIME_OPTIONS.map(time => (
@@ -230,7 +232,7 @@ export function StopEditModal({
           {/* Tipo de Parada */}
           {!isFirst && !isLast && (
             <div className="space-y-2">
-              <Label>Tipo de Parada</Label>
+              <Label>{t("loads:create_wizard.phases.route_details.edit_modal.stop_type")}</Label>
               <Select
                 value={formData.stop_type || stop.stop_type}
                 onValueChange={(value: 'pickup' | 'delivery') => updateField('stop_type', value)}
@@ -239,8 +241,8 @@ export function StopEditModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pickup">Recogida (Pickup)</SelectItem>
-                  <SelectItem value="delivery">Entrega (Delivery)</SelectItem>
+                  <SelectItem value="pickup">{t("loads:create_wizard.phases.route_details.edit_modal.pickup_label")}</SelectItem>
+                  <SelectItem value="delivery">{t("loads:create_wizard.phases.route_details.edit_modal.delivery_label")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -250,15 +252,15 @@ export function StopEditModal({
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <Building className="h-4 w-4" />
-              Información de la Empresa
+              {t("loads:create_wizard.phases.route_details.edit_modal.company_info")}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="company">Empresa *</Label>
+                <Label htmlFor="company">{t("loads:create_wizard.phases.route_details.edit_modal.company_required")}</Label>
                 <Input
                   id="company"
-                  placeholder="Nombre de la empresa"
+                  placeholder={t("loads:create_wizard.phases.route_details.edit_modal.company_placeholder")}
                   value={formData.company_name || ''}
                   onChange={companyNameHandlers.onChange}
                   onBlur={companyNameHandlers.onBlur}
@@ -266,10 +268,10 @@ export function StopEditModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reference">Número de Referencia</Label>
+                <Label htmlFor="reference">{t("loads:create_wizard.phases.route_details.edit_modal.reference_number")}</Label>
                 <Input
                   id="reference"
-                  placeholder="Número de Pickup/Delivery"
+                  placeholder={t("loads:create_wizard.phases.route_details.edit_modal.reference_placeholder")}
                   value={formData.reference_number || ''}
                   onChange={referenceHandlers.onChange}
                   onBlur={referenceHandlers.onBlur}
@@ -292,10 +294,10 @@ export function StopEditModal({
               onCityChange={(value) => updateField('city', value)}
               zipCode={formData.zip_code || ''}
               onZipCodeChange={(value) => updateField('zip_code', value)}
-              streetAddressLabel="Dirección"
-              stateLabel="Estado"
-              cityLabel="Ciudad"
-              zipCodeLabel="ZIP"
+              streetAddressLabel={t("loads:create_wizard.phases.route_details.edit_modal.address_label")}
+              stateLabel={t("loads:create_wizard.phases.route_details.edit_modal.state_label")}
+              cityLabel={t("loads:create_wizard.phases.route_details.edit_modal.city_label")}
+              zipCodeLabel={t("loads:create_wizard.phases.route_details.edit_modal.zip_label")}
               required={true}
             />
           </div>
@@ -304,17 +306,17 @@ export function StopEditModal({
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <User className="h-4 w-4" />
-              Información de Contacto
+              {t("loads:create_wizard.phases.route_details.edit_modal.contact_info")}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="contact">Nombre de Contacto</Label>
+                <Label htmlFor="contact">{t("loads:create_wizard.phases.route_details.edit_modal.contact_name")}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="contact"
-                    placeholder="Nombre del contacto"
+                    placeholder={t("loads:create_wizard.phases.route_details.edit_modal.contact_name_placeholder")}
                     className="pl-10"
                     value={formData.contact_name || ''}
                     onChange={contactNameHandlers.onChange}
@@ -324,12 +326,12 @@ export function StopEditModal({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Teléfono de Contacto</Label>
+                <Label htmlFor="phone">{t("loads:create_wizard.phases.route_details.edit_modal.contact_phone")}</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="phone"
-                    placeholder="(555) 123-4567"
+                    placeholder={t("loads:create_wizard.phases.route_details.edit_modal.contact_phone_placeholder")}
                     className="pl-10"
                     value={formData.contact_phone || ''}
                     onChange={phoneHandlers.onChange}
@@ -344,12 +346,12 @@ export function StopEditModal({
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Instrucciones Especiales
+              {t("loads:create_wizard.phases.route_details.edit_modal.special_instructions")}
             </h3>
             
             <div className="space-y-2">
               <Textarea
-                placeholder="Instrucciones especiales para esta parada..."
+                placeholder={t("loads:create_wizard.phases.route_details.edit_modal.instructions_placeholder")}
                 value={formData.special_instructions || ''}
                 onChange={(e) => updateField('special_instructions', e.target.value)}
                 rows={2}
@@ -362,10 +364,10 @@ export function StopEditModal({
         {/* Actions */}
         <div className="flex justify-end gap-3 p-6 pt-0 border-t">
           <Button variant="outline" onClick={onClose}>
-            Cancelar
+            {t("loads:create_wizard.phases.route_details.edit_modal.cancel")}
           </Button>
           <Button onClick={handleSave}>
-            Guardar Cambios
+            {t("loads:create_wizard.phases.route_details.edit_modal.save_changes")}
           </Button>
         </div>
       </div>
