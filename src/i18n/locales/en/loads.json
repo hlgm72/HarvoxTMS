@@ -158,7 +158,8 @@
     "buttons": {
       "previous": "Previous",
       "cancel": "Cancel", 
-      "next": "Next"
+      "next": "Next",
+      "create_load": "Create Load"
     },
     "navigation": {
       "previous": "Previous",
