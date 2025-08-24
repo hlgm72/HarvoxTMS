@@ -31,7 +31,7 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
       <Container style={headerContainer}>
         <div style={logoSection}>
           <Img
-            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/assets/fleetnest-bimi-logo.svg"
+            src="https://cdn.jsdelivr.net/gh/user-attachments/assets/4ca477a6-e9f1-4afd-bf78-6c3f91a0e52c"
             alt="FleetNest TMS Logo"
             width="40"
             height="40"
