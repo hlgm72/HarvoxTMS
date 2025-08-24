@@ -159,6 +159,10 @@
             "description": "Photos of the load"
           }
         },
+        "badges": {
+          "required": "Required",
+          "generated": "Generated"
+        },
         "empty_state": {
           "no_documents": "No documents uploaded yet",
           "use_selector": "Use the buttons above to add documents"

@@ -159,6 +159,10 @@
             "description": "Fotos de la carga"
           }
         },
+        "badges": {
+          "required": "Requerido",
+          "generated": "Generado"
+        },
         "empty_state": {
           "no_documents": "Aún no se han subido documentos",
           "use_selector": "Usa los botones de arriba para agregar documentos"
