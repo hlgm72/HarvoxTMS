@@ -55,6 +55,14 @@ interface FMCSACompanyData {
   } | null;
 }
 
+// Company option for selection
+interface CompanyOption {
+  name: string;
+  href: string;
+  dotNumber?: string;
+  mcNumber?: string;
+}
+
 // Enhanced FMCSA HTML Parser function - Hybrid approach
 function parseFMCSA_HTML(html: string): FMCSACompanyData {
   const $ = cheerio.load(html);
@@ -265,10 +273,10 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
   }
 
   // Extract USDOT Status
-  let usdotStatus = extractField('Operating Status:', fullText);
+  let usdotStatus = extractField('USDOT Status:', fullText);
   if (!usdotStatus) {
     // Look for status patterns
-    const statusMatch = fullText.match(/Operating\s+Status:\s*(\w+)/i);
+    const statusMatch = fullText.match(/USDOT\s+Status:\s*(\w+)/i);
     if (statusMatch) {
       usdotStatus = statusMatch[1].toUpperCase();
     } else if (fullText.includes('ACTIVE')) {
@@ -379,7 +387,7 @@ function parseFMCSA_HTML(html: string): FMCSACompanyData {
 }
 
 // Enhanced FMCSA search function
-async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME'): Promise<FMCSACompanyData | null> {
+async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME'): Promise<FMCSACompanyData | { companies: CompanyOption[] } | null> {
   try {
     console.log(`🔍 Starting FMCSA search for ${searchType}: "${searchQuery}"`);
     
@@ -393,16 +401,12 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     } else if (searchType === 'MC') {
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${cleanQuery}`;
     } else if (searchType === 'NAME') {
-      // Para búsqueda por nombre, usar el mismo formato que MC y DOT
       const nameQuery = searchQuery.trim().replace(/\s+/g, '+');
-      
-      // Usar el formato correcto que funciona con FMCSA
       url = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=NAME&original_query_param=NAME&query_string=${nameQuery}`;
-      console.log(`🏷️ NAME SEARCH - Using correct FMCSA format: "${url}"`);
+      console.log(`🏷️ NAME SEARCH - Using FMCSA format: "${url}"`);
     }
 
     console.log('🌐 Final URL:', url);
-    console.log('🌐 Search query details:', { searchType, originalQuery: searchQuery, cleanedQuery: searchType !== 'NAME' ? cleanQuery : searchQuery });
 
     // Make the request to FMCSA SAFER
     console.log('📡 Making request to FMCSA...');
@@ -420,16 +424,6 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
 
     if (!response.ok) {
       console.error(`❌ HTTP error! status: ${response.status}`);
-      console.error(`❌ Status text: ${response.statusText}`);
-      console.error(`❌ Response headers:`, Object.fromEntries(response.headers.entries()));
-      
-      // Try to get response text even on error
-      try {
-        const errorText = await response.text();
-        console.error(`❌ Error response body: ${errorText.substring(0, 500)}`);
-      } catch (e) {
-        console.error(`❌ Could not read error response body`);
-      }
       return null;
     }
 
@@ -442,32 +436,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       return null;
     }
     
-    // Para búsquedas por nombre, mostrar más información de debug
-    if (searchType === 'NAME') {
-      console.log('🔍 NAME SEARCH DEBUG - Response details:');
-      console.log(`📄 HTML length: ${html.length}`);
-      console.log('📄 Response OK:', response.ok);
-      console.log('📄 Response status:', response.status);
-      console.log('🔍 NAME SEARCH DEBUG - First 2000 chars of HTML:');
-      console.log(html.substring(0, 2000));
-      console.log('🔍 NAME SEARCH DEBUG - Contains key patterns:');
-      console.log('- Contains "Legal Name":', html.includes('Legal Name'));
-      console.log('- Contains "USDOT":', html.includes('USDOT'));
-      console.log('- Contains "Company Snapshot":', html.includes('Company Snapshot'));
-      console.log('- Contains "MC-" or "MC/":', html.includes('MC-') || html.includes('MC/'));
-      
-      // Buscar patrones específicos que nos ayuden a entender la estructura
-      const titleMatch = html.match(/<title[^>]*>([^<]+)</i);
-      if (titleMatch) {
-        console.log('📋 Page title found:', titleMatch[1]);
-      }
-      
-      // Buscar si hay resultados de búsqueda múltiple
-      const hasResultsTable = html.includes('results') || html.includes('Search Results');
-      console.log('📋 Has results table:', hasResultsTable);
-    }
-    
-    // Para búsquedas por nombre, verificar si es una página de resultados intermedios o snapshot directo
+    // For name searches, check if we have multiple results
     if (searchType === 'NAME') {
       const $ = cheerio.load(html);
       const title = $('head > title').text();
@@ -476,13 +445,10 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log(`📋 Page title: "${title}"`);
       console.log(`📋 Is direct snapshot: ${isSnapshot}`);
       
-      if (isSnapshot) {
-        console.log('✅ Direct snapshot page detected for NAME search');
-        // Es un snapshot directo, procesar normalmente
-      } else {
+      if (!isSnapshot) {
         console.log('📋 Detected intermediate results page for name search');
         
-        // Buscar diferentes tipos de enlaces en la página de resultados
+        // Extract multiple companies from results page
         const allLinks = $('a[href]').map((_, a) => {
           const href = $(a).attr('href');
           const text = $(a).text().trim();
@@ -491,7 +457,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
         
         console.log(`🔍 Found ${allLinks.length} total links on results page`);
         
-        // Buscar enlaces que contengan información de carriers
+        // Find carrier links
         const carrierLinks = allLinks.filter(link => 
           link.href && (
             link.href.includes('MC_MX') || 
@@ -502,103 +468,35 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
           )
         );
         
-        console.log(`🔍 Found ${carrierLinks.length} potential carrier links:`, carrierLinks);
-        
-        if (carrierLinks.length === 0) {
-          console.log('❌ No carrier links found in results page');
-          
-          // Intentar buscar patrones alternativos en el HTML
-          const mcPattern = html.match(/MC[A-Z-]*\s*(\d+)/i);
-          const dotPattern = html.match(/USDOT[A-Z\s-]*(\d+)/i);
-          
-          console.log('🔍 Found MC pattern in HTML:', mcPattern ? mcPattern[0] : 'None');
-          console.log('🔍 Found DOT pattern in HTML:', dotPattern ? dotPattern[0] : 'None');
-          
-          // Si encontramos patrones, intentar construir URL directa
-          if (mcPattern) {
-            const mcNumber = mcPattern[1];
-            const directUrl = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${mcNumber}`;
-            console.log(`🔗 Trying direct MC lookup: ${directUrl}`);
-            
-            const directResponse = await fetch(directUrl, {
-              method: 'GET',
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-              },
-            });
-            
-            if (directResponse.ok) {
-              const directHtml = await directResponse.text();
-              console.log(`📄 Direct MC lookup successful (${directHtml.length} chars)`);
-              (globalThis as any).lastHtml = directHtml;
-              const companyData = parseFMCSA_HTML(directHtml);
-              console.log('📊 Data from direct MC lookup:', companyData);
-              
-              if (companyData.legalName || companyData.dotNumber || companyData.mcNumber) {
-                return companyData;
-              }
-            }
-          }
-          
-          return null;
-        }
-        
-        console.log(`🎯 Processing ${carrierLinks.length} carrier links for name search`);
-        console.log('🔍 All available companies:');
+        console.log(`🔍 Found ${carrierLinks.length} potential carrier links:`);
         carrierLinks.forEach((link, index) => {
           console.log(`  ${index + 1}. "${link.text}"`);
         });
         
-        // Just use the first result for now - we'll improve matching later
-        const bestMatch = carrierLinks[0];
-        console.log(`🎯 Selected: "${bestMatch.text}"`);
-        
-        const snapshotUrl = bestMatch.href.startsWith('http') 
-          ? bestMatch.href 
-          : `https://safer.fmcsa.dot.gov${bestMatch.href.startsWith('/') ? '' : '/'}${bestMatch.href}`;
-        
-        console.log(`🔗 Navigating to selected result: ${snapshotUrl}`);
-        
-        // Hacer una nueva petición al snapshot directo
-        const snapshotResponse = await fetch(snapshotUrl, {
-          method: 'GET',
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-          },
-        });
-        
-        if (snapshotResponse.ok) {
-          const snapshotHtml = await snapshotResponse.text();
-          console.log(`📄 Received snapshot HTML (${snapshotHtml.length} characters)`);
+        if (carrierLinks.length > 1) {
+          // Multiple companies found - return list for user selection
+          const companies = carrierLinks.map(link => ({
+            name: link.text,
+            href: link.href.startsWith('http') 
+              ? link.href 
+              : `https://safer.fmcsa.dot.gov${link.href.startsWith('/') ? '' : '/'}${link.href}`
+          }));
           
-          // Store the snapshot HTML for parsing
-          (globalThis as any).lastHtml = snapshotHtml;
-          
-          // Parse the snapshot page
-          const companyData = parseFMCSA_HTML(snapshotHtml);
-          console.log('📊 Final extracted data from snapshot:', companyData);
-          
-          // Return null if no essential data was found
-          if (!companyData.legalName && !companyData.dotNumber && !companyData.mcNumber) {
-            console.log('❌ No essential company data found in snapshot');
-            return null;
-          }
-          
-          return companyData;
-        } else {
-          console.error(`❌ Failed to fetch snapshot: ${snapshotResponse.status}`);
-          return null;
+          console.log(`📋 Returning ${companies.length} companies for user selection`);
+          return { companies };
         }
+        
+        if (carrierLinks.length === 1) {
+          // Single result found, get details directly
+          const companyUrl = carrierLinks[0].href.startsWith('http') 
+            ? carrierLinks[0].href 
+            : `https://safer.fmcsa.dot.gov${carrierLinks[0].href.startsWith('/') ? '' : '/'}${carrierLinks[0].href}`;
+          
+          console.log(`🔗 Single result found, getting details: ${companyUrl}`);
+          return await getCompanyDetails(companyUrl);
+        }
+        
+        return null;
       }
     }
     
@@ -613,45 +511,50 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     console.log('  - Legal Name:', companyData.legalName);
     console.log('  - DOT Number:', companyData.dotNumber);
     console.log('  - MC Number:', companyData.mcNumber);
-    console.log('  - Physical Address:', companyData.physicalAddress);
-    console.log('  - Phone:', companyData.phone);
-    console.log('  - Entity Type:', companyData.entityType);
-    console.log('  - USDOT Status:', companyData.usdotStatus);
     
     // Validación más flexible - solo necesitamos al menos UNO de estos campos principales
     const hasEssentialData = companyData.legalName || companyData.dotNumber || companyData.mcNumber;
     
-    console.log('📊 Final extracted data:', companyData);
     console.log('📊 Has essential data:', hasEssentialData);
     
-    // Return null if no essential data was found
     if (!hasEssentialData) {
       console.log('❌ No essential company data found');
-      console.log('🔍 HTML snippet for debugging (first 1000 chars):');
-      console.log(html.substring(0, 1000));
-      console.log('🔍 HTML snippet for debugging (last 500 chars):');
-      console.log(html.substring(html.length - 500));
-      
-      // Buscar patrones específicos en el HTML para debug
-      const patterns = {
-        'Legal Name pattern': /Legal\s+Name[:\s]*(.*?)(?:\n|\r|<|$)/i,
-        'USDOT pattern': /USDOT\s+Number[:\s]*(\d+)/i,
-        'MC pattern': /MC[\/\-\s]*(\d+)/i,
-        'Company name in title': /<title[^>]*>([^<]+)</i
-      };
-      
-      console.log('🔍 Pattern matching results:');
-      Object.entries(patterns).forEach(([name, pattern]) => {
-        const match = html.match(pattern);
-        console.log(`  ${name}:`, match ? match[1] || match[0] : 'Not found');
-      });
-      
       return null;
     }
 
     return companyData;
   } catch (error) {
     console.error('❌ Error searching FMCSA:', error);
+    return null;
+  }
+}
+
+// Function to get company details from a specific URL
+async function getCompanyDetails(companyUrl: string): Promise<FMCSACompanyData | null> {
+  try {
+    console.log(`🔍 Getting company details from: ${companyUrl}`);
+    
+    const response = await fetch(companyUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+    
+    if (!response.ok) {
+      console.error(`❌ Failed to fetch company details: ${response.status}`);
+      return null;
+    }
+    
+    const html = await response.text();
+    console.log(`📄 Received company details HTML (${html.length} characters)`);
+    
+    (globalThis as any).lastHtml = html;
+    const companyData = parseFMCSA_HTML(html);
+    
+    console.log('📊 Company details extracted:', companyData);
+    return companyData;
+  } catch (error) {
+    console.error('❌ Error getting company details:', error);
     return null;
   }
 }
@@ -670,9 +573,44 @@ Deno.serve(async (req) => {
 
   try {
     console.log('📝 Processing POST request')
-    const { searchQuery, searchType } = await req.json()
-    console.log('🔍 Search params:', { searchQuery, searchType })
+    const body = await req.json()
+    const { searchQuery, searchType, companyUrl } = body
+    console.log('🔍 Request params:', { searchQuery, searchType, companyUrl })
 
+    // If companyUrl is provided, get details for specific company
+    if (companyUrl) {
+      console.log('🔗 Getting specific company details')
+      const companyData = await getCompanyDetails(companyUrl)
+      
+      if (!companyData) {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'No company data found for the specified URL' 
+          }),
+          { 
+            status: 200, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        )
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          data: companyData
+        }),
+        { 
+          status: 200,
+          headers: { 
+            ...corsHeaders,
+            'Content-Type': 'application/json' 
+          } 
+        }
+      )
+    }
+
+    // Regular search flow
     if (!searchQuery || !searchType) {
       return new Response(
         JSON.stringify({ 
@@ -700,22 +638,14 @@ Deno.serve(async (req) => {
     }
 
     // Call the real FMCSA scraping function
-    const companyData = await searchFMCSA(searchQuery, searchType as 'DOT' | 'MC' | 'NAME')
-    const html = (globalThis as any).lastHtml || ''
-
-    if (!companyData) {
+    const result = await searchFMCSA(searchQuery, searchType as 'DOT' | 'MC' | 'NAME')
+    
+    if (!result) {
       console.log('No company data found')
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'No company data found in FMCSA database',
-          debug: {
-            searchQuery,
-            searchType,
-            htmlLength: html.length,
-            rawHtml: html,
-            timestamp: new Date().toISOString()
-          }
+          error: 'No company data found in FMCSA database'
         }),
         { 
           status: 200, 
@@ -724,17 +654,30 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('✅ Returning enhanced data:', companyData)
+    // Check if result contains multiple companies
+    if ('companies' in result) {
+      console.log(`✅ Returning ${result.companies.length} companies for selection`)
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          multipleResults: true,
+          companies: result.companies
+        }),
+        { 
+          status: 200,
+          headers: { 
+            ...corsHeaders,
+            'Content-Type': 'application/json' 
+          } 
+        }
+      )
+    }
+
+    console.log('✅ Returning single company data:', result)
     return new Response(
       JSON.stringify({ 
         success: true, 
-        data: companyData,
-        debug: {
-          searchQuery,
-          searchType,
-          htmlLength: html.length,
-          rawHtml: html
-        }
+        data: result
       }),
       { 
         status: 200,

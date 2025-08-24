@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Search, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, Loader2, CheckCircle, AlertCircle, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import {
@@ -63,6 +63,13 @@ interface FMCSAData {
   } | null;
 }
 
+interface CompanyOption {
+  name: string;
+  href: string;
+  dotNumber?: string;
+  mcNumber?: string;
+}
+
 interface FMCSALookupModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -84,6 +91,8 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
   const [loading, setLoading] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const [data, setData] = useState<FMCSAData | null>(null);
+  const [companies, setCompanies] = useState<CompanyOption[]>([]);
+  const [showCompanies, setShowCompanies] = useState(false);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
@@ -92,6 +101,10 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
     }
 
     setLoading(true);
+    setData(null);
+    setCompanies([]);
+    setShowCompanies(false);
+    
     try {
       const { data: responseData, error } = await supabase.functions.invoke('fmcsa-lookup', {
         body: {
@@ -111,7 +124,53 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
         const errorMessage = responseData?.error || t('fmcsa_lookup_modal.messages.no_info_found');
         showError(errorMessage);
         console.log('FMCSA search failed:', errorMessage);
-        setData(null);
+        setLoading(false);
+        return;
+      }
+
+      // Check if we have multiple companies to choose from
+      if (responseData.multipleResults && responseData.companies) {
+        setCompanies(responseData.companies);
+        setShowCompanies(true);
+        showSuccess(`Se encontraron ${responseData.companies.length} empresas. Selecciona la correcta.`);
+        setLoading(false);
+        return;
+      }
+
+      // Single company result
+      const fmcsaData = responseData.data as FMCSAData;
+      setData(fmcsaData);
+      showSuccess(t('fmcsa_lookup_modal.messages.info_found'));
+      setLoading(false);
+
+    } catch (error) {
+      console.error('Error calling FMCSA function:', error);
+      showError(t('fmcsa_lookup_modal.messages.search_error'));
+      setLoading(false);
+    }
+  };
+
+  const handleSelectCompany = async (company: CompanyOption) => {
+    setLoading(true);
+    setShowCompanies(false);
+    
+    try {
+      const { data: responseData, error } = await supabase.functions.invoke('fmcsa-lookup', {
+        body: {
+          companyUrl: company.href
+        }
+      });
+
+      if (error) {
+        console.error('FMCSA company details error:', error);
+        showError(t('fmcsa_lookup_modal.messages.search_error'));
+        setLoading(false);
+        return;
+      }
+
+      if (!responseData || !responseData.success) {
+        const errorMessage = responseData?.error || t('fmcsa_lookup_modal.messages.no_info_found');
+        showError(errorMessage);
         setLoading(false);
         return;
       }
@@ -122,7 +181,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
       setLoading(false);
 
     } catch (error) {
-      console.error('Error calling FMCSA function:', error);
+      console.error('Error getting company details:', error);
       showError(t('fmcsa_lookup_modal.messages.search_error'));
       setLoading(false);
     }
@@ -157,7 +216,14 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
   const handleClose = () => {
     setData(null);
     setSearchQuery("");
+    setCompanies([]);
+    setShowCompanies(false);
     onClose();
+  };
+
+  const handleBackToSearch = () => {
+    setShowCompanies(false);
+    setCompanies([]);
   };
 
   const getLabelForSearchType = () => {
@@ -256,6 +322,36 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
               </Button>
             </div>
           </div>
+
+          {/* Multiple Companies Selection */}
+          {showCompanies && companies.length > 0 && (
+            <div className="p-6 bg-muted rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-lg">Empresas Encontradas</h3>
+                <Button variant="outline" size="sm" onClick={handleBackToSearch}>
+                  Volver
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Se encontraron {companies.length} empresas. Selecciona la que corresponde:
+              </p>
+              
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {companies.map((company, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="w-full justify-between p-4 h-auto"
+                    onClick={() => handleSelectCompany(company)}
+                    disabled={loading}
+                  >
+                    <span className="text-left">{company.name}</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Search Results */}
           {data && (
