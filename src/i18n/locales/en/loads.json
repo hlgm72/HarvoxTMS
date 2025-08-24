@@ -53,8 +53,6 @@
           "pickup": "P{{number}}: Missing Company, Address, City, State, Scheduled Date",
           "delivery": "D{{number}}: Missing Company, Address, City, State, Scheduled Date"
         },
-        "date_error": "Date Error",
-        "instructions_label": "Instructions:",
         "add_intermediate_stop": "Add Intermediate Stop",
         "instructions": {
           "click_edit": "Click on any stop to edit its details",

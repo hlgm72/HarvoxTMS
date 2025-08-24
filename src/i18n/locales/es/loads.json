@@ -53,8 +53,6 @@
           "pickup": "P{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
           "delivery": "D{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada"
         },
-        "date_error": "Error de Fecha",
-        "instructions_label": "Instrucciones:",
         "add_intermediate_stop": "Agregar Parada Intermedia",
         "instructions": {
           "click_edit": "Haz clic en cualquier parada para editar sus detalles",
