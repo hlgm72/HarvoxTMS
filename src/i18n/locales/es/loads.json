@@ -504,7 +504,15 @@
     "stats": {
       "title": "Estadísticas de Cargas",
       "description": "Ver análisis detallados y reportes",
-      "statistics": "Estadísticas"
+      "statistics": "Estadísticas",
+      "total_loads": "Total de Cargas",
+      "total_value": "Valor Total",
+      "in_transit": "En Tránsito",
+      "pending": "Pendientes",
+      "load_status": "Estado de Cargas",
+      "completed": "Completadas",
+      "average_per_load": "Promedio por Carga",
+      "average_value": "Valor Promedio"
     },
     "import": {
       "title": "Importar Cargas", 

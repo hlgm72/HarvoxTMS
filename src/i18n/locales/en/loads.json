@@ -504,7 +504,15 @@
     "stats": {
       "title": "Load Statistics",
       "description": "View detailed analytics and reports",
-      "statistics": "Statistics"
+      "statistics": "Statistics",
+      "total_loads": "Total Loads",
+      "total_value": "Total Value",
+      "in_transit": "In Transit",
+      "pending": "Pending",
+      "load_status": "Load Status",
+      "completed": "Completed",
+      "average_per_load": "Average per Load",
+      "average_value": "Average Value"
     },
     "import": {
       "title": "Import Loads", 
