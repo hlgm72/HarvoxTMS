@@ -444,10 +444,27 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     
     // Para búsquedas por nombre, mostrar más información de debug
     if (searchType === 'NAME') {
-      console.log('🔍 NAME SEARCH DEBUG - First 1000 chars of HTML:');
-      console.log(html.substring(0, 1000));
-      console.log('🔍 NAME SEARCH DEBUG - Last 500 chars of HTML:');
-      console.log(html.substring(html.length - 500));
+      console.log('🔍 NAME SEARCH DEBUG - Response details:');
+      console.log(`📄 HTML length: ${html.length}`);
+      console.log('📄 Response OK:', response.ok);
+      console.log('📄 Response status:', response.status);
+      console.log('🔍 NAME SEARCH DEBUG - First 2000 chars of HTML:');
+      console.log(html.substring(0, 2000));
+      console.log('🔍 NAME SEARCH DEBUG - Contains key patterns:');
+      console.log('- Contains "Legal Name":', html.includes('Legal Name'));
+      console.log('- Contains "USDOT":', html.includes('USDOT'));
+      console.log('- Contains "Company Snapshot":', html.includes('Company Snapshot'));
+      console.log('- Contains "MC-" or "MC/":', html.includes('MC-') || html.includes('MC/'));
+      
+      // Buscar patrones específicos que nos ayuden a entender la estructura
+      const titleMatch = html.match(/<title[^>]*>([^<]+)</i);
+      if (titleMatch) {
+        console.log('📋 Page title found:', titleMatch[1]);
+      }
+      
+      // Buscar si hay resultados de búsqueda múltiple
+      const hasResultsTable = html.includes('results') || html.includes('Search Results');
+      console.log('📋 Has results table:', hasResultsTable);
     }
     
     // Para búsquedas por nombre, verificar si es una página de resultados intermedios o snapshot directo
@@ -460,26 +477,84 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
       console.log(`📋 Is direct snapshot: ${isSnapshot}`);
       
       if (isSnapshot) {
-        console.log('✅ Direct snapshot page detected');
+        console.log('✅ Direct snapshot page detected for NAME search');
         // Es un snapshot directo, procesar normalmente
       } else {
         console.log('📋 Detected intermediate results page for name search');
         
-        // Buscar enlaces que contengan MC_MX o MC- en la página de resultados
-        const mcLinks = $('a[href*="MC_MX"], a[href*="MC-"]').map((_, a) => $(a).attr('href')).get();
+        // Buscar diferentes tipos de enlaces en la página de resultados
+        const allLinks = $('a[href]').map((_, a) => {
+          const href = $(a).attr('href');
+          const text = $(a).text().trim();
+          return { href, text };
+        }).get();
         
-        console.log(`🔍 Found ${mcLinks.length} MC links:`, mcLinks);
+        console.log(`🔍 Found ${allLinks.length} total links on results page`);
         
-        if (mcLinks.length === 0) {
-          console.log('❌ No MC links found in results page');
+        // Buscar enlaces que contengan información de carriers
+        const carrierLinks = allLinks.filter(link => 
+          link.href && (
+            link.href.includes('MC_MX') || 
+            link.href.includes('USDOT') || 
+            link.href.includes('queryCarrierSnapshot') ||
+            link.text.includes('MC-') ||
+            link.text.includes('DOT')
+          )
+        );
+        
+        console.log(`🔍 Found ${carrierLinks.length} potential carrier links:`, carrierLinks);
+        
+        if (carrierLinks.length === 0) {
+          console.log('❌ No carrier links found in results page');
+          
+          // Intentar buscar patrones alternativos en el HTML
+          const mcPattern = html.match(/MC[A-Z-]*\s*(\d+)/i);
+          const dotPattern = html.match(/USDOT[A-Z\s-]*(\d+)/i);
+          
+          console.log('🔍 Found MC pattern in HTML:', mcPattern ? mcPattern[0] : 'None');
+          console.log('🔍 Found DOT pattern in HTML:', dotPattern ? dotPattern[0] : 'None');
+          
+          // Si encontramos patrones, intentar construir URL directa
+          if (mcPattern) {
+            const mcNumber = mcPattern[1];
+            const directUrl = `https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&query_type=queryCarrierSnapshot&query_param=MC_MX&original_query_param=MC_MX&query_string=${mcNumber}`;
+            console.log(`🔗 Trying direct MC lookup: ${directUrl}`);
+            
+            const directResponse = await fetch(directUrl, {
+              method: 'GET',
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+              },
+            });
+            
+            if (directResponse.ok) {
+              const directHtml = await directResponse.text();
+              console.log(`📄 Direct MC lookup successful (${directHtml.length} chars)`);
+              (globalThis as any).lastHtml = directHtml;
+              const companyData = parseFMCSA_HTML(directHtml);
+              console.log('📊 Data from direct MC lookup:', companyData);
+              
+              if (companyData.legalName || companyData.dotNumber || companyData.mcNumber) {
+                return companyData;
+              }
+            }
+          }
+          
           return null;
         }
         
-        // Tomar el primer enlace
-        const firstLink = mcLinks[0];
-        const snapshotUrl = firstLink.startsWith('http') ? firstLink : `https://safer.fmcsa.dot.gov/${firstLink}`;
+        // Tomar el primer enlace que parece más relevante
+        const firstLink = carrierLinks[0];
+        const snapshotUrl = firstLink.href.startsWith('http') 
+          ? firstLink.href 
+          : `https://safer.fmcsa.dot.gov${firstLink.href.startsWith('/') ? '' : '/'}${firstLink.href}`;
         
-        console.log(`🔗 Navigating to first result: ${snapshotUrl}`);
+        console.log(`🔗 Navigating to first carrier result: ${snapshotUrl}`);
         
         // Hacer una nueva petición al snapshot directo
         const snapshotResponse = await fetch(snapshotUrl, {
@@ -523,15 +598,46 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
     (globalThis as any).lastHtml = html;
 
     // Use the enhanced parser
-    console.log('Parsing HTML with enhanced parser...');
+    console.log('🔍 Parsing HTML with enhanced parser...');
     const companyData = parseFMCSA_HTML(html);
     
+    console.log('📊 Raw extraction results:');
+    console.log('  - Legal Name:', companyData.legalName);
+    console.log('  - DOT Number:', companyData.dotNumber);
+    console.log('  - MC Number:', companyData.mcNumber);
+    console.log('  - Physical Address:', companyData.physicalAddress);
+    console.log('  - Phone:', companyData.phone);
+    console.log('  - Entity Type:', companyData.entityType);
+    console.log('  - USDOT Status:', companyData.usdotStatus);
+    
+    // Validación más flexible - solo necesitamos al menos UNO de estos campos principales
+    const hasEssentialData = companyData.legalName || companyData.dotNumber || companyData.mcNumber;
+    
     console.log('📊 Final extracted data:', companyData);
+    console.log('📊 Has essential data:', hasEssentialData);
     
     // Return null if no essential data was found
-    if (!companyData.legalName && !companyData.dotNumber && !companyData.mcNumber) {
+    if (!hasEssentialData) {
       console.log('❌ No essential company data found');
-      console.log('🔍 HTML snippet for debugging:', html.substring(0, 500));
+      console.log('🔍 HTML snippet for debugging (first 1000 chars):');
+      console.log(html.substring(0, 1000));
+      console.log('🔍 HTML snippet for debugging (last 500 chars):');
+      console.log(html.substring(html.length - 500));
+      
+      // Buscar patrones específicos en el HTML para debug
+      const patterns = {
+        'Legal Name pattern': /Legal\s+Name[:\s]*(.*?)(?:\n|\r|<|$)/i,
+        'USDOT pattern': /USDOT\s+Number[:\s]*(\d+)/i,
+        'MC pattern': /MC[\/\-\s]*(\d+)/i,
+        'Company name in title': /<title[^>]*>([^<]+)</i
+      };
+      
+      console.log('🔍 Pattern matching results:');
+      Object.entries(patterns).forEach(([name, pattern]) => {
+        const match = html.match(pattern);
+        console.log(`  ${name}:`, match ? match[1] || match[0] : 'Not found');
+      });
+      
       return null;
     }
 
