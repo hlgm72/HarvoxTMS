@@ -17,336 +17,246 @@
       "new_load": "New Load",
       "create_with_number": "Create Load #{{number}}",
       "edit_with_number": "Edit Load #{{number}}",
-      "duplicate_with_number": "Duplicate Load #{{number}}"
+      "step": "Step {{current}} of {{total}}"
     },
-    "description": {
-      "create": "Create a new load following the step-by-step process",
-      "edit": "Modify the existing load data",
-      "duplicate": "Create a new load based on an existing load"
+    "steps": {
+      "load_info": "Load Information",
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "assignment": "Driver Assignment",
+      "documents": "Documents"
     },
-    "loading": {
-      "load_data": "Loading load data...",
-      "duplicate_data": "Loading data to duplicate..."
-    },
-    "error": {
-      "loading_data": "Error loading data",
-      "close": "Close"
-    },
-    "progress": {
-      "step_x_of_y": "Step {{current}} of {{total}}",
-      "go_to": "Go to {{title}}"
-    },
-    "phases": {
-      "essential_info": {
-        "title": "Essential Information",
-        "description": "Basic load data",
-        "card_description": "Basic data needed to register the load in the system"
-      },
-      "route_details": {
-        "title": "Route Details",
-        "description": "Stops and addresses",
-        "card_title": "Load Stops",
-        "card_description": "Define pickup and delivery stops. The first must be pickup and the last delivery.",
-        "stop_number": "Stop #{{number}}",
-        "pickup": "Pickup",
-        "delivery": "Delivery",
-        "incomplete_address": "Incomplete address",
-        "add_intermediate_stop": "Add Intermediate Stop",
-        "date_error": "Date error",
-        "reorder_warning": "Cannot reorder: dates must be in chronological order",
-        "valid_configuration": "Valid stops configuration.",
-        "instructions_label": "Instructions:",
-        "instructions": {
-          "click_edit": "Click on a stop to edit it",
-          "drag_reorder": "Drag stops to reorder them",
-          "chronological_dates": "Dates must be in chronological order"
-        },
-        "edit_modal": {
-          "title": "Stop #{{number}}",
-          "description": "Complete the stop information",
-          "pickup_label": "Pickup",
-          "delivery_label": "Delivery",
-          "scheduling": "Scheduling",
-          "scheduled_date": "Scheduled Date",
-          "scheduled_date_required": "Scheduled Date *",
-          "select_date": "Select date",
-          "scheduled_time": "Scheduled Time",
-          "select_time": "Select time",
-          "year_placeholder": "Year",
-          "stop_type": "Stop Type",
-          "company_info": "Company Information",
-          "company_required": "Company *",
-          "company_placeholder": "Company name",
-          "reference_number": "Reference Number",
-          "reference_placeholder": "Pickup/Delivery number",
-          "address_label": "Address",
-          "state_label": "State",
-          "city_label": "City", 
-          "zip_label": "ZIP",
-          "contact_info": "Contact Information",
-          "contact_name": "Contact Name",
-          "contact_name_placeholder": "Contact name",
-          "contact_phone": "Contact Phone",
-          "contact_phone_placeholder": "(555) 123-4567",
-          "special_instructions": "Special Instructions",
-          "instructions_placeholder": "Special instructions for this stop...",
-          "cancel": "Cancel",
-          "save_changes": "Save Changes"
-        }
-      },
-      "assignment": {
-        "title": "Assignment",
-        "description": "Driver and activation",
-        "card_title": "Driver Assignment",
-        "card_description": "Select the driver who will perform this load. The assigned driver will be able to see the load information in their portal.",
-        "driver_section": {
-          "title": "Driver (Required)",
-          "placeholder": "Select a driver...",
-          "no_drivers": "No drivers available",
-          "contact_admin": "Contact administrator to add drivers.",
-          "selected_label": "Driver:"
-        },
-        "dispatcher_section": {
-          "title": "Internal Dispatcher (Optional)",
-          "placeholder": "Select a dispatcher (optional)...",
-          "no_dispatchers": "No dispatchers available",
-          "no_assignment": "No dispatcher assigned",
-          "selected_label": "Dispatcher:"
-        },
-        "owner_operator": {
-          "badge": "Owner Operator",
-          "percentages_title": "Owner Operator Percentages",
-          "percentages_description": "These percentages will be applied specifically to this load. You can modify them as needed.",
-          "leasing_label": "Leasing (%)",
-          "factoring_label": "Factoring (%)",
-          "dispatching_label": "Dispatching (%)",
-          "loading": "Loading Owner Operator data..."
-        },
-        "important_info": {
-          "title": "ℹ️ Important Information",
-          "notifications": "The selected driver will receive notification of the assignment",
-          "portal_access": "They will be able to see load details in their portal",
-          "dispatcher_optional": "The internal dispatcher is optional and helps with tracking",
-          "active_only": "Only active drivers and dispatchers can receive assignments",
-          "changeable": "You can change assignments after creating the load"
-        }
-      },
-      "documents": {
-        "title": "Documents",
-        "description": "Rate confirmation and Load Order",
-        "card_title": "Load Documents",
-        "card_description": "Manage all documents related to this load",
-        "document_types": {
-          "rate_confirmation": {
-            "label": "Rate Confirmation (RC)",
-            "short_label": "RC",
-            "description": "Broker's rate confirmation"
-          },
-          "driver_instructions": {
-            "label": "Driver Instructions (DI)",
-            "short_label": "DI",
-            "description": "Specific instructions for the driver"
-          },
-          "bol": {
-            "label": "Bill of Lading (BOL)",
-            "short_label": "BOL",
-            "description": "Shipping document"
-          },
-          "pod": {
-            "label": "Proof of Delivery (POD)",
-            "short_label": "POD",
-            "description": "Delivery confirmation"
-          },
-          "load_invoice": {
-            "label": "Load Invoice (LI)",
-            "short_label": "LI",
-            "description": "Load invoice"
-          },
-          "load_order": {
-            "label": "Load Order",
-            "short_label": "Load Order",
-            "description": "Available load order"
-          },
-          "load_photos": {
-            "label": "Load Photos",
-            "short_label": "Photos",
-            "description": "Pickup and delivery photographs (max. 4 per category)"
-          }
-        },
-        "badges": {
-          "required": "Required",
-          "generated": "Generated"
-        },
-        "buttons": {
-          "view": "View",
-          "download": "Download",
-          "replace": "Replace",
-          "delete": "Delete",
-          "upload_document": "Upload document",
-          "upload_photo": "Upload photo",
-          "generate_load_order": "Generate Load Order",
-          "completed": "Completed"
-        },
-        "tooltips": {
-          "view_document": "View document",
-          "download_document": "Download document",
-          "replace_document": "Replace document",
-          "delete_document": "Delete document"
-        },
-        "upload": {
-          "all_documents_uploaded": "All documents have been uploaded",
-          "no_documents_available": "No documents available to upload",
-          "uploading_photo": "Uploading photo...",
-          "uploading": "Uploading...",
-          "all_categories_complete": "All categories complete (4/4)"
-        },
-        "photo_categories": {
-          "pickup": {
-            "label": "Pickup ({{count}}/4)",
-            "description": "Photographs at pickup"
-          },
-          "delivery": {
-            "label": "Delivery ({{count}}/4)",
-            "description": "Photographs at delivery"
-          }
-        },
-        "empty_state": {
-          "no_documents": "No documents uploaded yet",
-          "use_selector": "Use the selector above to upload documents"
-        },
-        "delete_dialog": {
-          "title": "Delete document?",
-          "description": "This action will permanently delete \"{{fileName}}\". This cannot be undone.",
-          "cancel": "Cancel",
-          "delete": "Delete"
-        },
-        "success_messages": {
-          "photo_uploaded": "Photo uploaded",
-          "photo_uploaded_category": "{{category}} photo uploaded successfully",
-          "document_uploaded": "Document uploaded",
-          "document_uploaded_filename": "{{fileName}} was uploaded successfully",
-          "load_order_generated": "Load Order generated",
-          "load_order_success": "The Load Order has been generated and saved successfully",
-          "download_started": "Download started",
-          "download_filename": "{{fileName}} is being downloaded",
-          "document_deleted": "Document deleted",
-          "document_deleted_filename": "{{fileName}} has been deleted successfully"
-        },
-        "error_messages": {
-          "load_documents": "Could not load documents",
-          "upload_photo": "Could not upload photo",
-          "upload_document": "Could not upload file",
-          "unexpected_upload": "Unexpected error uploading document",
-          "unexpected_photo": "Unexpected error uploading photo",
-          "generate_load_order": "Error generating or saving Load Order. Please try again.",
-          "generate_view_link": "Could not generate link to view document",
-          "open_document": "Could not open document",
-          "generate_download_link": "Could not generate download link",
-          "signed_url": "Could not get signed URL",
-          "download_document": "Could not download document",
-          "delete_document": "Error deleting document"
-        },
-        "photos": {
-          "title": "Load Photos",
-          "description": "Pickup and delivery photographs (max. 4 per category)",
-          "empty_state": {
-            "title": "No load photos",
-            "description": "Photos will appear here when you upload them using the \"Upload photo\" button"
-          },
-          "upload_photo": "Upload Photo",
-          "upload_category": "Upload {{category}}",
-          "photo_count": "{{count}}/8 photos",
-          "category_count": "{{count}}/4",
-          "pickup_photos": "Pickup Photos",
-          "delivery_photos": "Delivery Photos",
-          "delete_photo_title": "Delete photo?",
-          "delete_photo_description": "This action will permanently delete this photo. This cannot be undone.",
-          "delete_confirm": "Delete",
-          "cancel": "Cancel",
-          "error_messages": {
-            "limit_reached": "Limit reached",
-            "limit_category": "You already have 4 photos in the {{category}} category",
-            "invalid_file_type": "Invalid file type",
-            "accepted_formats": "Only JPG, PNG and WEBP files are allowed",
-            "file_too_large": "File too large",
-            "max_size": "File cannot be larger than 10MB",
-            "upload_failed": "Could not upload photo",
-            "delete_failed": "Could not delete photo",
-            "view_failed": "Could not generate link to view photo",
-            "open_failed": "Could not open photo",
-            "save_failed": "Could not save photo information",
-            "unexpected_upload": "Unexpected error uploading photo",
-            "unexpected_delete": "Unexpected error deleting photo"
-          },
-          "success_messages": {
-            "uploaded": "Photo uploaded",
-            "uploaded_category": "{{category}} photo uploaded successfully",
-            "deleted": "Photo deleted",
-            "deleted_success": "Photo was deleted successfully"
-          },
-          "categories": {
-            "pickup": "pickup",
-            "delivery": "delivery",
-            "pickup_label": "Pickup",
-            "delivery_label": "Delivery",
-            "pickup_spanish": "pickup",
-            "delivery_spanish": "delivery"
-          }
-        }
-      },
-    "form": {
-      "load_number": "Load Number",
-      "load_number_required": "*",
-      "load_number_placeholder": "Ex: LD-001, 2024-001, etc.",
-      "load_number_duplicate": "This load number already exists. Please use a different number.",
-      "po_number": "PO# (Purchase Order)",
-      "po_number_placeholder": "Ex: PO-12345, PO-2024-001",
-      "client_broker": "Client/Broker",
-      "client_broker_required": "*",
-      "client_placeholder": "Search client by name, DOT, MC...",
-      "client_contact": "Client Contact",
-      "contact_placeholder": "Search contact...",
-      "commodity": "Commodity",
-      "commodity_required": "*",
-      "commodity_placeholder": "Electronics, Food Products, etc.",
-      "weight": "Weight (lbs)",
-      "weight_placeholder": "Ex: 25,000",
-      "total_amount": "Total Amount ($)",
-      "total_amount_required": "*",
-      "total_amount_placeholder": "$0.00"
-    },
-    "validation": {
-      "load_number_required": "Load number is required.",
-      "load_number_duplicate_error": "Cannot create load with duplicate number.",
-      "client_required": "You must select a client.",
-      "commodity_required": "Commodity is required.",
-      "amount_required": "Total amount must be greater than 0.",
-      "stops_minimum": "There must be at least 2 stops (pickup and delivery).",
-      "stops_first_pickup": "The first stop must be a pickup",
-      "stops_last_delivery": "The last stop must be a delivery",
-      "stops_missing_company": "Company",
-      "stops_missing_address": "Address", 
-      "stops_missing_city": "City",
-      "stops_missing_state": "State",
-      "stops_missing_date": "Scheduled date",
-      "stops_missing_fields": "{{stopType}}{{number}}: Missing {{fields}}",
-      "chronological_error": "Dates must be in chronological order. Stop {{current}} has an earlier date than stop {{previous}}",
-      "validation_error": "Validation Error",
-      "stops_error": "Stops Error", 
-      "dates_error": "Dates Error"
-    },
-    "buttons": {
+    "navigation": {
       "previous": "Previous",
       "next": "Next",
-      "cancel": "Cancel",
-      "create_load": "Create Load",
-      "save_changes": "Save Changes"
+      "finish": "Create Load",
+      "saving": "Saving...",
+      "save_draft": "Save Draft",
+      "update": "Update Load"
+    }
+  },
+  "load_info": {
+    "title": "Load Information",
+    "description": "Enter the basic information for this load. All required fields must be filled to proceed to the next step.",
+    "card_title": "Load Details",
+    "card_description": "Main information and configuration of the load"
+  },
+  "pickup_delivery": {
+    "pickup": {
+      "title": "Pickup Information",
+      "description": "Configure where and when the cargo will be picked up. Complete address and contact information are required.",
+      "card_title": "Pickup",
+      "card_description": "Pickup location, time, and contact information"
     },
+    "delivery": {
+      "title": "Delivery Information", 
+      "description": "Configure where and when the cargo will be delivered. Complete address and contact information are required.",
+      "card_title": "Delivery",
+      "card_description": "Delivery location, time, and contact information"
+    }
+  },
+  "assignment": {
+    "title": "Driver Assignment",
+    "description": "Select the driver who will perform this load. The assigned driver will be able to see the load information in their portal.",
+    "card_title": "Driver Assignment",
+    "card_description": "Assign driver and internal dispatcher to this load",
+    "driver": {
+      "title": "Driver (Required)",
+      "placeholder": "Select a driver...",
+      "no_drivers": "No drivers available",
+      "no_assignment": "No driver assigned",
+      "selected_label": "Driver:"
+    },
+    "dispatcher": {
+      "title": "Internal Dispatcher (Optional)",
+      "placeholder": "Select a dispatcher (optional)...",
+      "no_dispatchers": "No dispatchers available",
+      "no_assignment": "No dispatcher assigned",
+      "selected_label": "Dispatcher:"
+    },
+    "owner_operator": {
+      "badge": "Owner Operator",
+      "percentages_title": "Owner Operator Percentages",
+      "percentages_description": "These percentages will be applied specifically to this load. You can modify them as needed.",
+      "leasing_label": "Leasing (%)",
+      "factoring_label": "Factoring (%)",
+      "dispatching_label": "Dispatching (%)",
+      "loading": "Loading Owner Operator data..."
+    },
+    "important_info": {
+      "title": "ℹ️ Important Information",
+      "notifications": "The selected driver will receive notification of the assignment",
+      "portal_access": "They will be able to see load details in their portal",
+      "dispatcher_optional": "The internal dispatcher is optional and helps with tracking",
+      "active_only": "Only active drivers and dispatchers can receive assignments",
+      "changeable": "You can change assignments after creating the load"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "description": "Rate confirmation and Load Order",
+    "card_title": "Load Documents",
+    "card_description": "Manage all documents related to this load",
+    "document_types": {
+      "rate_confirmation": {
+        "label": "Rate Confirmation (RC)",
+        "short_label": "RC",
+        "description": "Broker's rate confirmation"
+      },
+      "bol": {
+        "label": "Bill of Lading (BOL)",
+        "short_label": "BOL",
+        "description": "Shipping document"
+      },
+      "pod": {
+        "label": "Proof of Delivery (POD)",
+        "short_label": "POD",
+        "description": "Delivery confirmation"
+      },
+      "load_invoice": {
+        "label": "Load Invoice (LI)",
+        "short_label": "LI",
+        "description": "Load invoice"
+      },
+      "load_order": {
+        "label": "Load Order",
+        "short_label": "Load Order",
+        "description": "Available load order"
+      },
+      "load_photos": {
+        "label": "Load Photos",
+        "short_label": "Photos",
+        "description": "Photos of pickup and delivery"
+      },
+      "other": {
+        "label": "Other Document",
+        "short_label": "Other",
+        "description": "Additional document"
+      }
+    },
+    "upload": {
+      "title": "Upload Documents",
+      "select_type": "Document Type",
+      "select_type_placeholder": "Select document type...",
+      "select_file": "Select File",
+      "drop_zone": "Drop files here or click to select",
+      "supported_formats": "PDF, DOC, DOCX, JPG, PNG (Max 10MB)",
+      "upload_button": "Upload Document",
+      "uploading": "Uploading...",
+      "all_categories_complete": "All categories complete (4/4)"
+    },
+    "photo_categories": {
+      "pickup": {
+        "label": "Pickup ({{count}}/4)",
+        "description": "Photographs at pickup"
+      },
+      "delivery": {
+        "label": "Delivery ({{count}}/4)",
+        "description": "Photographs at delivery"
+      }
+    },
+    "empty_state": {
+      "no_documents": "No documents uploaded yet",
+      "use_selector": "Use the selector above to upload documents"
+    },
+    "delete_dialog": {
+      "title": "Delete document?",
+      "description": "This action will permanently delete \"{{fileName}}\". This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "success_messages": {
+      "uploaded": "Document \"{{fileName}}\" was uploaded successfully",
+      "deleted": "Document was deleted successfully"
+    },
+    "error_messages": {
+      "upload_failed": "Failed to upload document \"{{fileName}}\"",
+      "delete_failed": "Failed to delete document",
+      "file_too_large": "File is too large (max 10MB)",
+      "invalid_format": "File format not supported"
+    },
+    "photos": {
+      "title": "Load Photos",
+      "description": "Photographs of pickup and delivery (max 4 per category)",
+      "upload_button": "Upload Photo",
+      "empty_state": {
+        "no_photos": "No load photos",
+        "instruction": "Photos will appear here when you upload them using the 'Upload Photo' button"
+      },
+      "delete_dialog": {
+        "title": "Delete photo?",
+        "description": "This action will permanently delete the selected photo. This cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      },
+      "success_messages": {
+        "uploaded_success": "Photo was uploaded successfully",
+        "deleted_success": "Photo was deleted successfully"
+      },
+      "error_messages": {
+        "upload_failed": "Failed to upload photo",
+        "delete_failed": "Failed to delete photo",
+        "max_photos_reached": "Maximum number of photos reached for this category (4)",
+        "file_too_large": "File is too large (max 10MB)",
+        "invalid_format": "Only JPG and PNG images are supported"
+      },
+      "upload_dialog": {
+        "title": "Upload Photo",
+        "select_category": "Photo Category",
+        "category_placeholder": "Select category...",
+        "select_file": "Select Photo",
+        "drop_zone": "Drop photo here or click to select",
+        "supported_formats": "JPG, PNG (Max 10MB)",
+        "upload_button": "Upload Photo",
+        "uploading": "Uploading...",
+        "cancel": "Cancel"
+      },
+      "categories": {
+        "pickup": "pickup",
+        "delivery": "delivery",
+        "pickup_label": "Pickup",
+        "delivery_label": "Delivery",
+        "pickup_spanish": "pickup",
+        "delivery_spanish": "delivery"
+      }
+    }
+  },
+  "form": {
+    "load_number": "Load Number",
+    "load_number_required": "*",
+    "load_number_placeholder": "Ex: LD-001, 2024-001, etc.",
+    "broker": "Broker/Client", 
+    "broker_required": "*",
+    "broker_placeholder": "Select broker or client...",
+    "commodity": "Commodity",
+    "commodity_placeholder": "Description of the cargo...",
+    "weight": "Weight (lbs)",
+    "weight_placeholder": "0",
+    "pieces": "Pieces",
+    "pieces_placeholder": "0", 
+    "dimensions": "Dimensions",
+    "length_placeholder": "Length",
+    "width_placeholder": "Width", 
+    "height_placeholder": "Height",
+    "revenue": "Revenue ($)",
+    "revenue_placeholder": "0.00",
+    "notes": "Notes",
+    "notes_placeholder": "Additional comments about this load...",
+    "validation": {
+      "load_number_required": "Load number is required",
+      "load_number_format": "Use format: LD-001, 2024-001, etc.",
+      "broker_required": "Broker or client is required",
+      "weight_positive": "Weight must be greater than 0",
+      "pieces_positive": "Number of pieces must be greater than 0",
+      "revenue_positive": "Revenue must be greater than 0",
+      "dimensions_positive": "All dimensions must be greater than 0"
+    }
+  },
+  "messages": {
     "success": {
-      "load_created": "🚛 Load {{number}} created",
-      "load_updated": "Load {{number}} updated",
-      "load_duplicated": "Load {{number}} duplicated successfully",
-      "created_message": "Load {{number}} for {{client}} has been created successfully and is ready to be processed.",
+      "created_title": "Load {{number}} created successfully",
+      "created_message": "The load has been saved correctly and is ready to be managed.",
+      "updated_title": "Load {{number}} updated successfully", 
       "updated_message": "Changes to load {{number}} have been saved correctly.",
       "duplicated_message": "A new load {{number}} has been created based on the original load."
     },
@@ -377,12 +287,11 @@
     "by_dates": "By Dates", 
     "open_periods": "Open Periods",
     "processing": "Processing",
-    "historical_periods": "Historical Periods",
-    "more_periods": "more periods",
+    "closed": "Closed", 
+    "paid": "Paid",
+    "locked": "Locked",
     "status": {
       "open": "Open",
-      "processing": "Processing", 
-      "closed": "Closed",
       "paid": "Paid",
       "locked": "Locked"
     }
@@ -392,12 +301,10 @@
     "route_planned": "Route Planned",
     "assigned": "Assigned",
     "en_route_pickup": "En Route to Pickup",
-    "at_pickup": "At Pickup",
+    "arrived_pickup": "Arrived at Pickup",
     "loaded": "Loaded",
-    "in_progress": "In Progress",
-    "in_transit": "In Transit",
     "en_route_delivery": "En Route to Delivery",
-    "at_delivery": "At Delivery",
+    "arrived_delivery": "Arrived at Delivery",
     "delivered": "Delivered",
     "completed": "Completed",
     "pending": "Pending",
@@ -424,84 +331,57 @@
     "filters": {
       "title": "Load Filters",
       "description": "Filter loads by status, driver, broker and dates",
-      "filters": "Filters",
-      "filters_active": "Filters (active)",
-      "applied_filters": "Applied Filters",
-      "clear": "Clear",
       "status": "Status",
       "driver": "Driver",
-      "broker": "Broker / Client",
-      "period": "Payment Period",
-      "date_range": "Pickup Date",
-      "placeholders": {
-        "status": "Select status",
-        "loading": "Loading...",
-        "driver": "Select driver",
-        "broker": "Select broker",
-        "period": "Select period",
-        "date_range": "Select dates"
-      },
-      "options": {
-        "status": {
-          "all": "All statuses"
-        },
-        "broker": {
-          "all": "All brokers"
-        },
-        "driver": {
-          "all": "All drivers"
-        }
-      }
+      "broker": "Broker",
+      "date_range": "Date Range",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear Filters",
+      "apply": "Apply"
     },
     "export": {
-      "title": "Export Data", 
+      "title": "Export Loads",
       "description": "Export load data in different formats",
-      "export": "Export",
+      "excel": "Export to Excel",
       "pdf": "Export to PDF",
-      "excel": "Export to Excel", 
-      "options_title": "Export Options",
-      "include_filters": "Include applied filters",
-      "visible_only": "Visible loads only",
-      "include_stats": "Include statistics"
+      "csv": "Export to CSV"
     },
-    "view": {
-      "title": "View Settings",
-      "description": "Customize how loads are displayed",
-      "view": "View",
-      "sort_by": "Sort by",
-      "density": "Density",
-      "visible_columns": "Visible Columns",
-      "density_options": {
-        "compact": "Compact",
-        "normal": "Normal",
-        "comfortable": "Comfortable"
-      },
-      "columns": {
-        "broker_info": "Broker Information",
-        "driver_info": "Driver Information", 
-        "dates": "Dates",
-        "amounts": "Amounts"
-      },
-      "options": {
-        "sort": {
-          "date_desc": "Date (newest first)",
-          "date_asc": "Date (oldest first)",
-          "amount_desc": "Amount (highest first)",
-          "amount_asc": "Amount (lowest first)",
-          "status": "Status"
-        }
-      }
+    "import": {
+      "title": "Import Loads", 
+      "description": "Import loads from Excel or CSV files",
+      "select_file": "Select File",
+      "upload": "Upload and Import"
     },
-    "stats": {
-      "title": "Statistics",
-      "description": "View quick statistics of your loads",
-      "statistics": "Statistics",
+    "analytics": {
+      "title": "Load Analytics",
+      "description": "View detailed analytics and reports",
+      "revenue_analysis": "Revenue Analysis",
+      "performance_metrics": "Performance Metrics",
+      "driver_statistics": "Driver Statistics"
+    }
+  },
+  "analytics": {
+    "revenue": {
+      "title": "Revenue Analysis",
+      "total_revenue": "Total Revenue",
+      "average_per_load": "Average per Load",
+      "month_over_month": "Month over Month",
+      "top_brokers": "Top Brokers",
+      "revenue_trend": "Revenue Trend"
+    },
+    "performance": {
+      "title": "Performance Metrics", 
       "total_loads": "Total Loads",
-      "total_value": "Total Value",
-      "in_transit": "In Transit",
-      "pending": "Pending",
-      "load_status": "Load Status",
-      "completed": "Completed",
+      "completed_loads": "Completed Loads",
+      "completion_rate": "Completion Rate",
+      "average_delivery_time": "Average Delivery Time",
+      "on_time_delivery": "On-time Delivery Rate"
+    },
+    "drivers": {
+      "title": "Driver Statistics",
+      "active_drivers": "Active Drivers",
+      "total_deliveries": "Total Deliveries",
       "average_per_load": "Average per Load",
       "average_value": "Average value per load"
     }
@@ -520,18 +400,15 @@
     "description": "Manage your loads efficiently with our comprehensive logistics management system",
     "create_button": "Create First Load",
     "features": {
-      "time_management": "Time Management",
-      "automatic_tracking": "Automatic pickup and delivery tracking",
-      "profitability": "Profitability",
-      "realtime_analysis": "Real-time margin analysis",
-      "documentation": "Documentation",
-      "complete_control": "Complete control of load documents",
-      "automated_management": "Automated management",
-      "realtime_tracking": "Real-time tracking",
-      "detailed_reports": "Detailed reports"
+      "title": "Key Features:",
+      "real_time_tracking": "Real-time tracking",
+      "document_management": "Document management", 
+      "driver_assignment": "Driver assignment",
+      "revenue_analytics": "Revenue analytics"
     },
     "stats": {
-      "active_loads": "Active Loads",
+      "loads_created": "Loads Created",
+      "miles_driven": "Miles Driven",
       "total_revenue": "Total Revenue",
       "completed_deliveries": "Completed Deliveries"
     }
@@ -548,11 +425,10 @@
     "pending_doc": "Pending Doc",
     "missing_required_single": "Missing required document: {{docs}}",
     "missing_required_multiple": "Missing required documents: {{docs}}",
-    "cannot_mark_delivered": "Cannot mark as delivered without required documents",
-    "load_order": "Load Order",
-    "replace_rc": "Replace RC",
-    "upload_rc": "Upload RC", 
-    "regenerate_lo": "Regenerate LO",
+    "pending_generation_single": "Pending generation of document: {{docs}}",
+    "pending_generation_multiple": "Pending generation of documents: {{docs}}",
+    "has_rc": "Has RC",
+    "no_rc": "No RC",
     "generate_lo": "Generate LO",
     "documents_ok": "Documents OK",
     "all_required_docs": "All required documents are present",
@@ -572,29 +448,16 @@
     "error_loading": "Could not load document information",
     "no_documents": "No documents uploaded yet",
     "generate_load_order": "Generate Load Order",
-    "export_pdf": "Export to PDF",
-    "preview_not_available": "Preview not available",
-    "protected_documents": "Protected Documents",
-    "load_completed": "Load Completed",
-    "protection_warning": "The driver has started working on this load. Main documents are protected from deletion.",
-    "completion_warning": "This load has been completed. No more documents can be added.",
-    "active": "Active",
-    "priority": "Priority",
-    "info_regenerate": "You can regenerate the LO to update data",
-    "info_replace": "You can replace the RC even during work",
-    "error_generate_link": "Could not generate download link",
-    "error_view_link": "Could not generate link to view document",
-    "error_save_document": "Could not save document information",
-    "error_upload": "Could not upload file",
-    "error_generate_lo": "Could not generate the Load Order. Try again.",
-    "success_upload": "Document uploaded",
-    "success_generate_lo": "Load Order generated",
-    "success_photo": "Photo uploaded",
-    "rules_title": "Document Rules:",
-    "rules": {
-      "1": "Rate Confirmation (RC) or Load Order (LO) required to start",
-      "2": "Load Order takes priority over Rate Confirmation",
-      "3": "Once work is started, documents are protected",
+    "view_document": "View",
+    "delete_document": "Delete",
+    "upload_new": "Upload New Document",
+    "replace_document": "Replace",
+    "document_actions": "Document Actions",
+    "upload_instructions": {
+      "title": "Upload Instructions",
+      "1": "Select the document type from the dropdown",
+      "2": "Choose the file you want to upload",
+      "3": "Once work is started, documents are protected", 
       "4": "RC can be replaced, LO can be regenerated"
     }
   },
@@ -603,13 +466,15 @@
     "description": "Create a custom Load Order with the amount the driver will see.",
     "custom_amount": "Amount for Load Order ($)",
     "original_amount": "Original amount:",
-    "commodity": "Commodity:",
-    "load": "Load:",
-    "important": "Important:",
-    "warning": "The driver will see this Load Order instead of the original Rate Confirmation. The amount must be less than or equal to the original amount.",
+    "placeholder": "Enter amount...",
+    "generate_button": "Generate Load Order",
     "generating": "Generating...",
-    "generate": "Generate Load Order",
     "cancel": "Cancel",
+    "note": "The Load Order will be generated with the amount you specify. The driver will see this amount in their portal.",
+    "validation": {
+      "amount_error": "Amount cannot be greater than original",
+      "amount_required": "Amount must be greater than 0"
+    },
     "amount_error": "Amount cannot be greater than original",
     "amount_required": "Amount must be greater than 0",
     "success": "Load Order created successfully with amount",
@@ -629,22 +494,20 @@
     "dates_schedule": "Dates & Schedule",
     "pickup": "Pickup:",
     "delivery": "Delivery:",
-    "period_status": "Period Status",
-    "actions_available": "Available Actions",
-    "view_load": "View Load",
-    "edit_load": "Edit Load",
-    "more_actions": "More Actions",
-    "commodity": "Commodity",
-    "payment_period": "Payment Period",
-    "created": "Created:",
-    "view": "View",
-    "edit": "Edit",
-    "duplicate_load": "Duplicate Load",
-    "reassign_period": "Reassign Period",
-    "manage_documents": "Manage Documents",
-    "delete_load": "Delete Load",
-    "confirm_deletion": "Confirm deletion?",
-    "deletion_warning": "This action will permanently delete load {loadNumber} and all its associated data (stops and documents).",
+    "revenue": "Revenue:",
+    "notes": "Notes:",
+    "no_notes": "No additional notes",
+    "created_date": "Created:",
+    "pieces": "Pieces:",
+    "weight": "Weight:",
+    "dimensions": "Dimensions:",
+    "no_commodity": "No commodity information",
+    "no_dimensions": "No dimensions specified"
+  },
+  "delete": {
+    "title": "Delete Load",
+    "message": "Are you sure you want to delete load #{{loadNumber}}?",
+    "warning": "This will permanently delete all information related to this load, including documents and status history.",
     "deletion_irreversible": "This action cannot be undone.",
     "cancel": "Cancel",
     "deleting": "Deleting..."

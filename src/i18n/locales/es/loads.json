@@ -8,7 +8,7 @@
   },
   "create": {
     "button": "Nueva Carga",
-    "title": "Crear Nueva Carga",
+    "title": "Crear Nueva Carga", 
     "duplicate": "Duplicar Carga",
     "edit": "Editar Carga"
   },
@@ -17,350 +17,260 @@
       "new_load": "Nueva Carga",
       "create_with_number": "Crear Carga #{{number}}",
       "edit_with_number": "Editar Carga #{{number}}",
-      "duplicate_with_number": "Duplicar Carga #{{number}}"
+      "step": "Paso {{current}} de {{total}}"
     },
-    "description": {
-      "create": "Crea una nueva carga siguiendo el proceso paso a paso",
-      "edit": "Modifica los datos de la carga existente",
-      "duplicate": "Crea una nueva carga basada en una carga existente"
+    "steps": {
+      "load_info": "Información de Carga",
+      "pickup": "Recogida",
+      "delivery": "Entrega",
+      "assignment": "Asignación de Conductor",
+      "documents": "Documentos"
     },
-    "loading": {
-      "load_data": "Cargando datos de la carga...",
-      "duplicate_data": "Cargando datos para duplicar..."
-    },
-    "error": {
-      "loading_data": "Error al cargar datos",
-      "close": "Cerrar"
-    },
-    "progress": {
-      "step_x_of_y": "Paso {{current}} de {{total}}",
-      "go_to": "Ir al {{title}}"
-    },
-    "phases": {
-      "essential_info": {
-        "title": "Información Esencial",
-        "description": "Datos básicos de la carga",
-        "card_description": "Datos básicos necesarios para registrar la carga en el sistema"
-      },
-      "route_details": {
-        "title": "Detalles de Ruta", 
-        "description": "Paradas y direcciones",
-        "card_title": "Paradas de la Carga",
-        "card_description": "Define las paradas de recogida y entrega. La primera debe ser pickup y la última delivery.",
-        "stop_number": "Parada #{{number}}",
-        "pickup": "Recogida",
-        "delivery": "Entrega",
-        "incomplete_address": "Dirección incompleta",
-        "add_intermediate_stop": "Agregar Parada Intermedia",
-        "date_error": "Error de fecha",
-        "reorder_warning": "No se puede reordenar: las fechas deben estar en orden cronológico",
-        "valid_configuration": "Configuración de paradas válida.",
-        "instructions_label": "Instrucciones:",
-        "instructions": {
-          "click_edit": "Haz clic en una parada para editarla",
-          "drag_reorder": "Arrastra las paradas para reordenarlas",
-          "chronological_dates": "Las fechas deben estar en orden cronológico"
-        },
-        "edit_modal": {
-          "title": "Parada #{{number}}",
-          "description": "Complete la información de la parada",
-          "pickup_label": "Recogida (Pickup)",
-          "delivery_label": "Entrega (Delivery)",
-          "scheduling": "Programación",
-          "scheduled_date": "Fecha Programada",
-          "scheduled_date_required": "Fecha Programada *",
-          "select_date": "Seleccionar fecha",
-          "scheduled_time": "Hora Programada",
-          "select_time": "Seleccionar hora",
-          "year_placeholder": "Año",
-          "stop_type": "Tipo de Parada",
-          "company_info": "Información de la Empresa",
-          "company_required": "Empresa *",
-          "company_placeholder": "Nombre de la empresa",
-          "reference_number": "Número de Referencia",
-          "reference_placeholder": "Número de Pickup/Delivery",
-          "address_label": "Dirección",
-          "state_label": "Estado", 
-          "city_label": "Ciudad",
-          "zip_label": "ZIP",
-          "contact_info": "Información de Contacto",
-          "contact_name": "Nombre de Contacto",
-          "contact_name_placeholder": "Nombre del contacto",
-          "contact_phone": "Teléfono de Contacto",
-          "contact_phone_placeholder": "(555) 123-4567",
-          "special_instructions": "Instrucciones Especiales",
-          "instructions_placeholder": "Instrucciones especiales para esta parada...",
-          "cancel": "Cancelar",
-          "save_changes": "Guardar Cambios"
-        }
-      },
-      "assignment": {
-        "title": "Asignación",
-        "description": "Conductor y activación",
-        "card_title": "Asignación de Conductor",
-        "card_description": "Selecciona el conductor que realizará esta carga. El conductor asignado podrá ver la información de la carga en su portal.",
-        "driver_section": {
-          "title": "Conductor (Requerido)",
-          "placeholder": "Selecciona un conductor...",
-          "no_drivers": "No hay conductores disponibles",
-          "contact_admin": "Contacta al administrador para agregar conductores.",
-          "selected_label": "Conductor:"
-        },
-        "dispatcher_section": {
-          "title": "Dispatcher Interno (Opcional)",
-          "placeholder": "Selecciona un dispatcher (opcional)...",
-          "no_dispatchers": "No hay dispatchers disponibles",
-          "no_assignment": "Sin dispatcher asignado",
-          "selected_label": "Dispatcher:"
-        },
-        "owner_operator": {
-          "badge": "Owner Operator",
-          "percentages_title": "Porcentajes del Owner Operator",
-          "percentages_description": "Estos porcentajes se aplicarán específicamente a esta carga. Puedes modificarlos según sea necesario.",
-          "leasing_label": "Leasing (%)",
-          "factoring_label": "Factoring (%)",
-          "dispatching_label": "Dispatching (%)",
-          "loading": "Cargando datos del Owner Operator..."
-        },
-        "important_info": {
-          "title": "ℹ️ Información importante",
-          "notifications": "El conductor seleccionado recibirá notificación de la asignación",
-          "portal_access": "Podrá ver los detalles de la carga en su portal",
-          "dispatcher_optional": "El dispatcher interno es opcional y ayuda con el seguimiento",
-          "active_only": "Solo conductores y dispatchers activos pueden recibir asignaciones",
-          "changeable": "Puedes cambiar las asignaciones después de crear la carga"
-        }
-      },
-      "documents": {
-        "title": "Documentos",
-        "description": "Rate confirmation y Load Order",
-        "card_title": "Documentos de la Carga",
-        "card_description": "Gestiona todos los documentos relacionados con esta carga",
-        "document_types": {
-          "rate_confirmation": {
-            "label": "Rate Confirmation (RC)",
-            "short_label": "RC",
-            "description": "Confirmación de tarifa del broker"
-          },
-          "driver_instructions": {
-            "label": "Driver Instructions (DI)",
-            "short_label": "DI", 
-            "description": "Instrucciones específicas para el conductor"
-          },
-          "bol": {
-            "label": "Bill of Lading (BOL)",
-            "short_label": "BOL",
-            "description": "Documento de embarque"
-          },
-          "pod": {
-            "label": "Proof of Delivery (POD)",
-            "short_label": "POD",
-            "description": "Prueba de entrega"
-          },
-          "load_invoice": {
-            "label": "Load Invoice (LI)",
-            "short_label": "LI",
-            "description": "Factura de la carga"
-          },
-          "load_order": {
-            "label": "Load Order",
-            "short_label": "Load Order",
-            "description": "Orden de carga disponible"
-          },
-          "load_photos": {
-            "label": "Fotos de la Carga",
-            "short_label": "Fotos",
-            "description": "Fotografías del pickup y delivery (máx. 4 por categoría)"
-          }
-        },
-        "badges": {
-          "required": "Requerido",
-          "generated": "Generado"
-        },
-        "buttons": {
-          "view": "Ver",
-          "download": "Descargar",
-          "replace": "Reemplazar",
-          "delete": "Eliminar",
-          "upload_document": "Subir documento",
-          "upload_photo": "Subir foto",
-          "generate_load_order": "Generar Load Order",
-          "completed": "Completado"
-        },
-        "tooltips": {
-          "view_document": "Ver documento",
-          "download_document": "Descargar documento",
-          "replace_document": "Reemplazar documento",
-          "delete_document": "Eliminar documento"
-        },
-        "upload": {
-          "all_documents_uploaded": "Todos los documentos han sido subidos",
-          "no_documents_available": "No hay documentos disponibles para subir",
-          "uploading_photo": "Subiendo foto...",
-          "uploading": "Subiendo...",
-          "all_categories_complete": "Todas las categorías completas (4/4)"
-        },
-        "photo_categories": {
-          "pickup": {
-            "label": "Recogida ({{count}}/4)",
-            "description": "Fotografías en la recogida"
-          },
-          "delivery": {
-            "label": "Entrega ({{count}}/4)",
-            "description": "Fotografías en la entrega"
-          }
-        },
-        "empty_state": {
-          "no_documents": "No hay documentos subidos aún",
-          "use_selector": "Usa el selector arriba para subir documentos"
-        },
-        "delete_dialog": {
-          "title": "¿Eliminar documento?",
-          "description": "Esta acción eliminará permanentemente \"{{fileName}}\". No se puede deshacer.",
-          "cancel": "Cancelar",
-          "delete": "Eliminar"
-        },
-        "success_messages": {
-          "photo_uploaded": "Foto subida",
-          "photo_uploaded_category": "Foto de {{category}} subida correctamente",
-          "document_uploaded": "Documento subido",
-          "document_uploaded_filename": "{{fileName}} se subió correctamente",
-          "load_order_generated": "Load Order generado",
-          "load_order_success": "El Load Order se ha generado y guardado exitosamente",
-          "download_started": "Descarga iniciada",
-          "download_filename": "{{fileName}} se está descargando",
-          "document_deleted": "Documento eliminado",
-          "document_deleted_filename": "{{fileName}} ha sido eliminado correctamente"
-        },
-        "error_messages": {
-          "load_documents": "No se pudieron cargar los documentos",
-          "upload_photo": "No se pudo subir la foto",
-          "upload_document": "No se pudo subir el archivo",
-          "unexpected_upload": "Error inesperado al subir el documento",
-          "unexpected_photo": "Error inesperado al subir la foto",
-          "generate_load_order": "Error al generar o guardar el Load Order. Intenta nuevamente.",
-          "generate_view_link": "No se pudo generar el enlace para ver el documento",
-          "open_document": "No se pudo abrir el documento",
-          "generate_download_link": "No se pudo generar el enlace de descarga",
-          "signed_url": "No se pudo obtener la URL firmada",
-          "download_document": "No se pudo descargar el documento",
-          "delete_document": "Error al eliminar el documento"
-        },
-        "photos": {
-          "title": "Fotos de la Carga",
-          "description": "Fotografías del pickup y delivery (máx. 4 por categoría)",
-          "empty_state": {
-            "title": "No hay fotos de la carga",
-            "description": "Las fotos aparecerán aquí cuando las subas usando el botón \"Subir foto\""
-          },
-          "upload_photo": "Subir Foto",
-          "upload_category": "Subir {{category}}",
-          "photo_count": "{{count}}/8 fotos",
-          "category_count": "{{count}}/4",
-          "pickup_photos": "Fotos de Recogida",
-          "delivery_photos": "Fotos de Entrega",
-          "delete_photo_title": "¿Eliminar foto?",
-          "delete_photo_description": "Esta acción eliminará permanentemente esta foto. No se puede deshacer.",
-          "delete_confirm": "Eliminar",
-          "cancel": "Cancelar",
-          "error_messages": {
-            "limit_reached": "Límite alcanzado",
-            "limit_category": "Ya tienes 4 fotos en la categoría {{category}}",
-            "invalid_file_type": "Tipo de archivo no válido",
-            "accepted_formats": "Solo se permiten archivos JPG, PNG y WEBP",
-            "file_too_large": "Archivo muy grande",
-            "max_size": "El archivo no puede ser mayor a 10MB",
-            "upload_failed": "No se pudo subir la foto",
-            "delete_failed": "No se pudo eliminar la foto",
-            "view_failed": "No se pudo generar el enlace para ver la foto",
-            "open_failed": "No se pudo abrir la foto",
-            "save_failed": "No se pudo guardar la información de la foto",
-            "unexpected_upload": "Error inesperado al subir la foto",
-            "unexpected_delete": "Error inesperado al eliminar la foto"
-          },
-          "success_messages": {
-            "uploaded": "Foto subida",
-            "uploaded_category": "Foto de {{category}} subida correctamente",
-            "deleted": "Foto eliminada",
-            "deleted_success": "La foto se eliminó correctamente"
-          },
-          "categories": {
-            "pickup": "pickup",
-            "delivery": "delivery",
-            "pickup_label": "Pickup",
-            "delivery_label": "Delivery",
-            "pickup_spanish": "recogida",
-            "delivery_spanish": "entrega"
-          }
-        }
-      },
-    "form": {
-      "load_number": "Número de Carga",
-      "load_number_required": "*",
-      "load_number_placeholder": "Ej: LD-001, 2024-001, etc.",
-      "load_number_duplicate": "Este número de carga ya existe. Por favor use un número diferente.",
-      "po_number": "PO# (Purchase Order)",
-      "po_number_placeholder": "Ej: PO-12345, PO-2024-001",
-      "client_broker": "Cliente/Broker",
-      "client_broker_required": "*",
-      "client_placeholder": "Buscar cliente por nombre, DOT, MC...",
-      "client_contact": "Contacto del Cliente",
-      "contact_placeholder": "Buscar contacto...",
-      "commodity": "Commodity",
-      "commodity_required": "*",
-      "commodity_placeholder": "Electronics, Food Products, etc.",
-      "weight": "Peso (lbs)",
-      "weight_placeholder": "Ej: 25,000",
-      "total_amount": "Monto Total ($)",
-      "total_amount_required": "*",
-      "total_amount_placeholder": "$0.00"
-    },
-    "validation": {
-      "load_number_required": "El número de carga es requerido.",
-      "load_number_duplicate_error": "No se puede crear la carga con un número duplicado.",
-      "client_required": "Debes seleccionar un cliente.",
-      "commodity_required": "El commodity es requerido.",
-      "amount_required": "El monto total debe ser mayor a 0.",
-      "stops_minimum": "Debe haber al menos 2 paradas (pickup y delivery).",
-      "stops_first_pickup": "La primera parada debe ser una recogida (pickup)",
-      "stops_last_delivery": "La última parada debe ser una entrega (delivery)",
-      "stops_missing_company": "Empresa",
-      "stops_missing_address": "Dirección",
-      "stops_missing_city": "Ciudad", 
-      "stops_missing_state": "Estado",
-      "stops_missing_date": "Fecha programada",
-      "stops_missing_fields": "{{stopType}}{{number}}: Faltan {{fields}}",
-      "chronological_error": "Las fechas deben estar en orden cronológico. La parada {{current}} tiene una fecha anterior a la parada {{previous}}",
-      "validation_error": "Error de validación",
-      "stops_error": "Error en las paradas",
-      "dates_error": "Error de fechas"
-    },
-    "buttons": {
+    "navigation": {
       "previous": "Anterior",
-      "next": "Siguiente", 
-      "cancel": "Cancelar",
-      "create_load": "Crear Carga",
-      "save_changes": "Guardar Cambios"
+      "next": "Siguiente",
+      "finish": "Crear Carga",
+      "saving": "Guardando...",
+      "save_draft": "Guardar Borrador",
+      "update": "Actualizar Carga"
+    }
+  },
+  "load_info": {
+    "title": "Información de la Carga",
+    "description": "Ingresa la información básica de esta carga. Todos los campos requeridos deben completarse para proceder al siguiente paso.",
+    "card_title": "Detalles de la Carga",
+    "card_description": "Información principal y configuración de la carga"
+  },
+  "pickup_delivery": {
+    "pickup": {
+      "title": "Información de Recogida",
+      "description": "Configura dónde y cuándo se recogerá la carga. Se requiere dirección completa e información de contacto.",
+      "card_title": "Recogida",
+      "card_description": "Ubicación, horario e información de contacto para la recogida"
     },
+    "delivery": {
+      "title": "Información de Entrega", 
+      "description": "Configura dónde y cuándo se entregará la carga. Se requiere dirección completa e información de contacto.",
+      "card_title": "Entrega",
+      "card_description": "Ubicación, horario e información de contacto para la entrega"
+    }
+  },
+  "assignment": {
+    "title": "Asignación de Conductor",
+    "description": "Selecciona el conductor que realizará esta carga. El conductor asignado podrá ver la información de la carga en su portal.",
+    "card_title": "Asignación de Conductor",
+    "card_description": "Asignar conductor y dispatcher interno a esta carga",
+    "driver": {
+      "title": "Conductor (Requerido)",
+      "placeholder": "Selecciona un conductor...",
+      "no_drivers": "No hay conductores disponibles",
+      "no_assignment": "Ningún conductor asignado",
+      "selected_label": "Conductor:"
+    },
+    "dispatcher": {
+      "title": "Dispatcher Interno (Opcional)",
+      "placeholder": "Selecciona un dispatcher (opcional)...",
+      "no_dispatchers": "No hay dispatchers disponibles",
+      "no_assignment": "Ningún dispatcher asignado",
+      "selected_label": "Dispatcher:"
+    },
+    "owner_operator": {
+      "badge": "Operador Propietario",
+      "percentages_title": "Porcentajes de Operador Propietario",
+      "percentages_description": "Estos porcentajes se aplicarán específicamente a esta carga. Puedes modificarlos según sea necesario.",
+      "leasing_label": "Arrendamiento (%)",
+      "factoring_label": "Factoraje (%)",
+      "dispatching_label": "Despacho (%)",
+      "loading": "Cargando datos del Operador Propietario..."
+    },
+    "important_info": {
+      "title": "ℹ️ Información importante",
+      "notifications": "El conductor seleccionado recibirá notificación de la asignación",
+      "portal_access": "Podrá ver los detalles de la carga en su portal",
+      "dispatcher_optional": "El dispatcher interno es opcional y ayuda con el seguimiento",
+      "active_only": "Solo conductores y dispatchers activos pueden recibir asignaciones",
+      "changeable": "Puedes cambiar las asignaciones después de crear la carga"
+    }
+  },
+  "documents": {
+    "title": "Documentos",
+    "description": "Confirmación de tarifa y Orden de Carga",
+    "card_title": "Documentos de la Carga",
+    "card_description": "Gestionar todos los documentos relacionados con esta carga",
+    "document_types": {
+      "rate_confirmation": {
+        "label": "Confirmación de Tarifa (RC)",
+        "short_label": "RC",
+        "description": "Confirmación de tarifa del broker"
+      },
+      "bol": {
+        "label": "Conocimiento de Embarque (BOL)",
+        "short_label": "BOL",
+        "description": "Documento de envío"
+      },
+      "pod": {
+        "label": "Prueba de Entrega (POD)",
+        "short_label": "POD",
+        "description": "Confirmación de entrega"
+      },
+      "load_invoice": {
+        "label": "Factura de Carga (LI)",
+        "short_label": "LI",
+        "description": "Factura de la carga"
+      },
+      "load_order": {
+        "label": "Orden de Carga",
+        "short_label": "Orden de Carga",
+        "description": "Orden de carga disponible"
+      },
+      "load_photos": {
+        "label": "Fotos de Carga",
+        "short_label": "Fotos",
+        "description": "Fotos de recogida y entrega"
+      },
+      "other": {
+        "label": "Otro Documento",
+        "short_label": "Otro",
+        "description": "Documento adicional"
+      }
+    },
+    "upload": {
+      "title": "Subir Documentos",
+      "select_type": "Tipo de Documento",
+      "select_type_placeholder": "Selecciona tipo de documento...",
+      "select_file": "Seleccionar Archivo",
+      "drop_zone": "Arrastra archivos aquí o haz clic para seleccionar",
+      "supported_formats": "PDF, DOC, DOCX, JPG, PNG (Máx 10MB)",
+      "upload_button": "Subir Documento",
+      "uploading": "Subiendo...",
+      "all_categories_complete": "Todas las categorías completas (4/4)"
+    },
+    "photo_categories": {
+      "pickup": {
+        "label": "Recogida ({{count}}/4)",
+        "description": "Fotografías en la recogida"
+      },
+      "delivery": {
+        "label": "Entrega ({{count}}/4)",
+        "description": "Fotografías en la entrega"
+      }
+    },
+    "empty_state": {
+      "no_documents": "No se han subido documentos aún",
+      "use_selector": "Usa el selector de arriba para subir documentos"
+    },
+    "delete_dialog": {
+      "title": "¿Eliminar documento?",
+      "description": "Esta acción eliminará permanentemente \"{{fileName}}\". Esto no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    },
+    "success_messages": {
+      "uploaded": "El documento \"{{fileName}}\" se subió exitosamente",
+      "deleted": "El documento se eliminó exitosamente"
+    },
+    "error_messages": {
+      "upload_failed": "Falló al subir el documento \"{{fileName}}\"",
+      "delete_failed": "Falló al eliminar el documento",
+      "file_too_large": "El archivo es muy grande (máx 10MB)",
+      "invalid_format": "Formato de archivo no soportado"
+    },
+    "photos": {
+      "title": "Fotos de la Carga",
+      "description": "Fotografías del pickup y delivery (máx. 4 por categoría)",
+      "upload_button": "Subir Foto",
+      "empty_state": {
+        "no_photos": "No hay fotos de la carga",
+        "instruction": "Las fotos aparecerán aquí cuando las subas usando el botón \"Subir foto\""
+      },
+      "delete_dialog": {
+        "title": "¿Eliminar foto?",
+        "description": "Esta acción eliminará permanentemente la foto seleccionada. Esto no se puede deshacer.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar"
+      },
+      "success_messages": {
+        "uploaded_success": "La foto se subió exitosamente",
+        "deleted_success": "La foto se eliminó exitosamente"
+      },
+      "error_messages": {
+        "upload_failed": "Falló al subir la foto",
+        "delete_failed": "Falló al eliminar la foto",
+        "max_photos_reached": "Número máximo de fotos alcanzado para esta categoría (4)",
+        "file_too_large": "El archivo es muy grande (máx 10MB)",
+        "invalid_format": "Solo se soportan imágenes JPG y PNG"
+      },
+      "upload_dialog": {
+        "title": "Subir Foto",
+        "select_category": "Categoría de Foto",
+        "category_placeholder": "Selecciona categoría...",
+        "select_file": "Seleccionar Foto",
+        "drop_zone": "Arrastra la foto aquí o haz clic para seleccionar",
+        "supported_formats": "JPG, PNG (Máx 10MB)",
+        "upload_button": "Subir Foto",
+        "uploading": "Subiendo...",
+        "cancel": "Cancelar"
+      },
+      "categories": {
+        "pickup": "recogida",
+        "delivery": "entrega",
+        "pickup_label": "Recogida",
+        "delivery_label": "Entrega",
+        "pickup_spanish": "recogida",
+        "delivery_spanish": "entrega"
+      }
+    }
+  },
+  "form": {
+    "load_number": "Número de Carga",
+    "load_number_required": "*",
+    "load_number_placeholder": "Ej: LD-001, 2024-001, etc.",
+    "broker": "Broker/Cliente", 
+    "broker_required": "*",
+    "broker_placeholder": "Seleccionar broker o cliente...",
+    "commodity": "Mercancía",
+    "commodity_placeholder": "Descripción de la carga...",
+    "weight": "Peso (lbs)",
+    "weight_placeholder": "0",
+    "pieces": "Piezas",
+    "pieces_placeholder": "0", 
+    "dimensions": "Dimensiones",
+    "length_placeholder": "Largo",
+    "width_placeholder": "Ancho", 
+    "height_placeholder": "Alto",
+    "revenue": "Ingreso ($)",
+    "revenue_placeholder": "0.00",
+    "notes": "Notas",
+    "notes_placeholder": "Comentarios adicionales sobre esta carga...",
+    "validation": {
+      "load_number_required": "El número de carga es requerido",
+      "load_number_format": "Usar formato: LD-001, 2024-001, etc.",
+      "broker_required": "Broker o cliente es requerido",
+      "weight_positive": "El peso debe ser mayor a 0",
+      "pieces_positive": "El número de piezas debe ser mayor a 0",
+      "revenue_positive": "El ingreso debe ser mayor a 0",
+      "dimensions_positive": "Todas las dimensiones deben ser mayores a 0"
+    }
+  },
+  "messages": {
     "success": {
-      "load_created": "🚛 Carga {{number}} creada",
-      "load_updated": "Carga {{number}} actualizada",
-      "load_duplicated": "Carga {{number}} duplicada exitosamente",
-      "created_message": "La carga {{number}} para {{client}} ha sido creada exitosamente y está lista para ser procesada.",
-      "updated_message": "Los cambios en la carga {{number}} han sido guardados correctamente.",
+      "created_title": "Carga {{number}} creada exitosamente",
+      "created_message": "La carga ha sido guardada correctamente y está lista para ser gestionada.",
+      "updated_title": "Carga {{number}} actualizada exitosamente", 
+      "updated_message": "Los cambios a la carga {{number}} han sido guardados correctamente.",
       "duplicated_message": "Se ha creado una nueva carga {{number}} basada en la carga original."
     },
     "error": {
-      "create_title": "Error al crear carga {{number}}",
-      "update_title": "Error al actualizar carga {{number}}",
-      "duplicate_title": "Error al duplicar carga {{number}}",
-      "general_message": "Ha ocurrido un error inesperado. Por favor intenta nuevamente."
+      "create_title": "Error al crear la carga {{number}}",
+      "update_title": "Error al actualizar la carga {{number}}",
+      "duplicate_title": "Error al duplicar la carga {{number}}",
+      "general_message": "Ocurrió un error inesperado. Por favor intenta de nuevo."
     }
   },
   "periods": {
     "current": "Período Actual",
     "previous": "Período Anterior", 
-    "next": "Período Siguiente",
+    "next": "Siguiente Período",
     "all": "Historial Completo",
     "this_month": "Este Mes",
     "last_month": "Mes Pasado",
@@ -373,135 +283,105 @@
     "selected": "Período Seleccionado"
   },
   "period_filter": {
-    "quick_filters": "Filtros rápidos",
-    "by_dates": "Por fechas",
-    "open_periods": "Períodos Abiertos", 
-    "processing": "En Procesamiento",
-    "historical_periods": "Períodos Históricos",
-    "more_periods": "períodos más",
+    "quick_filters": "Filtros Rápidos",
+    "by_dates": "Por Fechas", 
+    "open_periods": "Períodos Abiertos",
+    "processing": "En Proceso",
+    "closed": "Cerrado", 
+    "paid": "Pagado",
+    "locked": "Bloqueado",
     "status": {
       "open": "Abierto",
-      "processing": "Procesando",
-      "closed": "Cerrado", 
       "paid": "Pagado",
       "locked": "Bloqueado"
     }
   },
   "status": {
-    "created": "Creada",
-    "route_planned": "Ruta Planificada",
-    "assigned": "Asignada",
+    "created": "Creado",
+    "route_planned": "Ruta Planeada",
+    "assigned": "Asignado",
     "en_route_pickup": "En Ruta a Recogida",
-    "at_pickup": "En Recogida",
-    "loaded": "Cargada",
-    "in_progress": "En Progreso",
-    "in_transit": "En Tránsito",
+    "arrived_pickup": "Llegado a Recogida",
+    "loaded": "Cargado",
     "en_route_delivery": "En Ruta a Entrega",
-    "at_delivery": "En Entrega",
-    "delivered": "Entregada",
-    "completed": "Completada",
+    "arrived_delivery": "Llegado a Entrega",
+    "delivered": "Entregado",
+    "completed": "Completado",
     "pending": "Pendiente",
-    "cancelled": "Cancelada"
+    "cancelled": "Cancelado"
   },
   "actions": {
     "view": "Ver Detalles",
     "edit": "Editar",
     "duplicate": "Duplicar",
     "delete": "Eliminar",
-    "status_history": "Historial de Estado",
+    "status_history": "Historial de Estados",
     "assign": "Asignar Conductor",
     "documents": "Gestionar Documentos",
     "photos": "Fotos",
     "assign_status": "Asignar",
     "in_transit_status": "En Tránsito",
-    "delivered_status": "Entregada",
+    "delivered_status": "Entregado",
     "complete_status": "Completar",
     "cancel_status": "Cancelar",
     "reopen_status": "Reabrir (En Tránsito)"
   },
   "floating_actions": {
-    "title": "Acciones de Cargas",
+    "title": "Acciones de Carga",
     "filters": {
-      "title": "Filtros de Cargas",
+      "title": "Filtros de Carga",
       "description": "Filtrar cargas por estado, conductor, broker y fechas",
-      "filters": "Filtros",
-      "filters_active": "Filtros (activos)",
-      "applied_filters": "Filtros Aplicados",
-      "clear": "Limpiar",
       "status": "Estado",
       "driver": "Conductor",
-      "broker": "Broker / Cliente",
-      "period": "Período de Pago",
-      "date_range": "Fecha de Pickup",
-      "placeholders": {
-        "status": "Seleccionar estado",
-        "loading": "Cargando...",
-        "driver": "Seleccionar conductor",
-        "broker": "Seleccionar broker",
-        "period": "Seleccionar período",
-        "date_range": "Seleccionar fechas"
-      },
-      "options": {
-        "status": {
-          "all": "Todos los estados"
-        },
-        "broker": {
-          "all": "Todos los brokers"
-        },
-        "driver": {
-          "all": "Todos los conductores"
-        }
-      }
+      "broker": "Broker",
+      "date_range": "Rango de Fechas",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar Filtros",
+      "apply": "Aplicar"
     },
     "export": {
-      "title": "Exportar Datos", 
+      "title": "Exportar Cargas",
       "description": "Exportar datos de cargas en diferentes formatos",
-      "export": "Exportar",
-      "pdf": "Exportar a PDF",
       "excel": "Exportar a Excel",
-      "options_title": "Opciones de Exportación", 
-      "include_filters": "Incluir filtros aplicados",
-      "visible_only": "Solo cargas visibles",
-      "include_stats": "Incluir estadísticas"
+      "pdf": "Exportar a PDF",
+      "csv": "Exportar a CSV"
     },
-    "view": {
-      "title": "Configuración de Vista",
-      "description": "Personalizar cómo se muestran las cargas",
-      "view": "Vista",
-      "sort_by": "Ordenar por",
-      "density": "Densidad",
-      "visible_columns": "Columnas Visibles",
-      "density_options": {
-        "compact": "Compacta",
-        "normal": "Normal",
-        "comfortable": "Confortable"
-      },
-      "columns": {
-        "broker_info": "Información del Broker",
-        "driver_info": "Información del Conductor", 
-        "dates": "Fechas",
-        "amounts": "Montos"
-      },
-      "options": {
-        "sort": {
-          "date_desc": "Fecha (más reciente)",
-          "date_asc": "Fecha (más antigua)",
-          "amount_desc": "Monto (mayor a menor)",
-          "amount_asc": "Monto (menor a mayor)",
-          "status": "Estado"
-        }
-      }
+    "import": {
+      "title": "Importar Cargas", 
+      "description": "Importar cargas desde archivos Excel o CSV",
+      "select_file": "Seleccionar Archivo",
+      "upload": "Subir e Importar"
     },
-    "stats": {
-      "title": "Estadísticas",
-      "description": "Ver estadísticas rápidas de tus cargas",
-      "statistics": "Estadísticas",
-      "total_loads": "Total Cargas",
-      "total_value": "Valor Total",
-      "in_transit": "En Tránsito",
-      "pending": "Pendientes",
-      "load_status": "Estados de Carga",
-      "completed": "Completadas",
+    "analytics": {
+      "title": "Análisis de Cargas",
+      "description": "Ver análisis detallados y reportes",
+      "revenue_analysis": "Análisis de Ingresos",
+      "performance_metrics": "Métricas de Rendimiento",
+      "driver_statistics": "Estadísticas de Conductores"
+    }
+  },
+  "analytics": {
+    "revenue": {
+      "title": "Análisis de Ingresos",
+      "total_revenue": "Ingreso Total",
+      "average_per_load": "Promedio por Carga",
+      "month_over_month": "Mes sobre Mes",
+      "top_brokers": "Principales Brokers",
+      "revenue_trend": "Tendencia de Ingresos"
+    },
+    "performance": {
+      "title": "Métricas de Rendimiento", 
+      "total_loads": "Total de Cargas",
+      "completed_loads": "Cargas Completadas",
+      "completion_rate": "Tasa de Finalización",
+      "average_delivery_time": "Tiempo Promedio de Entrega",
+      "on_time_delivery": "Tasa de Entrega a Tiempo"
+    },
+    "drivers": {
+      "title": "Estadísticas de Conductores",
+      "active_drivers": "Conductores Activos",
+      "total_deliveries": "Total de Entregas",
       "average_per_load": "Promedio por Carga",
       "average_value": "Valor promedio por carga"
     }
@@ -517,42 +397,38 @@
   },
   "empty_state": {
     "title": "Comienza tu gestión de cargas",
-    "description": "Administra tus cargas de manera eficiente con nuestro sistema integral de gestión logística",
+    "description": "Gestiona tus cargas de manera eficiente con nuestro sistema integral de gestión logística",
     "create_button": "Crear Primera Carga",
     "features": {
-      "time_management": "Gestión de Tiempos",
-      "automatic_tracking": "Seguimiento automático de pickup y delivery",
-      "profitability": "Rentabilidad", 
-      "realtime_analysis": "Análisis en tiempo real de márgenes",
-      "documentation": "Documentación",
-      "complete_control": "Control completo de documentos de carga",
-      "automated_management": "Gestión automatizada",
-      "realtime_tracking": "Seguimiento en tiempo real",
-      "detailed_reports": "Reportes detallados"
+      "title": "Características Principales:",
+      "real_time_tracking": "Seguimiento en tiempo real",
+      "document_management": "Gestión de documentos", 
+      "driver_assignment": "Asignación de conductores",
+      "revenue_analytics": "Análisis de ingresos"
     },
     "stats": {
-      "active_loads": "Cargas Activas",
-      "total_revenue": "Ingresos Totales",
+      "loads_created": "Cargas Creadas",
+      "miles_driven": "Millas Conducidas",
+      "total_revenue": "Ingreso Total",
       "completed_deliveries": "Entregas Completadas"
     }
   },
   "history": {
-    "title": "Historial de Estado",
+    "title": "Historial de Estados",
     "current": "Actual",
     "eta": "ETA: ",
     "time": "Hora: ",
-    "no_history": "No hay historial de estado disponible para esta carga"
+    "no_history": "No hay historial de estados disponible para esta carga"
   },
   "validation": {
-    "missing_docs": "Docs Faltantes",
-    "pending_doc": "Doc Pendiente",
-    "missing_required_single": "Falta documento requerido: {{docs}}",
-    "missing_required_multiple": "Faltan documentos requeridos: {{docs}}",
-    "cannot_mark_delivered": "No se puede marcar como entregada sin documentos requeridos",
-    "load_order": "Load Order",
-    "replace_rc": "Reemplazar RC",
-    "upload_rc": "Subir RC", 
-    "regenerate_lo": "Regenerar LO",
+    "missing_docs": "Documentos Faltantes",
+    "pending_doc": "Documento Pendiente",
+    "missing_required_single": "Documento requerido faltante: {{docs}}",
+    "missing_required_multiple": "Documentos requeridos faltantes: {{docs}}",
+    "pending_generation_single": "Pendiente generación de documento: {{docs}}",
+    "pending_generation_multiple": "Pendiente generación de documentos: {{docs}}",
+    "has_rc": "Tiene RC",
+    "no_rc": "Sin RC",
     "generate_lo": "Generar LO",
     "documents_ok": "Documentos OK",
     "all_required_docs": "Todos los documentos requeridos están presentes",
@@ -570,50 +446,39 @@
     "uploaded_title": "Documentos Subidos",
     "loading": "Cargando estado de documentos...",
     "error_loading": "No se pudo cargar la información de documentos",
-    "no_documents": "No hay documentos subidos aún",
-    "generate_load_order": "Generar Load Order",
-    "export_pdf": "Exportar a PDF",
-    "preview_not_available": "Vista previa no disponible",
-    "protected_documents": "Documentos Protegidos",
-    "load_completed": "Carga Completada",
-    "protection_warning": "El conductor ha comenzado a trabajar en esta carga. Los documentos principales están protegidos contra eliminación.",
-    "completion_warning": "Esta carga ha sido completada. No se pueden agregar más documentos.",
-    "active": "Activo",
-    "priority": "Prioridad",
-    "info_regenerate": "Puede regenerar el LO para actualizar datos",
-    "info_replace": "Puede reemplazar el RC incluso durante el trabajo",
-    "error_generate_link": "No se pudo generar el enlace de descarga",
-    "error_view_link": "No se pudo generar el enlace para ver el documento",
-    "error_save_document": "No se pudo guardar la información del documento",
-    "error_upload": "No se pudo subir el archivo",
-    "error_generate_lo": "No se pudo generar el Load Order. Intenta nuevamente.",
-    "success_upload": "Documento subido",
-    "success_generate_lo": "Load Order generado",
-    "success_photo": "Foto subida",
-    "rules_title": "Reglas de Documentos:",
-    "rules": {
-      "1": "Se requiere Rate Confirmation (RC) o Load Order (LO) para comenzar",
-      "2": "Load Order tiene prioridad sobre Rate Confirmation",
-      "3": "Una vez iniciado el trabajo, los documentos se protegen",
-      "4": "RC se puede reemplazar, LO se puede regenerar"
+    "no_documents": "No se han subido documentos aún",
+    "generate_load_order": "Generar Orden de Carga",
+    "view_document": "Ver",
+    "delete_document": "Eliminar",
+    "upload_new": "Subir Nuevo Documento",
+    "replace_document": "Reemplazar",
+    "document_actions": "Acciones de Documento",
+    "upload_instructions": {
+      "title": "Instrucciones de Subida",
+      "1": "Selecciona el tipo de documento del dropdown",
+      "2": "Elige el archivo que quieres subir",
+      "3": "Una vez iniciado el trabajo, los documentos están protegidos", 
+      "4": "RC puede ser reemplazado, LO puede ser regenerado"
     }
   },
   "generate_load_order": {
-    "title": "Generar Load Order",
-    "description": "Crea un Load Order personalizado con el monto que verá el conductor.",
-    "custom_amount": "Monto para el Load Order ($)",
+    "title": "Generar Orden de Carga",
+    "description": "Crear una Orden de Carga personalizada con el monto que verá el conductor.",
+    "custom_amount": "Monto para Orden de Carga ($)",
     "original_amount": "Monto original:",
-    "commodity": "Commodity:",
-    "load": "Carga:",
-    "important": "Importante:",
-    "warning": "El conductor verá este Load Order en lugar del Rate Confirmation original. El monto debe ser menor o igual al monto original.",
+    "placeholder": "Ingresa el monto...",
+    "generate_button": "Generar Orden de Carga",
     "generating": "Generando...",
-    "generate": "Generar Load Order",
     "cancel": "Cancelar",
+    "note": "La Orden de Carga será generada con el monto que especifiques. El conductor verá este monto en su portal.",
+    "validation": {
+      "amount_error": "El monto no puede ser mayor al original",
+      "amount_required": "El monto debe ser mayor a 0"
+    },
     "amount_error": "El monto no puede ser mayor al original",
     "amount_required": "El monto debe ser mayor a 0",
-    "success": "Load Order creado exitosamente con monto",
-    "error": "No se pudo generar el Load Order. Intenta nuevamente."
+    "success": "Orden de Carga creada exitosamente con el monto",
+    "error": "No se pudo generar la Orden de Carga. Intenta de nuevo."
   },
   "list": {
     "loading": "Cargando cargas...",
@@ -624,27 +489,25 @@
     "assigned_driver": "Conductor Asignado",
     "contact": "Contacto:",
     "dispatcher": "Dispatcher:",
-    "not_assigned": "Sin asignar",
-    "commodity_info": "Información de Commodity",
-    "dates_schedule": "Fechas y Horarios",
+    "not_assigned": "No asignado",
+    "commodity_info": "Información de Mercancía",
+    "dates_schedule": "Fechas y Horario",
     "pickup": "Recogida:",
     "delivery": "Entrega:",
-    "period_status": "Estado del Período",
-    "actions_available": "Acciones Disponibles",
-    "view_load": "Ver Carga",
-    "edit_load": "Editar Carga",
-    "more_actions": "Más Acciones",
-    "commodity": "Commodity",
-    "payment_period": "Período de Pago",
-    "created": "Creada:",
-    "view": "Ver",
-    "edit": "Editar",
-    "duplicate_load": "Duplicar Carga",
-    "reassign_period": "Reasignar Período",
-    "manage_documents": "Gestionar Documentos",
-    "delete_load": "Eliminar Carga",
-    "confirm_deletion": "¿Confirmar eliminación?",
-    "deletion_warning": "Esta acción eliminará permanentemente la carga {loadNumber} y todos sus datos asociados (paradas y documentos).",
+    "revenue": "Ingreso:",
+    "notes": "Notas:",
+    "no_notes": "Sin notas adicionales",
+    "created_date": "Creado:",
+    "pieces": "Piezas:",
+    "weight": "Peso:",
+    "dimensions": "Dimensiones:",
+    "no_commodity": "Sin información de mercancía",
+    "no_dimensions": "Sin dimensiones especificadas"
+  },
+  "delete": {
+    "title": "Eliminar Carga",
+    "message": "¿Estás seguro de que quieres eliminar la carga #{{loadNumber}}?",
+    "warning": "Esto eliminará permanentemente toda la información relacionada con esta carga, incluyendo documentos e historial de estados.",
     "deletion_irreversible": "Esta acción no se puede deshacer.",
     "cancel": "Cancelar",
     "deleting": "Eliminando..."
