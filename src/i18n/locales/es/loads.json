@@ -49,6 +49,10 @@
           "delivery": "D{{number}}:"
         },
         "missing_fields": "Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
+        "incomplete_stop_message": {
+          "pickup": "P{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
+          "delivery": "D{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada"
+        },
         "add_intermediate_stop": "Agregar Parada Intermedia",
         "instructions": {
           "click_edit": "Haz clic en cualquier parada para editar sus detalles",
