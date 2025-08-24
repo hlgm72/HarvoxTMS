@@ -25,7 +25,68 @@ export default function AuthCallback() {
         if (session?.user) {
           console.log('OAuth user logged in:', session.user.id);
           
-          // Get all user roles first
+          // First check if there are pending invitations for this email
+          const { data: pendingInvitation, error: invitationError } = await supabase
+            .from('user_invitations')
+            .select('*')
+            .eq('email', session.user.email?.toLowerCase())
+            .is('accepted_at', null)
+            .gte('expires_at', new Date().toISOString())
+            .eq('is_active', true)
+            .maybeSingle();
+
+          console.log('Checking pending invitations:', { pendingInvitation, invitationError });
+
+          // If there's a pending invitation, process it automatically
+          if (pendingInvitation && !invitationError) {
+            console.log('Found pending invitation, processing automatically...');
+            
+            try {
+              const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+              
+              const { data: functionResult, error: functionError } = await supabase.functions.invoke('accept-google-invitation', {
+                body: {
+                  invitationToken: pendingInvitation.invitation_token,
+                  userEmail: session.user.email,
+                  userId: session.user.id,
+                  userTimezone: userTimezone
+                }
+              });
+
+              if (functionError) {
+                console.error('Error processing invitation:', functionError);
+                showError('Error', 'Error procesando la invitación automáticamente');
+              } else if (functionResult.success) {
+                console.log('Invitation processed successfully:', functionResult);
+                showSuccess('¡Bienvenido!', `Te has unido exitosamente como ${functionResult.user.role}`);
+                
+                // Wait a moment for role propagation and redirect
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Redirect based on role from invitation
+                const role = functionResult.user.role;
+                if (role === 'superadmin') {
+                  navigate('/superadmin');
+                } else if (role === 'company_owner') {
+                  navigate('/dashboard/owner');
+                } else if (role === 'operations_manager') {
+                  navigate('/dashboard/operations');
+                } else if (role === 'dispatcher') {
+                  navigate('/dashboard/dispatch');
+                } else if (role === 'driver') {
+                  navigate('/dashboard/driver');
+                } else {
+                  navigate('/dashboard');
+                }
+                return; // Exit early since invitation was processed
+              }
+            } catch (error) {
+              console.error('Error in automatic invitation processing:', error);
+              // Continue with normal flow if invitation processing fails
+            }
+          }
+          
+          // Get all user roles (normal flow if no invitation or invitation processing failed)
           const { data: roleData, error: roleError } = await supabase
             .from('user_company_roles')
             .select('role, id, company_id')
@@ -34,8 +95,10 @@ export default function AuthCallback() {
 
           console.log('OAuth role query result:', { roleData, roleError });
 
-          // Show success message
-          showSuccess('¡Bienvenido!', 'Has sido autenticado exitosamente con Google.');
+          // Show success message (if not already shown above)
+          if (!pendingInvitation) {
+            showSuccess('¡Bienvenido!', 'Has sido autenticado exitosamente con Google.');
+          }
 
           const roles = roleData || [];
           
