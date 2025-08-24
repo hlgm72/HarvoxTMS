@@ -292,8 +292,8 @@
             "pickup_spanish": "pickup",
             "delivery_spanish": "delivery"
           }
-        },
-    },
+        }
+      },
     "form": {
       "load_number": "Load Number",
       "load_number_required": "*",

@@ -292,8 +292,8 @@
             "pickup_spanish": "recogida",
             "delivery_spanish": "entrega"
           }
-        },
-    },
+        }
+      },
     "form": {
       "load_number": "Número de Carga",
       "load_number_required": "*",
