@@ -138,12 +138,16 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
     onSuccess: (client) => {
       // Invalidar TODAS las queries relacionadas con clientes
       queryClient.invalidateQueries({ 
+        queryKey: ['clients'],
+        exact: false
+      });
+      queryClient.invalidateQueries({ 
         queryKey: ['company-clients'],
         exact: false
       });
       // También refrescar directamente
       queryClient.refetchQueries({ 
-        queryKey: ['company-clients'],
+        queryKey: ['clients'],
         exact: false
       });
       
