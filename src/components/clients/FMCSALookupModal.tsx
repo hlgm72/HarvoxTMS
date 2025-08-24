@@ -343,7 +343,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                 {companies.map((company, index) => (
                   <div
                     key={index}
-                    className="border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                    className="bg-white border rounded-lg p-4 hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => handleSelectCompany(company)}
                   >
                     <div className="flex items-center justify-between">
