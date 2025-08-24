@@ -82,22 +82,22 @@
     },
     "form": {
       "load_number": "Load Number",
-      "load_number_required": "Required",
+      "load_number_required": "*",
       "load_number_placeholder": "Ex: LD-001, 2024-001, etc.",
       "po_number": "PO Number",
       "po_number_placeholder": "Purchase order number...",
       "client_broker": "Client/Broker",
-      "client_broker_required": "Required",
+      "client_broker_required": "*",
       "client_placeholder": "Select client or broker...",
       "client_contact": "Client Contact",
       "no_contacts_available": "No contacts available",
       "commodity": "Commodity",
-      "commodity_required": "Required",
+      "commodity_required": "*",
       "commodity_placeholder": "Description of the cargo...",
       "weight": "Weight (lbs)",
       "weight_placeholder": "0",
       "total_amount": "Total Amount",
-      "total_amount_required": "Required"
+      "total_amount_required": "*"
     },
     "buttons": {
       "previous": "Previous",
