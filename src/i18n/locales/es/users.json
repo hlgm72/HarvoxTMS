@@ -130,7 +130,7 @@
     "email_required": "Email y rol son requeridos",
     "company_info_error": "No se pudo obtener la información de la empresa",
     "invitation_sent": "Invitación Enviada",
-    "invitation_sent_description": "Se ha enviado una invitación a {name}. Recibirá un email con instrucciones para configurar su cuenta.",
+    "invitation_sent_description": "Se ha enviado una invitación a {name}. Recibirá un correo electrónico con instrucciones para configurar su cuenta.",
     "error_loading": "Error al cargar usuarios: {error}",
     "error_inviting": "Error al enviar la invitación",
     "delete_test_user_error": "Solo los superadministradores y propietarios de empresa pueden eliminar usuarios de prueba",
