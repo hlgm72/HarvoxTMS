@@ -44,7 +44,19 @@
       },
       "route_details": {
         "title": "Detalles de Ruta", 
-        "description": "Paradas y direcciones"
+        "description": "Paradas y direcciones",
+        "card_title": "Paradas de la Carga",
+        "card_description": "Define las paradas de recogida y entrega. La primera debe ser pickup y la última delivery.",
+        "stop_number": "Parada #{{number}}",
+        "pickup": "Recogida",
+        "delivery": "Entrega",
+        "incomplete_address": "Dirección incompleta",
+        "add_intermediate_stop": "Agregar Parada Intermedia",
+        "instructions": {
+          "click_edit": "Haz clic en una parada para editarla",
+          "drag_reorder": "Arrastra las paradas para reordenarlas",
+          "chronological_dates": "Las fechas deben estar en orden cronológico"
+        }
       },
       "assignment": {
         "title": "Asignación",

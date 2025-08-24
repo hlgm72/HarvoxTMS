@@ -44,7 +44,19 @@
       },
       "route_details": {
         "title": "Route Details",
-        "description": "Stops and addresses"
+        "description": "Stops and addresses",
+        "card_title": "Load Stops",
+        "card_description": "Define pickup and delivery stops. The first must be pickup and the last delivery.",
+        "stop_number": "Stop #{{number}}",
+        "pickup": "Pickup",
+        "delivery": "Delivery",
+        "incomplete_address": "Incomplete address",
+        "add_intermediate_stop": "Add Intermediate Stop",
+        "instructions": {
+          "click_edit": "Click on a stop to edit it",
+          "drag_reorder": "Drag stops to reorder them",
+          "chronological_dates": "Dates must be in chronological order"
+        }
       },
       "assignment": {
         "title": "Assignment",
