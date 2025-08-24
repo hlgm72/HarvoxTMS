@@ -63,6 +63,7 @@
           "title": "Edit Stop Details",
           "description": "Update stop information and scheduling",
           "pickup_label": "Pickup",
+          "delivery_label": "Delivery",
           "scheduling": "Scheduling",
           "scheduled_date_required": "Scheduled date is required",
           "select_date": "Select date",

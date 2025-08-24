@@ -63,6 +63,7 @@
           "title": "Editar Detalles de Parada",
           "description": "Actualizar información y programación de la parada",
           "pickup_label": "Recogida",
+          "delivery_label": "Entrega",
           "scheduling": "Programación",
           "scheduled_date_required": "La fecha programada es requerida",
           "select_date": "Seleccionar fecha",
