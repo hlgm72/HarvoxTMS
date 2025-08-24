@@ -239,7 +239,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         <DialogContent className="max-w-md">
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="ml-2">{mode === 'edit' ? 'Cargando datos de la carga...' : 'Cargando datos para duplicar...'}</span>
+            <span className="ml-2">{mode === 'edit' ? t("loads:create_wizard.loading.load_data") : t("loads:create_wizard.loading.duplicate_data")}</span>
           </div>
         </DialogContent>
       </Dialog>
@@ -253,9 +253,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         <DialogContent className="max-w-md">
           <div className="text-center p-8">
             <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Error al cargar datos</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("loads:create_wizard.error.loading_data")}</h3>
             <p className="text-sm text-muted-foreground mb-4">{loadDataError}</p>
-            <Button onClick={onClose}>Cerrar</Button>
+            <Button onClick={onClose}>{t("loads:create_wizard.error.close")}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -263,10 +263,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   }
 
   const phases = [
-    { id: 1, title: "Información Esencial", description: "Datos básicos de la carga", completed: false },
-    { id: 2, title: "Detalles de Ruta", description: "Paradas y direcciones", completed: false },
-    { id: 3, title: "Asignación", description: "Conductor y activación", completed: false },
-    { id: 4, title: "Documentos", description: "Rate confirmation y Load Order", completed: false }
+    { id: 1, title: t("loads:create_wizard.phases.essential_info.title"), description: t("loads:create_wizard.phases.essential_info.description"), completed: false },
+    { id: 2, title: t("loads:create_wizard.phases.route_details.title"), description: t("loads:create_wizard.phases.route_details.description"), completed: false },
+    { id: 3, title: t("loads:create_wizard.phases.assignment.title"), description: t("loads:create_wizard.phases.assignment.description"), completed: false },
+    { id: 4, title: t("loads:create_wizard.phases.documents.title"), description: t("loads:create_wizard.phases.documents.description"), completed: false }
   ];
 
   const handleClose = () => {
@@ -280,18 +280,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
     // Minimum 2 stops
     if (stops.length < 2) {
-      errors.push('Debe haber al menos 2 paradas');
+      errors.push(t("loads:create_wizard.validation.stops_minimum"));
       return { isValid: false, errors };
     }
 
     // First stop must be pickup
     if (stops[0].stop_type !== 'pickup') {
-      errors.push('La primera parada debe ser una recogida (pickup)');
+      errors.push(t("loads:create_wizard.validation.stops_first_pickup"));
     }
 
     // Last stop must be delivery
     if (stops[stops.length - 1].stop_type !== 'delivery') {
-      errors.push('La última parada debe ser una entrega (delivery)');
+      errors.push(t("loads:create_wizard.validation.stops_last_delivery"));
     }
 
     // Validate each stop has required fields
@@ -300,26 +300,30 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       const fieldsErrors: string[] = [];
       
       if (!stop.company_name?.trim()) {
-        fieldsErrors.push('Empresa');
+        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_company"));
       }
       if (!stop.address?.trim()) {
-        fieldsErrors.push('Dirección');
+        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_address"));
       }
       if (!stop.city?.trim()) {
-        fieldsErrors.push('Ciudad');
+        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_city"));
       }
       if (!stop.state?.trim()) {
-        fieldsErrors.push('Estado');
+        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_state"));
       }
 
       // Validación obligatoria de fecha para todas las paradas
       if (!stop.scheduled_date) {
-        fieldsErrors.push('Fecha programada');
+        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_date"));
       }
 
       if (fieldsErrors.length > 0) {
         const stopType = stop.stop_type === 'pickup' ? 'P' : 'D';
-        errors.push(`${stopType}${stopNumber}: Faltan ${fieldsErrors.join(', ')}`);
+        errors.push(t("loads:create_wizard.validation.stops_missing_fields", { 
+          stopType, 
+          number: stopNumber, 
+          fields: fieldsErrors.join(', ') 
+        }));
       }
     });
 
@@ -356,7 +360,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       if (currentDate < prevDate) {
         const prevStopNumber = stopsToValidate.findIndex(s => s === prevStop) + 1;
         const currentStopNumber = stopsToValidate.findIndex(s => s === currentStop) + 1;
-        errors.push(`Las fechas deben estar en orden cronológico. La parada ${currentStopNumber} tiene una fecha anterior a la parada ${prevStopNumber}`);
+        errors.push(t("loads:create_wizard.validation.chronological_error", {
+          current: currentStopNumber,
+          previous: prevStopNumber
+        }));
       }
     }
 
@@ -389,9 +396,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       console.log('🚨 onSubmit blocked - missing load number');
       form.setError("load_number", {
         type: "manual",
-        message: "El número de carga es requerido."
+        message: t("loads:create_wizard.validation.load_number_required")
       });
-      showError("Error de validación", "El número de carga es requerido.");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.load_number_required"));
       setCurrentPhase(1);
       return;
     }
@@ -401,9 +408,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       console.log('🚨 onSubmit blocked - duplicate load number');
       form.setError("load_number", {
         type: "manual",
-        message: "Este número de carga ya existe. Por favor use un número diferente."
+        message: t("loads:create_wizard.form.load_number_duplicate")
       });
-      showError("Error de validación", "Este número de carga ya existe. Por favor use un número diferente.");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.form.load_number_duplicate"));
       setCurrentPhase(1);
       return;
     }
@@ -413,9 +420,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       console.log('🚨 onSubmit blocked - invalid PO number');
       form.setError("po_number", {
         type: "manual",
-        message: poNumberValidation.error || "El número PO no es válido."
+        message: poNumberValidation.error || t("loads:create_wizard.validation.validation_error")
       });
-      showError("Error de validación", poNumberValidation.error || "El número PO no es válido.");
+      showError(t("loads:create_wizard.validation.validation_error"), poNumberValidation.error || t("loads:create_wizard.validation.validation_error"));
       setCurrentPhase(1);
       return;
     }
@@ -425,9 +432,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       console.log('🚨 onSubmit blocked - missing client');
       form.setError("client_id", {
         type: "manual",
-        message: "Debes seleccionar un cliente."
+        message: t("loads:create_wizard.validation.client_required")
       });
-      showError("Error de validación", "Debes seleccionar un cliente.");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.client_required"));
       setCurrentPhase(1);
       return;
     }
@@ -437,9 +444,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       console.log('🚨 onSubmit blocked - missing commodity');
       form.setError("commodity", {
         type: "manual",
-        message: "El commodity es requerido."
+        message: t("loads:create_wizard.validation.commodity_required")
       });
-      showError("Error de validación", "El commodity es requerido.");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.commodity_required"));
       setCurrentPhase(1);
       return;
     }
@@ -449,9 +456,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       console.log('🚨 onSubmit blocked - invalid amount');
       form.setError("total_amount", {
         type: "manual",
-        message: "El monto total debe ser mayor a 0."
+        message: t("loads:create_wizard.validation.amount_required")
       });
-      showError("Error de validación", "El monto total debe ser mayor a 0.");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.amount_required"));
       setCurrentPhase(1);
       return;
     }
@@ -459,7 +466,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Solo validar número duplicado en modo creación y duplicación (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && loadNumberValidation.isDuplicate) {
       console.log('🚨 onSubmit blocked - duplicate load number');
-      showError("Error de validación", "No se puede crear la carga con un número duplicado.");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.load_number_duplicate_error"));
       setCurrentPhase(1); // Ir al paso 1 donde está el campo load_number
       return;
     }
@@ -467,7 +474,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Validar paradas (Paso 2)
     if (!loadStops || loadStops.length < 2) {
       console.log('🚨 onSubmit blocked - insufficient stops');
-      showError("Error de validación", "Debe haber al menos 2 paradas (pickup y delivery).");
+      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.stops_minimum"));
       setCurrentPhase(2);
       return;
     }
@@ -476,7 +483,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const stopsValidation = validateStops(loadStops);
     if (!stopsValidation.isValid) {
       console.log('🚨 onSubmit blocked - invalid stops:', stopsValidation.errors);
-      showError("Error en las paradas", stopsValidation.errors[0]);
+      showError(t("loads:create_wizard.validation.stops_error"), stopsValidation.errors[0]);
       setCurrentPhase(2);
       return;
     }
@@ -485,7 +492,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const chronologicalValidation = validateChronologicalOrder(loadStops);
     if (!chronologicalValidation.isValid) {
       console.log('🚨 onSubmit blocked - chronological order error:', chronologicalValidation.errors);
-      showError("Error de fechas", chronologicalValidation.errors[0]);
+      showError(t("loads:create_wizard.validation.dates_error"), chronologicalValidation.errors[0]);
       setCurrentPhase(2);
       return;
     }
@@ -547,15 +554,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         
         showSuccess(
           isEdit 
-            ? `Carga ${loadNumber} actualizada` 
+            ? t("loads:create_wizard.success.load_updated", { number: loadNumber })
             : isDuplicate 
-            ? `Carga ${loadNumber} duplicada exitosamente`
-            : `🚛 Carga ${loadNumber} creada`,
+            ? t("loads:create_wizard.success.load_duplicated", { number: loadNumber })
+            : t("loads:create_wizard.success.load_created", { number: loadNumber }),
           isEdit 
-            ? `Los cambios en la carga ${loadNumber} han sido guardados correctamente.` 
+            ? t("loads:create_wizard.success.updated_message", { number: loadNumber })
             : isDuplicate 
-            ? `Se ha creado una nueva carga ${loadNumber} basada en la carga original.`
-            : `La carga ${loadNumber} para ${clientName} ha sido creada exitosamente y está lista para ser procesada.`
+            ? t("loads:create_wizard.success.duplicated_message", { number: loadNumber })
+            : t("loads:create_wizard.success.created_message", { number: loadNumber, client: clientName })
         );
         
         // Close dialog after showing toast
@@ -572,12 +579,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
         const loadNumber = form.getValues("load_number");
         const errorTitle = mode === 'edit' 
-          ? `Error al actualizar carga ${loadNumber}` 
+          ? t("loads:create_wizard.error.update_title", { number: loadNumber })
           : mode === 'duplicate'
-          ? `Error al duplicar carga ${loadNumber}`
-          : `Error al crear carga ${loadNumber}`;
+          ? t("loads:create_wizard.error.duplicate_title", { number: loadNumber })
+          : t("loads:create_wizard.error.create_title", { number: loadNumber });
         
-        showError(errorTitle, error.message || "Ha ocurrido un error inesperado. Por favor intenta nuevamente.");
+        showError(errorTitle, error.message || t("loads:create_wizard.error.general_message"));
       }
     });
   };
@@ -591,20 +598,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
               const loadNumber = currentLoadNumber?.trim();
               
               if (mode === 'edit') {
-                return loadNumber ? `Editar Carga #${loadNumber}` : 'Editar Carga';
+                return loadNumber ? t("loads:create_wizard.title.edit_with_number", { number: loadNumber }) : t("loads:create");
               } else if (mode === 'duplicate') {
-                return loadNumber ? `Duplicar Carga #${loadNumber}` : 'Duplicar Carga';
+                return loadNumber ? t("loads:create_wizard.title.duplicate_with_number", { number: loadNumber }) : t("loads:duplicate");
               } else {
-                return loadNumber ? `Crear Carga #${loadNumber}` : 'Nueva Carga';
+                return loadNumber ? t("loads:create_wizard.title.create_with_number", { number: loadNumber }) : t("loads:create_wizard.title.new_load");
               }
             })()}
           </DialogTitle>
           <DialogDescription>
             {mode === 'create' 
-              ? 'Crea una nueva carga siguiendo el proceso paso a paso'
+              ? t("loads:create_wizard.description.create")
               : mode === 'edit'
-              ? 'Modifica los datos de la carga existente'
-              : 'Crea una nueva carga basada en una carga existente'
+              ? t("loads:create_wizard.description.edit")
+              : t("loads:create_wizard.description.duplicate")
             }
           </DialogDescription>
         </DialogHeader>
@@ -613,7 +620,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         {/* Mobile compact step indicator */}
         <div className="sm:hidden mb-4 px-2">
           <div className="flex items-center justify-between text-sm">
-            <span>Paso {currentPhase} de {phases.length}</span>
+            <span>{t("loads:create_wizard.progress.step_x_of_y", { current: currentPhase, total: phases.length })}</span>
             <div className="flex items-center gap-1">
               {phases.map((p) => (
                 <span
@@ -641,7 +648,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         ? 'border-green-500 bg-green-500 text-white hover:border-green-600 hover:bg-green-600'
                         : 'border-muted bg-background text-muted-foreground hover:border-primary hover:text-primary'
                     }`}
-                    title={`Ir al ${phase.title}`}
+                    title={t("loads:create_wizard.progress.go_to", { title: phase.title })}
                   >
                     {phase.completed ? (
                       <CheckCircle className="h-4 w-4" />
@@ -670,10 +677,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Circle className="h-5 w-5 text-primary" />
-                    Información Esencial
+                    {t("loads:create_wizard.phases.essential_info.title")}
                   </CardTitle>
                   <CardDescription>
-                    Datos básicos necesarios para registrar la carga en el sistema
+                    {t("loads:create_wizard.phases.essential_info.card_description")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -695,43 +702,43 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         );
                         
                         return (
-                          <FormItem>
-                             <FormLabel>Número de Carga *</FormLabel>
-                             <FormControl>
-                               <div className="relative">
-                                 <Input 
-                                   placeholder="Ej: LD-001, 2024-001, etc." 
-                                   value={field.value || ''}
-                                   onChange={textHandlers.onChange}
-                                   onBlur={textHandlers.onBlur}
-                                   className={
-                                     loadNumberValidation.isDuplicate 
-                                       ? "border-destructive focus:border-destructive" 
-                                       : loadNumberValidation.isValid 
-                                       ? "border-green-500 focus:border-green-500" 
-                                       : ""
-                                   }
-                                 />
-                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                   {loadNumberValidation.isValidating && (
-                                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                                   )}
-                                   {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
-                                     <AlertTriangle className="h-4 w-4 text-destructive" />
-                                   )}
-                                   {!loadNumberValidation.isValidating && loadNumberValidation.isValid && currentLoadNumber && (
-                                     <Check className="h-4 w-4 text-green-500" />
-                                   )}
-                                 </div>
-                               </div>
-                             </FormControl>
-                            <FormMessage />
-                            {loadNumberValidation.isDuplicate && (
-                              <p className="text-sm text-destructive mt-1">
-                                Este número de carga ya existe. Por favor use un número diferente.
-                              </p>
-                            )}
-                          </FormItem>
+                           <FormItem>
+                              <FormLabel>{t("loads:create_wizard.form.load_number")} {t("loads:create_wizard.form.load_number_required")}</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input 
+                                    placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                    value={field.value || ''}
+                                    onChange={textHandlers.onChange}
+                                    onBlur={textHandlers.onBlur}
+                                    className={
+                                      loadNumberValidation.isDuplicate 
+                                        ? "border-destructive focus:border-destructive" 
+                                        : loadNumberValidation.isValid 
+                                        ? "border-green-500 focus:border-green-500" 
+                                        : ""
+                                    }
+                                  />
+                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    {loadNumberValidation.isValidating && (
+                                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                    )}
+                                    {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
+                                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                                    )}
+                                    {!loadNumberValidation.isValidating && loadNumberValidation.isValid && currentLoadNumber && (
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    )}
+                                  </div>
+                                </div>
+                              </FormControl>
+                             <FormMessage />
+                             {loadNumberValidation.isDuplicate && (
+                               <p className="text-sm text-destructive mt-1">
+                                 {t("loads:create_wizard.form.load_number_duplicate")}
+                               </p>
+                             )}
+                           </FormItem>
                         );
                       }}
                      />
@@ -747,43 +754,43 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          );
                          
                          return (
-                           <FormItem>
-                             <FormLabel>PO# (Purchase Order)</FormLabel>
-                             <FormControl>
-                               <div className="relative">
-                                 <Input 
-                                   placeholder="Ej: PO-12345, PO-2024-001" 
-                                   value={field.value || ''}
-                                   onChange={textHandlers.onChange}
-                                   onBlur={textHandlers.onBlur}
-                                   className={
-                                     !poNumberValidation.isValid 
-                                       ? "border-destructive focus:border-destructive" 
-                                       : poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== ''
-                                       ? "border-green-500 focus:border-green-500" 
-                                       : ""
-                                   }
-                                 />
-                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                   {poNumberValidation.isLoading && (
-                                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                                   )}
-                                   {!poNumberValidation.isLoading && !poNumberValidation.isValid && poNumberValidation.error && (
-                                     <AlertTriangle className="h-4 w-4 text-destructive" />
-                                   )}
-                                   {!poNumberValidation.isLoading && poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== '' && (
-                                     <Check className="h-4 w-4 text-green-500" />
-                                   )}
-                                 </div>
-                               </div>
-                             </FormControl>
-                             <FormMessage />
-                             {!poNumberValidation.isValid && poNumberValidation.error && (
-                               <p className="text-sm text-destructive mt-1">
-                                 {poNumberValidation.error}
-                               </p>
-                             )}
-                           </FormItem>
+                            <FormItem>
+                              <FormLabel>{t("loads:create_wizard.form.po_number")}</FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <Input 
+                                    placeholder={t("loads:create_wizard.form.po_number_placeholder")}
+                                    value={field.value || ''}
+                                    onChange={textHandlers.onChange}
+                                    onBlur={textHandlers.onBlur}
+                                    className={
+                                      !poNumberValidation.isValid 
+                                        ? "border-destructive focus:border-destructive" 
+                                        : poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== ''
+                                        ? "border-green-500 focus:border-green-500" 
+                                        : ""
+                                    }
+                                  />
+                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    {poNumberValidation.isLoading && (
+                                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                    )}
+                                    {!poNumberValidation.isLoading && !poNumberValidation.isValid && poNumberValidation.error && (
+                                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                                    )}
+                                    {!poNumberValidation.isLoading && poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== '' && (
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    )}
+                                  </div>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                              {!poNumberValidation.isValid && poNumberValidation.error && (
+                                <p className="text-sm text-destructive mt-1">
+                                  {poNumberValidation.error}
+                                </p>
+                              )}
+                            </FormItem>
                          );
                        }}
                      />
@@ -793,30 +800,30 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         control={form.control}
                         name="client_id"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Cliente/Broker *</FormLabel>
-                            <FormControl>
-                                <ClientCombobox
-                                  clients={clients}
-                                  value={field.value}
-                                   onValueChange={(value) => {
-                                     field.onChange(value);
-                                     const client = clients.find(c => c.id === value);
-                                     setSelectedClient(client || null);
-                                     form.setValue("contact_id", "");
-                                     // Limpiar error cuando el usuario seleccione un cliente
-                                     if (form.formState.errors.client_id) {
-                                       form.clearErrors("client_id");
-                                     }
-                                   }}
-                                  onClientSelect={(client) => setSelectedClient(client as Client)}
-                                  placeholder="Buscar cliente por nombre, DOT, MC..."
-                                  className="w-full"
-                                  onCreateNew={() => setShowCreateClient(true)}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
+                           <FormItem>
+                             <FormLabel>{t("loads:create_wizard.form.client_broker")} {t("loads:create_wizard.form.client_broker_required")}</FormLabel>
+                             <FormControl>
+                                 <ClientCombobox
+                                   clients={clients}
+                                   value={field.value}
+                                    onValueChange={(value) => {
+                                      field.onChange(value);
+                                      const client = clients.find(c => c.id === value);
+                                      setSelectedClient(client || null);
+                                      form.setValue("contact_id", "");
+                                      // Limpiar error cuando el usuario seleccione un cliente
+                                      if (form.formState.errors.client_id) {
+                                        form.clearErrors("client_id");
+                                      }
+                                    }}
+                                   onClientSelect={(client) => setSelectedClient(client as Client)}
+                                   placeholder={t("loads:create_wizard.form.client_placeholder")}
+                                   className="w-full"
+                                   onCreateNew={() => setShowCreateClient(true)}
+                                 />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
                         )}
                       />
 
@@ -825,21 +832,21 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         control={form.control}
                         name="contact_id"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Contacto del Cliente</FormLabel>
-                            <FormControl>
-                                <ContactCombobox
-                                  clientId={selectedClient?.id}
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                  placeholder="Buscar contacto..."
-                                  disabled={!selectedClient}
-                                  className="w-full"
-                                  onCreateNew={selectedClient ? () => setShowCreateDispatcher(true) : undefined}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
+                           <FormItem>
+                             <FormLabel>{t("loads:create_wizard.form.client_contact")}</FormLabel>
+                             <FormControl>
+                                 <ContactCombobox
+                                   clientId={selectedClient?.id}
+                                   value={field.value}
+                                   onValueChange={field.onChange}
+                                   placeholder={t("loads:create_wizard.form.contact_placeholder")}
+                                   disabled={!selectedClient}
+                                   className="w-full"
+                                   onCreateNew={selectedClient ? () => setShowCreateDispatcher(true) : undefined}
+                                 />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
                         )}
                       />
 
@@ -860,18 +867,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                           );
                          
                          return (
-                           <FormItem>
-                             <FormLabel>Commodity *</FormLabel>
-                             <FormControl>
-                               <Input 
-                                 placeholder="Electronics, Food Products, etc." 
-                                 value={field.value || ''}
-                                 onChange={textHandlers.onChange}
-                                 onBlur={textHandlers.onBlur}
-                               />
-                             </FormControl>
-                             <FormMessage />
-                           </FormItem>
+                            <FormItem>
+                              <FormLabel>{t("loads:create_wizard.form.commodity")} {t("loads:create_wizard.form.commodity_required")}</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder={t("loads:create_wizard.form.commodity_placeholder")}
+                                  value={field.value || ''}
+                                  onChange={textHandlers.onChange}
+                                  onBlur={textHandlers.onBlur}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
                          );
                        }}
                      />
@@ -894,28 +901,28 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          };
 
                          return (
-                           <FormItem>
-                             <FormLabel>Peso (lbs)</FormLabel>
-                             <FormControl>
-                               <Input 
-                                 type="text"
-                                 placeholder="Ej: 25,000"
-                                 value={formatWeight(field.value)}
-                                 onChange={(e) => {
-                                   const parsed = parseWeight(e.target.value);
-                                   field.onChange(parsed);
-                                 }}
-                                 onBlur={(e) => {
-                                   // Re-format on blur to ensure consistent formatting
-                                   const parsed = parseWeight(e.target.value);
-                                   if (parsed) {
-                                     e.target.value = formatWeight(parsed);
-                                   }
-                                 }}
-                               />
-                             </FormControl>
-                             <FormMessage />
-                           </FormItem>
+                            <FormItem>
+                              <FormLabel>{t("loads:create_wizard.form.weight")}</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="text"
+                                  placeholder={t("loads:create_wizard.form.weight_placeholder")}
+                                  value={formatWeight(field.value)}
+                                  onChange={(e) => {
+                                    const parsed = parseWeight(e.target.value);
+                                    field.onChange(parsed);
+                                  }}
+                                  onBlur={(e) => {
+                                    // Re-format on blur to ensure consistent formatting
+                                    const parsed = parseWeight(e.target.value);
+                                    if (parsed) {
+                                      e.target.value = formatWeight(parsed);
+                                    }
+                                  }}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
                          );
                        }}
                      />
@@ -925,30 +932,30 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         control={form.control}
                         name="total_amount"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Monto Total ($) *</FormLabel>
-                            <FormControl>
-                               <Input 
-                                 type="text"
-                                 inputMode="decimal"
-                                 pattern="[0-9]*"
-                                 value={atmInput.displayValue}
-                                 onChange={(e) => {
-                                   // Handle onChange to prevent React warning
-                                   // The actual value handling is done by ATM input handlers
-                                   field.onChange(e.target.value);
-                                 }}
-                                 onKeyDown={atmInput.handleKeyDown}
-                                 onPaste={atmInput.handlePaste}
-                                 onFocus={atmInput.handleFocus}
-                                 onClick={atmInput.handleClick}
-                                 placeholder="$0.00"
-                                 className="text-right"
-                                 autoComplete="off"
-                               />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
+                           <FormItem>
+                             <FormLabel>{t("loads:create_wizard.form.total_amount")} {t("loads:create_wizard.form.total_amount_required")}</FormLabel>
+                             <FormControl>
+                                <Input 
+                                  type="text"
+                                  inputMode="decimal"
+                                  pattern="[0-9]*"
+                                  value={atmInput.displayValue}
+                                  onChange={(e) => {
+                                    // Handle onChange to prevent React warning
+                                    // The actual value handling is done by ATM input handlers
+                                    field.onChange(e.target.value);
+                                  }}
+                                  onKeyDown={atmInput.handleKeyDown}
+                                  onPaste={atmInput.handlePaste}
+                                  onFocus={atmInput.handleFocus}
+                                  onClick={atmInput.handleClick}
+                                  placeholder={t("loads:create_wizard.form.total_amount_placeholder")}
+                                  className="text-right"
+                                  autoComplete="off"
+                                />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
                         )}
                       />
                   </div>
@@ -1031,12 +1038,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 }}
                 disabled={currentPhase === 1}
               >
-                Anterior
+                {t("loads:create_wizard.buttons.previous")}
               </Button>
 
               <div className="flex gap-2">
                 <Button type="button" variant="outline" onClick={handleClose}>
-                  Cancelar
+                  {t("loads:create_wizard.buttons.cancel")}
                 </Button>
                 
                 {currentPhase < phases.length ? (
@@ -1049,7 +1056,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                       setCurrentPhase(currentPhase + 1);
                     }}
                   >
-                    Siguiente
+                    {t("loads:create_wizard.buttons.next")}
                   </Button>
                  ) : (mode === 'create' || mode === 'duplicate') ? (
                    <Button 
@@ -1067,7 +1074,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                      {createLoadMutation.isPending ? (
                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
                      ) : null}
-                     Crear Carga
+                     {t("loads:create_wizard.buttons.create_load")}
                    </Button>
                 ) : (
                   <Button 
@@ -1081,7 +1088,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                     {createLoadMutation.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : null}
-                    Guardar Cambios
+                    {t("loads:create_wizard.buttons.save_changes")}
                   </Button>
                 )}
               </div>

@@ -12,6 +12,112 @@
     "duplicate": "Duplicar Carga",
     "edit": "Editar Carga"
   },
+  "create_wizard": {
+    "title": {
+      "new_load": "Nueva Carga",
+      "create_with_number": "Crear Carga #{{number}}",
+      "edit_with_number": "Editar Carga #{{number}}",
+      "duplicate_with_number": "Duplicar Carga #{{number}}"
+    },
+    "description": {
+      "create": "Crea una nueva carga siguiendo el proceso paso a paso",
+      "edit": "Modifica los datos de la carga existente",
+      "duplicate": "Crea una nueva carga basada en una carga existente"
+    },
+    "loading": {
+      "load_data": "Cargando datos de la carga...",
+      "duplicate_data": "Cargando datos para duplicar..."
+    },
+    "error": {
+      "loading_data": "Error al cargar datos",
+      "close": "Cerrar"
+    },
+    "progress": {
+      "step_x_of_y": "Paso {{current}} de {{total}}",
+      "go_to": "Ir al {{title}}"
+    },
+    "phases": {
+      "essential_info": {
+        "title": "Información Esencial",
+        "description": "Datos básicos de la carga",
+        "card_description": "Datos básicos necesarios para registrar la carga en el sistema"
+      },
+      "route_details": {
+        "title": "Detalles de Ruta", 
+        "description": "Paradas y direcciones"
+      },
+      "assignment": {
+        "title": "Asignación",
+        "description": "Conductor y activación"
+      },
+      "documents": {
+        "title": "Documentos",
+        "description": "Rate confirmation y Load Order"
+      }
+    },
+    "form": {
+      "load_number": "Número de Carga",
+      "load_number_required": "*",
+      "load_number_placeholder": "Ej: LD-001, 2024-001, etc.",
+      "load_number_duplicate": "Este número de carga ya existe. Por favor use un número diferente.",
+      "po_number": "PO# (Purchase Order)",
+      "po_number_placeholder": "Ej: PO-12345, PO-2024-001",
+      "client_broker": "Cliente/Broker",
+      "client_broker_required": "*",
+      "client_placeholder": "Buscar cliente por nombre, DOT, MC...",
+      "client_contact": "Contacto del Cliente",
+      "contact_placeholder": "Buscar contacto...",
+      "commodity": "Commodity",
+      "commodity_required": "*",
+      "commodity_placeholder": "Electronics, Food Products, etc.",
+      "weight": "Peso (lbs)",
+      "weight_placeholder": "Ej: 25,000",
+      "total_amount": "Monto Total ($)",
+      "total_amount_required": "*",
+      "total_amount_placeholder": "$0.00"
+    },
+    "validation": {
+      "load_number_required": "El número de carga es requerido.",
+      "load_number_duplicate_error": "No se puede crear la carga con un número duplicado.",
+      "client_required": "Debes seleccionar un cliente.",
+      "commodity_required": "El commodity es requerido.",
+      "amount_required": "El monto total debe ser mayor a 0.",
+      "stops_minimum": "Debe haber al menos 2 paradas (pickup y delivery).",
+      "stops_first_pickup": "La primera parada debe ser una recogida (pickup)",
+      "stops_last_delivery": "La última parada debe ser una entrega (delivery)",
+      "stops_missing_company": "Empresa",
+      "stops_missing_address": "Dirección",
+      "stops_missing_city": "Ciudad", 
+      "stops_missing_state": "Estado",
+      "stops_missing_date": "Fecha programada",
+      "stops_missing_fields": "{{stopType}}{{number}}: Faltan {{fields}}",
+      "chronological_error": "Las fechas deben estar en orden cronológico. La parada {{current}} tiene una fecha anterior a la parada {{previous}}",
+      "validation_error": "Error de validación",
+      "stops_error": "Error en las paradas",
+      "dates_error": "Error de fechas"
+    },
+    "buttons": {
+      "previous": "Anterior",
+      "next": "Siguiente", 
+      "cancel": "Cancelar",
+      "create_load": "Crear Carga",
+      "save_changes": "Guardar Cambios"
+    },
+    "success": {
+      "load_created": "🚛 Carga {{number}} creada",
+      "load_updated": "Carga {{number}} actualizada",
+      "load_duplicated": "Carga {{number}} duplicada exitosamente",
+      "created_message": "La carga {{number}} para {{client}} ha sido creada exitosamente y está lista para ser procesada.",
+      "updated_message": "Los cambios en la carga {{number}} han sido guardados correctamente.",
+      "duplicated_message": "Se ha creado una nueva carga {{number}} basada en la carga original."
+    },
+    "error": {
+      "create_title": "Error al crear carga {{number}}",
+      "update_title": "Error al actualizar carga {{number}}",
+      "duplicate_title": "Error al duplicar carga {{number}}",
+      "general_message": "Ha ocurrido un error inesperado. Por favor intenta nuevamente."
+    }
+  },
   "periods": {
     "current": "Período Actual",
     "previous": "Período Anterior", 

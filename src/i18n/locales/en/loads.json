@@ -8,9 +8,115 @@
   },
   "create": {
     "button": "New Load",
-    "title": "Create New Load",
+    "title": "Create New Load", 
     "duplicate": "Duplicate Load",
     "edit": "Edit Load"
+  },
+  "create_wizard": {
+    "title": {
+      "new_load": "New Load",
+      "create_with_number": "Create Load #{{number}}",
+      "edit_with_number": "Edit Load #{{number}}",
+      "duplicate_with_number": "Duplicate Load #{{number}}"
+    },
+    "description": {
+      "create": "Create a new load following the step-by-step process",
+      "edit": "Modify the existing load data",
+      "duplicate": "Create a new load based on an existing load"
+    },
+    "loading": {
+      "load_data": "Loading load data...",
+      "duplicate_data": "Loading data to duplicate..."
+    },
+    "error": {
+      "loading_data": "Error loading data",
+      "close": "Close"
+    },
+    "progress": {
+      "step_x_of_y": "Step {{current}} of {{total}}",
+      "go_to": "Go to {{title}}"
+    },
+    "phases": {
+      "essential_info": {
+        "title": "Essential Information",
+        "description": "Basic load data",
+        "card_description": "Basic data needed to register the load in the system"
+      },
+      "route_details": {
+        "title": "Route Details",
+        "description": "Stops and addresses"
+      },
+      "assignment": {
+        "title": "Assignment",
+        "description": "Driver and activation"
+      },
+      "documents": {
+        "title": "Documents",
+        "description": "Rate confirmation and Load Order"
+      }
+    },
+    "form": {
+      "load_number": "Load Number",
+      "load_number_required": "*",
+      "load_number_placeholder": "Ex: LD-001, 2024-001, etc.",
+      "load_number_duplicate": "This load number already exists. Please use a different number.",
+      "po_number": "PO# (Purchase Order)",
+      "po_number_placeholder": "Ex: PO-12345, PO-2024-001",
+      "client_broker": "Client/Broker",
+      "client_broker_required": "*",
+      "client_placeholder": "Search client by name, DOT, MC...",
+      "client_contact": "Client Contact",
+      "contact_placeholder": "Search contact...",
+      "commodity": "Commodity",
+      "commodity_required": "*",
+      "commodity_placeholder": "Electronics, Food Products, etc.",
+      "weight": "Weight (lbs)",
+      "weight_placeholder": "Ex: 25,000",
+      "total_amount": "Total Amount ($)",
+      "total_amount_required": "*",
+      "total_amount_placeholder": "$0.00"
+    },
+    "validation": {
+      "load_number_required": "Load number is required.",
+      "load_number_duplicate_error": "Cannot create load with duplicate number.",
+      "client_required": "You must select a client.",
+      "commodity_required": "Commodity is required.",
+      "amount_required": "Total amount must be greater than 0.",
+      "stops_minimum": "There must be at least 2 stops (pickup and delivery).",
+      "stops_first_pickup": "The first stop must be a pickup",
+      "stops_last_delivery": "The last stop must be a delivery",
+      "stops_missing_company": "Company",
+      "stops_missing_address": "Address", 
+      "stops_missing_city": "City",
+      "stops_missing_state": "State",
+      "stops_missing_date": "Scheduled date",
+      "stops_missing_fields": "{{stopType}}{{number}}: Missing {{fields}}",
+      "chronological_error": "Dates must be in chronological order. Stop {{current}} has an earlier date than stop {{previous}}",
+      "validation_error": "Validation Error",
+      "stops_error": "Stops Error", 
+      "dates_error": "Dates Error"
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "cancel": "Cancel",
+      "create_load": "Create Load",
+      "save_changes": "Save Changes"
+    },
+    "success": {
+      "load_created": "🚛 Load {{number}} created",
+      "load_updated": "Load {{number}} updated",
+      "load_duplicated": "Load {{number}} duplicated successfully",
+      "created_message": "Load {{number}} for {{client}} has been created successfully and is ready to be processed.",
+      "updated_message": "Changes to load {{number}} have been saved correctly.",
+      "duplicated_message": "A new load {{number}} has been created based on the original load."
+    },
+    "error": {
+      "create_title": "Error creating load {{number}}",
+      "update_title": "Error updating load {{number}}",
+      "duplicate_title": "Error duplicating load {{number}}",
+      "general_message": "An unexpected error occurred. Please try again."
+    }
   },
   "periods": {
     "current": "Current Period",
