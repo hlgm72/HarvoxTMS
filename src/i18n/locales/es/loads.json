@@ -122,6 +122,13 @@
           "upload_photo": "Subir Foto",
           "generate_load_order": "Generar Orden de Carga"
         },
+        "document_types": {
+          "rate_confirmation": "Confirmación de Tarifa",
+          "driver_license": "Licencia de Conductor",
+          "bill_of_lading": "Conocimiento de Embarque",
+          "purchase_order": "Orden de Compra", 
+          "load_order": "Orden de Carga"
+        },
         "empty_state": {
           "no_documents": "Aún no se han subido documentos",
           "use_selector": "Usa los botones de arriba para agregar documentos"

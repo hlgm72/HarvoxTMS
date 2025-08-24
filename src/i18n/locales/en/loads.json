@@ -122,6 +122,13 @@
           "upload_photo": "Upload Photo",
           "generate_load_order": "Generate Load Order"
         },
+        "document_types": {
+          "rate_confirmation": "Rate Confirmation",
+          "driver_license": "Driver License", 
+          "bill_of_lading": "Bill of Lading",
+          "purchase_order": "Purchase Order",
+          "load_order": "Load Order"
+        },
         "empty_state": {
           "no_documents": "No documents uploaded yet",
           "use_selector": "Use the buttons above to add documents"
