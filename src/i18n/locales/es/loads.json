@@ -170,6 +170,22 @@
         "photos": {
           "title": "Fotos",
           "description": "Fotos e imágenes de la carga",
+          "categories": {
+            "pickup_label": "Recogida",
+            "delivery_label": "Entrega",
+            "pickup_spanish": "recogida",
+            "delivery_spanish": "entrega"
+          },
+          "error_messages": {
+            "limit_reached": "Límite de fotos alcanzado",
+            "limit_category": "No se pueden subir más fotos de {{category}} (4/4)",
+            "invalid_file_type": "Tipo de archivo inválido",
+            "accepted_formats": "Solo se aceptan imágenes JPG, PNG y WEBP"
+          },
+          "success_messages": {
+            "uploaded": "Foto subida exitosamente",
+            "uploaded_category": "Foto de {{category}} subida exitosamente"
+          },
           "empty_state": {
             "title": "No se han subido fotos",
             "description": "Sube fotos relacionadas con esta carga"
