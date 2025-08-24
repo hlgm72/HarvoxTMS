@@ -130,7 +130,7 @@
     "email_required": "Email and role are required",
     "company_info_error": "Could not get company information",
     "invitation_sent": "Invitation Sent",
-    "invitation_sent_description": "An invitation has been sent to {name}. They will receive an email with instructions to set up their account.",
+    "invitation_sent_description": "The invitation has been sent successfully. They will receive an email with instructions to set up their account.",
     "error_loading": "Error loading users: {error}",
     "error_inviting": "Error sending invitation",
     "delete_test_user_error": "Only superadmins and company owners can delete test users",

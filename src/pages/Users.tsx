@@ -589,7 +589,7 @@ export default function Users() {
 
       showSuccess(
         t('messages.invitation_sent', { ns: 'users' }),
-        t('messages.invitation_sent_description', { name: displayName, ns: 'users' })
+        t('messages.invitation_sent_description', { ns: 'users' })
       );
       setInviteDialogOpen(false);
       setInviteForm({ email: '', role: '', first_name: '', last_name: '' });
