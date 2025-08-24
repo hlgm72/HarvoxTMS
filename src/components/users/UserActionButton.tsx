@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, UserX, MoreVertical } from "lucide-react";
+import { Trash2, UserX, MoreVertical, Eraser } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -48,9 +48,11 @@ export function UserActionButton({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [permanentDeleteDialogOpen, setPermanentDeleteDialogOpen] = useState(false);
+  const [cleanupDialogOpen, setCleanupDialogOpen] = useState(false);
   const [confirmationEmail, setConfirmationEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [deletionAnalysis, setDeletionAnalysis] = useState<any>(null);
+  const [cleanupResult, setCleanupResult] = useState<any>(null);
 
   // Solo company_owners pueden ver estas opciones
   const canManageUsers = userRole?.role === 'company_owner';
@@ -156,6 +158,41 @@ export function UserActionButton({
     }
   };
 
+  const handleCleanupUserData = async () => {
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase.functions.invoke('cleanup-user-data', {
+        body: {
+          userId: user.id,
+          userEmail: user.email
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setCleanupResult(data);
+        toast.success(`Datos limpiados: ${data.totalDeleted} registros eliminados`);
+        
+        // Invalidar queries y reanalizar para eliminación
+        queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+        queryClient.invalidateQueries({ queryKey: ['company-users'] });
+        queryClient.invalidateQueries({ queryKey: ['users'] });
+        
+        // Recargar análisis de eliminación
+        await loadDeletionAnalysis();
+      } else {
+        toast.error(data?.message || "Error en la limpieza de datos");
+      }
+    } catch (error: any) {
+      console.error('Error cleaning up user data:', error);
+      toast.error(error.message || "Error al limpiar datos del usuario");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const openPermanentDeleteDialog = async () => {
     await loadDeletionAnalysis();
     setPermanentDeleteDialogOpen(true);
@@ -181,6 +218,16 @@ export function UserActionButton({
           >
             <UserX className="h-4 w-4 mr-2" />
             Desactivar Usuario
+          </DropdownMenuItem>
+          <DropdownMenuItem 
+            onClick={() => {
+              handleCleanupUserData();
+              setDropdownOpen(false);
+            }}
+            className="text-orange-600 focus:text-orange-600"
+          >
+            <Eraser className="h-4 w-4 mr-2" />
+            Limpiar Datos
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem 
@@ -303,6 +350,17 @@ export function UserActionButton({
             >
               Cancelar
             </Button>
+            {!deletionAnalysis?.can_delete && (
+              <Button 
+                variant="outline" 
+                onClick={handleCleanupUserData}
+                disabled={loading}
+                className="text-orange-600 hover:text-orange-700"
+              >
+                <Eraser className="h-4 w-4 mr-2" />
+                {loading ? "Limpiando..." : "Limpiar Datos"}
+              </Button>
+            )}
             {deletionAnalysis?.can_delete && (
               <Button 
                 variant="destructive" 
