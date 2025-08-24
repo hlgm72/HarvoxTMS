@@ -404,7 +404,16 @@
       "real_time_tracking": "Real-time tracking",
       "document_management": "Document management", 
       "driver_assignment": "Driver assignment",
-      "revenue_analytics": "Revenue analytics"
+      "revenue_analytics": "Revenue analytics",
+      "time_management": "Time management",
+      "automatic_tracking": "Automatic tracking",
+      "profitability": "Profitability analysis",
+      "realtime_analysis": "Real-time analysis",
+      "documentation": "Complete documentation",
+      "complete_control": "Complete control",
+      "automated_management": "Automated management",
+      "realtime_tracking": "Real-time tracking",
+      "detailed_reports": "Detailed reports"
     },
     "stats": {
       "loads_created": "Loads Created",

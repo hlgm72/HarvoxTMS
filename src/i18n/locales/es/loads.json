@@ -404,7 +404,16 @@
       "real_time_tracking": "Seguimiento en tiempo real",
       "document_management": "Gestión de documentos", 
       "driver_assignment": "Asignación de conductores",
-      "revenue_analytics": "Análisis de ingresos"
+      "revenue_analytics": "Análisis de ingresos",
+      "time_management": "Gestión de tiempo",
+      "automatic_tracking": "Seguimiento automático",
+      "profitability": "Análisis de rentabilidad",
+      "realtime_analysis": "Análisis en tiempo real",
+      "documentation": "Documentación completa",
+      "complete_control": "Control completo",
+      "automated_management": "Gestión automatizada",
+      "realtime_tracking": "Seguimiento en tiempo real",
+      "detailed_reports": "Reportes detallados"
     },
     "stats": {
       "loads_created": "Cargas Creadas",
