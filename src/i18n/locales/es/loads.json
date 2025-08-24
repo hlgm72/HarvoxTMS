@@ -115,7 +115,25 @@
       "documents": {
         "title": "Documentos",
         "description": "Gestión de documentos",
-        "card_description": "Gestiona la documentación para esta carga"
+        "card_description": "Gestiona la documentación para esta carga",
+        "card_title": "Gestionar documentación para esta carga",
+        "buttons": {
+          "upload_document": "Subir Documento",
+          "upload_photo": "Subir Foto",
+          "generate_load_order": "Generar Orden de Carga"
+        },
+        "empty_state": {
+          "no_documents": "Aún no se han subido documentos",
+          "use_selector": "Usa los botones de arriba para agregar documentos"
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Fotos e imágenes de la carga",
+          "empty_state": {
+            "title": "No se han subido fotos",
+            "description": "Sube fotos relacionadas con esta carga"
+          }
+        }
       }
     },
     "form": {

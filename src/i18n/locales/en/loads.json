@@ -115,7 +115,25 @@
       "documents": {
         "title": "Documents",
         "description": "Document management",
-        "card_description": "Manage documentation for this load"
+        "card_description": "Manage documentation for this load",
+        "card_title": "Manage documentation for this load",
+        "buttons": {
+          "upload_document": "Upload Document",
+          "upload_photo": "Upload Photo",
+          "generate_load_order": "Generate Load Order"
+        },
+        "empty_state": {
+          "no_documents": "No documents uploaded yet",
+          "use_selector": "Use the buttons above to add documents"
+        },
+        "photos": {
+          "title": "Photos",
+          "description": "Load photos and images",
+          "empty_state": {
+            "title": "No photos uploaded",
+            "description": "Upload photos related to this load"
+          }
+        }
       }
     },
     "form": {
