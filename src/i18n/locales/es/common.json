@@ -228,7 +228,7 @@
       "sections": {
         "basic_info": "Información Básica de la Empresa",
         "regulatory_docs": "IDs Regulatorios y Fiscales",
-        "location": "Ubicación",
+        "location": "Dirección de la Empresa",
         "owner_info": "Información del Propietario",
         "payment_config": "Configuración de Pagos",
         "system_config": "Configuración del Sistema"

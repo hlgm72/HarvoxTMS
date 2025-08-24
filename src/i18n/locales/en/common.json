@@ -228,7 +228,7 @@
       "sections": {
         "basic_info": "Basic Company Information",
         "regulatory_docs": "Regulatory & Tax IDs",
-        "location": "Location",
+        "location": "Company Address",
         "owner_info": "Owner Information",
         "payment_config": "Payment Configuration",
         "system_config": "System Configuration"

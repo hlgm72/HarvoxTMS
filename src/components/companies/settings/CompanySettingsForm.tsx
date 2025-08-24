@@ -395,10 +395,6 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  {t('company.settings.fields.address')}
-                </h4>
                 <AddressForm
                   streetAddress={formData.street_address}
                   onStreetAddressChange={(value) => handleInputChange('street_address', value)}
