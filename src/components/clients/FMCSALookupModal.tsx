@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,6 +78,7 @@ interface FMCSALookupModalProps {
 }
 
 export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupModalProps) {
+  const { t } = useTranslation('clients');
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState<"DOT" | "MC" | "NAME">("MC");
   const [loading, setLoading] = useState(false);
@@ -85,7 +87,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      showError("Por favor ingresa un término de búsqueda");
+      showError(t('fmcsa_lookup_modal.messages.no_search_term'));
       return;
     }
 
@@ -100,13 +102,13 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
 
       if (error) {
         console.error('FMCSA lookup error:', error);
-        showError("Error al buscar en FMCSA");
+        showError(t('fmcsa_lookup_modal.messages.search_error'));
         setLoading(false);
         return;
       }
 
       if (!responseData || !responseData.success) {
-        const errorMessage = responseData?.error || "No se encontró información en FMCSA";
+        const errorMessage = responseData?.error || t('fmcsa_lookup_modal.messages.no_info_found');
         showError(errorMessage);
         console.log('FMCSA search failed:', errorMessage);
         setData(null);
@@ -116,12 +118,12 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
 
       const fmcsaData = responseData.data as FMCSAData;
       setData(fmcsaData);
-      showSuccess("Información encontrada en FMCSA");
+      showSuccess(t('fmcsa_lookup_modal.messages.info_found'));
       setLoading(false);
 
     } catch (error) {
       console.error('Error calling FMCSA function:', error);
-      showError("Error al buscar en FMCSA");
+      showError(t('fmcsa_lookup_modal.messages.search_error'));
       setLoading(false);
     }
   };
@@ -143,7 +145,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
       }
       
       onDataFound(mappedData);
-      showSuccess("Información aplicada al formulario");
+      showSuccess(t('fmcsa_lookup_modal.messages.data_applied'));
       
       // Limpiar datos y cerrar modal
       setData(null);
@@ -158,16 +160,42 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
     onClose();
   };
 
+  const getLabelForSearchType = () => {
+    switch (searchType) {
+      case "DOT":
+        return t('fmcsa_lookup_modal.form.labels.dot_number');
+      case "MC":
+        return t('fmcsa_lookup_modal.form.labels.mc_number');
+      case "NAME":
+        return t('fmcsa_lookup_modal.form.labels.company_name');
+      default:
+        return t('fmcsa_lookup_modal.form.labels.mc_number');
+    }
+  };
+
+  const getPlaceholderForSearchType = () => {
+    switch (searchType) {
+      case "DOT":
+        return t('fmcsa_lookup_modal.form.placeholders.dot');
+      case "MC":
+        return t('fmcsa_lookup_modal.form.placeholders.mc');
+      case "NAME":
+        return t('fmcsa_lookup_modal.form.placeholders.name');
+      default:
+        return t('fmcsa_lookup_modal.form.placeholders.mc');
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose} modal>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Search className="h-5 w-5" />
-            Búsqueda FMCSA
+            {t('fmcsa_lookup_modal.title')}
           </DialogTitle>
           <DialogDescription>
-            Busca información de empresas en la base de datos del FMCSA para completar automáticamente los datos del broker.
+            {t('fmcsa_lookup_modal.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -181,7 +209,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                 size="sm"
                 onClick={() => setSearchType("MC")}
               >
-                MC #
+                {t('fmcsa_lookup_modal.search_types.mc')}
               </Button>
               <Button
                 type="button"
@@ -189,7 +217,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                 size="sm"
                 onClick={() => setSearchType("DOT")}
               >
-                DOT #
+                {t('fmcsa_lookup_modal.search_types.dot')}
               </Button>
               <Button
                 type="button"
@@ -197,25 +225,20 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                 size="sm"
                 onClick={() => setSearchType("NAME")}
               >
-                Nombre
+                {t('fmcsa_lookup_modal.search_types.name')}
               </Button>
             </div>
 
             <div className="flex gap-2">
               <div className="flex-1">
                 <Label htmlFor="fmcsa-search">
-                  {searchType === "DOT" ? "Número DOT" : 
-                   searchType === "MC" ? "Número MC" : "Nombre de la empresa"}
+                  {getLabelForSearchType()}
                 </Label>
                 <Input
                   id="fmcsa-search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={
-                    searchType === "DOT" ? "Ej: 1234567" :
-                    searchType === "MC" ? "Ej: 123456" :
-                    "Ej: ABC Logistics"
-                  }
+                  placeholder={getPlaceholderForSearchType()}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
@@ -237,51 +260,51 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
           {/* Search Results */}
           {data && (
             <div className="p-6 bg-muted rounded-lg">
-              <h3 className="font-semibold mb-4 text-lg">🧾 Información general extraída</h3>
+              <h3 className="font-semibold mb-4 text-lg">{t('fmcsa_lookup_modal.results.title')}</h3>
               
               {/* Información Básica */}
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-primary">🏢 Empresa</h4>
+                <h4 className="font-medium text-primary">{t('fmcsa_lookup_modal.results.sections.company')}</h4>
                 <div className="grid grid-cols-1 gap-3 text-sm pl-4">
                   <div>
-                    <span className="font-medium">Nombre legal:</span> {data.legalName || 'No disponible'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.legal_name')}</span> {data.legalName || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                   <div>
-                    <span className="font-medium">MC Number:</span> {data.mcNumber || 'No disponible'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.mc_number')}</span> {data.mcNumber || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                   <div>
-                    <span className="font-medium">USDOT Number:</span> {data.dotNumber || 'No disponible'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.dot_number')}</span> {data.dotNumber || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                   <div>
-                    <span className="font-medium">Entidad:</span> {data.entityType || 'No disponible'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.entity')}</span> {data.entityType || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                   <div>
-                    <span className="font-medium">DBA (Doing Business As):</span> {data.dba || 'No aplica / vacío'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.dba')}</span> {data.dba || t('fmcsa_lookup_modal.results.no_dba')}
                   </div>
                 </div>
               </div>
 
               {/* Dirección */}
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-primary">📍 Dirección</h4>
+                <h4 className="font-medium text-primary">{t('fmcsa_lookup_modal.results.sections.address')}</h4>
                 <div className="grid grid-cols-1 gap-3 text-sm pl-4">
                   <div>
-                    <span className="font-medium">Dirección física:</span>
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.physical_address')}</span>
                     <br />
-                    {data.physicalAddress || 'No disponible'}
+                    {data.physicalAddress || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                   <div>
-                    <span className="font-medium">Teléfono:</span> {data.phone || 'No disponible'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.phone')}</span> {data.phone || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                 </div>
               </div>
 
               {/* Estado de Operación */}
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-primary">🚛 Estado de operación</h4>
+                <h4 className="font-medium text-primary">{t('fmcsa_lookup_modal.results.sections.operation_status')}</h4>
                 <div className="grid grid-cols-1 gap-3 text-sm pl-4">
                   <div>
-                    <span className="font-medium">USDOT Status:</span> {data.usdotStatus || 'No disponible'}
+                    <span className="font-medium">{t('fmcsa_lookup_modal.results.fields.usdot_status')}</span> {data.usdotStatus || t('fmcsa_lookup_modal.results.no_data')}
                   </div>
                 </div>
               </div>
@@ -292,13 +315,13 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                   className="flex-1"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  Aplicar datos al formulario
+                  {t('fmcsa_lookup_modal.buttons.apply_data')}
                 </Button>
                 <Button 
                   variant="outline"
                   onClick={handleClose}
                 >
-                  Cancelar
+                  {t('fmcsa_lookup_modal.buttons.cancel')}
                 </Button>
               </div>
             </div>
@@ -307,8 +330,7 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
           <div className="text-xs text-muted-foreground flex items-start gap-2">
             <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
             <span>
-              Los datos se obtienen de la base de datos pública del FMCSA. 
-              Verifica siempre la exactitud de la información antes de guardar.
+              {t('fmcsa_lookup_modal.disclaimer')}
             </span>
           </div>
         </div>

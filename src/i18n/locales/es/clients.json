@@ -211,5 +211,59 @@
       "email_invalid": "Email inválido",
       "client_name_required": "Nombre del cliente requerido"
     }
+  },
+  "fmcsa_lookup_modal": {
+    "title": "Búsqueda FMCSA",
+    "description": "Busca información de empresas en la base de datos del FMCSA para completar automáticamente los datos del broker.",
+    "search_types": {
+      "mc": "MC #",
+      "dot": "DOT #",
+      "name": "Nombre"
+    },
+    "form": {
+      "labels": {
+        "dot_number": "Número DOT",
+        "mc_number": "Número MC",
+        "company_name": "Nombre de la empresa"
+      },
+      "placeholders": {
+        "dot": "Ej: 1234567",
+        "mc": "Ej: 123456",
+        "name": "Ej: ABC Logistics"
+      }
+    },
+    "results": {
+      "title": "🧾 Información general extraída",
+      "sections": {
+        "company": "🏢 Empresa",
+        "address": "📍 Dirección",
+        "operation_status": "🚛 Estado de operación"
+      },
+      "fields": {
+        "legal_name": "Nombre legal:",
+        "mc_number": "MC Number:",
+        "dot_number": "USDOT Number:",
+        "entity": "Entidad:",
+        "dba": "DBA (Doing Business As):",
+        "physical_address": "Dirección física:",
+        "phone": "Teléfono:",
+        "usdot_status": "USDOT Status:"
+      },
+      "no_data": "No disponible",
+      "no_dba": "No aplica / vacío"
+    },
+    "buttons": {
+      "search": "Buscar",
+      "apply_data": "Aplicar datos al formulario",
+      "cancel": "Cancelar"
+    },
+    "messages": {
+      "no_search_term": "Por favor ingresa un término de búsqueda",
+      "search_error": "Error al buscar en FMCSA",
+      "no_info_found": "No se encontró información en FMCSA",
+      "info_found": "Información encontrada en FMCSA",
+      "data_applied": "Información aplicada al formulario"
+    },
+    "disclaimer": "Los datos se obtienen de la base de datos pública del FMCSA. Verifica siempre la exactitud de la información antes de guardar."
   }
 }

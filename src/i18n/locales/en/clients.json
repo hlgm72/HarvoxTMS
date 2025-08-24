@@ -211,5 +211,59 @@
       "email_invalid": "Invalid email",
       "client_name_required": "Client name required"
     }
+  },
+  "fmcsa_lookup_modal": {
+    "title": "FMCSA Lookup",
+    "description": "Search for company information in the FMCSA database to automatically complete broker data.",
+    "search_types": {
+      "mc": "MC #",
+      "dot": "DOT #", 
+      "name": "Name"
+    },
+    "form": {
+      "labels": {
+        "dot_number": "DOT Number",
+        "mc_number": "MC Number",
+        "company_name": "Company Name"
+      },
+      "placeholders": {
+        "dot": "Ex: 1234567",
+        "mc": "Ex: 123456", 
+        "name": "Ex: ABC Logistics"
+      }
+    },
+    "results": {
+      "title": "🧾 General information extracted",
+      "sections": {
+        "company": "🏢 Company",
+        "address": "📍 Address",
+        "operation_status": "🚛 Operation Status"
+      },
+      "fields": {
+        "legal_name": "Legal name:",
+        "mc_number": "MC Number:",
+        "dot_number": "USDOT Number:",
+        "entity": "Entity:",
+        "dba": "DBA (Doing Business As):",
+        "physical_address": "Physical address:",
+        "phone": "Phone:",
+        "usdot_status": "USDOT Status:"
+      },
+      "no_data": "Not available",
+      "no_dba": "Not applicable / empty"
+    },
+    "buttons": {
+      "search": "Search",
+      "apply_data": "Apply data to form",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "no_search_term": "Please enter a search term",
+      "search_error": "Error searching FMCSA",
+      "no_info_found": "No information found in FMCSA",
+      "info_found": "Information found in FMCSA",
+      "data_applied": "Information applied to form"
+    },
+    "disclaimer": "Data is obtained from the public FMCSA database. Always verify the accuracy of information before saving."
   }
 }
