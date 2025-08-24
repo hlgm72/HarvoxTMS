@@ -449,6 +449,7 @@
         "driver": "Select driver...",
         "broker": "Select broker...",
         "period": "Select period...",
+        "date_range": "Select date range...",
         "loading": "Loading..."
       },
       "options": {
