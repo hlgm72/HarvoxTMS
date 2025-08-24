@@ -391,6 +391,9 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
   try {
     console.log(`🔍 Starting FMCSA search for ${searchType}: "${searchQuery}"`);
     
+    // Store original search query for later filtering
+    const originalSearchQuery = searchQuery.trim();
+    
     // Construct the URL
     let url = '';
     const cleanQuery = searchQuery.replace(/^(MC-?|DOT-?)/, ''); // Remove MC- or DOT- prefix
@@ -475,14 +478,21 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
         
         if (carrierLinks.length > 1) {
           // Multiple companies found - filter for exact matches first
-          const searchQueryLower = searchQuery.toLowerCase().trim();
+          const searchQueryLower = originalSearchQuery.toLowerCase().trim();
+          
+          console.log(`🎯 Filtering for exact matches with search query: "${originalSearchQuery}"`);
           
           // Look for exact matches
-          const exactMatches = carrierLinks.filter(link => 
-            link.text.toLowerCase().trim() === searchQueryLower
-          );
+          const exactMatches = carrierLinks.filter(link => {
+            const linkTextLower = link.text.toLowerCase().trim();
+            console.log(`  Comparing "${linkTextLower}" with "${searchQueryLower}"`);
+            return linkTextLower === searchQueryLower;
+          });
           
-          console.log(`🎯 Found ${exactMatches.length} exact matches for "${searchQuery}"`);
+          console.log(`🎯 Found ${exactMatches.length} exact matches for "${originalSearchQuery}"`);
+          exactMatches.forEach((match, index) => {
+            console.log(`  Exact match ${index + 1}: "${match.text}"`);
+          });
           
           if (exactMatches.length > 0) {
             // Use only exact matches
@@ -499,9 +509,13 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
           
           // If no exact matches, look for close matches (contains all words from search)
           const searchWords = searchQueryLower.split(/\s+/).filter(word => word.length > 2);
+          console.log(`🔍 No exact matches found. Looking for companies containing words: [${searchWords.join(', ')}]`);
+          
           const closeMatches = carrierLinks.filter(link => {
             const linkText = link.text.toLowerCase().trim();
-            return searchWords.every(word => linkText.includes(word));
+            const hasAllWords = searchWords.every(word => linkText.includes(word));
+            console.log(`  "${link.text}" contains all words: ${hasAllWords}`);
+            return hasAllWords;
           });
           
           console.log(`🎯 Found ${closeMatches.length} close matches containing all words`);
@@ -520,6 +534,7 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
           }
           
           // Fall back to all results if no better filtering worked
+          console.log(`⚠️ No exact or close matches found. Returning all ${carrierLinks.length} results`);
           const companies = carrierLinks.map(link => ({
             name: link.text,
             href: link.href.startsWith('http') 
