@@ -19,12 +19,61 @@
       "edit_with_number": "Edit Load #{{number}}",
       "step": "Step {{current}} of {{total}}"
     },
+    "description": {
+      "create": "Follow these steps to create a complete load with all necessary information"
+    },
     "steps": {
       "load_info": "Load Information",
       "pickup": "Pickup",
       "delivery": "Delivery",
       "assignment": "Driver Assignment",
       "documents": "Documents"
+    },
+    "phases": {
+      "essential_info": {
+        "title": "Essential Information",
+        "description": "Basic load details and client information",
+        "card_description": "Enter the fundamental details for this load"
+      },
+      "route_details": {
+        "title": "Route Details", 
+        "description": "Pickup and delivery locations with schedules",
+        "card_description": "Configure pickup and delivery locations"
+      },
+      "assignment": {
+        "title": "Assignment",
+        "description": "Select driver and internal dispatcher for this load",
+        "card_description": "Assign personnel to handle this load"
+      },
+      "documents": {
+        "title": "Documents",
+        "description": "Upload and manage all load-related documents",
+        "card_description": "Manage documentation for this load"
+      }
+    },
+    "form": {
+      "load_number": "Load Number",
+      "load_number_required": "Required",
+      "load_number_placeholder": "Ex: LD-001, 2024-001, etc.",
+      "po_number": "PO Number",
+      "po_number_placeholder": "Purchase order number...",
+      "client_broker": "Client/Broker",
+      "client_broker_required": "Required",
+      "client_placeholder": "Select client or broker...",
+      "client_contact": "Client Contact",
+      "no_contacts_available": "No contacts available",
+      "commodity": "Commodity",
+      "commodity_required": "Required",
+      "commodity_placeholder": "Description of the cargo...",
+      "weight": "Weight (lbs)",
+      "weight_placeholder": "0",
+      "total_amount": "Total Amount",
+      "total_amount_required": "Required"
+    },
+    "buttons": {
+      "previous": "Previous",
+      "cancel": "Cancel", 
+      "next": "Next"
     },
     "navigation": {
       "previous": "Previous",

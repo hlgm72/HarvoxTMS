@@ -19,12 +19,61 @@
       "edit_with_number": "Editar Carga #{{number}}",
       "step": "Paso {{current}} de {{total}}"
     },
+    "description": {
+      "create": "Sigue estos pasos para crear una carga completa con toda la información necesaria"
+    },
     "steps": {
       "load_info": "Información de Carga",
       "pickup": "Recogida",
       "delivery": "Entrega",
       "assignment": "Asignación de Conductor",
       "documents": "Documentos"
+    },
+    "phases": {
+      "essential_info": {
+        "title": "Información Esencial",
+        "description": "Detalles básicos de la carga e información del cliente",
+        "card_description": "Ingresa los detalles fundamentales para esta carga"
+      },
+      "route_details": {
+        "title": "Detalles de Ruta", 
+        "description": "Ubicaciones de recogida y entrega con horarios",
+        "card_description": "Configura las ubicaciones de recogida y entrega"
+      },
+      "assignment": {
+        "title": "Asignación",
+        "description": "Selecciona conductor y dispatcher interno para esta carga",
+        "card_description": "Asigna personal para manejar esta carga"
+      },
+      "documents": {
+        "title": "Documentos",
+        "description": "Sube y gestiona todos los documentos relacionados con la carga",
+        "card_description": "Gestiona la documentación para esta carga"
+      }
+    },
+    "form": {
+      "load_number": "Número de Carga",
+      "load_number_required": "Requerido",
+      "load_number_placeholder": "Ej: LD-001, 2024-001, etc.",
+      "po_number": "Número de PO",
+      "po_number_placeholder": "Número de orden de compra...",
+      "client_broker": "Cliente/Broker",
+      "client_broker_required": "Requerido",
+      "client_placeholder": "Seleccionar cliente o broker...",
+      "client_contact": "Contacto del Cliente",
+      "no_contacts_available": "Sin contactos disponibles",
+      "commodity": "Mercancía",
+      "commodity_required": "Requerido",
+      "commodity_placeholder": "Descripción de la carga...",
+      "weight": "Peso (lbs)",
+      "weight_placeholder": "0",
+      "total_amount": "Monto Total",
+      "total_amount_required": "Requerido"
+    },
+    "buttons": {
+      "previous": "Anterior",
+      "cancel": "Cancelar", 
+      "next": "Siguiente"
     },
     "navigation": {
       "previous": "Anterior",
