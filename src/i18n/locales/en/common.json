@@ -439,6 +439,13 @@
       "active": "Active"
     }
   },
+  "profile": {
+    "phone": "Phone",
+    "language": "Language",
+    "timezone": "Timezone", 
+    "address": "Address",
+    "not_specified": "Not specified"
+  },
   "loads": {
     "load": "load",
     "load_plural": "loads",

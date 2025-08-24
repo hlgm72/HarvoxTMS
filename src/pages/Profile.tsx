@@ -78,21 +78,21 @@ export default function Profile() {
             <CardContent className="p-4 md:p-6">
               <div className="space-y-3 text-sm">
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                  <span className="text-muted-foreground font-medium">Teléfono:</span>
-                  <span className="text-foreground">{profile?.phone || 'No especificado'}</span>
+                  <span className="text-muted-foreground font-medium">{t('profile.phone')}:</span>
+                  <span className="text-foreground">{profile?.phone || t('profile.not_specified')}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                  <span className="text-muted-foreground font-medium">Idioma:</span>
+                  <span className="text-muted-foreground font-medium">{t('profile.language')}:</span>
                   <span className="text-foreground">{preferences?.preferred_language === 'es' ? 'Español' : 'English'}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-                  <span className="text-muted-foreground font-medium">Zona horaria:</span>
+                  <span className="text-muted-foreground font-medium">{t('profile.timezone')}:</span>
                   <span className="text-foreground">{preferences?.timezone || 'America/New_York'}</span>
                 </div>
                 {(profile?.street_address || profile?.zip_code) && (
                   <div className="pt-2 border-t">
                     <div className="flex flex-col gap-1">
-                      <span className="text-muted-foreground font-medium">Dirección:</span>
+                      <span className="text-muted-foreground font-medium">{t('profile.address')}:</span>
                       <div className="text-foreground text-xs leading-relaxed">
                         {profile?.street_address && (
                           <div>{profile.street_address}</div>
