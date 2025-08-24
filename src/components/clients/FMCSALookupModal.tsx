@@ -349,21 +349,15 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <h4 className="font-medium text-sm mb-1">{company.name}</h4>
-                        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                           {company.dotNumber && (
-                            <Badge variant="outline" className="text-xs">
-                              DOT: {company.dotNumber}
-                            </Badge>
+                            <span>DOT: {company.dotNumber}</span>
                           )}
                           {company.mcNumber && (
-                            <Badge variant="outline" className="text-xs">
-                              MC: {company.mcNumber}
-                            </Badge>
+                            <span>MC: {company.mcNumber}</span>
                           )}
                           {company.city && company.state && (
-                            <Badge variant="secondary" className="text-xs">
-                              {company.city}, {company.state}
-                            </Badge>
+                            <span>{company.city}, {company.state}</span>
                           )}
                         </div>
                         {company.physicalAddress && (
