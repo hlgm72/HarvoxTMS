@@ -38,7 +38,7 @@ export const InvitationBase = ({
     <Preview>{previewText}</Preview>
     <Body style={bodyStyle}>
       <Container style={containerStyle}>
-        <EmailHeader title={title} subtitle={subtitle} />
+        <EmailHeader />
         
         <Section style={contentSection}>
           <Container style={contentContainer}>

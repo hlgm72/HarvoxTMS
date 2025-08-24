@@ -9,7 +9,7 @@ import {
 } from 'npm:@react-email/components@0.0.22';
 
 interface EmailHeaderProps {
-  title: string;
+  title?: string;
   subtitle?: string;
 }
 
@@ -41,11 +41,6 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
         </div>
         
         <div style={gradientLine}></div>
-        
-        <div style={titleSection}>
-          <Text style={mainTitle}>{title}</Text>
-          {subtitle && <Text style={subtitleStyle}>{subtitle}</Text>}
-        </div>
       </Container>
     </Section>
   </>
@@ -91,27 +86,4 @@ const gradientLine = {
   background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%)',
   margin: '20px 0',
   borderRadius: '2px',
-};
-
-const titleSection = {
-  textAlign: 'center' as const,
-};
-
-const mainTitle = {
-  color: '#ffffff',
-  fontSize: '28px',
-  fontWeight: '800',
-  margin: '0 0 8px 0',
-  lineHeight: '1.2',
-  fontFamily: 'Inter, Helvetica, Arial, sans-serif',
-  textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-};
-
-const subtitleStyle = {
-  color: 'rgba(255,255,255,0.9)',
-  fontSize: '16px',
-  fontWeight: '400',
-  margin: '0',
-  lineHeight: '1.4',
-  fontFamily: 'Inter, Helvetica, Arial, sans-serif',
 };
