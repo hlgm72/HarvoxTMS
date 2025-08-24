@@ -345,14 +345,14 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             <CardContent className="space-y-4">
                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="ein">{t('company.settings.fields.ein')}</Label>
+                  <Label htmlFor="dot_number">{t('company.settings.fields.dot_number')}</Label>
                   <Input
-                    id="ein"
-                    value={formData.ein || ''}
-                    onChange={einHandlers.onChange}
-                    onKeyPress={einHandlers.onKeyPress}
-                    placeholder={t('company.settings.fields.ein_placeholder')}
-                    maxLength={10}
+                    id="dot_number"
+                    value={formData.dot_number || ''}
+                    onChange={dotNumberHandlers.onChange}
+                    onKeyPress={dotNumberHandlers.onKeyPress}
+                    placeholder={t('company.settings.fields.dot_number_placeholder')}
+                    maxLength={8}
                   />
                 </div>
 
@@ -369,14 +369,14 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="dot_number">{t('company.settings.fields.dot_number')}</Label>
+                  <Label htmlFor="ein">{t('company.settings.fields.ein')}</Label>
                   <Input
-                    id="dot_number"
-                    value={formData.dot_number || ''}
-                    onChange={dotNumberHandlers.onChange}
-                    onKeyPress={dotNumberHandlers.onKeyPress}
-                    placeholder={t('company.settings.fields.dot_number_placeholder')}
-                    maxLength={8}
+                    id="ein"
+                    value={formData.ein || ''}
+                    onChange={einHandlers.onChange}
+                    onKeyPress={einHandlers.onKeyPress}
+                    placeholder={t('company.settings.fields.ein_placeholder')}
+                    maxLength={10}
                   />
                 </div>
               </div>
