@@ -56,8 +56,8 @@ export default function Profile() {
     <>
       <PageToolbar 
         icon={User}
-        title="Mi Perfil"
-        subtitle="Gestiona tu información personal y configuración de cuenta"
+        title={t('profile.title')}
+        subtitle={t('profile.subtitle')}
       />
       <div className="container mx-auto p-3 md:p-6 max-w-6xl">
         <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
@@ -115,8 +115,8 @@ export default function Profile() {
             {/* Personal Information Form */}
             <Card>
               <CardHeader>
-                <CardTitle>Información Personal</CardTitle>
-                <CardDescription>Actualiza tu información personal y de contacto</CardDescription>
+                <CardTitle>{t('profile.personal_info')}</CardTitle>
+                <CardDescription>{t('profile.personal_info_description')}</CardDescription>
               </CardHeader>
               <CardContent className="p-4 md:p-6">
                 <ProfileForm onCancel={onCancelProfile} />
