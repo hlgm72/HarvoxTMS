@@ -62,7 +62,8 @@
         },
         "dispatcher_section": {
           "title": "Internal Dispatcher (Optional)",
-          "placeholder": "Select a dispatcher (optional)..."
+          "placeholder": "Select a dispatcher (optional)...",
+          "no_assignment": "No dispatcher assigned"
         },
         "important_info": {
           "title": "ℹ️ Important Information",
