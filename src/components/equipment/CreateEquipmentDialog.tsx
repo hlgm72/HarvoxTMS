@@ -27,7 +27,7 @@ interface CreateEquipmentDialogProps {
 }
 
 export function CreateEquipmentDialog({ open, onOpenChange, defaultEquipmentType = "truck" }: CreateEquipmentDialogProps) {
-  const { t } = useTranslation(['common', 'equipment']);
+  const { t } = useTranslation(['equipment', 'common']);
   const { createEquipment, isCreating } = useEquipment();
   const [currentEquipmentType, setCurrentEquipmentType] = useState(defaultEquipmentType);
 
