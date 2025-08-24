@@ -143,32 +143,49 @@ export function UserActionButton({
     try {
       setLoading(true);
       
-      const { data, error } = await supabase.functions.invoke('permanently-delete-user', {
-        body: {
-          userId: user.id,
-          confirmationEmail: confirmationEmail
-        }
-      });
+      // Check if this is an invitation (not a real user) by checking if deletion analysis indicates it's orphaned
+      const isOrphanedInvitation = (deletionAnalysis as any)?.is_orphaned_invitation;
+      
+      if (isOrphanedInvitation) {
+        // For invitations, delete directly from the database
+        const { error } = await supabase
+          .from('user_invitations')
+          .delete()
+          .eq('id', user.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      if (data?.success) {
-        toast.success("El usuario ha sido eliminado permanentemente del sistema");
-        
-        // Invalidar todas las queries relacionadas con usuarios y conductores
-        queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
-        queryClient.invalidateQueries({ queryKey: ['company-users'] });
-        queryClient.invalidateQueries({ queryKey: ['users'] });
-        
-        // También invalidar usando el hook específico
-        invalidateCount();
-        
-        setPermanentDeleteDialogOpen(false);
-        setConfirmationEmail("");
-        onUserUpdated?.();
+        toast.success("La invitación ha sido eliminada permanentemente");
       } else {
-        toast.error(data?.message || "El usuario no puede ser eliminado");
+        // For real users, use the edge function
+        const { data, error } = await supabase.functions.invoke('permanently-delete-user', {
+          body: {
+            userId: user.id,
+            confirmationEmail: confirmationEmail
+          }
+        });
+
+        if (error) throw error;
+
+        if (data?.success) {
+          toast.success("El usuario ha sido eliminado permanentemente del sistema");
+        } else {
+          toast.error(data?.message || "El usuario no puede ser eliminado");
+          return;
+        }
       }
+      
+      // Invalidar todas las queries relacionadas con usuarios y conductores
+      queryClient.invalidateQueries({ queryKey: ['drivers-count'] });
+      queryClient.invalidateQueries({ queryKey: ['company-users'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      
+      // También invalidar usando el hook específico
+      invalidateCount();
+      
+      setPermanentDeleteDialogOpen(false);
+      setConfirmationEmail("");
+      onUserUpdated?.();
     } catch (error: any) {
       console.error('Error deleting user permanently:', error);
       toast.error(error.message || "Error al eliminar el usuario");
