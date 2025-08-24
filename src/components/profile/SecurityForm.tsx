@@ -158,7 +158,7 @@ export function SecurityForm({ onCancel, showCancelButton = true, className }: S
                 {t('profile.security.cancel')}
               </Button>
             )}
-            <Button type="submit" disabled={changingPassword} variant="secondary" className="w-full sm:w-auto">
+            <Button type="submit" disabled={changingPassword} variant="default" className="w-full sm:w-auto">
               {changingPassword ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
