@@ -9,11 +9,14 @@ import { Loader2, Building2, Shield, Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { AppLogo } from '@/components/ui/AppLogo';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export default function Invitation() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('invitation');
   
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -147,12 +150,12 @@ export default function Invitation() {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('form.errors.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('form.errors.passwordTooShort'));
       return;
     }
 
@@ -189,7 +192,7 @@ export default function Invitation() {
       });
 
       if (signInError) {
-        throw new Error(`Error al iniciar sesión: ${signInError.message}`);
+        throw new Error(t('form.errors.signInError', { message: signInError.message }));
       }
 
       // Redirect to processing page with invitation token and role
@@ -197,7 +200,7 @@ export default function Invitation() {
       navigate(`/invitation/callback?token=${token}&role=${userRole}&from_manual=true`);
 
     } catch (err: any) {
-      setError(err.message || 'Error creating account');
+      setError(err.message || t('form.errors.accountCreationError'));
     } finally {
       setSubmitting(false);
     }
@@ -208,7 +211,7 @@ export default function Invitation() {
     
     // Prevent Google OAuth if user is already authenticated
     if (userAlreadyAuth) {
-      showError('Error', 'Ya tienes una sesión activa. Por favor, cierra sesión primero.');
+      showError('Error', t('authStatus.activeSessionDescription'));
       return;
     }
     
@@ -263,9 +266,9 @@ export default function Invitation() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-orange-600">Sesión Activa Detectada</CardTitle>
+            <CardTitle className="text-orange-600">{t('authStatus.activeSessionTitle')}</CardTitle>
             <CardDescription>
-              Ya tienes una sesión activa. Para procesar esta invitación, necesitas cerrar tu sesión actual primero.
+              {t('authStatus.activeSessionDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -274,14 +277,14 @@ export default function Invitation() {
               className="w-full"
               disabled={submitting}
             >
-              {submitting ? 'Cerrando sesión...' : 'Cerrar Sesión y Continuar'}
+              {submitting ? t('authStatus.signingOut') : t('authStatus.signOut')}
             </Button>
             <Button 
               onClick={() => navigate('/dashboard')} 
               variant="outline"
               className="w-full"
             >
-              Ir al Dashboard
+              {t('authStatus.goToDashboard')}
             </Button>
           </CardContent>
         </Card>
@@ -294,7 +297,7 @@ export default function Invitation() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="flex items-center space-x-2">
           <Loader2 className="h-6 w-6 animate-spin" />
-          <span>Validating invitation...</span>
+          <span>{t('validation.loading')}</span>
         </div>
       </div>
     );
@@ -305,7 +308,7 @@ export default function Invitation() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-red-600">Invalid Invitation</CardTitle>
+            <CardTitle className="text-red-600">{t('validation.invalid')}</CardTitle>
             <CardDescription>{error}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -313,7 +316,7 @@ export default function Invitation() {
               onClick={() => navigate('/auth')} 
               className="w-full"
             >
-              Go to Login
+              {t('validation.goToLogin')}
             </Button>
           </CardContent>
         </Card>
@@ -325,18 +328,23 @@ export default function Invitation() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
+          {/* Header with Language Switcher */}
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher />
+          </div>
+          
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <AppLogo width={80} height={80} />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome to FleetNest!
+              {t('welcome.title')}
             </h1>
             <p className="text-gray-600">
               {invitation?.role === 'driver' 
-                ? `Has sido invitado a unirte como conductor a ${invitation?.companyName}`
-                : `You've been invited to manage ${invitation?.companyName}`
+                ? t('welcome.subtitle.driver', { companyName: invitation?.companyName })
+                : t('welcome.subtitle.manager', { companyName: invitation?.companyName })
               }
             </p>
           </div>
@@ -348,8 +356,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <Users className="h-8 w-8 text-blue-600" />
                   <div>
-                    <h3 className="font-semibold">Mis Cargas</h3>
-                    <p className="text-sm text-gray-600">Ve y gestiona tus cargas asignadas</p>
+                    <h3 className="font-semibold">{t('features.driver.loads.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.driver.loads.description')}</p>
                   </div>
                 </div>
               </div>
@@ -358,8 +366,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <Shield className="h-8 w-8 text-green-600" />
                   <div>
-                    <h3 className="font-semibold">Pagos</h3>
-                    <p className="text-sm text-gray-600">Consulta tus ingresos y deducciones</p>
+                    <h3 className="font-semibold">{t('features.driver.payments.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.driver.payments.description')}</p>
                   </div>
                 </div>
               </div>
@@ -368,8 +376,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <BarChart3 className="h-8 w-8 text-purple-600" />
                   <div>
-                    <h3 className="font-semibold">Reportes</h3>
-                    <p className="text-sm text-gray-600">Historial de viajes y ganancias</p>
+                    <h3 className="font-semibold">{t('features.driver.reports.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.driver.reports.description')}</p>
                   </div>
                 </div>
               </div>
@@ -378,8 +386,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <Building2 className="h-8 w-8 text-orange-600" />
                   <div>
-                    <h3 className="font-semibold">Documentos</h3>
-                    <p className="text-sm text-gray-600">Gestiona tus documentos de conductor</p>
+                    <h3 className="font-semibold">{t('features.driver.documents.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.driver.documents.description')}</p>
                   </div>
                 </div>
               </div>
@@ -390,8 +398,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <Building2 className="h-8 w-8 text-blue-600" />
                   <div>
-                    <h3 className="font-semibold">Company Management</h3>
-                    <p className="text-sm text-gray-600">Manage your fleet operations</p>
+                    <h3 className="font-semibold">{t('features.manager.company.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.manager.company.description')}</p>
                   </div>
                 </div>
               </div>
@@ -400,8 +408,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <Users className="h-8 w-8 text-green-600" />
                   <div>
-                    <h3 className="font-semibold">Driver Management</h3>
-                    <p className="text-sm text-gray-600">Add and manage drivers</p>
+                    <h3 className="font-semibold">{t('features.manager.drivers.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.manager.drivers.description')}</p>
                   </div>
                 </div>
               </div>
@@ -410,8 +418,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <Shield className="h-8 w-8 text-purple-600" />
                   <div>
-                    <h3 className="font-semibold">Payment Tracking</h3>
-                    <p className="text-sm text-gray-600">Track loads and payments</p>
+                    <h3 className="font-semibold">{t('features.manager.payments.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.manager.payments.description')}</p>
                   </div>
                 </div>
               </div>
@@ -420,8 +428,8 @@ export default function Invitation() {
                 <div className="flex items-center space-x-3">
                   <BarChart3 className="h-8 w-8 text-orange-600" />
                   <div>
-                    <h3 className="font-semibold">Reporting</h3>
-                    <p className="text-sm text-gray-600">Comprehensive reports</p>
+                    <h3 className="font-semibold">{t('features.manager.reporting.title')}</h3>
+                    <p className="text-sm text-gray-600">{t('features.manager.reporting.description')}</p>
                   </div>
                 </div>
               </div>
@@ -431,7 +439,7 @@ export default function Invitation() {
           {/* Registration Form */}
           <Card>
             <CardHeader>
-              <CardTitle>Crear Tu Cuenta</CardTitle>
+              <CardTitle>{t('form.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {error && (
@@ -444,7 +452,7 @@ export default function Invitation() {
               <div className="space-y-4">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-4">
-                    Elige cómo crear tu cuenta
+                    {t('form.subtitle')}
                   </p>
                 </div>
                 
@@ -473,7 +481,7 @@ export default function Invitation() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  <span>Continuar con Google</span>
+                  <span>{t('form.googleButton')}</span>
                 </Button>
 
                 <div className="relative">
@@ -482,107 +490,100 @@ export default function Invitation() {
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                      O crea cuenta manualmente
+                      {t('form.orText')}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Manual Registration Form */}
-              <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">Nombre</Label>
+              {/* Manual Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">{t('form.fields.firstName')}</Label>
                     <Input
                       id="firstName"
-                      name="firstName"
                       type="text"
                       value={formData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       required
                       disabled={submitting}
-                      autoComplete="off"
-                      data-form-type="other"
+                      autoComplete="given-name"
+                      className="mt-1"
                     />
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Apellido</Label>
+                  <div>
+                    <Label htmlFor="lastName">{t('form.fields.lastName')}</Label>
                     <Input
                       id="lastName"
-                      name="lastName"
                       type="text"
                       value={formData.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       required
                       disabled={submitting}
-                      autoComplete="off"
-                      data-form-type="other"
+                      autoComplete="family-name"
+                      className="mt-1"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Email de Invitación</Label>
+                <div>
+                  <Label htmlFor="email">{t('form.fields.invitationEmail')}</Label>
                   <Input
+                    id="email"
                     type="email"
                     value={invitation?.email || ''}
                     disabled
-                    className="bg-gray-50"
+                    className="mt-1 bg-muted"
                   />
-                  <p className="text-sm text-gray-500">
-                    Este es el email con el que fuiste invitado
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t('form.fields.invitationEmailDescription')}
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Contraseña</Label>
+                <div>
+                  <Label htmlFor="password">{t('form.fields.password')}</Label>
                   <Input
                     id="password"
-                    name="new-password"
                     type="password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
                     disabled={submitting}
-                    minLength={6}
                     autoComplete="new-password"
-                    data-form-type="other"
+                    className="mt-1"
                   />
-                  <p className="text-sm text-gray-500">
-                    Debe tener al menos 6 caracteres
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t('form.fields.passwordDescription')}
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                <div>
+                  <Label htmlFor="confirmPassword">{t('form.fields.confirmPassword')}</Label>
                   <Input
                     id="confirmPassword"
-                    name="confirm-password"
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
                     disabled={submitting}
-                    minLength={6}
                     autoComplete="new-password"
-                    data-form-type="other"
+                    className="mt-1"
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full" 
+                <Button
+                  type="submit"
                   disabled={submitting}
+                  className="w-full"
                 >
                   {submitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creando Cuenta...
+                      Loading...
                     </>
                   ) : (
-                    'Crear Cuenta y Comenzar'
+                    t('form.submit')
                   )}
                 </Button>
               </form>

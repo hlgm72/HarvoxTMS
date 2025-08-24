@@ -1,0 +1,81 @@
+{
+  "welcome": {
+    "title": "Welcome to FleetNest!",
+    "subtitle": {
+      "driver": "You've been invited to join as a driver for {{companyName}}",
+      "manager": "You've been invited to manage {{companyName}}"
+    }
+  },
+  "features": {
+    "driver": {
+      "loads": {
+        "title": "My Loads",
+        "description": "View and manage your assigned loads"
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "Check your income and deductions"
+      },
+      "reports": {
+        "title": "Reports",
+        "description": "Trip history and earnings"
+      },
+      "documents": {
+        "title": "Documents",
+        "description": "Manage your driver documents"
+      }
+    },
+    "manager": {
+      "company": {
+        "title": "Company Management",
+        "description": "Manage your fleet operations"
+      },
+      "drivers": {
+        "title": "Driver Management",
+        "description": "Add and manage drivers"
+      },
+      "payments": {
+        "title": "Payment Tracking",
+        "description": "Track loads and payments"
+      },
+      "reporting": {
+        "title": "Reporting",
+        "description": "Comprehensive reports"
+      }
+    }
+  },
+  "form": {
+    "title": "Create Your Account",
+    "subtitle": "Choose how to create your account",
+    "googleButton": "Continue with Google",
+    "orText": "Or create account manually",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "invitationEmail": "Invitation Email",
+      "invitationEmailDescription": "This is the email you were invited with",
+      "password": "Password",
+      "passwordDescription": "Must be at least 6 characters",
+      "confirmPassword": "Confirm Password"
+    },
+    "submit": "Create Account and Get Started",
+    "errors": {
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long",
+      "signInError": "Error signing in: {{message}}",
+      "accountCreationError": "Error creating account"
+    }
+  },
+  "authStatus": {
+    "activeSessionTitle": "Active Session Detected",
+    "activeSessionDescription": "You already have an active session. To process this invitation, you need to sign out first.",
+    "signOut": "Sign Out and Continue",
+    "goToDashboard": "Go to Dashboard",
+    "signingOut": "Signing out..."
+  },
+  "validation": {
+    "loading": "Validating invitation...",
+    "invalid": "Invalid Invitation",
+    "goToLogin": "Go to Login"
+  }
+}
