@@ -44,6 +44,11 @@
         "pickup": "Pickup",
         "delivery": "Delivery",
         "incomplete_address": "Missing Company, Address, City, State, Scheduled Date",
+        "stop_prefix": {
+          "pickup": "P{{number}}:",
+          "delivery": "D{{number}}:"
+        },
+        "missing_fields": "Missing Company, Address, City, State, Scheduled Date",
         "add_intermediate_stop": "Add Intermediate Stop",
         "instructions": {
           "click_edit": "Click on any stop to edit its details",
