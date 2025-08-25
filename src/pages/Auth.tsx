@@ -354,8 +354,14 @@ export default function Auth() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Always validate the field, even when empty
-    validateField(field, value);
+    
+    // Don't validate if there are active validation errors from form submission
+    // Only validate when user is actively typing to add content, not when clearing errors
+    const currentError = fieldErrors[field];
+    if (!currentError || value) {
+      validateField(field, value);
+    }
+    
     if (error) setError(null);
   };
 
