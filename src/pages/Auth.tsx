@@ -157,6 +157,11 @@ export default function Auth() {
   // Enhanced autofill detection specifically for Samsung Browser credentials
   const detectCredentialAutofill = () => {
     try {
+      // Don't interfere if there are active validation errors
+      if (Object.keys(fieldErrors).length > 0 || loading) {
+        return;
+      }
+
       const emailInput = document.getElementById('email') as HTMLInputElement;
       const passwordInput = document.getElementById('password') as HTMLInputElement;
       
@@ -286,19 +291,22 @@ export default function Auth() {
     const interval = setInterval(() => {
       checkCount++;
       
-      // Only check if we haven't reached max attempts
-      if (checkCount <= maxChecks) {
+      // Don't run autofill detection if there are validation errors or form is loading
+      const hasValidationErrors = Object.keys(fieldErrors).length > 0;
+      
+      // Only check if we haven't reached max attempts and no validation errors
+      if (checkCount <= maxChecks && !hasValidationErrors && !loading) {
         detectCredentialAutofill();
       }
       
-      // Stop the interval after max checks or if form has data
-      if (checkCount >= maxChecks || (formData.email && formData.password)) {
+      // Stop the interval after max checks, if form has data, or if there are validation errors
+      if (checkCount >= maxChecks || (formData.email && formData.password) || hasValidationErrors) {
         clearInterval(interval);
       }
     }, 500);
     
     return () => clearInterval(interval);
-  }, [mounted]); // Remove dependencies to prevent restart
+  }, [mounted, fieldErrors, loading]); // Add fieldErrors and loading as dependencies
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
