@@ -244,7 +244,8 @@ export function LoadCard({
             onClick={() => onViewDetails(load)}
           >
             <Eye className="h-4 w-4 mr-2" />
-            {t('common:view_details')}
+            <span className="hidden sm:inline">{t('common:view_details')}</span>
+            <span className="sm:hidden">Details</span>
           </Button>
         </div>
 
