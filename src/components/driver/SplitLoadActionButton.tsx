@@ -19,6 +19,8 @@ export function SplitLoadActionButton({
   onUploadPOD, 
   isPending 
 }: SplitLoadActionButtonProps) {
+  console.log('🚀 SplitLoadActionButton - INICIO', { loadId: load.id, status: load.status, isPending });
+  
   const { t } = useTranslation(['common']);
   const { nextStopInfo, hasNextAction } = useLoadStopsNavigation(load);
   const { data: documentValidation } = useLoadDocumentValidation(load.id);
@@ -110,7 +112,15 @@ export function SplitLoadActionButton({
   const primaryAction = getPrimaryAction();
   const availableStates = getAvailableStates();
 
+  console.log('🎯 SplitLoadActionButton - RENDER CHECK', {
+    loadId: load.id,
+    primaryAction: primaryAction ? primaryAction.text : 'null',
+    availableStatesLength: availableStates.length,
+    willRender: !!primaryAction
+  });
+
   if (!primaryAction) {
+    console.log('❌ SplitLoadActionButton - NO PRIMARY ACTION, returning null');
     return null; // No hay acciones disponibles
   }
 
