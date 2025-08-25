@@ -278,7 +278,7 @@ export function DocumentCard({
             {/* Menu dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Button variant="ghost" size="sm" className="h-10 w-10 p-0 touch-manipulation">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -419,24 +419,24 @@ export function DocumentCard({
         </div>
       </div>
 
-      {/* Bottom row - Action buttons aligned horizontally */}
-      <div className="flex gap-2 px-4 pb-4">
+      {/* Bottom row - Action buttons with improved responsiveness */}
+      <div className="flex flex-col sm:flex-row gap-3 px-4 pb-4">
         <Button 
           variant="outline" 
           size="sm" 
           onClick={handleDownload}
-          className="flex-1 text-xs h-8"
+          className="flex-1 text-sm h-10 touch-manipulation"
         >
-          <Download className="h-3 w-3 mr-1" />
+          <Download className="h-4 w-4 mr-2" />
           {t('card.buttons.download')}
         </Button>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={() => setEmailModalOpen(true)}
-          className="flex-1 text-xs h-8"
+          className="flex-1 text-sm h-10 touch-manipulation"
         >
-          <Mail className="h-3 w-3 mr-1" />
+          <Mail className="h-4 w-4 mr-2" />
           {t('card.buttons.email')}
         </Button>
       </div>
