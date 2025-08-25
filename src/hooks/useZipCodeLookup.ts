@@ -11,7 +11,9 @@ interface ZipCodeData {
 export function useZipCodeLookup() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  
+  console.log('useZipCodeLookup - Current language:', i18n.language);
 
   const lookupZipCode = async (zipCode: string): Promise<ZipCodeData | null> => {
     if (!zipCode || zipCode.length !== 5) {
@@ -27,12 +29,12 @@ export function useZipCodeLookup() {
       
       if (!response.ok) {
         if (response.status === 404) {
-          const errorMsg = t('address.zip_code_not_found');
-          console.log('ZIP code not found translation:', errorMsg);
+          const errorMsg = t('address.zip_code_not_found', 'ZIP code not found');
+          console.log('ZIP code not found - key:', 'address.zip_code_not_found', 'translation:', errorMsg, 'language:', i18n.language);
           setError(errorMsg);
         } else {
-          const errorMsg = t('address.zip_code_lookup_error');
-          console.log('ZIP code lookup error translation:', errorMsg);
+          const errorMsg = t('address.zip_code_lookup_error', 'Error looking up ZIP code');
+          console.log('ZIP code lookup error - key:', 'address.zip_code_lookup_error', 'translation:', errorMsg, 'language:', i18n.language);
           setError(errorMsg);
         }
         return null;
@@ -51,8 +53,8 @@ export function useZipCodeLookup() {
 
       return null;
     } catch (err) {
-      const errorMsg = t('address.zip_code_connection_error');
-      console.log('ZIP code connection error translation:', errorMsg);
+      const errorMsg = t('address.zip_code_connection_error', 'Connection error');
+      console.log('ZIP code connection error - key:', 'address.zip_code_connection_error', 'translation:', errorMsg, 'language:', i18n.language);
       setError(errorMsg);
       return null;
     } finally {
