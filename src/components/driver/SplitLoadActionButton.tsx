@@ -135,7 +135,7 @@ export function SplitLoadActionButton({
             align="end" 
             className="w-56 bg-background border shadow-lg z-50"
           >
-            {availableStates.map((state) => (
+            {availableStates.slice(1).map((state) => (
               <DropdownMenuItem
                 key={state.key}
                 onClick={() => {
