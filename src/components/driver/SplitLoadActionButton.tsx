@@ -27,6 +27,8 @@ export function SplitLoadActionButton({
     // Estados base del sistema
     const getAllStates = () => {
       const baseStates = [
+        { key: 'created', label: t('common:loads.status.created') },
+        { key: 'route_planned', label: t('common:loads.status.route_planned') },
         { key: 'assigned', label: t('common:loads.status.assigned') },
         { key: 'en_route_pickup', label: t('common:loads.status.en_route_pickup') },
         { key: 'at_pickup', label: t('common:loads.status.at_pickup') },
@@ -57,6 +59,13 @@ export function SplitLoadActionButton({
   const getAvailableStates = () => {
     const allStates = getAllStates();
     const currentStatusIndex = allStates.findIndex(s => s.key === load.status);
+    
+    console.log('🔍 SplitLoadActionButton Debug:', {
+      loadStatus: load.status,
+      allStates: allStates.map(s => s.key),
+      currentStatusIndex,
+      availableStates: currentStatusIndex === -1 ? [] : allStates.slice(currentStatusIndex + 1)
+    });
     
     if (currentStatusIndex === -1) return [];
     
