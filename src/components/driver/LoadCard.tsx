@@ -212,23 +212,6 @@ export function LoadCard({
           </div>
         </div>
 
-        {/* Latest Status Update */}
-        {(load.latest_status_notes || load.latest_status_eta) && (
-          <div className="space-y-1 p-3 bg-muted/50 rounded-lg">
-            <p className="text-xs font-medium text-muted-foreground">
-              {t('loads:latest_update')}
-            </p>
-            {load.latest_status_notes && (
-              <p className="text-sm">{load.latest_status_notes}</p>
-            )}
-            {load.latest_status_eta && (
-              <p className="text-xs text-muted-foreground">
-                ETA: {formatDateTimeShort(load.latest_status_eta)}
-              </p>
-            )}
-          </div>
-        )}
-
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
