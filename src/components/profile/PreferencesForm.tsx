@@ -27,13 +27,14 @@ interface PreferencesFormProps {
   showSaveButton?: boolean;
   className?: string;
   showOnboardingSection?: boolean;
+  useDetectedTimezone?: boolean; // Para forzar usar timezone detectada en setup wizard
 }
 
 export interface PreferencesFormRef {
   saveData: () => Promise<{ success: boolean; error?: string }>;
 }
 
-export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, showSaveButton = true, className, showOnboardingSection = false }, ref) => {
+export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, showSaveButton = true, className, showOnboardingSection = false, useDetectedTimezone = false }, ref) => {
   const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useUserProfile();
@@ -64,7 +65,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
     const detectedTimezone = getUserTimezone();
     console.log('🌍 PreferencesForm: Detected timezone:', detectedTimezone);
     
-    if (preferences) {
+    if (preferences && !useDetectedTimezone) {
       const formValues = {
         preferred_language: preferences.preferred_language || 'en',
         timezone: preferences.timezone || detectedTimezone,
@@ -72,15 +73,15 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
       console.log('🔄 PreferencesForm: resetting form with values', formValues);
       preferencesForm.reset(formValues);
     } else {
-      // Si no hay preferencias, usar valores por defecto con zona horaria detectada automáticamente
+      // Si no hay preferencias o se fuerza usar timezone detectada, usar valores por defecto con zona horaria detectada automáticamente
       const defaultValues = {
-        preferred_language: 'en',
+        preferred_language: preferences?.preferred_language || 'en',
         timezone: detectedTimezone, // Siempre usar la zona horaria detectada
       };
-      console.log('🔄 PreferencesForm: no preferences, using defaults with detected timezone', defaultValues);
+      console.log('🔄 PreferencesForm: no preferences or forced detected timezone, using defaults with detected timezone', defaultValues);
       preferencesForm.reset(defaultValues);
     }
-  }, [preferences, preferencesForm]);
+  }, [preferences, preferencesForm, useDetectedTimezone]);
 
   const savePreferencesData = async (data: PreferencesFormData): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: t('profile.personal_info.user_not_found') };

@@ -451,6 +451,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                       showCancelButton={false}
                       showSaveButton={false}
                       className="space-y-6"
+                      useDetectedTimezone={true}
                     />
                   </div>
 
