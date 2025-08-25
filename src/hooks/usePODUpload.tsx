@@ -6,6 +6,7 @@ import { useLoadDocumentUploadFlowACID } from '@/hooks/useLoadDocumentManagement
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PODUploadModalProps {
   loadId: string;
@@ -19,6 +20,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
   const { showSuccess, showError } = useFleetNotifications();
   const { mutate: uploadDocument, isPending: isUploading } = useLoadDocumentUploadFlowACID();
   const { t } = useTranslation('loads');
+  const queryClient = useQueryClient();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -43,6 +45,12 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
       onSuccess: () => {
         showSuccess(t('pod_upload.upload_success'));
         setSelectedFile(null);
+        
+        // Invalidar queries para refrescar datos
+        queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
+        queryClient.invalidateQueries({ queryKey: ['loads'] });
+        queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+        
         onSuccess();
         onClose();
       },
