@@ -95,51 +95,87 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     setIsCompleting(true);
     
     try {
-      console.log('Starting setup completion process...');
+      console.log('🚀 SetupWizard: Starting setup completion process...');
+      console.log('🚀 SetupWizard: User roles - isDriver:', isDriver, 'isCompanyOwner:', isCompanyOwner);
       
       const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
       
       // 1) Guardar Datos Personales primero
       if (personalInfoFormRef.current) {
-        console.log('Saving personal info...');
-        const result = await personalInfoFormRef.current.saveData();
-        saveResults.push({ step: 'Información Personal', ...result });
+        console.log('🔄 SetupWizard: Saving personal info...');
+        try {
+          const result = await personalInfoFormRef.current.saveData();
+          console.log('✅ SetupWizard: Personal info result:', result);
+          saveResults.push({ step: 'Información Personal', ...result });
+        } catch (error) {
+          console.error('❌ SetupWizard: Personal info error:', error);
+          saveResults.push({ step: 'Información Personal', success: false, error: error.message });
+        }
+      } else {
+        console.warn('⚠️ SetupWizard: personalInfoFormRef is null');
       }
       
       // 2) Guardar datos de Conductor (si aplica)
       if (isDriver && driverInfoFormRef.current) {
-        console.log('Saving driver info...');
-        const result = await driverInfoFormRef.current.saveData();
-        saveResults.push({ step: 'Información del Conductor', ...result });
+        console.log('🔄 SetupWizard: Saving driver info...');
+        try {
+          const result = await driverInfoFormRef.current.saveData();
+          console.log('✅ SetupWizard: Driver info result:', result);
+          saveResults.push({ step: 'Información del Conductor', ...result });
+        } catch (error) {
+          console.error('❌ SetupWizard: Driver info error:', error);
+          saveResults.push({ step: 'Información del Conductor', success: false, error: error.message });
+        }
+      } else if (isDriver) {
+        console.warn('⚠️ SetupWizard: isDriver=true but driverInfoFormRef is null');
       }
       
       // 3) Guardar datos de Empresa (si aplica)
       if (isCompanyOwner && companySetupRef.current) {
-        console.log('Saving company info...');
-        const companyResult = await companySetupRef.current.saveData();
-        saveResults.push({ 
-          step: 'Información de la Empresa', 
-          success: companyResult, 
-          error: companyResult ? undefined : 'Error al guardar información de la empresa'
-        });
+        console.log('🔄 SetupWizard: Saving company info...');
+        try {
+          const companyResult = await companySetupRef.current.saveData();
+          console.log('✅ SetupWizard: Company info result:', companyResult);
+          saveResults.push({ 
+            step: 'Información de la Empresa', 
+            success: companyResult, 
+            error: companyResult ? undefined : 'Error al guardar información de la empresa'
+          });
+        } catch (error) {
+          console.error('❌ SetupWizard: Company info error:', error);
+          saveResults.push({ step: 'Información de la Empresa', success: false, error: error.message });
+        }
+      } else if (isCompanyOwner) {
+        console.warn('⚠️ SetupWizard: isCompanyOwner=true but companySetupRef is null');
       }
       
       // 4) Guardar Preferencias al final (esto puede refrescar el perfil y cambiar idioma)
       if (preferencesFormRef.current) {
-        console.log('Saving preferences...');
-        const result = await preferencesFormRef.current.saveData();
-        saveResults.push({ step: 'Preferencias', ...result });
+        console.log('🔄 SetupWizard: Saving preferences...');
+        try {
+          const result = await preferencesFormRef.current.saveData();
+          console.log('✅ SetupWizard: Preferences result:', result);
+          saveResults.push({ step: 'Preferencias', ...result });
+        } catch (error) {
+          console.error('❌ SetupWizard: Preferences error:', error);
+          saveResults.push({ step: 'Preferencias', success: false, error: error.message });
+        }
+      } else {
+        console.warn('⚠️ SetupWizard: preferencesFormRef is null');
       }
+      
+      console.log('📊 SetupWizard: All save results:', saveResults);
       
       // Check if all saves were successful
       const failedSaves = saveResults.filter(result => !result.success);
       
       if (failedSaves.length > 0) {
+        console.error('❌ SetupWizard: Failed saves:', failedSaves);
         const errorMessage = failedSaves.map(fail => `${fail.step}: ${fail.error}`).join('\n');
         throw new Error(`Error en los siguientes pasos:\n${errorMessage}`);
       }
       
-      console.log('All data saved successfully');
+      console.log('🎉 SetupWizard: All data saved successfully');
       
       // Show success message
       showSuccess(
@@ -151,7 +187,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       onComplete();
       
     } catch (error: any) {
-      console.error('Error during setup completion:', error);
+      console.error('💥 SetupWizard: Error during setup completion:', error);
       showError(
         "Error al completar la configuración",
         error.message || "Algunos datos no pudieron ser guardados. Por favor, inténtalo nuevamente."

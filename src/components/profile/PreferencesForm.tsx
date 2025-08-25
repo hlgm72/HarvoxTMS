@@ -57,11 +57,22 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   });
 
   useEffect(() => {
+    console.log('🔄 PreferencesForm: preferences changed', preferences);
     if (preferences) {
-      preferencesForm.reset({
+      const formValues = {
         preferred_language: preferences.preferred_language || 'en',
         timezone: preferences.timezone || getUserTimezone(),
-      });
+      };
+      console.log('🔄 PreferencesForm: resetting form with values', formValues);
+      preferencesForm.reset(formValues);
+    } else {
+      // Si no hay preferencias, usar valores por defecto con zona horaria detectada
+      const defaultValues = {
+        preferred_language: 'en',
+        timezone: getUserTimezone(),
+      };
+      console.log('🔄 PreferencesForm: no preferences, using defaults', defaultValues);
+      preferencesForm.reset(defaultValues);
     }
   }, [preferences, preferencesForm]);
 
@@ -114,16 +125,31 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   // Expose saveData method via ref
   useImperativeHandle(ref, () => ({
     saveData: async () => {
-      // Trigger validation to ensure all field values are current
+      console.log('🔄 PreferencesForm: saveData called');
+      
+      // Force validation to ensure all field values are current
       const isValid = await preferencesForm.trigger();
+      console.log('🔄 PreferencesForm: validation result', isValid);
+      
       if (!isValid) {
+        const errors = preferencesForm.formState.errors;
+        console.error('🔄 PreferencesForm: validation errors', errors);
         return { success: false, error: 'Form validation failed' };
       }
       
       // Get current form values (this includes any user changes)
       const data = preferencesForm.getValues();
-      console.log('🔄 Saving preferences data:', data);
-      return await savePreferencesData(data);
+      console.log('🔄 PreferencesForm: current form values', data);
+      console.log('🔄 PreferencesForm: detected timezone', getUserTimezone());
+      
+      // Ensure we have valid values
+      const finalData = {
+        preferred_language: data.preferred_language || 'en',
+        timezone: data.timezone || getUserTimezone(),
+      };
+      console.log('🔄 PreferencesForm: final data to save', finalData);
+      
+      return await savePreferencesData(finalData);
     }
   }));
 
