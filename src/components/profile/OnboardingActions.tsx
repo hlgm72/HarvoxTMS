@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useFleetNotifications } from '@/components/notifications';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useSetupWizard } from '@/hooks/useSetupWizard';
-import { SetupWizard } from '@/components/setup/SetupWizard';
 import { Play, Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
@@ -15,16 +14,10 @@ interface OnboardingActionsProps {
 export function OnboardingActions({ className }: OnboardingActionsProps) {
   const { showSuccess, showError } = useFleetNotifications();
   const { resetOnboarding } = useOnboarding();
-  const { resetSetup, markSetupCompleted } = useSetupWizard();
+  const { resetSetup } = useSetupWizard();
   const { user, currentRole } = useAuth();
   const [resetting, setResetting] = useState(false);
-  const [showSetupWizard, setShowSetupWizard] = useState(false);
   const { t } = useTranslation('settings');
-
-  // Debug logging
-  useEffect(() => {
-    console.log('🔍 showSetupWizard changed:', showSetupWizard);
-  }, [showSetupWizard]);
 
   const handleResetOnboarding = async () => {
     if (!user || !currentRole) {
@@ -49,28 +42,27 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
     }
   };
 
-  const handleShowSetup = () => {
-    console.log('🚀 handleShowSetup called');
+  const handleResetSetup = async () => {
     if (!user || !currentRole) {
-      console.log('❌ No user or role');
       showError(t('onboarding.actions.error_title'), t('onboarding.actions.error_message'));
       return;
     }
-    console.log('✅ Opening setup wizard');
-    setShowSetupWizard(true);
-  };
 
-  const handleSetupComplete = () => {
-    setShowSetupWizard(false);
-    markSetupCompleted();
-    showSuccess(
-      t('onboarding.actions.setup_reset_title'),
-      'Setup wizard completed successfully!'
-    );
-  };
-
-  const handleSetupClose = () => {
-    setShowSetupWizard(false);
+    setResetting(true);
+    try {
+      resetSetup();
+      showSuccess(
+        t('onboarding.actions.setup_reset_title'),
+        t('onboarding.actions.setup_reset_message')
+      );
+    } catch (error: any) {
+      showError(
+        t('onboarding.actions.reset_error_title'),
+        error.message || t('onboarding.actions.setup_reset_error')
+      );
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
@@ -89,27 +81,19 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
           
           <Button
             variant="outline"
-            onClick={handleShowSetup}
+            onClick={handleResetSetup}
             disabled={resetting}
             className="flex-1"
           >
             <Settings className="mr-2 h-4 w-4" />
-            {t('onboarding.actions.view_setup')}
+            {resetting ? t('onboarding.actions.resetting') : t('onboarding.actions.view_setup')}
           </Button>
         </div>
         
         <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-          <strong>{t('onboarding.note_label')}</strong> The welcome tour requires a page reload to activate, but the Setup Assistant will open immediately.
+          <strong>{t('onboarding.note_label')}</strong> {t('onboarding.note')}
         </div>
       </div>
-
-      {/* Setup Wizard Modal */}
-      <SetupWizard
-        isOpen={showSetupWizard}
-        onClose={handleSetupClose}
-        onComplete={handleSetupComplete}
-        userRole={currentRole || 'driver'}
-      />
     </div>
   );
 }

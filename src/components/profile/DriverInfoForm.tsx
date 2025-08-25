@@ -1,26 +1,22 @@
-import React, { useState } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth } from '@/contexts/AuthContext';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useFleetNotifications } from '@/components/notifications';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Save, RotateCcw, Truck } from 'lucide-react';
+import { BirthDateInput } from '@/components/ui/BirthDateInput';
+import { createTextHandlers } from '@/lib/textUtils';
+import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
+import { useTranslation } from 'react-i18next';
 
 const driverInfoSchema = z.object({
-  driverId: z.string().optional(),
-  licenseNumber: z.string().min(1, 'El número de licencia es requerido'),
-  licenseState: z.string().min(1, 'El estado de la licencia es requerido'),
-  licenseIssueDate: z.string().optional(),
-  licenseExpiryDate: z.string().optional(),
-  cdlClass: z.string().optional(),
-  cdlEndorsements: z.string().optional(),
-  dateOfBirth: z.string().optional(),
-  emergencyContactName: z.string().optional(),
-  emergencyContactPhone: z.string().optional(),
+  emergency_contact_name: z.string().optional(),
+  emergency_contact_phone: z.string().optional(),
 });
 
 type DriverInfoFormData = z.infer<typeof driverInfoSchema>;
@@ -31,257 +27,382 @@ interface DriverInfoFormProps {
   className?: string;
 }
 
-const US_STATES = [
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-];
+export interface DriverInfoFormRef {
+  saveData: () => Promise<{ success: boolean; error?: string }>;
+}
 
-const CDL_CLASSES = ['A', 'B', 'C'];
+interface DriverProfile {
+  date_of_birth: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  license_number: string | null;
+  license_state: string | null;
+  license_issue_date: string | null;
+  license_expiry_date: string | null;
+  cdl_class: string | null;
+  cdl_endorsements: string | null;
+}
 
-export function DriverInfoForm({ onCancel, showCancelButton = true, className }: DriverInfoFormProps) {
+interface LicenseData {
+  license_number: string;
+  license_state: string;
+  license_issue_date: Date | null;
+  license_expiry_date: Date | null;
+  cdl_class: string;
+  cdl_endorsements: string;
+}
+
+export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
+  const { showSuccess, showError } = useFleetNotifications();
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation('settings');
+  const [updating, setUpdating] = useState(false);
+  const [driverProfile, setDriverProfile] = useState<DriverProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const form = useForm<DriverInfoFormData>({
+  const [licenseData, setLicenseData] = useState<LicenseData>({
+    license_number: '',
+    license_state: '',
+    license_issue_date: null,
+    license_expiry_date: null,
+    cdl_class: '',
+    cdl_endorsements: '',
+  });
+
+  // Create handlers for text inputs
+  const phoneHandlers = createTextHandlers((value) => 
+    driverInfoForm.setValue('emergency_contact_phone', value), 'phone'
+  );
+
+  const driverInfoForm = useForm<DriverInfoFormData>({
     resolver: zodResolver(driverInfoSchema),
     defaultValues: {
-      driverId: '',
-      licenseNumber: '',
-      licenseState: '',
-      licenseIssueDate: '',
-      licenseExpiryDate: '',
-      cdlClass: '',
-      cdlEndorsements: '',
-      dateOfBirth: '',
-      emergencyContactName: '',
-      emergencyContactPhone: '',
+      emergency_contact_name: '',
+      emergency_contact_phone: '',
     },
   });
 
-  const onSubmit = async (data: DriverInfoFormData) => {
-    if (!user) return;
-    
-    setIsLoading(true);
+  // Helper functions for date conversion (for license dates only now)
+  const formatDateForDisplay = (dateString: string | null): string => {
+    if (!dateString) return '';
     
     try {
-      const { error } = await supabase
-        .from('driver_profiles')
-        .upsert({
-          user_id: user.id,
-          driver_id: data.driverId || null,
-          license_number: data.licenseNumber,
-          license_state: data.licenseState,
-          license_issue_date: data.licenseIssueDate || null,
-          license_expiry_date: data.licenseExpiryDate || null,
-          cdl_class: data.cdlClass || null,
-          cdl_endorsements: data.cdlEndorsements || null,
-          date_of_birth: data.dateOfBirth || null,
-          emergency_contact_name: data.emergencyContactName || null,
-          emergency_contact_phone: data.emergencyContactPhone || null,
-          is_active: true,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-
-      toast.success('Información del conductor actualizada');
+      let year: number, month: number, day: number;
+      
+      if (dateString.includes('T') || dateString.includes('Z')) {
+        const datePart = dateString.split('T')[0];
+        [year, month, day] = datePart.split('-').map(Number);
+      } else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        [year, month, day] = dateString.split('-').map(Number);
+      } else {
+        return dateString;
+      }
+      
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return dateString;
+      }
+      
+      // Return in dd/mm/yyyy format for Spanish locale (you can adjust based on i18n)
+      return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
     } catch (error) {
-      console.error('Error updating driver info:', error);
-      toast.error('Error al actualizar información del conductor');
-    } finally {
-      setIsLoading(false);
+      console.error('Error formatting date for display:', error);
+      return dateString;
     }
   };
 
+  // Fetch driver profile data
+  useEffect(() => {
+    const fetchDriverProfile = async () => {
+      if (!user) return;
+
+      try {
+        // Obtener datos específicos del conductor usando función segura
+        const { data, error } = await supabase.rpc('get_driver_sensitive_info', {
+          target_user_id: user.id
+        });
+        const driverData = data?.[0] || null;
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching driver profile:', error);
+          return;
+        }
+
+        // Set driver profile state
+        const combinedProfile = {
+          date_of_birth: null,
+          emergency_contact_name: driverData?.emergency_contact_name || null,
+          emergency_contact_phone: driverData?.emergency_contact_phone || null,
+          license_number: driverData?.license_number || null,
+          license_state: driverData?.license_state || null,
+          license_issue_date: driverData?.license_issue_date || null,
+          license_expiry_date: driverData?.license_expiry_date || null,
+          cdl_class: driverData?.cdl_class || null,
+          cdl_endorsements: driverData?.cdl_endorsements || null
+        };
+
+        setDriverProfile(combinedProfile);
+
+        // Update form with profile data
+        driverInfoForm.reset({
+          emergency_contact_name: driverData?.emergency_contact_name || '',
+          emergency_contact_phone: driverData?.emergency_contact_phone || '',
+        });
+
+        // Update license data separately
+        if (driverData) {
+          setLicenseData({
+            license_number: driverData.license_number || '',
+            license_state: driverData.license_state || '',
+            license_issue_date: parseDateFromDatabase(driverData.license_issue_date),
+            license_expiry_date: parseDateFromDatabase(driverData.license_expiry_date),
+            cdl_class: driverData.cdl_class || '',
+            cdl_endorsements: driverData.cdl_endorsements || '',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching driver profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDriverProfile();
+  }, [user, driverInfoForm]);
+
+  const saveDriverInfoData = async (data: DriverInfoFormData): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: t('profile.driver.user_not_found') };
+
+    try {
+      // Check if driver profile exists
+      const { data: existingProfile } = await supabase
+        .from('driver_profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      const driverUpdateData = {
+        user_id: user.id,
+        emergency_contact_name: data.emergency_contact_name || null,
+        emergency_contact_phone: data.emergency_contact_phone || null,
+        license_number: licenseData.license_number || null,
+        license_state: licenseData.license_state || null,
+        license_issue_date: licenseData.license_issue_date ? formatDateForDatabase(licenseData.license_issue_date) : null,
+        license_expiry_date: licenseData.license_expiry_date ? formatDateForDatabase(licenseData.license_expiry_date) : null,
+        cdl_class: licenseData.cdl_class || null,
+        cdl_endorsements: licenseData.cdl_endorsements || null,
+        updated_at: new Date().toISOString(),
+      };
+
+      let error;
+
+      if (existingProfile) {
+        // Update existing profile
+        ({ error } = await supabase
+          .from('driver_profiles')
+          .update(driverUpdateData)
+          .eq('user_id', user.id));
+      } else {
+        // Create new profile
+        ({ error } = await supabase
+          .from('driver_profiles')
+          .insert({
+            ...driverUpdateData,
+            is_active: true,
+          }));
+      }
+
+      if (error) {
+        console.error('Error saving driver info:', error);
+        return { success: false, error: error.message };
+      }
+
+      // Update local state
+      setDriverProfile({
+        date_of_birth: null,
+        emergency_contact_name: data.emergency_contact_name || null,
+        emergency_contact_phone: data.emergency_contact_phone || null,
+        license_number: licenseData.license_number || null,
+        license_state: licenseData.license_state || null,
+        license_issue_date: licenseData.license_issue_date ? formatDateForDatabase(licenseData.license_issue_date) : null,
+        license_expiry_date: licenseData.license_expiry_date ? formatDateForDatabase(licenseData.license_expiry_date) : null,
+        cdl_class: licenseData.cdl_class || null,
+        cdl_endorsements: licenseData.cdl_endorsements || null,
+      });
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || t('profile.driver.unknown_error') };
+    }
+  };
+
+  const onSubmitDriverInfo = async (data: DriverInfoFormData) => {
+    setUpdating(true);
+    try {
+      const result = await saveDriverInfoData(data);
+      if (result.success) {
+        showSuccess(
+          t('profile.driver.success_title'),
+          t('profile.driver.success_message')
+        );
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      showError(
+        t('profile.driver.error_title'),
+        error.message || t('profile.driver.error_message')
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Expose saveData method via ref
+  useImperativeHandle(ref, () => ({
+    saveData: async () => {
+      // Trigger validation to ensure all field values are current
+      const isValid = await driverInfoForm.trigger();
+      if (!isValid) {
+        return { success: false, error: 'Form validation failed' };
+      }
+      
+      // Get current form values (this includes any user changes)
+      const data = driverInfoForm.getValues();
+      console.log('🔄 Saving driver info data:', data);
+      return await saveDriverInfoData(data);
+    }
+  }));
+
+  const handleCancel = () => {
+    if (driverProfile) {
+      driverInfoForm.reset({
+        emergency_contact_name: driverProfile.emergency_contact_name || '',
+        emergency_contact_phone: driverProfile.emergency_contact_phone || '',
+      });
+      
+      setLicenseData({
+        license_number: driverProfile.license_number || '',
+        license_state: driverProfile.license_state || '',
+        license_issue_date: parseDateFromDatabase(driverProfile.license_issue_date),
+        license_expiry_date: parseDateFromDatabase(driverProfile.license_expiry_date),
+        cdl_class: driverProfile.cdl_class || '',
+        cdl_endorsements: driverProfile.cdl_endorsements || '',
+      });
+    }
+    onCancel?.();
+  };
+
+  const handleLicenseUpdate = (field: keyof LicenseData, value: any) => {
+    setLicenseData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const parseDateFromDatabase = (dateString: string | null | undefined): Date | null => {
+    if (!dateString) return null;
+    
+    try {
+      let year: number, month: number, day: number;
+      
+      if (dateString.includes('T') || dateString.includes('Z')) {
+        const datePart = dateString.split('T')[0];
+        [year, month, day] = datePart.split('-').map(Number);
+      } else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        [year, month, day] = dateString.split('-').map(Number);
+      } else {
+        return null;
+      }
+      
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return null;
+      }
+      
+      return new Date(year, month - 1, day);
+    } catch (error) {
+      console.error('Error parsing date from database:', error);
+      return null;
+    }
+  };
+
+  const formatDateForDatabase = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className={className}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="driverId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ID del Conductor</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="ID único del conductor" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="licenseNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número de Licencia *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Número de licencia de conducir" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="licenseState"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado de la Licencia *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Estado" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {US_STATES.map((state) => (
-                        <SelectItem key={state} value={state}>
-                          {state}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="licenseIssueDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fecha de Emisión</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="date" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="licenseExpiryDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fecha de Vencimiento</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="date" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="cdlClass"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Clase CDL</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona clase CDL" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {CDL_CLASSES.map((cdlClass) => (
-                        <SelectItem key={cdlClass} value={cdlClass}>
-                          Clase {cdlClass}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cdlEndorsements"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Endorsos CDL</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Ej: H, N, P, S, T, X" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="dateOfBirth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fecha de Nacimiento</FormLabel>
-                <FormControl>
-                  <Input {...field} type="date" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <Form {...driverInfoForm}>
+        <form onSubmit={driverInfoForm.handleSubmit(onSubmitDriverInfo)} className="space-y-4">
+          <LicenseInfoSection
+            data={licenseData}
+            onUpdate={handleLicenseUpdate}
+            loading={updating}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="emergencyContactName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contacto de Emergencia</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nombre del contacto" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="space-y-4 border-t pt-4">
+            <h4 className="text-sm font-medium text-muted-foreground">{t('profile.driver.emergency_contact')}</h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={driverInfoForm.control}
+                name="emergency_contact_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">{t('profile.driver.contact_name')}</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder={t('profile.driver.contact_name_placeholder')} 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="emergencyContactPhone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Teléfono de Emergencia</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="tel" placeholder="(555) 123-4567" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={driverInfoForm.control}
+                name="emergency_contact_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">{t('profile.driver.contact_phone')}</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder={t('profile.driver.contact_phone_placeholder')}
+                        value={field.value || ''} 
+                        {...phoneHandlers}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          <div className="flex justify-end gap-2">
-            {showCancelButton && onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancelar
+          <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+            {showCancelButton && (
+              <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
+                <RotateCcw className="mr-2 h-4 w-4" />
+                {t('profile.driver.cancel')}
               </Button>
             )}
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Guardando...' : 'Guardar'}
+            <Button type="submit" disabled={updating} className="w-full sm:w-auto">
+              <Save className="mr-2 h-4 w-4" />
+              {updating ? t('profile.driver.saving') : t('profile.driver.save')}
             </Button>
           </div>
         </form>
       </Form>
     </div>
   );
-}
+});

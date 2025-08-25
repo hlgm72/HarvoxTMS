@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useFleetNotifications } from '@/components/notifications';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { OnboardingPreferencesForm } from './OnboardingPreferencesForm';
+import { Save, RotateCcw, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { OnboardingActions } from './OnboardingActions';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const preferencesSchema = z.object({
-  language: z.string().min(1, 'El idioma es requerido'),
-  theme: z.enum(['light', 'dark', 'system']),
-  timezone: z.string().min(1, 'La zona horaria es requerida'),
+  preferred_language: z.string().optional(),
+  timezone: z.string().optional(),
 });
 
 type PreferencesFormData = z.infer<typeof preferencesSchema>;
@@ -22,166 +24,234 @@ type PreferencesFormData = z.infer<typeof preferencesSchema>;
 interface PreferencesFormProps {
   onCancel?: () => void;
   showCancelButton?: boolean;
-  showOnboardingSection?: boolean;
   className?: string;
+  showOnboardingSection?: boolean;
 }
 
-const timezones = [
-  'America/New_York',
-  'America/Chicago', 
-  'America/Denver',
-  'America/Los_Angeles',
-  'America/Phoenix',
-  'America/Anchorage',
-  'Pacific/Honolulu',
-  'America/Mexico_City',
-  'America/Toronto',
-  'Europe/London',
-  'Europe/Madrid',
-  'America/Bogota',
-  'America/Lima',
-  'America/Argentina/Buenos_Aires'
-];
+export interface PreferencesFormRef {
+  saveData: () => Promise<{ success: boolean; error?: string }>;
+}
 
-export function PreferencesForm({ 
-  onCancel, 
-  showCancelButton = true, 
-  showOnboardingSection = false,
-  className 
-}: PreferencesFormProps) {
-  const { user } = useAuth();
-  const { preferences, fetchPreferences } = useUserPreferences();
-  const [isLoading, setIsLoading] = useState(false);
+export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, className, showOnboardingSection = false }, ref) => {
+  const { t, i18n } = useTranslation('settings');
+  const { showSuccess, showError } = useFleetNotifications();
+  const { user } = useUserProfile();
+  const { preferences, updatePreferences } = useUserPreferences();
+  const [updating, setUpdating] = useState(false);
 
-  const form = useForm<PreferencesFormData>({
-    resolver: zodResolver(preferencesSchema),
-    defaultValues: {
-      language: preferences?.preferred_language || 'es',
-      theme: (preferences?.theme as 'light' | 'dark' | 'system') || 'system',
-      timezone: preferences?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-  });
-
-  const onSubmit = async (data: PreferencesFormData) => {
-    if (!user) return;
-    
-    setIsLoading(true);
-    
+  // Detectar zona horaria automáticamente
+  const getUserTimezone = () => {
     try {
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          preferred_language: data.language,
-          theme: data.theme,
-          timezone: data.timezone,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-
-      await fetchPreferences();
-      toast.success('Preferencias actualizadas');
-    } catch (error) {
-      console.error('Error updating preferences:', error);
-      toast.error('Error al actualizar preferencias');
-    } finally {
-      setIsLoading(false);
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return 'America/New_York'; // Fallback
     }
   };
 
-  return (
-    <div className={className}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="language"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Idioma</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un idioma" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="es">Español</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  const preferencesForm = useForm<PreferencesFormData>({
+    resolver: zodResolver(preferencesSchema),
+    defaultValues: {
+      preferred_language: 'en',
+      timezone: getUserTimezone(),
+    },
+  });
 
-          <FormField
-            control={form.control}
-            name="theme"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tema</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un tema" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="light">Claro</SelectItem>
-                    <SelectItem value="dark">Oscuro</SelectItem>
-                    <SelectItem value="system">Sistema</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  useEffect(() => {
+    console.log('🔄 PreferencesForm: preferences changed', preferences);
+    if (preferences) {
+      const formValues = {
+        preferred_language: preferences.preferred_language || 'en',
+        timezone: preferences.timezone || getUserTimezone(),
+      };
+      console.log('🔄 PreferencesForm: resetting form with values', formValues);
+      preferencesForm.reset(formValues);
+    } else {
+      // Si no hay preferencias, usar valores por defecto con zona horaria detectada
+      const defaultValues = {
+        preferred_language: 'en',
+        timezone: getUserTimezone(),
+      };
+      console.log('🔄 PreferencesForm: no preferences, using defaults', defaultValues);
+      preferencesForm.reset(defaultValues);
+    }
+  }, [preferences, preferencesForm]);
 
-          <FormField
-            control={form.control}
-            name="timezone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Zona Horaria</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona tu zona horaria" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {timezones.map((tz) => (
-                      <SelectItem key={tz} value={tz}>
-                        {tz.replace(/_/g, ' ')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  const savePreferencesData = async (data: PreferencesFormData): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: t('profile.personal_info.user_not_found') };
 
-          <div className="flex justify-end gap-2">
-            {showCancelButton && onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancelar
-              </Button>
-            )}
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Guardando...' : 'Guardar'}
-            </Button>
-          </div>
-        </form>
-      </Form>
+    try {
+      const result = await updatePreferences({
+        preferred_language: data.preferred_language || 'en',
+        timezone: data.timezone || getUserTimezone(),
+      });
+
+      if (!result.success) {
+        return { success: false, error: result.error };
+      }
+
+      // Update i18n language if changed
+      if (data.preferred_language && data.preferred_language !== i18n.language) {
+        await i18n.changeLanguage(data.preferred_language);
+      }
+
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || t('profile.personal_info.unknown_error') };
+    }
+  };
+
+  const onSubmitPreferences = async (data: PreferencesFormData) => {
+    setUpdating(true);
+    try {
+      const result = await savePreferencesData(data);
+      if (result.success) {
+        showSuccess(
+          t('profile.preferences.success_title'),
+          t('profile.preferences.success_message')
+        );
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      showError(
+        t('profile.preferences.error_title'),
+        error.message || t('profile.preferences.error_message')
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Expose saveData method via ref
+  useImperativeHandle(ref, () => ({
+    saveData: async () => {
+      console.log('🔄 PreferencesForm: saveData called');
       
-      {showOnboardingSection && (
-        <div className="mt-6">
-          <OnboardingPreferencesForm />
-        </div>
-      )}
-    </div>
+      // Force validation to ensure all field values are current
+      const isValid = await preferencesForm.trigger();
+      console.log('🔄 PreferencesForm: validation result', isValid);
+      
+      if (!isValid) {
+        const errors = preferencesForm.formState.errors;
+        console.error('🔄 PreferencesForm: validation errors', errors);
+        return { success: false, error: 'Form validation failed' };
+      }
+      
+      // Get current form values (this includes any user changes)
+      const data = preferencesForm.getValues();
+      console.log('🔄 PreferencesForm: current form values', data);
+      console.log('🔄 PreferencesForm: detected timezone', getUserTimezone());
+      
+      // Ensure we have valid values
+      const finalData = {
+        preferred_language: data.preferred_language || 'en',
+        timezone: data.timezone || getUserTimezone(),
+      };
+      console.log('🔄 PreferencesForm: final data to save', finalData);
+      
+      return await savePreferencesData(finalData);
+    }
+  }));
+
+  const handleCancel = () => {
+    if (preferences) {
+      preferencesForm.reset({
+        preferred_language: preferences.preferred_language || 'en',
+        timezone: preferences.timezone || getUserTimezone(),
+      });
+    }
+    onCancel?.();
+  };
+
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>{t('profile.preferences.title')}</CardTitle>
+        <CardDescription>
+          {t('profile.preferences.description')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <Form {...preferencesForm}>
+          <form onSubmit={preferencesForm.handleSubmit(onSubmitPreferences)} className="space-y-4" data-form="preferences">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={preferencesForm.control}
+                name="preferred_language"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">{t('profile.preferences.preferred_language')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('profile.preferences.language_placeholder')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="en">{t('profile.preferences.english')}</SelectItem>
+                        <SelectItem value="es">{t('profile.preferences.spanish')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={preferencesForm.control}
+                name="timezone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">{t('profile.preferences.timezone')}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('profile.preferences.timezone_placeholder')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="America/New_York">{t('profile.preferences.timezones.eastern')}</SelectItem>
+                        <SelectItem value="America/Chicago">{t('profile.preferences.timezones.central')}</SelectItem>
+                        <SelectItem value="America/Denver">{t('profile.preferences.timezones.mountain')}</SelectItem>
+                        <SelectItem value="America/Los_Angeles">{t('profile.preferences.timezones.pacific')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {showCancelButton && (
+              <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  {t('profile.preferences.cancel')}
+                </Button>
+                <Button type="submit" disabled={updating} className="w-full sm:w-auto">
+                  <Save className="mr-2 h-4 w-4" />
+                  {updating ? t('profile.preferences.saving') : t('profile.preferences.save')}
+                </Button>
+              </div>
+            )}
+          </form>
+        </Form>
+
+        {showOnboardingSection && (
+          <div className="border-t pt-6">
+            <div className="mb-4">
+              <h4 className="text-base font-medium flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                {t('onboarding.title')}
+              </h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t('onboarding.description')}
+              </p>
+            </div>
+            <OnboardingActions />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
-}
+});

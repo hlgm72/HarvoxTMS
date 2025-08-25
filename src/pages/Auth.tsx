@@ -478,15 +478,6 @@ export default function Auth() {
       });
 
       if (isLogin) {
-        // Clean up auth state before attempting login to prevent limbo states
-        const { cleanupAuthState, forceSignOut } = await import('@/utils/authCleanup');
-        
-        console.log('🧹 Cleaning auth state before login...');
-        await forceSignOut();
-        
-        // Wait a bit for cleanup to complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         // Sign in existing user
         const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email.trim(),
@@ -535,43 +526,10 @@ export default function Auth() {
       }
     } catch (err: any) {
       console.error('Authentication error:', err);
-      
-      // Handle specific authentication errors with user-friendly messages using i18n
-      let errorTitle = t('auth:errors.generic_auth_error_title');
-      let errorMessage = t('auth:errors.generic_auth_error_message');
-      
-      if (err?.message) {
-        const errorMsg = err.message.toLowerCase();
-        
-        if (errorMsg.includes('invalid login credentials') || errorMsg.includes('invalid credentials')) {
-          errorTitle = t('auth:errors.invalid_credentials_title');
-          errorMessage = t('auth:errors.invalid_credentials_message');
-        } else if (errorMsg.includes('email not confirmed')) {
-          errorTitle = t('auth:errors.email_not_confirmed_title');
-          errorMessage = t('auth:errors.email_not_confirmed_message');
-        } else if (errorMsg.includes('too many requests')) {
-          errorTitle = t('auth:errors.too_many_requests_title');
-          errorMessage = t('auth:errors.too_many_requests_message');
-        } else if (errorMsg.includes('user not found')) {
-          errorTitle = t('auth:errors.user_not_found_title');
-          errorMessage = t('auth:errors.user_not_found_message');
-        } else if (errorMsg.includes('weak password')) {
-          errorTitle = t('auth:errors.weak_password_title');
-          errorMessage = t('auth:errors.weak_password_message');
-        } else if (errorMsg.includes('email already registered') || errorMsg.includes('user already registered')) {
-          errorTitle = t('auth:errors.email_already_registered_title');
-          errorMessage = t('auth:errors.email_already_registered_message');
-        } else if (errorMsg.includes('signup disabled')) {
-          errorTitle = t('auth:errors.signup_disabled_title');
-          errorMessage = t('auth:errors.signup_disabled_message');
-        } else {
-          // Keep generic message for unknown errors but log the actual error
-          console.warn('Unhandled auth error:', err.message);
-          errorMessage = `${t('auth:errors.generic_auth_error_message')}: ${err.message}`;
-        }
-      }
-      
-      showError(errorTitle, errorMessage);
+      showError(
+        "Error de autenticación",
+        err.message || "Ocurrió un error durante la autenticación"
+      );
     } finally {
       setLoading(false);
     }
@@ -699,7 +657,7 @@ export default function Auth() {
           <CardContent className="pt-0">
             {/* Forgot Password Form */}
             {showForgotPassword && (
-              <form onSubmit={handleForgotPassword} className="space-y-4" noValidate>
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="resetEmail" className="font-body font-medium text-foreground">
                     {t('auth:forgot_password.email_label')}
@@ -781,7 +739,7 @@ export default function Auth() {
 
             {/* Reset Password Form */}
             {showResetPassword && (
-              <form onSubmit={handleResetPassword} className="space-y-4" noValidate>
+              <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="newPassword" className="font-body font-medium text-foreground">
                     Nueva Contraseña
@@ -854,7 +812,7 @@ export default function Auth() {
             {/* Main Login/Signup Form */}
             {!showForgotPassword && (
               <>
-                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {!isLogin && (
                     <div className="space-y-4 animate-fade-in">
                       <div className="grid grid-cols-2 gap-4">
