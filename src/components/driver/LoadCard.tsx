@@ -10,7 +10,8 @@ import {
   FileText, 
   Navigation, 
   Eye,
-  CheckCircle
+  CheckCircle,
+  Package
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort } from '@/lib/dateFormatting';
@@ -87,7 +88,15 @@ export function LoadCard({
     <Card className="overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between text-lg">
-          <span>{load.load_number}</span>
+          <div className="flex items-center gap-2">
+            {/* Icono visible solo en pantallas pequeñas */}
+            <Package className="h-5 w-5 md:hidden" />
+            <span>
+              {/* "Load #" visible solo en pantallas grandes */}
+              <span className="hidden md:inline">Load #</span>
+              {load.load_number} ({formatCurrency(load.total_amount)})
+            </span>
+          </div>
           <div className="flex items-center gap-2">
             <Badge variant={getStatusVariant(load.status)}>
               {t(`common:loads.status.${load.status}`)}
@@ -210,15 +219,7 @@ export function LoadCard({
           />
         </div>
 
-        {/* Amount */}
-        <div className="pt-2 border-t">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">{t('common:loads.amount')}</span>
-            <span className="font-semibold text-primary">
-              {formatCurrency(load.total_amount)}
-            </span>
-          </div>
-        </div>
+        {/* Amount - removido de aquí ya que se muestra en el título */}
       </CardContent>
     </Card>
   );
