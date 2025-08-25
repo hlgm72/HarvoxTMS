@@ -19,6 +19,8 @@ import { PaymentFilters, PaymentFiltersType } from "@/components/payments/Paymen
 import { PaymentFiltersSheet } from "@/components/payments/PaymentFiltersSheet";
 import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, useNextPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useTranslation } from 'react-i18next';
+import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
+import { FinancialLockWarning, FinancialLockIndicator } from "@/components/payments/FinancialLockWarning";
 
 export default function PaymentReports() {
   const { t } = useTranslation(['payments', 'common']);
@@ -45,6 +47,18 @@ export default function PaymentReports() {
   const [selectedForPayment, setSelectedForPayment] = useState<any>(null);
   
   const { markDriverAsPaid, calculateDriverPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
+
+  // Validación de integridad financiera para el período actual
+  const currentPeriodId = useMemo(() => {
+    if (filters.periodFilter.type === 'current' && currentPeriod) return currentPeriod.id;
+    if (filters.periodFilter.type === 'specific' && filters.periodFilter.periodId) return filters.periodFilter.periodId;
+    return null;
+  }, [filters.periodFilter, currentPeriod]);
+
+  const { 
+    data: financialValidation, 
+    isLoading: isValidationLoading 
+  } = useFinancialDataValidation(currentPeriodId);
 
   // Actualizar filtro de período cuando se carga el período actual
   useEffect(() => {
@@ -298,7 +312,19 @@ export default function PaymentReports() {
         }
       />
 
-      <div className="p-2 md:p-4 space-y-6">
+        <div className="p-2 md:p-4 space-y-6">
+        {/* Financial Lock Warning */}
+        {financialValidation && (
+          <FinancialLockWarning
+            isLocked={financialValidation.is_locked}
+            canModify={financialValidation.can_modify}
+            warningMessage={financialValidation.warning_message}
+            paidDrivers={financialValidation.paid_drivers}
+            totalDrivers={financialValidation.total_drivers}
+            variant="banner"
+          />
+        )}
+        
         {/* Stats Cards */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <StatsCard
@@ -406,13 +432,24 @@ export default function PaymentReports() {
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2 w-full md:w-auto md:justify-end">
+                        {/* Indicador de bloqueo financiero */}
+                        <FinancialLockIndicator 
+                          isLocked={financialValidation?.is_locked || false}
+                          className="mr-2"
+                        />
+                        
                         {calculation.payment_status !== 'paid' && calculation.calculated_at && (
                           <Button
                             variant="default"
                             size="sm"
                             onClick={() => handleMarkAsPaid(calculation)}
-                            disabled={paymentLoading}
-                            className="bg-green-600 hover:bg-green-700"
+                            disabled={paymentLoading || financialValidation?.is_locked}
+                            className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                            title={
+                              financialValidation?.is_locked 
+                                ? "No se puede marcar como pagado: período bloqueado" 
+                                : undefined
+                            }
                           >
                             <DollarSign className="h-4 w-4 mr-2" />
                             {t('reports.mark_paid')}

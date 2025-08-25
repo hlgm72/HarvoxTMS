@@ -3090,6 +3090,10 @@ export type Database = {
         Args: { target_company_id: string }
         Returns: boolean
       }
+      can_modify_financial_data: {
+        Args: { period_id: string }
+        Returns: Json
+      }
       can_user_be_permanently_deleted: {
         Args: { user_id_param: string }
         Returns: Json
@@ -3592,6 +3596,10 @@ export type Database = {
       }
       is_current_user_anonymous: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_payment_period_locked: {
+        Args: { period_id: string }
         Returns: boolean
       }
       is_period_locked: {
