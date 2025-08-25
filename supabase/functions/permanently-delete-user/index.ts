@@ -52,22 +52,24 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Iniciando eliminación permanente del usuario: ${userId}`);
 
-    // 1. Verificar si el usuario puede ser eliminado usando RPC existente
-    const { data: deletionCheck, error: checkError } = await supabase
-      .rpc('can_user_be_permanently_deleted', { user_id_param: userId });
-
-    if (checkError) {
-      console.error('Error verificando eliminación:', checkError);
-      throw new Error(`Error verificando eliminación: ${checkError.message}`);
+    // 1. Verificar si el usuario existe y obtener su email
+    const { data: userData, error: userError } = await supabase.auth.admin.getUserById(userId);
+    
+    if (userError || !userData.user) {
+      return new Response(
+        JSON.stringify({ error: 'Usuario no encontrado en el sistema de autenticación' }),
+        { 
+          status: 404, 
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        }
+      );
     }
 
-    if (!deletionCheck?.can_delete) {
+    const userEmail = userData.user.email;
+    
+    if (!userEmail) {
       return new Response(
-        JSON.stringify({ 
-          success: false,
-          message: 'El usuario no puede ser eliminado debido a datos relacionados',
-          deletion_check: deletionCheck
-        }),
+        JSON.stringify({ error: 'No se pudo obtener el email del usuario' }),
         { 
           status: 400, 
           headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -76,7 +78,6 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // 2. Verificar email de confirmación
-    const userEmail = deletionCheck.user_email;
     if (userEmail !== confirmationEmail) {
       return new Response(
         JSON.stringify({ error: 'El email de confirmación no coincide con el usuario a eliminar' }),
@@ -146,6 +147,30 @@ const handler = async (req: Request): Promise<Response> => {
       console.error('Error eliminando invitaciones:', invitationsError);
     } else {
       console.log('✅ Invitaciones eliminadas');
+    }
+
+    console.log('🗑️ Eliminando cálculos de pago...');
+    const { error: calculationsError } = await supabase
+      .from('driver_period_calculations')
+      .delete()
+      .eq('driver_user_id', userId);
+
+    if (calculationsError) {
+      console.error('Error eliminando cálculos de pago:', calculationsError);
+    } else {
+      console.log('✅ Cálculos de pago eliminados');
+    }
+
+    console.log('🗑️ Eliminando instancias de gastos...');
+    const { error: expenseInstancesError } = await supabase
+      .from('expense_instances')
+      .delete()
+      .eq('driver_user_id', userId);
+
+    if (expenseInstancesError) {
+      console.error('Error eliminando instancias de gastos:', expenseInstancesError);
+    } else {
+      console.log('✅ Instancias de gastos eliminadas');
     }
 
     console.log('🗑️ Eliminando perfil de conductor...');
