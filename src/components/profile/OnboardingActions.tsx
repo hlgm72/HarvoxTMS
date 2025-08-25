@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useFleetNotifications } from '@/components/notifications';
 import { useOnboarding } from '@/hooks/useOnboarding';
@@ -20,6 +20,11 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
   const [resetting, setResetting] = useState(false);
   const [showSetupWizard, setShowSetupWizard] = useState(false);
   const { t } = useTranslation('settings');
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 showSetupWizard changed:', showSetupWizard);
+  }, [showSetupWizard]);
 
   const handleResetOnboarding = async () => {
     if (!user || !currentRole) {
@@ -45,10 +50,13 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
   };
 
   const handleShowSetup = () => {
+    console.log('🚀 handleShowSetup called');
     if (!user || !currentRole) {
+      console.log('❌ No user or role');
       showError(t('onboarding.actions.error_title'), t('onboarding.actions.error_message'));
       return;
     }
+    console.log('✅ Opening setup wizard');
     setShowSetupWizard(true);
   };
 
@@ -91,7 +99,7 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
         </div>
         
         <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-          <strong>{t('onboarding.note_label')}</strong> {t('onboarding.note')}
+          <strong>{t('onboarding.note_label')}</strong> The welcome tour requires a page reload to activate, but the Setup Assistant will open immediately.
         </div>
       </div>
 
