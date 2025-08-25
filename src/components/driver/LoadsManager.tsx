@@ -38,6 +38,8 @@ import { LoadDocumentsSection } from '@/components/loads/LoadDocumentsSection';
 import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
 import { LoadActionButtonWithPOD } from "./LoadActionButtonWithPOD";
 import { usePODUpload } from "@/hooks/usePODUpload";
+import { useLoadCompletion } from '@/hooks/useLoadCompletion';
+import { CelebrationLoadCard } from './CelebrationLoadCard';
 
 interface Load {
   id: string;
@@ -56,6 +58,13 @@ interface Load {
   latest_status_notes?: string;
   latest_status_eta?: string;
   latest_status_stop_id?: string;
+  // Documentos de la carga
+  documents?: Array<{
+    id: string;
+    document_type: string;
+    file_name: string;
+    file_url: string;
+  }>;
   stops?: Array<{
     id: string;
     stop_number: number;
@@ -283,6 +292,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           latest_status_notes: (load as any).latest_status_notes,
           latest_status_eta: (load as any).latest_status_eta,
           latest_status_stop_id: (load as any).latest_status_stop_id,
+          // Documentos de la carga 
+          documents: load.documents || [],
           stops: stops.map((stop, index) => ({
             ...stop,
             id: stop.id || `${load.id}-stop-${index}`,
@@ -388,8 +399,16 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     });
   };
 
-  const activeLoads = loads.filter(load => !['completed', 'cancelled'].includes(load.status));
-  const completedLoads = loads.filter(load => ['completed'].includes(load.status));
+  // Lógica mejorada para determinar cargas completadas
+  const isLoadCompleted = (load: Load): boolean => {
+    return load.status === 'delivered' && 
+           load.documents?.some(doc => doc.document_type === 'pod') === true;
+  };
+
+  const activeLoads = loads.filter(load => 
+    !['cancelled'].includes(load.status) && !isLoadCompleted(load)
+  );
+  const completedLoads = loads.filter(load => isLoadCompleted(load));
 
   // Determinar la carga actual (más prioritaria) para mostrar en el dashboard
   const getCurrentLoad = (loads: Load[]): Load | null => {
@@ -496,15 +515,29 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             </Card>
           ) : (
             // En dashboard mode mostrar solo la carga actual, en modo completo mostrar todas
-            (dashboardMode ? [currentLoad].filter(Boolean) : activeLoads).map((load) => (
-              <Card key={load.id} className="overflow-hidden">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Package className="h-5 w-5" />
-                      <CardTitle className="text-base">{load.load_number}</CardTitle>
-                      <LoadDocumentStatusIndicator loadId={load.id} showDetails={true} />
-                    </div>
+            (dashboardMode ? [currentLoad].filter(Boolean) : activeLoads).map((load) => {
+              const completionState = useLoadCompletion(load.id, load.status);
+              
+              // Si está en celebración, mostrar tarjeta especial
+              if (completionState.showCelebration) {
+                return (
+                  <CelebrationLoadCard
+                    key={load.id}
+                    load={load}
+                    showCelebration={true}
+                  />
+                );
+              }
+
+              return (
+                <Card key={load.id} className="overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Package className="h-5 w-5" />
+                        <CardTitle className="text-base">{load.load_number}</CardTitle>
+                        <LoadDocumentStatusIndicator loadId={load.id} showDetails={true} />
+                      </div>
                     <div className="text-right">
                       <Badge className={getStatusColor(load.status)}>
                         {getStatusText(load.status)}
@@ -781,9 +814,10 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                        </TooltipProvider>
                    </div>
                 </CardContent>
-              </Card>
-            ))
-          )}
+                </Card>
+               );
+             })
+           )}
         </TabsContent>
 
         <TabsContent value="completed" className="space-y-4">
@@ -864,8 +898,10 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         </LoadDocumentsProvider>
       )}
       
-      {/* Modal de subida de POD */}
-      <PODUploadComponent onSuccess={() => refetch()} />
+       {/* Modal de subida de POD */}
+       <PODUploadComponent onSuccess={() => {
+         refetch(); // Refrescar datos cuando se sube el POD
+       }} />
     </div>
   );
 }
