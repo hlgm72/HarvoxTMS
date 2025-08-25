@@ -16,7 +16,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
-import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { SplitLoadActionButton } from "./SplitLoadActionButton";
 import { cn } from "@/lib/utils";
@@ -101,7 +100,6 @@ export function LoadCard({
             <Badge variant={getStatusVariant(load.status)}>
               {t(`common:loads.status.${load.status}`)}
             </Badge>
-            <LoadDocumentStatusIndicator loadId={load.id} />
           </div>
         </CardTitle>
         <p className="text-sm text-muted-foreground font-medium">
