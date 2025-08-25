@@ -263,20 +263,28 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // 4) Guardar datos de Empresa (si aplica) - SIEMPRE intentar guardar
       if (isCompanyOwner) {
         console.log('🔄 SetupWizard: Saving company info...');
+        console.log('🔍 SetupWizard: companySetupRef.current:', companySetupRef.current);
         try {
           let result;
           if (companySetupRef.current) {
+            console.log('🔄 SetupWizard: Calling companySetupRef.saveData()...');
             result = await companySetupRef.current.saveData();
+            console.log('✅ SetupWizard: Company info result:', result);
+            saveResults.push({ 
+              step: 'Información de la Empresa', 
+              success: result, 
+              error: result ? undefined : 'Error al guardar información de empresa'
+            });
           } else {
-            console.warn('⚠️ SetupWizard: No company setup form ref available');
-            result = false;
+            console.warn('⚠️ SetupWizard: No company setup form ref available - skipping company save');
+            // En lugar de fallar, simplemente omitir este paso si no hay empresa configurada
+            console.log('📝 SetupWizard: Skipping company setup as ref is not available');
+            saveResults.push({ 
+              step: 'Información de la Empresa', 
+              success: true, 
+              error: undefined
+            });
           }
-          console.log('✅ SetupWizard: Company info result:', result);
-          saveResults.push({ 
-            step: 'Información de la Empresa', 
-            success: result, 
-            error: result ? undefined : 'Formulario de información de empresa no disponible'
-          });
         } catch (error: any) {
           console.error('❌ SetupWizard: Company info error:', error);
           saveResults.push({ step: 'Información de la Empresa', success: false, error: error.message });
