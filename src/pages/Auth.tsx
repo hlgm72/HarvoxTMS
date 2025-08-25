@@ -174,21 +174,21 @@ export default function Auth() {
       const passwordValue = passwordInput.value || '';
       let hasChanges = false;
       
-      // Update form data if values changed
+      // Update form data if values changed - ONLY update, don't validate to avoid clearing existing errors
       if (emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
-        // Only validate if the field is not empty or if it was previously filled
-        if (emailValue || formData.email) {
+        // Only validate if we're adding content (not removing it)
+        if (emailValue && !formData.email) {
           validateField('email', emailValue);
         }
         hasChanges = true;
       }
       
-      // Only validate password field if it's being filled, not cleared by user action
+      // Only validate password field if we're adding content (not removing it)
       if (passwordValue !== formData.password) {
         setFormData(prev => ({ ...prev, password: passwordValue }));
-        // Only validate if the field is not empty or if it was previously filled
-        if (passwordValue || formData.password) {
+        // Only validate if we're adding content (not removing it)
+        if (passwordValue && !formData.password) {
           validateField('password', passwordValue);
         }
         hasChanges = true;
