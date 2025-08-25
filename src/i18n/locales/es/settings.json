@@ -114,6 +114,7 @@
       "language_placeholder": "Selecciona un idioma",
       "timezone": "Zona Horaria",
       "timezone_placeholder": "Selecciona zona horaria",
+      "detected": "Detectada",
       "english": "English",
       "spanish": "Español",
       "timezones": {

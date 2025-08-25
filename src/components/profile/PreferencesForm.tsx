@@ -212,7 +212,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
                     <FormLabel className="text-sm font-medium">
                       {t('profile.preferences.timezone')}
                       <span className="text-xs text-muted-foreground ml-2">
-                        (Detectada: {getUserTimezone()})
+                        ({t('profile.preferences.detected')}: {getUserTimezone()})
                       </span>
                     </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value || getUserTimezone()}>
