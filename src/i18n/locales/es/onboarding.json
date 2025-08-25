@@ -192,7 +192,7 @@
     },
     "success": {
       "title": "¡Configuración completada!",
-      "message": "Todos tus datos han sido guardados exitosamente. Zona horaria configurada:"
+      "message": "Todos tus datos han sido guardados exitosamente."
     },
     "error": {
       "title": "Error al completar la configuración",
