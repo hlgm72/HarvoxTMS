@@ -214,10 +214,12 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
                         (Detectada: {getUserTimezone()})
                       </span>
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value || getUserTimezone()}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('profile.preferences.timezone_placeholder')} />
+                          <SelectValue 
+                            placeholder={t('profile.preferences.timezone_placeholder')}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
