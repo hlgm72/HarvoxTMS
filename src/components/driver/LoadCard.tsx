@@ -239,6 +239,7 @@ export function LoadCard({
             <SplitLoadActionButton
               load={load}
               onUpdateStatus={(loadId, newStatus, stopId, stopInfo) => {
+                console.log('🔥 LoadCard - SplitLoadActionButton clicked:', { loadId, newStatus, stopId, stopInfo });
                 const actionText = getNextActionText(load.status);
                 onUpdateStatus(loadId, newStatus, actionText, stopId, stopInfo);
               }}
