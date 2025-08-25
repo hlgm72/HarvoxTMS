@@ -194,10 +194,13 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     load?: any;
   }>({ isOpen: false });
 
-  const calculateProgress = (status: string, stopsData?: any[]): number => {
+  const calculateProgress = (status: string, stopsData?: any[], hasPOD?: boolean): number => {
     // Casos especiales
     if (status === 'assigned') return 0;
     if (status === 'closed') return 100;
+    
+    // ✅ NUEVO: Si está delivered Y tiene POD = 100%
+    if (status === 'delivered' && hasPOD) return 100;
 
     if (!stopsData || stopsData.length === 0) {
       // Fallback para carga de 2 paradas: 2×3 + 1 = 7 estados totales
@@ -210,7 +213,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         case 'loaded': return progressPerState * 3; // 42%
         case 'en_route_delivery': return progressPerState * 4; // 56%
         case 'at_delivery': return progressPerState * 5; // 70%
-        case 'delivered': return progressPerState * 6; // 84%
+        case 'delivered': return progressPerState * 6; // 84% (sin POD)
         default: return 0;
       }
     }
@@ -240,14 +243,14 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
         currentStatePosition = 5;
         break;
       case 'delivered':
-        currentStatePosition = 6;
+        currentStatePosition = 6; // Sin POD = ~85%
         break;
       default:
         return 0;
     }
     
     const finalProgress = progressPerState * currentStatePosition;
-    return Math.min(finalProgress, 99);
+    return Math.min(finalProgress, 90); // Máximo 90% sin POD
   };
 
   // Fetch driver's loads using the real hook
@@ -287,7 +290,11 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
           delivery_date: latestDelivery?.scheduled_date || '',
           status: load.status,
           total_amount: load.total_amount,
-          progress: calculateProgress(load.status, stops),
+          progress: calculateProgress(
+            load.status, 
+            stops, 
+            load.documents?.some(doc => doc.document_type === 'pod')
+          ),
           // Información del historial de estado más reciente
           latest_status_notes: (load as any).latest_status_notes,
           latest_status_eta: (load as any).latest_status_eta,
