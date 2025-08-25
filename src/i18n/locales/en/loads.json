@@ -182,7 +182,7 @@
         "photos": {
           "title": "Photos",
           "description": "Load photos and images",
-          "photo_count": "Load photos and images",
+          "photo_count": "{{count}} photos total",
           "pickup_photos": "Pickup Photos",
           "delivery_photos": "Delivery Photos",
           "category_count": "{{count}} photos",

@@ -182,7 +182,7 @@
         "photos": {
           "title": "Fotos",
           "description": "Fotos e imágenes de la carga",
-          "photo_count": "Fotos e imágenes de la carga",
+          "photo_count": "{{count}} fotos en total",
           "pickup_photos": "Fotos de Recogida",
           "delivery_photos": "Fotos de Entrega",
           "category_count": "{{count}} fotos",
