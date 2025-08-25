@@ -129,6 +129,11 @@ export function LoadCard({
                      >
                        <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
                          {pickupStop?.company_name || `${load.origin_city}, ${load.origin_state}`}
+                         {formatDateSafe(load.pickup_date) && (
+                           <span className="font-normal text-muted-foreground ml-1">
+                             ({formatDateTimeAuto(load.pickup_date)})
+                           </span>
+                         )}
                        </p>
                        {pickupStop?.address && (
                          <p className="text-xs text-muted-foreground">{pickupStop.address}</p>
@@ -147,18 +152,18 @@ export function LoadCard({
                      state: load.origin_state
                    })}
                  >
-                   <p className="font-medium group-hover:underline decoration-2 underline-offset-2">{load.origin_city}, {load.origin_state}</p>
+                   <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
+                     {load.origin_city}, {load.origin_state}
+                     {formatDateSafe(load.pickup_date) && (
+                       <span className="font-normal text-muted-foreground ml-1">
+                         ({formatDateTimeAuto(load.pickup_date)})
+                       </span>
+                     )}
+                   </p>
                  </div>
-              )}
-              <p className="text-muted-foreground">
-                {formatDateSafe(load.pickup_date) && (
-                  <>
-                    {t('common:pickup')}: {formatDateTimeAuto(load.pickup_date)}
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
+               )}
+             </div>
+           </div>
           
           <div className="flex items-start gap-2 text-sm">
             <Navigation className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
@@ -180,6 +185,11 @@ export function LoadCard({
                      >
                        <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
                          {lastDeliveryStop?.company_name || `${load.destination_city}, ${load.destination_state}`}
+                         {formatDateSafe(load.delivery_date) && (
+                           <span className="font-normal text-muted-foreground ml-1">
+                             ({formatDateTimeAuto(load.delivery_date)})
+                           </span>
+                         )}
                        </p>
                        {lastDeliveryStop?.address && (
                          <p className="text-xs text-muted-foreground">{lastDeliveryStop.address}</p>
@@ -198,18 +208,18 @@ export function LoadCard({
                      state: load.destination_state
                    })}
                  >
-                   <p className="font-medium group-hover:underline decoration-2 underline-offset-2">{load.destination_city}, {load.destination_state}</p>
+                   <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
+                     {load.destination_city}, {load.destination_state}
+                     {formatDateSafe(load.delivery_date) && (
+                       <span className="font-normal text-muted-foreground ml-1">
+                         ({formatDateTimeAuto(load.delivery_date)})
+                       </span>
+                     )}
+                   </p>
                  </div>
-              )}
-              <p className="text-muted-foreground">
-                {formatDateSafe(load.delivery_date) && (
-                  <>
-                    {t('common:delivery')}: {formatDateTimeAuto(load.delivery_date)}
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
+               )}
+             </div>
+           </div>
         </div>
 
         {/* Progress Bar */}
