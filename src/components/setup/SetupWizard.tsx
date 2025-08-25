@@ -11,6 +11,7 @@ import { PersonalInfoForm, PersonalInfoFormRef } from '@/components/profile/Pers
 import { PreferencesForm, PreferencesFormRef } from '@/components/profile/PreferencesForm';
 import { DriverInfoForm, DriverInfoFormRef } from '@/components/profile/DriverInfoForm';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { supabase } from '@/integrations/supabase/client';
 import { AddressForm } from '@/components/ui/AddressForm';
@@ -47,6 +48,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   const [validSteps, setValidSteps] = useState<boolean[]>([]);
   const { user, isDriver, isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const { updatePreferences } = useUserPreferences();
 
   // Estados centralizados para todos los datos del wizard
   const [wizardData, setWizardData] = useState({
@@ -219,14 +221,44 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       }
       
       // 2) Guardar Preferencias (siempre con zona horaria detectada)
-      console.log('🔄 SetupWizard: Saving preferences with timezone:', wizardData.preferences.timezone);
+      console.log('🔄 SetupWizard: Saving preferences with timezone:', wizardData.preferences?.timezone || 'auto-detected');
       try {
         let result;
-        if (wizardData.preferences && preferencesFormRef.current) {
+        
+        // Intentar obtener datos desde el ref primero
+        if (preferencesFormRef.current) {
+          console.log('🔄 SetupWizard: Getting preferences from form ref...');
           result = await preferencesFormRef.current.saveData();
+        } else if (wizardData.preferences) {
+          console.log('🔄 SetupWizard: Using cached preferences data...');
+          // Si tenemos datos en caché pero no ref, usar los datos directamente
+          result = await updatePreferences({
+            preferred_language: wizardData.preferences.preferred_language || 'en',
+            timezone: wizardData.preferences.timezone || (() => {
+              try {
+                return Intl.DateTimeFormat().resolvedOptions().timeZone;
+              } catch {
+                return 'America/New_York';
+              }
+            })(),
+          });
         } else {
-          result = { success: false, error: 'No preferences data' };
+          console.warn('⚠️ SetupWizard: No preferences data available, using defaults...');
+          // Como último recurso, usar valores por defecto
+          const getUserTimezone = () => {
+            try {
+              return Intl.DateTimeFormat().resolvedOptions().timeZone;
+            } catch {
+              return 'America/New_York';
+            }
+          };
+          
+          result = await updatePreferences({
+            preferred_language: 'en',
+            timezone: getUserTimezone(),
+          });
         }
+        
         console.log('✅ SetupWizard: Preferences result:', result);
         saveResults.push({ step: 'Preferencias', ...result });
       } catch (error: any) {
