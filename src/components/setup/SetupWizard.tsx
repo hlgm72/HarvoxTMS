@@ -654,13 +654,6 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-6">
-      <div className="text-center mb-4 sm:mb-6">
-        <h3 className="text-lg font-semibold mb-2">{t('setup.company.title')}</h3>
-        <p className="text-muted-foreground">
-          {t('setup.company.description')}
-        </p>
-      </div>
-
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="company-name" className="text-sm font-medium">{t('setup.company.fields.name')} *</Label>
