@@ -197,50 +197,34 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       console.log('  - preferencesFormRef.current:', preferencesFormRef.current);
       console.log('  - driverInfoFormRef.current:', driverInfoFormRef.current);
       console.log('  - companySetupRef.current:', companySetupRef.current);
-      console.log('🔍 SetupWizard: Current step:', currentStep);
-      console.log('🔍 SetupWizard: isDriver:', isDriver);
-      console.log('🔍 SetupWizard: isCompanyOwner:', isCompanyOwner);
       
       const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
       
-      // IMPORTANTE: Todos los formularios deben estar montados para que sus refs funcionen
-      // Voy a cambiar la estrategia: navegar de vuelta a cada paso para activar el guardado
+      // Save all data directly from refs (no navigation needed since all forms are mounted)
       
-      // 1) Guardar Datos Personales - navegar al paso 0 primero
-      console.log('🔄 SetupWizard: Navigating to step 0 to save personal info...');
-      setCurrentStep(0);
-      
-      // Dar tiempo para que React monte el componente
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      // 1) Guardar Datos Personales
       try {
-        let result;
         if (personalInfoFormRef.current) {
-          console.log('🔄 SetupWizard: personalInfoFormRef available, calling saveData...');
-          result = await personalInfoFormRef.current.saveData();
+          console.log('🔄 SetupWizard: Saving personal info...');
+          const result = await personalInfoFormRef.current.saveData();
+          console.log('✅ SetupWizard: Personal info result:', result);
+          saveResults.push({ step: 'Información Personal', ...result });
         } else {
-          console.warn('⚠️ SetupWizard: personalInfoFormRef still not available after navigation');
-          result = { success: false, error: 'Personal info form ref not available' };
+          console.warn('⚠️ SetupWizard: personalInfoFormRef not available');
+          saveResults.push({ step: 'Información Personal', success: false, error: 'Personal info form ref not available' });
         }
-        console.log('✅ SetupWizard: Personal info result:', result);
-        saveResults.push({ step: 'Información Personal', ...result });
       } catch (error: any) {
         console.error('❌ SetupWizard: Personal info error:', error);
         saveResults.push({ step: 'Información Personal', success: false, error: error.message });
       }
       
-      // 2) Guardar Preferencias - navegar al paso 1
-      console.log('🔄 SetupWizard: Navigating to step 1 to save preferences...');
-      setCurrentStep(1);
-      
-      // Dar tiempo para que React monte el componente
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      // 2) Guardar Preferencias
       try {
-        let result;
         if (preferencesFormRef.current) {
-          console.log('🔄 SetupWizard: preferencesFormRef available, calling saveData...');
-          result = await preferencesFormRef.current.saveData();
+          console.log('🔄 SetupWizard: Saving preferences...');
+          const result = await preferencesFormRef.current.saveData();
+          console.log('✅ SetupWizard: Preferences result:', result);
+          saveResults.push({ step: 'Preferencias', ...result });
         } else {
           console.warn('⚠️ SetupWizard: preferencesFormRef not available, using fallback...');
           const detectedTimezone = (() => {
@@ -251,13 +235,12 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
             }
           })();
           
-          result = await updatePreferences({
+          const result = await updatePreferences({
             preferred_language: wizardData.preferences?.preferred_language || 'en',
             timezone: wizardData.preferences?.timezone || detectedTimezone,
           });
+          saveResults.push({ step: 'Preferencias', ...result });
         }
-        console.log('✅ SetupWizard: Preferences result:', result);
-        saveResults.push({ step: 'Preferencias', ...result });
       } catch (error: any) {
         console.error('❌ SetupWizard: Preferences error:', error);
         saveResults.push({ step: 'Preferencias', success: false, error: error.message });
@@ -265,23 +248,16 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       
       // 3) Guardar datos de Conductor (si aplica)
       if (isDriver) {
-        console.log('🔄 SetupWizard: Navigating to step 2 to save driver info...');
-        setCurrentStep(2);
-        
-        // Dar tiempo para que React monte el componente
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         try {
-          let result;
           if (driverInfoFormRef.current) {
-            console.log('🔄 SetupWizard: driverInfoFormRef available, calling saveData...');
-            result = await driverInfoFormRef.current.saveData();
+            console.log('🔄 SetupWizard: Saving driver info...');
+            const result = await driverInfoFormRef.current.saveData();
+            console.log('✅ SetupWizard: Driver info result:', result);
+            saveResults.push({ step: 'Información del Conductor', ...result });
           } else {
             console.warn('⚠️ SetupWizard: driverInfoFormRef not available');
-            result = { success: false, error: 'Driver info form ref not available' };
+            saveResults.push({ step: 'Información del Conductor', success: false, error: 'Driver info form ref not available' });
           }
-          console.log('✅ SetupWizard: Driver info result:', result);
-          saveResults.push({ step: 'Información del Conductor', ...result });
         } catch (error: any) {
           console.error('❌ SetupWizard: Driver info error:', error);
           saveResults.push({ step: 'Información del Conductor', success: false, error: error.message });
@@ -290,18 +266,10 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       
       // 4) Guardar datos de Empresa (si aplica)
       if (isCompanyOwner) {
-        const companyStep = isDriver ? 3 : 2;
-        console.log(`🔄 SetupWizard: Navigating to step ${companyStep} to save company info...`);
-        setCurrentStep(companyStep);
-        
-        // Dar tiempo para que React monte el componente
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         try {
-          let result;
           if (companySetupRef.current) {
-            console.log('🔄 SetupWizard: companySetupRef available, calling saveData...');
-            result = await companySetupRef.current.saveData();
+            console.log('🔄 SetupWizard: Saving company info...');
+            const result = await companySetupRef.current.saveData();
             console.log('✅ SetupWizard: Company info result:', result);
             saveResults.push({ 
               step: 'Información de la Empresa', 
@@ -309,11 +277,11 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
               error: result ? undefined : 'Error al guardar información de empresa'
             });
           } else {
-            console.warn('⚠️ SetupWizard: companySetupRef not available - skipping company save');
+            console.warn('⚠️ SetupWizard: companySetupRef not available');
             saveResults.push({ 
               step: 'Información de la Empresa', 
-              success: true, 
-              error: undefined
+              success: false, 
+              error: 'Company form ref not available'
             });
           }
         } catch (error: any) {
@@ -446,45 +414,43 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </div>
               ) : (
                 <div className="space-y-6">
-                  {/* Personal Info Form */}
-                  {currentStep === 0 && (
-                    <div>
-                      <div className="text-center mb-4">
-                        <h3 className="text-lg font-semibold mb-2">{t('setup.steps.personal.title')}</h3>
-                        <p className="text-muted-foreground">
-                          {t('setup.dataWillBeSaved')}
-                        </p>
-                      </div>
-                      <PersonalInfoForm 
-                        ref={personalInfoFormRef}
-                        showCancelButton={false}
-                        showSaveButton={false}
-                        className="space-y-6"
-                      />
+                  {/* Always mount all forms but only show the current step */}
+                  
+                  {/* Personal Info Form - Always mounted */}
+                  <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
+                    <div className="text-center mb-4">
+                      <h3 className="text-lg font-semibold mb-2">{t('setup.steps.personal.title')}</h3>
+                      <p className="text-muted-foreground">
+                        {t('setup.dataWillBeSaved')}
+                      </p>
                     </div>
-                  )}
+                    <PersonalInfoForm 
+                      ref={personalInfoFormRef}
+                      showCancelButton={false}
+                      showSaveButton={false}
+                      className="space-y-6"
+                    />
+                  </div>
 
-                  {/* Preferences Form */}
-                  {currentStep === 1 && (
-                    <div>
-                      <div className="text-center mb-4">
-                        <h3 className="text-lg font-semibold mb-2">{t('setup.steps.preferences.configTitle')}</h3>
-                        <p className="text-muted-foreground">
-                          {t('setup.steps.preferences.autoDetected')} <strong>{wizardData.preferences.timezone}</strong>
-                        </p>
-                      </div>
-                      <PreferencesForm 
-                        ref={preferencesFormRef}
-                        showCancelButton={false}
-                        showSaveButton={false}
-                        className="space-y-6"
-                      />
+                  {/* Preferences Form - Always mounted */}
+                  <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
+                    <div className="text-center mb-4">
+                      <h3 className="text-lg font-semibold mb-2">{t('setup.steps.preferences.configTitle')}</h3>
+                      <p className="text-muted-foreground">
+                        {t('setup.steps.preferences.autoDetected')} <strong>{wizardData.preferences.timezone}</strong>
+                      </p>
                     </div>
-                  )}
+                    <PreferencesForm 
+                      ref={preferencesFormRef}
+                      showCancelButton={false}
+                      showSaveButton={false}
+                      className="space-y-6"
+                    />
+                  </div>
 
-                  {/* Driver Info Form */}
-                  {currentStep === 2 && isDriver && (
-                    <div>
+                  {/* Driver Info Form - Always mounted if driver */}
+                  {isDriver && (
+                    <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
                       <div className="text-center mb-4">
                         <h3 className="text-lg font-semibold mb-2">{t('setup.steps.driver.configTitle')}</h3>
                         <p className="text-muted-foreground">
@@ -499,9 +465,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                     </div>
                   )}
 
-                  {/* Company Setup Form */}
-                  {currentStep === (isDriver ? 3 : 2) && isCompanyOwner && (
-                    <div>
+                  {/* Company Setup Form - Always mounted if company owner */}
+                  {isCompanyOwner && (
+                    <div style={{ display: currentStep === (isDriver ? 3 : 2) ? 'block' : 'none' }}>
                       <div className="text-center mb-4">
                         <h3 className="text-lg font-semibold mb-2">{t('setup.steps.company.configTitle')}</h3>
                         <p className="text-muted-foreground">
