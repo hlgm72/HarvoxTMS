@@ -247,14 +247,22 @@ export default function Auth() {
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
     const checkValue = () => {
       if (!e.target) return;
+      
+      // Don't interfere if there are active validation errors
+      if (Object.keys(fieldErrors).length > 0 || loading) {
+        return;
+      }
+      
       const emailValue = e.target.value?.trim() || '';
       if (emailValue && emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
         if (error) setError(null);
       }
-      // Always check for credential autofill
-      detectCredentialAutofill();
+      // Only check for credential autofill if no validation errors
+      if (Object.keys(fieldErrors).length === 0) {
+        detectCredentialAutofill();
+      }
     };
     
     // Reduce de 6 checks a solo 2 para evitar bucle infinito
@@ -265,18 +273,36 @@ export default function Auth() {
   // Input event handler for Samsung Browser
   const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
     if (!e.currentTarget) return;
+    
+    // Don't interfere if there are active validation errors
+    if (Object.keys(fieldErrors).length > 0 || loading) {
+      // Still update the form data but don't validate
+      const emailValue = e.currentTarget.value?.trim() || '';
+      if (emailValue !== formData.email) {
+        setFormData(prev => ({ ...prev, email: emailValue }));
+      }
+      return;
+    }
+    
     const emailValue = e.currentTarget.value?.trim() || '';
     if (emailValue !== formData.email) {
       setFormData(prev => ({ ...prev, email: emailValue }));
       validateField('email', emailValue);
       if (error) setError(null);
     }
-    // Check if both fields were filled (credential autofill)
-    setTimeout(detectCredentialAutofill, 50);
+    // Only check if both fields were filled (credential autofill) if no validation errors
+    if (Object.keys(fieldErrors).length === 0) {
+      setTimeout(detectCredentialAutofill, 50);
+    }
   };
 
   // Password autofill detection - reducido para evitar bucle infinito
   const handlePasswordFocus = () => {
+    // Don't interfere if there are active validation errors
+    if (Object.keys(fieldErrors).length > 0 || loading) {
+      return;
+    }
+    
     setTimeout(detectCredentialAutofill, 50);
     setTimeout(detectCredentialAutofill, 200);
   };
