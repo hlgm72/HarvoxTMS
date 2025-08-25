@@ -458,6 +458,18 @@
     "load": "carga",
     "load_plural": "cargas",
     "my_loads": "Mis Cargas",
+    "skip_to": "Saltar a",
+    "status": {
+      "assigned": "Asignada",
+      "en_route_pickup": "Camino a recogida",
+      "at_pickup": "En recogida",
+      "loaded": "Cargada",
+      "en_route_delivery": "Camino a entrega",
+      "at_delivery": "En entrega",
+      "delivered": "Entregada",
+      "cancelled": "Cancelada",
+      "closed": "Cerrada"
+    },
     "actions": {
       "en_route_pickup": "Camino a recoger",
       "at_pickup": "Llegué a recogida",

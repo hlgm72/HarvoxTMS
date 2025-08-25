@@ -36,7 +36,7 @@ import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStat
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { LoadDocumentsSection } from '@/components/loads/LoadDocumentsSection';
 import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
-import { LoadActionButtonWithPOD } from "./LoadActionButtonWithPOD";
+import { SplitLoadActionButton } from "./SplitLoadActionButton";
 import { usePODUpload } from "@/hooks/usePODUpload";
 import { useLoadCompletion } from '@/hooks/useLoadCompletion';
 import { CelebrationLoadCard } from './CelebrationLoadCard';
@@ -763,7 +763,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
                    {/* Actions */}
                     <div className="flex gap-2">
-                      <LoadActionButtonWithPOD
+                      <SplitLoadActionButton
                         load={load}
                         onUpdateStatus={(loadId, newStatus, stopId, stopInfo) => {
                           const actionText = getNextActionText(load.status);
