@@ -34,14 +34,14 @@ export const useLoadCompletion = (loadId: string, status: string) => {
       // Mostrar toast celebratorio
       showSuccess("🎉 ¡Carga Completada! POD subido exitosamente. Moviendo a historial...");
 
-      // Después de 3 segundos, quitar la celebración
+      // Después de 5 segundos, quitar la celebración
       setTimeout(() => {
         setCompletionState(prev => ({
           ...prev,
           showCelebration: false,
           justCompleted: false
         }));
-      }, 3000);
+      }, 5000);
     } else if (completionState.isCompleted !== isNowCompleted) {
       setCompletionState(prev => ({
         ...prev,
