@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { SetupProvider, useSetup } from '@/contexts/SetupContext';
-import { PersonalInfoStep } from './steps/PersonalInfoStep';
-import { PreferencesStep } from './steps/PreferencesStep';
-import { DriverInfoStep } from './steps/DriverInfoStep';
+import { PersonalInfoStepWrapper } from './steps/PersonalInfoStepWrapper';
+import { PreferencesStepWrapper } from './steps/PreferencesStepWrapper';
+import { DriverInfoStepWrapper } from './steps/DriverInfoStepWrapper';
 
 interface SetupWizardProps {
   isOpen: boolean;
@@ -16,9 +16,9 @@ interface SetupWizardProps {
 }
 
 const STEPS = [
-  { id: 1, title: 'Información Personal', component: PersonalInfoStep },
-  { id: 2, title: 'Preferencias', component: PreferencesStep },
-  { id: 3, title: 'Información del Conductor', component: DriverInfoStep }
+  { id: 1, title: 'Información Personal', component: PersonalInfoStepWrapper },
+  { id: 2, title: 'Preferencias', component: PreferencesStepWrapper },
+  { id: 3, title: 'Información del Conductor', component: DriverInfoStepWrapper }
 ];
 
 function SetupWizardContent({ onClose, onComplete }: Omit<SetupWizardProps, 'isOpen' | 'userRole'>) {
@@ -94,34 +94,34 @@ function SetupWizardContent({ onClose, onComplete }: Omit<SetupWizardProps, 'isO
 
       {/* Step Navigation */}
       <div className="flex justify-center mb-6">
-        <div className="flex space-x-4">
+        <div className="flex space-x-2 sm:space-x-4">
           {STEPS.map((step) => (
             <button
               key={step.id}
               onClick={() => handleStepClick(step.id)}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+              className={`flex items-center space-x-2 px-2 sm:px-3 py-2 rounded-lg transition-all duration-200 border ${
                 step.id === currentStep
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                   : step.id < currentStep
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer'
-                  : 'bg-muted hover:bg-muted/80 cursor-pointer'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 cursor-pointer'
+                  : 'bg-background text-muted-foreground border-border hover:bg-muted/50 cursor-pointer'
               }`}
             >
               {step.id < currentStep ? (
                 <CheckCircle className="h-4 w-4" />
               ) : (
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-background text-foreground text-sm font-medium">
+                <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-muted text-muted-foreground text-xs sm:text-sm font-medium">
                   {step.id}
                 </span>
               )}
-              <span className="hidden sm:inline">{step.title}</span>
+              <span className="hidden sm:inline text-sm">{step.title}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Form Content */}
-      <div className="min-h-[400px]">
+      <div className="min-h-[400px] bg-card rounded-lg border p-6">
         <CurrentStepComponent />
       </div>
 
