@@ -367,19 +367,19 @@ export default function Auth() {
     try {
       // Check token validation first
       if (!tokenValidation?.isValid) {
-        setError(tokenValidation?.error || 'Token inválido');
+        setError(tokenValidation?.error || t('auth:errors.invalid_token', { defaultValue: 'Token inválido' }));
         setLoading(false);
         return;
       }
 
       if (!newPassword || newPassword.length < 8) {
-        setError('La contraseña debe tener al menos 8 caracteres');
+        setError(t('auth:validation.password_min_length'));
         setLoading(false);
         return;
       }
 
       if (newPassword !== confirmPassword) {
-        setError('Las contraseñas no coinciden');
+        setError(t('auth:errors.passwords_do_not_match', { defaultValue: 'Las contraseñas no coinciden' }));
         setLoading(false);
         return;
       }
@@ -394,7 +394,7 @@ export default function Auth() {
 
       if (resetError) {
         console.error('Error calling reset function:', resetError);
-        setError('Error al procesar el reset de contraseña');
+        setError(t('auth:errors.reset_password_error', { defaultValue: 'Error al procesar el reset de contraseña' }));
         setLoading(false);
         return;
       }
@@ -403,14 +403,14 @@ export default function Auth() {
       const result = resetResult as { success: boolean; message?: string; error?: string };
       
       if (!result?.success) {
-        setError(result?.error || 'Error al cambiar la contraseña');
+        setError(result?.error || t('auth:errors.reset_password_error', { defaultValue: 'Error al cambiar la contraseña' }));
         setLoading(false);
         return;
       }
 
       showSuccess(
-        'Contraseña actualizada',
-        'Tu contraseña ha sido actualizada exitosamente'
+        t('auth:reset_password.success_title', { defaultValue: 'Contraseña actualizada' }),
+        t('auth:reset_password.success_message', { defaultValue: 'Tu contraseña ha sido actualizada exitosamente' })
       );
 
       // Clear the form and redirect to login
@@ -423,7 +423,7 @@ export default function Auth() {
       
     } catch (err: any) {
       console.error('Password reset error:', err);
-      setError(err.message || 'Error al procesar el reset de contraseña');
+      setError(err.message || t('auth:errors.reset_password_error', { defaultValue: 'Error al procesar el reset de contraseña' }));
     } finally {
       setLoading(false);
     }
@@ -467,16 +467,41 @@ export default function Auth() {
     setLoading(true);
     setError(null);
 
-    try {
-      // Log form data being sent
-      console.log('Login attempt with data:', {
-        email: formData.email,
-        emailLength: formData.email.length,
-        hasSpaces: formData.email.includes(' '),
-        trimmedEmail: formData.email.trim(),
-        password: '***hidden***'
-      });
+    // Manual validation - check all required fields
+    const errors: Record<string, string> = {};
+    
+    if (!formData.email.trim()) {
+      errors.email = t('auth:validation.email_required');
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = t('auth:validation.email_invalid');
+    }
+    
+    if (!formData.password) {
+      errors.password = t('auth:validation.password_required');
+    } else if (!isLogin && formData.password.length < 8) {
+      errors.password = t('auth:validation.password_min_length');
+    }
+    
+    if (!isLogin) {
+      if (!formData.firstName.trim()) {
+        errors.firstName = t('auth:validation.first_name_required');
+      }
+      if (!formData.lastName.trim()) {
+        errors.lastName = t('auth:validation.last_name_required');
+      }
+      if (!formData.companyName.trim()) {
+        errors.companyName = t('auth:validation.company_name_required');
+      }
+    }
+    
+    // If there are validation errors, show them and stop
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setLoading(false);
+      return;
+    }
 
+    try {
       if (isLogin) {
         // Sign in existing user
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -486,7 +511,23 @@ export default function Auth() {
 
         if (error) {
           console.error('Supabase auth error:', error);
-          throw error;
+          
+          // Handle specific error types with translated messages
+          let errorMessage = t('auth:errors.unknown_error');
+          
+          if (error.message.includes('Invalid login credentials')) {
+            errorMessage = t('auth:errors.invalid_credentials');
+          } else if (error.message.includes('Email not confirmed')) {
+            errorMessage = t('auth:errors.email_not_confirmed', { defaultValue: 'Por favor confirma tu email antes de iniciar sesión' });
+          } else if (error.message.includes('Too many requests')) {
+            errorMessage = t('auth:errors.too_many_requests', { defaultValue: 'Demasiados intentos. Intenta nuevamente en unos minutos' });
+          } else if (error.message.includes('network')) {
+            errorMessage = t('auth:errors.network_error');
+          }
+          
+          setError(errorMessage);
+          setLoading(false);
+          return;
         }
 
         if (data.user) {
@@ -514,22 +555,36 @@ export default function Auth() {
           }
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase signup error:', error);
+          
+          // Handle specific signup error types with translated messages
+          let errorMessage = t('auth:errors.unknown_error');
+          
+          if (error.message.includes('User already registered')) {
+            errorMessage = t('auth:errors.email_already_exists');
+          } else if (error.message.includes('weak_password')) {
+            errorMessage = t('auth:errors.weak_password');
+          } else if (error.message.includes('network')) {
+            errorMessage = t('auth:errors.network_error');
+          }
+          
+          setError(errorMessage);
+          setLoading(false);
+          return;
+        }
 
         if (data.user) {
           showSuccess(
-            "¡Cuenta creada exitosamente!",
-            "Por favor revisa tu email para verificar tu cuenta"
+            t('auth:signup.success_title', { defaultValue: '¡Cuenta creada exitosamente!' }),
+            t('auth:signup.success_message', { defaultValue: 'Por favor revisa tu email para verificar tu cuenta' })
           );
           // Don't navigate yet - wait for email verification
         }
       }
     } catch (err: any) {
       console.error('Authentication error:', err);
-      showError(
-        "Error de autenticación",
-        err.message || "Ocurrió un error durante la autenticación"
-      );
+      setError(t('auth:errors.unknown_error'));
     } finally {
       setLoading(false);
     }
@@ -637,13 +692,16 @@ export default function Auth() {
             </div>
             
             <CardTitle className="text-2xl lg:text-3xl font-heading font-bold text-foreground mb-2">
-              {showResetPassword ? 'Nueva Contraseña' : 
+              {showResetPassword ? t('auth:reset_password.title', { defaultValue: 'Nueva Contraseña' }) : 
                showForgotPassword ? t('auth:forgot_password.title') : 
                (isLogin ? t('auth:title.login') : t('auth:title.signup'))}
             </CardTitle>
              <CardDescription className="font-body text-muted-foreground">
                {showResetPassword 
-                 ? `Establece tu nueva contraseña para ${tokenValidation?.userEmail || 'tu cuenta'}`
+                 ? t('auth:reset_password.description', { 
+                     defaultValue: `Establece tu nueva contraseña para ${tokenValidation?.userEmail || 'tu cuenta'}`,
+                     email: tokenValidation?.userEmail || 'tu cuenta'
+                   })
                 : showForgotPassword 
                   ? t('auth:forgot_password.description')
                   : (isLogin 
@@ -651,7 +709,7 @@ export default function Auth() {
                     : t('auth:description.signup')
                   )
               }
-            </CardDescription>
+             </CardDescription>
           </CardHeader>
           
           <CardContent className="pt-0">
@@ -664,19 +722,18 @@ export default function Auth() {
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="resetEmail"
-                      type="email"
-                      value={resetEmail}
-                      onChange={(e) => {
-                        setResetEmail(e.target.value);
-                        if (error) setError(null);
-                      }}
-                      placeholder={t('auth:form.email_placeholder')}
-                      className="auth-input pl-10 font-body"
-                      required
-                      disabled={loading || resetSuccess}
-                    />
+                     <Input
+                       id="resetEmail"
+                       type="email"
+                       value={resetEmail}
+                       onChange={(e) => {
+                         setResetEmail(e.target.value);
+                         if (error) setError(null);
+                       }}
+                       placeholder={t('auth:form.email_placeholder')}
+                       className="auth-input pl-10 font-body"
+                       disabled={loading || resetSuccess}
+                     />
                   </div>
                 </div>
                 
@@ -741,48 +798,46 @@ export default function Auth() {
             {showResetPassword && (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="font-body font-medium text-foreground">
-                    Nueva Contraseña
-                  </Label>
+                   <Label htmlFor="newPassword" className="font-body font-medium text-foreground">
+                     {t('auth:form.new_password', { defaultValue: 'Nueva Contraseña' })}
+                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => {
-                        setNewPassword(e.target.value);
-                        if (error) setError(null);
-                      }}
-                      placeholder="Ingresa tu nueva contraseña"
-                      className="auth-input pl-10 font-body"
-                      required
-                      disabled={loading}
-                      minLength={8}
-                    />
+                     <Input
+                       id="newPassword"
+                       type="password"
+                       value={newPassword}
+                       onChange={(e) => {
+                         setNewPassword(e.target.value);
+                         if (error) setError(null);
+                       }}
+                       placeholder={t('auth:validation.password_min_length', { defaultValue: 'Ingresa tu nueva contraseña (mínimo 8 caracteres)' })}
+                       className="auth-input pl-10 font-body"
+                       disabled={loading}
+                       minLength={8}
+                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="font-body font-medium text-foreground">
-                    Confirmar Contraseña
-                  </Label>
+                   <Label htmlFor="confirmPassword" className="font-body font-medium text-foreground">
+                     {t('auth:form.confirm_password', { defaultValue: 'Confirmar Contraseña' })}
+                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => {
-                        setConfirmPassword(e.target.value);
-                        if (error) setError(null);
-                      }}
-                      placeholder="Confirma tu nueva contraseña"
-                      className="auth-input pl-10 font-body"
-                      required
-                      disabled={loading}
-                      minLength={8}
-                    />
+                     <Input
+                       id="confirmPassword"
+                       type="password"
+                       value={confirmPassword}
+                       onChange={(e) => {
+                         setConfirmPassword(e.target.value);
+                         if (error) setError(null);
+                       }}
+                       placeholder={t('auth:form.confirm_password', { defaultValue: 'Confirma tu nueva contraseña' })}
+                       className="auth-input pl-10 font-body"
+                       disabled={loading}
+                       minLength={8}
+                     />
                   </div>
                 </div>
                 
@@ -797,14 +852,14 @@ export default function Auth() {
                    className="w-full font-body font-medium"
                    disabled={loading || !newPassword || !confirmPassword}
                  >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Actualizando contraseña...
-                    </>
-                  ) : (
-                    'Actualizar Contraseña'
-                  )}
+                   {loading ? (
+                     <>
+                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                       {t('auth:reset_password.updating', { defaultValue: 'Actualizando contraseña...' })}
+                     </>
+                   ) : (
+                     t('auth:reset_password.update_password', { defaultValue: 'Actualizar Contraseña' })
+                   )}
                 </Button>
               </form>
             )}
@@ -822,14 +877,13 @@ export default function Auth() {
                           </Label>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="firstName"
-                              value={formData.firstName}
-                              {...firstNameHandlers}
-                              className={`auth-input pl-10 font-body ${fieldErrors.firstName ? 'border-destructive' : ''}`}
-                              required={!isLogin}
-                              disabled={loading}
-                            />
+                             <Input
+                               id="firstName"
+                               value={formData.firstName}
+                               {...firstNameHandlers}
+                               className={`auth-input pl-10 font-body ${fieldErrors.firstName ? 'border-destructive' : ''}`}
+                               disabled={loading}
+                             />
                           </div>
                           {fieldErrors.firstName && (
                             <p className="text-sm text-destructive font-body">{fieldErrors.firstName}</p>
@@ -841,14 +895,13 @@ export default function Auth() {
                           </Label>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              id="lastName"
-                              value={formData.lastName}
-                              {...lastNameHandlers}
-                              className={`auth-input pl-10 font-body ${fieldErrors.lastName ? 'border-destructive' : ''}`}
-                              required={!isLogin}
-                              disabled={loading}
-                            />
+                             <Input
+                               id="lastName"
+                               value={formData.lastName}
+                               {...lastNameHandlers}
+                               className={`auth-input pl-10 font-body ${fieldErrors.lastName ? 'border-destructive' : ''}`}
+                               disabled={loading}
+                             />
                           </div>
                           {fieldErrors.lastName && (
                             <p className="text-sm text-destructive font-body">{fieldErrors.lastName}</p>
@@ -862,15 +915,14 @@ export default function Auth() {
                         </Label>
                         <div className="relative">
                           <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="companyName"
-                            value={formData.companyName}
-                            {...companyNameHandlers}
-                            placeholder={t('auth:form.company_placeholder')}
-                            className={`auth-input pl-10 font-body ${fieldErrors.companyName ? 'border-destructive' : ''}`}
-                            required={!isLogin}
-                            disabled={loading}
-                          />
+                           <Input
+                             id="companyName"
+                             value={formData.companyName}
+                             {...companyNameHandlers}
+                             placeholder={t('auth:form.company_placeholder')}
+                             className={`auth-input pl-10 font-body ${fieldErrors.companyName ? 'border-destructive' : ''}`}
+                             disabled={loading}
+                           />
                         </div>
                         {fieldErrors.companyName && (
                           <p className="text-sm text-destructive font-body">{fieldErrors.companyName}</p>
@@ -885,50 +937,49 @@ export default function Auth() {
                     </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
-                          const cleanValue = inputValue.replace(/\s/g, '');
-                          setFormData(prev => ({ ...prev, email: cleanValue }));
-                          validateField('email', cleanValue);
-                          if (error) setError(null);
-                        }}
-                        onInput={handleEmailInputEvent}
-                        onKeyPress={(e) => {
-                          // Prevent spaces from being typed
-                          if (e.key === ' ') {
-                            e.preventDefault();
-                          }
-                        }}
-                        onBlur={(e) => {
-                          const trimmedValue = handleEmailInput(e.target.value);
-                          setFormData(prev => ({ ...prev, email: trimmedValue }));
-                          validateField('email', trimmedValue);
-                        }}
-                        onFocus={handleEmailAutofill}
-                        onAnimationStart={(e) => {
-                          // Detect Chrome autofill animation
-                          if (e.animationName === 'onAutoFillStart') {
-                            setTimeout(() => {
-                              if (!e.currentTarget) return;
-                              const emailValue = e.currentTarget.value || '';
-                              if (emailValue && emailValue !== formData.email) {
-                                setFormData(prev => ({ ...prev, email: emailValue }));
-                                validateField('email', emailValue);
-                                if (error) setError(null);
-                              }
-                            }, 100);
-                          }
-                        }}
-                        placeholder={t('auth:form.email_placeholder')}
-                        className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
-                        required
-                        disabled={loading}
-                        autoComplete="email"
-                      />
+                       <Input
+                         id="email"
+                         type="email"
+                         value={formData.email}
+                         onChange={(e) => {
+                           const inputValue = e.target.value;
+                           const cleanValue = inputValue.replace(/\s/g, '');
+                           setFormData(prev => ({ ...prev, email: cleanValue }));
+                           validateField('email', cleanValue);
+                           if (error) setError(null);
+                         }}
+                         onInput={handleEmailInputEvent}
+                         onKeyPress={(e) => {
+                           // Prevent spaces from being typed
+                           if (e.key === ' ') {
+                             e.preventDefault();
+                           }
+                         }}
+                         onBlur={(e) => {
+                           const trimmedValue = handleEmailInput(e.target.value);
+                           setFormData(prev => ({ ...prev, email: trimmedValue }));
+                           validateField('email', trimmedValue);
+                         }}
+                         onFocus={handleEmailAutofill}
+                         onAnimationStart={(e) => {
+                           // Detect Chrome autofill animation
+                           if (e.animationName === 'onAutoFillStart') {
+                             setTimeout(() => {
+                               if (!e.currentTarget) return;
+                               const emailValue = e.currentTarget.value || '';
+                               if (emailValue && emailValue !== formData.email) {
+                                 setFormData(prev => ({ ...prev, email: emailValue }));
+                                 validateField('email', emailValue);
+                                 if (error) setError(null);
+                               }
+                             }, 100);
+                           }
+                         }}
+                         placeholder={t('auth:form.email_placeholder')}
+                         className={`auth-input pl-10 font-body ${fieldErrors.email ? 'border-destructive' : ''}`}
+                         disabled={loading}
+                         autoComplete="email"
+                       />
                     </div>
                     {fieldErrors.email && (
                       <p className="text-sm text-destructive font-body">{fieldErrors.email}</p>
@@ -941,19 +992,18 @@ export default function Auth() {
                     </Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                        onFocus={handlePasswordFocus}
-                        placeholder={isLogin ? t('auth:form.password_placeholder_login') : t('auth:form.password_placeholder_signup')}
-                        className={`auth-input pl-10 pr-10 font-body ${fieldErrors.password ? 'border-destructive' : ''}`}
-                        required
-                        disabled={loading}
-                        minLength={isLogin ? undefined : 8}
-                        autoComplete="current-password"
-                      />
+                       <Input
+                         id="password"
+                         type={showPassword ? "text" : "password"}
+                         value={formData.password}
+                         onChange={(e) => handleInputChange('password', e.target.value)}
+                         onFocus={handlePasswordFocus}
+                         placeholder={isLogin ? t('auth:form.password_placeholder_login') : t('auth:form.password_placeholder_signup')}
+                         className={`auth-input pl-10 pr-10 font-body ${fieldErrors.password ? 'border-destructive' : ''}`}
+                         disabled={loading}
+                         minLength={isLogin ? undefined : 8}
+                         autoComplete="current-password"
+                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
@@ -976,7 +1026,7 @@ export default function Auth() {
                           className="text-sm font-body text-primary hover:text-primary/80 transition-colors"
                           disabled={loading}
                         >
-                          ¿Olvidaste tu contraseña?
+                          {t('auth:forgot_password.forgot_password', { defaultValue: '¿Olvidaste tu contraseña?' })}
                         </button>
                       </div>
                     )}
