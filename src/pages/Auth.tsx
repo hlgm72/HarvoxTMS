@@ -535,10 +535,51 @@ export default function Auth() {
       }
     } catch (err: any) {
       console.error('Authentication error:', err);
-      showError(
-        "Error de autenticación",
-        err.message || "Ocurrió un error durante la autenticación"
-      );
+      
+      // Handle specific authentication errors with user-friendly Spanish messages
+      let errorTitle = "Error de autenticación";
+      let errorMessage = "Ocurrió un error durante la autenticación";
+      
+      if (err?.message) {
+        switch (err.message.toLowerCase()) {
+          case 'invalid login credentials':
+            errorTitle = "Credenciales incorrectas";
+            errorMessage = "El email o la contraseña son incorrectos. Por favor verifica tus datos e intenta nuevamente.";
+            break;
+          case 'email not confirmed':
+            errorTitle = "Email no verificado";
+            errorMessage = "Por favor verifica tu email antes de iniciar sesión. Revisa tu bandeja de entrada.";
+            break;
+          case 'too many requests':
+            errorTitle = "Demasiados intentos";
+            errorMessage = "Has intentado iniciar sesión demasiadas veces. Por favor espera unos minutos antes de intentar nuevamente.";
+            break;
+          case 'user not found':
+            errorTitle = "Usuario no encontrado";
+            errorMessage = "No existe una cuenta con este email. ¿Te gustaría crear una cuenta nueva?";
+            break;
+          case 'weak password':
+            errorTitle = "Contraseña débil";
+            errorMessage = "La contraseña debe tener al menos 6 caracteres.";
+            break;
+          case 'email already registered':
+          case 'user already registered':
+            errorTitle = "Email ya registrado";
+            errorMessage = "Ya existe una cuenta con este email. ¿Quieres iniciar sesión en su lugar?";
+            break;
+          case 'signup disabled':
+            errorTitle = "Registro deshabilitado";
+            errorMessage = "El registro de nuevos usuarios está temporalmente deshabilitado.";
+            break;
+          default:
+            // Keep generic message for unknown errors but log the actual error
+            console.warn('Unhandled auth error:', err.message);
+            errorMessage = `Error: ${err.message}`;
+            break;
+        }
+      }
+      
+      showError(errorTitle, errorMessage);
     } finally {
       setLoading(false);
     }
