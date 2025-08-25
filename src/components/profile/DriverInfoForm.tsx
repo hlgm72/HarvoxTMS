@@ -260,7 +260,15 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
   // Expose saveData method via ref
   useImperativeHandle(ref, () => ({
     saveData: async () => {
+      // Trigger validation to ensure all field values are current
+      const isValid = await driverInfoForm.trigger();
+      if (!isValid) {
+        return { success: false, error: 'Form validation failed' };
+      }
+      
+      // Get current form values (this includes any user changes)
       const data = driverInfoForm.getValues();
+      console.log('🔄 Saving driver info data:', data);
       return await saveDriverInfoData(data);
     }
   }));

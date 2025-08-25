@@ -279,7 +279,15 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
   // Expose saveData method via ref
   useImperativeHandle(ref, () => ({
     saveData: async () => {
+      // Trigger validation to ensure all field values are current
+      const isValid = await personalInfoForm.trigger();
+      if (!isValid) {
+        return { success: false, error: 'Form validation failed' };
+      }
+      
+      // Get current form values (this includes any user changes)
       const data = personalInfoForm.getValues();
+      console.log('🔄 Saving personal info data:', data);
       return await savePersonalInfoData(data);
     }
   }));
