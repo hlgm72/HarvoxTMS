@@ -27,9 +27,13 @@ export function useZipCodeLookup() {
       
       if (!response.ok) {
         if (response.status === 404) {
-          setError(t('address.zip_code_not_found'));
+          const errorMsg = t('address.zip_code_not_found');
+          console.log('ZIP code not found translation:', errorMsg);
+          setError(errorMsg);
         } else {
-          setError(t('address.zip_code_lookup_error'));
+          const errorMsg = t('address.zip_code_lookup_error');
+          console.log('ZIP code lookup error translation:', errorMsg);
+          setError(errorMsg);
         }
         return null;
       }
@@ -47,7 +51,9 @@ export function useZipCodeLookup() {
 
       return null;
     } catch (err) {
-      setError(t('address.zip_code_connection_error'));
+      const errorMsg = t('address.zip_code_connection_error');
+      console.log('ZIP code connection error translation:', errorMsg);
+      setError(errorMsg);
       return null;
     } finally {
       setIsLoading(false);
