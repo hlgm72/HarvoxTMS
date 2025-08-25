@@ -154,7 +154,7 @@
     "saving": "Guardando configuración...",
     "savingDescription": "Estamos guardando todos tus datos de configuración.",
     "timezoneDetected": "Zona horaria detectada:",
-    "dataWillBeSaved": "Los datos se guardarán al finalizar el wizard completo",
+    "dataWillBeSaved": "Los datos se guardarán al finalizar el asistente",
     "steps": {
       "personal": {
         "title": "Datos Personales",
@@ -177,7 +177,7 @@
         "description": "Información de tu empresa",
         "configTitle": "Configuración de Empresa",
         "configDescription": "Configura los datos básicos de tu empresa",
-        "warning": "Importante: Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos. Los datos se guardarán al finalizar el wizard completo."
+        "warning": "Importante: Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos. Los datos se guardarán al finalizar el asistente."
       }
     },
     "actions": {
