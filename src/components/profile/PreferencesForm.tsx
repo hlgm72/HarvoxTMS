@@ -58,20 +58,25 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
 
   useEffect(() => {
     console.log('🔄 PreferencesForm: preferences changed', preferences);
+    
+    // Detectar zona horaria automáticamente
+    const detectedTimezone = getUserTimezone();
+    console.log('🌍 PreferencesForm: Detected timezone:', detectedTimezone);
+    
     if (preferences) {
       const formValues = {
         preferred_language: preferences.preferred_language || 'en',
-        timezone: preferences.timezone || getUserTimezone(),
+        timezone: preferences.timezone || detectedTimezone,
       };
       console.log('🔄 PreferencesForm: resetting form with values', formValues);
       preferencesForm.reset(formValues);
     } else {
-      // Si no hay preferencias, usar valores por defecto con zona horaria detectada
+      // Si no hay preferencias, usar valores por defecto con zona horaria detectada automáticamente
       const defaultValues = {
         preferred_language: 'en',
-        timezone: getUserTimezone(),
+        timezone: detectedTimezone, // Siempre usar la zona horaria detectada
       };
-      console.log('🔄 PreferencesForm: no preferences, using defaults', defaultValues);
+      console.log('🔄 PreferencesForm: no preferences, using defaults with detected timezone', defaultValues);
       preferencesForm.reset(defaultValues);
     }
   }, [preferences, preferencesForm]);
@@ -202,7 +207,12 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
                 name="timezone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">{t('profile.preferences.timezone')}</FormLabel>
+                    <FormLabel className="text-sm font-medium">
+                      {t('profile.preferences.timezone')}
+                      <span className="text-xs text-muted-foreground ml-2">
+                        (Detectada: {getUserTimezone()})
+                      </span>
+                    </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
