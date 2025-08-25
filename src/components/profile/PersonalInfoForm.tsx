@@ -41,6 +41,7 @@ type PersonalInfoFormData = {
 interface PersonalInfoFormProps {
   onCancel?: () => void;
   showCancelButton?: boolean;
+  showSaveButton?: boolean;
   className?: string;
 }
 
@@ -48,7 +49,7 @@ export interface PersonalInfoFormRef {
   saveData: () => Promise<{ success: boolean; error?: string }>;
 }
 
-export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
+export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoFormProps>(({ onCancel, showCancelButton = true, showSaveButton = true, className }, ref) => {
   const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const { profile, user, refreshProfile } = useUserProfile();
@@ -404,10 +405,12 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
                 {t('profile.personal_info.cancel')}
               </Button>
             )}
-            <Button type="submit" disabled={updating} className="w-full sm:w-auto">
-              <Save className="mr-2 h-4 w-4" />
-              {updating ? t('profile.personal_info.saving') : t('profile.personal_info.save')}
-            </Button>
+            {showSaveButton && (
+              <Button type="submit" disabled={updating} className="w-full sm:w-auto">
+                <Save className="mr-2 h-4 w-4" />
+                {updating ? t('profile.personal_info.saving') : t('profile.personal_info.save')}
+              </Button>
+            )}
           </div>
         </form>
       </Form>

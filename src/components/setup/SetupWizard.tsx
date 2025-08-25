@@ -414,6 +414,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                     <PersonalInfoForm 
                       ref={personalInfoFormRef}
                       showCancelButton={false}
+                      showSaveButton={false}
                       className="space-y-6"
                     />
                   </div>
@@ -429,6 +430,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                     <PreferencesForm 
                       ref={preferencesFormRef}
                       showCancelButton={false}
+                      showSaveButton={false}
                       className="space-y-6"
                     />
                   </div>

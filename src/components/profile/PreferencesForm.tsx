@@ -24,6 +24,7 @@ type PreferencesFormData = z.infer<typeof preferencesSchema>;
 interface PreferencesFormProps {
   onCancel?: () => void;
   showCancelButton?: boolean;
+  showSaveButton?: boolean;
   className?: string;
   showOnboardingSection?: boolean;
 }
@@ -32,7 +33,7 @@ export interface PreferencesFormRef {
   saveData: () => Promise<{ success: boolean; error?: string }>;
 }
 
-export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, className, showOnboardingSection = false }, ref) => {
+export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormProps>(({ onCancel, showCancelButton = true, showSaveButton = true, className, showOnboardingSection = false }, ref) => {
   const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useUserProfile();
@@ -232,7 +233,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
               />
             </div>
 
-            {showCancelButton && (
+            {showSaveButton && (
               <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                   <RotateCcw className="mr-2 h-4 w-4" />
