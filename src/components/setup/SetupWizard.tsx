@@ -464,11 +464,12 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                           {t('setup.steps.driver.configDescription')}
                         </p>
                       </div>
-                      <DriverInfoForm 
-                        ref={driverInfoFormRef}
-                        showCancelButton={false}
-                        className="space-y-6"
-                      />
+                    <DriverInfoForm 
+                      ref={driverInfoFormRef}
+                      showCancelButton={false}
+                      showSaveButton={false}
+                      className="space-y-6"
+                    />
                     </div>
                   )}
 

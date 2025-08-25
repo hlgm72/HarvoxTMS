@@ -24,6 +24,7 @@ type DriverInfoFormData = z.infer<typeof driverInfoSchema>;
 interface DriverInfoFormProps {
   onCancel?: () => void;
   showCancelButton?: boolean;
+  showSaveButton?: boolean;
   className?: string;
 }
 
@@ -52,7 +53,7 @@ interface LicenseData {
   cdl_endorsements: string;
 }
 
-export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>(({ onCancel, showCancelButton = true, className }, ref) => {
+export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>(({ onCancel, showCancelButton = true, showSaveButton = true, className }, ref) => {
   const { showSuccess, showError } = useFleetNotifications();
   const { user } = useAuth();
   const { t } = useTranslation('settings');
@@ -396,10 +397,12 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
                 {t('profile.driver.cancel')}
               </Button>
             )}
-            <Button type="submit" disabled={updating} className="w-full sm:w-auto">
-              <Save className="mr-2 h-4 w-4" />
-              {updating ? t('profile.driver.saving') : t('profile.driver.save')}
-            </Button>
+            {showSaveButton && (
+              <Button type="submit" disabled={updating} className="w-full sm:w-auto">
+                <Save className="mr-2 h-4 w-4" />
+                {updating ? t('profile.driver.saving') : t('profile.driver.save')}
+              </Button>
+            )}
           </div>
         </form>
       </Form>
