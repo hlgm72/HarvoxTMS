@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDebounce } from 'use-debounce';
+import { useTranslation } from 'react-i18next';
 
 interface ZipCodeData {
   city: string;
@@ -10,6 +11,7 @@ interface ZipCodeData {
 export function useZipCodeLookup() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation('common');
 
   const lookupZipCode = async (zipCode: string): Promise<ZipCodeData | null> => {
     if (!zipCode || zipCode.length !== 5) {
@@ -25,9 +27,9 @@ export function useZipCodeLookup() {
       
       if (!response.ok) {
         if (response.status === 404) {
-          setError('ZIP code no encontrado');
+          setError(t('address.zip_code_not_found'));
         } else {
-          setError('Error al buscar ZIP code');
+          setError(t('address.zip_code_lookup_error'));
         }
         return null;
       }
@@ -45,7 +47,7 @@ export function useZipCodeLookup() {
 
       return null;
     } catch (err) {
-      setError('Error de conexión');
+      setError(t('address.zip_code_connection_error'));
       return null;
     } finally {
       setIsLoading(false);

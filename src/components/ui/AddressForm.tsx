@@ -144,7 +144,7 @@ export function AddressForm({
           />
           {isZipLoading && (
             <p className="text-sm text-muted-foreground">
-              {t('address.looking_up_zip', i18n.language === 'es' ? 'Buscando información...' : 'Looking up...')}
+              {t('address.looking_up_zip')}
             </p>
           )}
           {zipError && (
