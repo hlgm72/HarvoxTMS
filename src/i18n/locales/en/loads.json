@@ -120,7 +120,9 @@
         "buttons": {
           "upload_document": "Upload Document",
           "upload_photo": "Upload Photo",
-          "generate_load_order": "Generate Load Order"
+          "generate_load_order": "Generate Load Order",
+          "view": "View",
+          "download": "Download"
         },
         "document_types": {
           "rate_confirmation": {
