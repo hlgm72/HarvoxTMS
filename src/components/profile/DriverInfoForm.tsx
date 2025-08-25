@@ -116,12 +116,11 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
       if (!user) return;
 
       try {
-        // Obtener datos del perfil del conductor directamente
-        const { data: driverData, error } = await supabase
-          .from('driver_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+        // Obtener datos específicos del conductor usando función segura
+        const { data, error } = await supabase.rpc('get_driver_sensitive_info', {
+          target_user_id: user.id
+        });
+        const driverData = data?.[0] || null;
 
         if (error && error.code !== 'PGRST116') {
           console.error('Error fetching driver profile:', error);
