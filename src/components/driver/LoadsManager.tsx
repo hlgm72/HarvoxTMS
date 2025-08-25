@@ -39,7 +39,7 @@ import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
 import { SplitLoadActionButton } from "./SplitLoadActionButton";
 import { usePODUpload } from "@/hooks/usePODUpload";
 import { useLoadCompletion } from '@/hooks/useLoadCompletion';
-import { CelebrationLoadCard } from './CelebrationLoadCard';
+import { LoadCardWithCompletion } from './LoadCardWithCompletion';
 
 interface Load {
   id: string;
@@ -522,308 +522,34 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             </Card>
           ) : (
             // En dashboard mode mostrar solo la carga actual, en modo completo mostrar todas
-            (dashboardMode ? [currentLoad].filter(Boolean) : activeLoads).map((load) => {
-              const completionState = useLoadCompletion(load.id, load.status);
-              
-              // Si está en celebración, mostrar tarjeta especial
-              if (completionState.showCelebration) {
-                return (
-                  <CelebrationLoadCard
-                    key={load.id}
-                    load={load}
-                    showCelebration={true}
-                  />
-                );
-              }
-
-              return (
-                <Card key={load.id} className="overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Package className="h-5 w-5" />
-                        <CardTitle className="text-base">{load.load_number}</CardTitle>
-                        <LoadDocumentStatusIndicator loadId={load.id} showDetails={true} />
-                      </div>
-                    <div className="text-right">
-                      <Badge className={getStatusColor(load.status)}>
-                        {getStatusText(load.status)}
-                      </Badge>
-                      {load.status === 'assigned' && load.stops && load.stops.length > 0 && (
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                           {(() => {
-                             const firstStop = load.stops!.find(stop => stop.stop_type === 'pickup') || load.stops![0];
-                              if (firstStop?.scheduled_date) {
-                                const language = i18n.language;
-                               const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-                               const shortDate = formatDateSafe(firstStop.scheduled_date, pattern);
-                               
-                              
-                              return (
-                                 <>
-                                   <div className="flex items-center gap-1">
-                                     <Calendar className="h-3 w-3" />
-                                     <span>STA: {shortDate}</span>
-                                   </div>
-                                   {firstStop.scheduled_time && (
-                                     <div className="flex items-center gap-1">
-                                       <span>{firstStop.scheduled_time.length > 5 ? firstStop.scheduled_time.substring(0, 5) : firstStop.scheduled_time}</span>
-                                     </div>
-                                   )}
-                                </>
-                              );
-                            }
-                            return null;
-                          })()}
-                        </div>
-                       )}
-                       {/* Para estados diferentes a "assigned", mostrar ETA del historial de estado */}
-                       {load.status !== 'assigned' && (
-                         <div className="text-xs text-primary font-medium mt-0.5">
-                           {(() => {
-                              // Priorizar información del historial de estado más reciente
-                               if (load.latest_status_eta) {
-                                 // Solo mostrar "ETA:" cuando se está yendo hacia un lugar (en_route)
-                                 const showETA = load.status === 'en_route_pickup' || load.status === 'en_route_delivery';
-                                 const prefix = showETA ? 'ETA: ' : '';
-                                 
-                                 return (
-                                   <>
-                                     <Calendar className="h-3 w-3 inline mr-1" />
-                                     {prefix}{formatDateTimeShort(load.latest_status_eta)}
-                                   </>
-                                 );
-                               }
-                              
-                              // Fallback: mostrar fecha programada de la parada actual si no hay ETA del historial
-                             const currentStop = load.stops?.find(stop => {
-                               if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
-                                 return stop.stop_type === 'pickup';
-                               } else if (load.status === 'loaded' || load.status === 'en_route_delivery' || load.status === 'at_delivery') {
-                                 return stop.stop_type === 'delivery';
-                               }
-                               return false;
-                             });
-                             
-                             if (currentStop?.scheduled_date) {
-                               const pattern = i18n.language === 'es' ? 'dd/MM' : 'MM/dd';
-                               let result = `${formatDateSafe(currentStop.scheduled_date, pattern)}`;
-                               if (currentStop.scheduled_time) {
-                                 const timeWithoutSeconds = currentStop.scheduled_time.length > 5 ? currentStop.scheduled_time.substring(0, 5) : currentStop.scheduled_time;
-                                 result += ` ${timeWithoutSeconds}`;
-                               }
-                               return (
-                                 <>
-                                   <Calendar className="h-3 w-3 inline mr-1" />
-                                   {result}
-                                 </>
-                               );
-                             }
-                             
-                             return null;
-                           })()}
-                         </div>
-                       )}
-                      
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{load.client_name}</p>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  {/* Route Info - Enhanced for multiple stops */}
-                  <div className="space-y-3">
-                    {load.stops && load.stops.length > 0 ? (
-                      // Show detailed stops if available
-                      <div className="space-y-2">
-                        {load.stops.map((stop, index) => {
-                          // Encontrar todas las entregas para determinar la última
-                          const deliveryStops = load.stops!.filter(s => s.stop_type === 'delivery');
-                          const lastDeliveryIndex = deliveryStops.length > 0 ? 
-                            load.stops!.lastIndexOf(deliveryStops[deliveryStops.length - 1]) : -1;
-                          const isLastDelivery = stop.stop_type === 'delivery' && index === lastDeliveryIndex;
-                          
-                          let stopColor = '';
-                          if (stop.stop_type === 'pickup') {
-                            stopColor = 'bg-green-500'; // Verde para recogidas
-                          } else if (stop.stop_type === 'delivery') {
-                            if (load.stops!.length > 2 && !isLastDelivery) {
-                              stopColor = 'bg-blue-500'; // Azul para entregas intermedias
-                            } else {
-                              stopColor = 'bg-red-500'; // Rojo para la última entrega o cargas simples
-                            }
-                          }
-                          
-                          return (
-                            <div key={stop.id} className="flex items-start gap-3">
-                              <div className="flex flex-col items-center">
-                                <div className={`w-3 h-3 rounded-full ${stopColor}`}></div>
-                                {index < load.stops!.length - 1 && (
-                                  <div className="w-0.5 h-6 bg-border"></div>
-                                )}
-                              </div>
-                                <div className="flex-1">
-                                   <div className="flex items-center gap-2 mb-1">
-                                      <Badge variant="outline" className="text-xs">
-                                        {stop.stop_type === 'pickup' ? t('dashboard:loads.stop_types.pickup') : t('dashboard:loads.stop_types.delivery')} #{stop.stop_number}
-                                      </Badge>
-                                     {stop.scheduled_date && (
-                                       <span className="text-xs text-primary font-medium flex items-center gap-1">
-                                         <Calendar className="h-3 w-3" />
-                                         {(() => {
-                                           const language = i18n.language;
-                                           const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-                                           return formatDateSafe(stop.scheduled_date, pattern);
-                                         })()}
-                                         {stop.scheduled_time && ` ${stop.scheduled_time.length > 5 ? stop.scheduled_time.substring(0, 5) : stop.scheduled_time}`}
-                                       </span>
-                                     )}
-                                   </div>
-                                <p className="font-medium text-sm">
-                                  {stop.company_name}
-                                </p>
-                                <button
-                                  onClick={() => handleNavigateToStop(stop)}
-                                  disabled={isNavigating}
-                                  className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left underline decoration-dashed underline-offset-2 hover:decoration-solid"
-                                >
-                                  {[stop.address, stop.city, stop.state].filter(Boolean).join(', ')}
-                                </button>
-                              </div>
-                              {index === 0 && (
-                                <div className="text-right">
-                                  <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      // Fallback to simple origin/destination view
-                      <div className="flex items-start gap-3">
-                        <div className="flex flex-col items-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <div className="w-0.5 h-8 bg-border"></div>
-                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        </div>
-                        <div className="flex-1 space-y-2">
-                          <div>
-                            <p className="font-medium text-sm">{load.origin_city}, {load.origin_state}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Recogida: {load.pickup_date ? formatDateSafe(load.pickup_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{load.destination_city}, {load.destination_state}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Entrega: {load.delivery_date ? formatDateSafe(load.delivery_date, 'dd/MM/yyyy') : 'Fecha pendiente'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Progress */}
-                  <div className="space-y-2">
-                     <div className="flex justify-between text-sm">
-                       <span>
-                         {t('dashboard:loads.progress')}
-                         {(() => {
-                           // Calcular información de la parada directamente sin hook
-                           if (load.status !== 'assigned' && load.stops && load.stops.length > 0) {
-                             // Encontrar la parada actual según el estado
-                             let currentStop = null;
-                             if (load.status === 'en_route_pickup' || load.status === 'at_pickup') {
-                               currentStop = load.stops.find(stop => stop.stop_type === 'pickup');
-                             } else if (load.status === 'loaded' || load.status === 'en_route_delivery' || load.status === 'at_delivery') {
-                               currentStop = load.stops.find(stop => stop.stop_type === 'delivery');
-                             }
-                             
-                             if (currentStop) {
-                               const stopTypeText = currentStop.stop_type === 'pickup' ? 
-                                 t('dashboard:loads.stop_types.pickup') : 
-                                 t('dashboard:loads.stop_types.delivery');
-                               return ` (${stopTypeText} #${currentStop.stop_number})`;
-                             }
-                           }
-                           return '';
-                         })()}
-                       </span>
-                       <span className="font-medium">{load.progress}%</span>
-                     </div>
-                    <Progress value={load.progress} className="h-2" />
-                  </div>
-
-                  <Separator />
-
-                   {/* Actions */}
-                    <div className="flex gap-2">
-                      <SplitLoadActionButton
-                        load={load}
-                        onUpdateStatus={(loadId, newStatus, stopId, stopInfo) => {
-                          const actionText = getNextActionText(load.status);
-                          openStatusModal(loadId, newStatus, actionText, stopId, stopInfo);
-                        }}
-                        onUploadPOD={openPODUpload}
-                        isPending={updateLoadStatus.isPending}
-                      />
-                     <LoadStatusHistoryButton
-                       loadId={load.id}
-                       loadNumber={load.load_number}
-                       variant="outline"
-                       size="sm"
-                       showText={false}
-                     />
-                       <TooltipProvider>
-                         <Tooltip>
-                           <TooltipTrigger asChild>
-                             <Button 
-                               size="sm" 
-                               variant="outline" 
-                               onClick={() => setDocumentsDialog({ isOpen: true, load })}
-                             >
-                               <FileText className="h-4 w-4" />
-                             </Button>
-                           </TooltipTrigger>
-                           <TooltipContent>
-                             <p>{t('common:loads.tooltips.view_documents')}</p>
-                           </TooltipContent>
-                         </Tooltip>
-                       </TooltipProvider>
-                       <TooltipProvider>
-                         <Tooltip>
-                           <TooltipTrigger asChild>
-                             <Button size="sm" variant="outline">
-                               <Phone className="h-4 w-4" />
-                             </Button>
-                           </TooltipTrigger>
-                           <TooltipContent>
-                             <p>{t('common:loads.tooltips.call_contact')}</p>
-                           </TooltipContent>
-                         </Tooltip>
-                       </TooltipProvider>
-                       <TooltipProvider>
-                         <Tooltip>
-                           <TooltipTrigger asChild>
-                             <Button size="sm" variant="outline">
-                               <Route className="h-4 w-4" />
-                             </Button>
-                           </TooltipTrigger>
-                           <TooltipContent>
-                             <p>{t('common:loads.tooltips.view_route')}</p>
-                           </TooltipContent>
-                         </Tooltip>
-                       </TooltipProvider>
-                   </div>
-                </CardContent>
-                </Card>
-               );
-             })
+            (dashboardMode ? [currentLoad].filter(Boolean) : activeLoads).map((load, index) => (
+              <LoadCardWithCompletion
+                key={load.id}
+                load={load}
+                onUpdateStatus={(loadId, newStatus, actionText, stopId, stopInfo) => {
+                  openStatusModal(loadId, newStatus, actionText, stopId, stopInfo);
+                }}
+                onUploadPOD={openPODUpload}
+                onViewDetails={() => setDocumentsDialog({ isOpen: true, load })}
+                onCallContact={(load) => {
+                  if (load.contact_phone) {
+                    window.open(`tel:${load.contact_phone}`, '_self');
+                  }
+                }}
+                onViewRoute={(load) => {
+                  if (load.destination_city && load.destination_state) {
+                    openInMaps({
+                      address: `${load.destination_city}, ${load.destination_state}`,
+                      city: load.destination_city,
+                      state: load.destination_state,
+                      zipCode: ''
+                    });
+                  }
+                }}
+                updateLoadStatus={updateLoadStatus}
+                getNextActionText={getNextActionText}
+               />
+             ))
            )}
         </TabsContent>
 

@@ -42,14 +42,15 @@ export const useLoadCompletion = (loadId: string, status: string) => {
           justCompleted: false
         }));
       }, 3000);
-    } else {
-      setCompletionState({
+    } else if (completionState.isCompleted !== isNowCompleted) {
+      setCompletionState(prev => ({
+        ...prev,
         isCompleted: isNowCompleted,
         justCompleted: false,
         showCelebration: false
-      });
+      }));
     }
-  }, [isCompleted, showSuccess]);
+  }, [isCompleted, completionState.isCompleted]);
 
   return completionState;
 };
