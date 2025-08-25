@@ -32,31 +32,23 @@ export function useNavigationMaps() {
       const deviceInfo = await Device.getInfo();
       const formattedAddress = formatAddressForMaps(options);
 
+      // Usar URLs universales que permiten al usuario elegir la app
       let mapsUrl: string;
 
-      if (deviceInfo.platform === 'ios') {
-        // Para iOS, intentar abrir Apple Maps primero
-        mapsUrl = `maps://maps.apple.com/?q=${formattedAddress}&dirflg=d`;
-        
-        try {
-          await Browser.open({ url: mapsUrl });
-        } catch {
-          // Si falla Apple Maps, usar Google Maps
-          mapsUrl = `https://maps.google.com/?q=${formattedAddress}&navigate=yes`;
-          await Browser.open({ url: mapsUrl });
-        }
+      if (options.latitude && options.longitude) {
+        // Si tenemos coordenadas, usar geo: que es universal
+        mapsUrl = `geo:${options.latitude},${options.longitude}?q=${formattedAddress}`;
       } else {
-        // Para Android, intentar Google Maps primero
-        mapsUrl = `google.navigation:q=${formattedAddress}`;
-        
-        try {
-          await Browser.open({ url: mapsUrl });
-        } catch {
-          // Si falla la app de Google Maps, usar el navegador
-          mapsUrl = `https://maps.google.com/?q=${formattedAddress}&navigate=yes`;
-          await Browser.open({ url: mapsUrl });
-        }
+        // URL universal de Google Maps que activa el selector de apps
+        mapsUrl = `https://maps.google.com/maps?daddr=${formattedAddress}`;
       }
+
+      // Browser.open con toolbarColor para mejor experiencia
+      await Browser.open({ 
+        url: mapsUrl,
+        toolbarColor: '#000000'
+      });
+      
     } catch (error) {
       console.error('Error opening maps:', error);
       
