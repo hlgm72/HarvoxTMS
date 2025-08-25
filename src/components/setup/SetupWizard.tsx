@@ -122,36 +122,27 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  // Validar paso actual sin guardar
+  // Validar paso actual SIN guardar - simplificado para evitar errores
   const validateCurrentStep = async (): Promise<boolean> => {
+    // Por ahora, simplemente verificar que los refs estén disponibles
+    // La validación real se hará en el momento del guardado final
     try {
       switch (currentStep) {
         case 0: // Personal Info
-          if (personalInfoFormRef.current) {
-            // Solo validar sin guardar - los datos se almacenarán al final
-            const result = await personalInfoFormRef.current.saveData();
-            return result.success;
-          }
-          return false;
+          return personalInfoFormRef.current !== null;
 
         case 1: // Preferences
-          if (preferencesFormRef.current) {
-            const result = await preferencesFormRef.current.saveData();
-            return result.success;
-          }
-          return false;
+          return preferencesFormRef.current !== null;
 
         case 2: // Driver Info (if driver)
-          if (isDriver && driverInfoFormRef.current) {
-            const result = await driverInfoFormRef.current.saveData();
-            return result.success;
+          if (isDriver) {
+            return driverInfoFormRef.current !== null;
           }
           return true; // Skip if not driver
 
         case (isDriver ? 3 : 2): // Company Info (if company owner)
-          if (isCompanyOwner && companySetupRef.current) {
-            const result = await companySetupRef.current.saveData();
-            return result;
+          if (isCompanyOwner) {
+            return companySetupRef.current !== null;
           }
           return true; // Skip if not company owner
 
@@ -200,67 +191,49 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     setIsCompleting(true);
     
     try {
-      console.log('🚀 SetupWizard: Starting final save with all data...', wizardData);
+      console.log('🚀 SetupWizard: Starting final save with all data...');
       
       const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
       
-      // 1) Guardar Datos Personales
-      if (wizardData.personalInfo || personalInfoFormRef.current) {
-        console.log('🔄 SetupWizard: Saving personal info...');
-        try {
-          let result;
-          if (wizardData.personalInfo) {
-            result = { success: true };
-          } else {
-            result = await personalInfoFormRef.current!.saveData();
-          }
-          console.log('✅ SetupWizard: Personal info result:', result);
-          saveResults.push({ step: 'Información Personal', ...result });
-        } catch (error: any) {
-          console.error('❌ SetupWizard: Personal info error:', error);
-          saveResults.push({ step: 'Información Personal', success: false, error: error.message });
-        }
-      }
-      
-      // 2) Guardar Preferencias (siempre con zona horaria detectada)
-      console.log('🔄 SetupWizard: Saving preferences with timezone:', wizardData.preferences?.timezone || 'auto-detected');
+      // 1) Guardar Datos Personales - SIEMPRE intentar guardar
+      console.log('🔄 SetupWizard: Saving personal info...');
       try {
         let result;
-        
-        // Intentar obtener datos desde el ref primero
-        if (preferencesFormRef.current) {
-          console.log('🔄 SetupWizard: Getting preferences from form ref...');
-          result = await preferencesFormRef.current.saveData();
-        } else if (wizardData.preferences) {
-          console.log('🔄 SetupWizard: Using cached preferences data...');
-          // Si tenemos datos en caché pero no ref, usar los datos directamente
-          result = await updatePreferences({
-            preferred_language: wizardData.preferences.preferred_language || 'en',
-            timezone: wizardData.preferences.timezone || (() => {
-              try {
-                return Intl.DateTimeFormat().resolvedOptions().timeZone;
-              } catch {
-                return 'America/New_York';
-              }
-            })(),
-          });
+        if (personalInfoFormRef.current) {
+          result = await personalInfoFormRef.current.saveData();
         } else {
-          console.warn('⚠️ SetupWizard: No preferences data available, using defaults...');
-          // Como último recurso, usar valores por defecto
-          const getUserTimezone = () => {
+          console.warn('⚠️ SetupWizard: No personal info form ref available');
+          result = { success: false, error: 'Formulario de información personal no disponible' };
+        }
+        console.log('✅ SetupWizard: Personal info result:', result);
+        saveResults.push({ step: 'Información Personal', ...result });
+      } catch (error: any) {
+        console.error('❌ SetupWizard: Personal info error:', error);
+        saveResults.push({ step: 'Información Personal', success: false, error: error.message });
+      }
+      
+      // 2) Guardar Preferencias - SIEMPRE intentar guardar
+      console.log('🔄 SetupWizard: Saving preferences...');
+      try {
+        let result;
+        if (preferencesFormRef.current) {
+          result = await preferencesFormRef.current.saveData();
+        } else {
+          // Fallback usando updatePreferences directamente
+          console.log('🔄 SetupWizard: Using direct preferences update...');
+          const detectedTimezone = (() => {
             try {
               return Intl.DateTimeFormat().resolvedOptions().timeZone;
             } catch {
               return 'America/New_York';
             }
-          };
+          })();
           
           result = await updatePreferences({
-            preferred_language: 'en',
-            timezone: getUserTimezone(),
+            preferred_language: wizardData.preferences?.preferred_language || 'en',
+            timezone: wizardData.preferences?.timezone || detectedTimezone,
           });
         }
-        
         console.log('✅ SetupWizard: Preferences result:', result);
         saveResults.push({ step: 'Preferencias', ...result });
       } catch (error: any) {
@@ -268,44 +241,42 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
         saveResults.push({ step: 'Preferencias', success: false, error: error.message });
       }
       
-      // 3) Guardar datos de Conductor (si aplica)
+      // 3) Guardar datos de Conductor (si aplica) - SIEMPRE intentar guardar
       if (isDriver) {
         console.log('🔄 SetupWizard: Saving driver info...');
         try {
           let result;
-          if (wizardData.driverInfo || driverInfoFormRef.current) {
-            if (wizardData.driverInfo) {
-              result = { success: true };
-            } else {
-              result = await driverInfoFormRef.current!.saveData();
-            }
-            console.log('✅ SetupWizard: Driver info result:', result);
-            saveResults.push({ step: 'Información del Conductor', ...result });
+          if (driverInfoFormRef.current) {
+            result = await driverInfoFormRef.current.saveData();
+          } else {
+            console.warn('⚠️ SetupWizard: No driver info form ref available');
+            result = { success: false, error: 'Formulario de información del conductor no disponible' };
           }
+          console.log('✅ SetupWizard: Driver info result:', result);
+          saveResults.push({ step: 'Información del Conductor', ...result });
         } catch (error: any) {
           console.error('❌ SetupWizard: Driver info error:', error);
           saveResults.push({ step: 'Información del Conductor', success: false, error: error.message });
         }
       }
       
-      // 4) Guardar datos de Empresa (si aplica)
+      // 4) Guardar datos de Empresa (si aplica) - SIEMPRE intentar guardar
       if (isCompanyOwner) {
         console.log('🔄 SetupWizard: Saving company info...');
         try {
           let result;
-          if (wizardData.companyInfo !== null || companySetupRef.current) {
-            if (wizardData.companyInfo !== null) {
-              result = wizardData.companyInfo;
-            } else {
-              result = await companySetupRef.current!.saveData();
-            }
-            console.log('✅ SetupWizard: Company info result:', result);
-            saveResults.push({ 
-              step: 'Información de la Empresa', 
-              success: result, 
-              error: result ? undefined : 'Error al guardar información de la empresa'
-            });
+          if (companySetupRef.current) {
+            result = await companySetupRef.current.saveData();
+          } else {
+            console.warn('⚠️ SetupWizard: No company setup form ref available');
+            result = false;
           }
+          console.log('✅ SetupWizard: Company info result:', result);
+          saveResults.push({ 
+            step: 'Información de la Empresa', 
+            success: result, 
+            error: result ? undefined : 'Formulario de información de empresa no disponible'
+          });
         } catch (error: any) {
           console.error('❌ SetupWizard: Company info error:', error);
           saveResults.push({ step: 'Información de la Empresa', success: false, error: error.message });
@@ -317,7 +288,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // Check if all saves were successful
       const failedSaves = saveResults.filter(result => !result.success);
       
-        if (failedSaves.length > 0) {
+      if (failedSaves.length > 0) {
         console.error('❌ SetupWizard: Failed saves:', failedSaves);
         const errorMessage = failedSaves.map(fail => `${fail.step}: ${fail.error}`).join('\n');
         throw new Error(t('setup.error.inSteps') + '\n' + errorMessage);
@@ -328,7 +299,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // Show success message
       showSuccess(
         t('setup.success.title'),
-        t('setup.success.message') + ' ' + wizardData.preferences.timezone
+        t('setup.success.message')
       );
       
       // Call completion callback
@@ -427,14 +398,13 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
             
             <div className="flex-1 min-h-0 overflow-y-auto bg-white rounded-lg p-4">
               {isCompleting ? (
-                <div className="flex flex-col items-center justify-center h-full">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-                  <h3 className="text-lg font-semibold mb-2">{t('setup.saving')}</h3>
-                  <p className="text-muted-foreground text-center">
-                    {t('setup.savingDescription')}<br/>
-                    {t('setup.timezoneDetected')} <strong>{wizardData.preferences.timezone}</strong>
-                  </p>
-                </div>
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+                    <h3 className="text-lg font-semibold mb-2">{t('setup.saving')}</h3>
+                    <p className="text-muted-foreground text-center">
+                      {t('setup.savingDescription')}
+                    </p>
+                  </div>
               ) : (
                 <div className="space-y-6">
                   {/* Personal Info Form - Always present */}
