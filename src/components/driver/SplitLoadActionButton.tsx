@@ -60,10 +60,12 @@ export function SplitLoadActionButton({
   // Determinar qué estados están disponibles basado en el estado actual
   const getAvailableStates = () => {
     const allStates = getAllStates();
-    const currentStatusIndex = allStates.findIndex(s => s.key === load.status);
+    const cleanStatus = load.status.trim(); // Limpiar espacios y saltos de línea
+    const currentStatusIndex = allStates.findIndex(s => s.key === cleanStatus);
     
     console.log('🔍 SplitLoadActionButton Debug:', {
-      loadStatus: load.status,
+      originalStatus: load.status,
+      cleanStatus: cleanStatus,
       allStates: allStates.map(s => s.key),
       currentStatusIndex,
       availableStates: currentStatusIndex === -1 ? [] : allStates.slice(currentStatusIndex + 1)
@@ -77,8 +79,10 @@ export function SplitLoadActionButton({
 
   // Lógica para la acción principal (mismo comportamiento actual)
   const getPrimaryAction = () => {
+    const cleanStatus = load.status.trim(); // Limpiar espacios y saltos de línea
+    
     // Si está delivered y no tiene POD, mostrar Upload POD
-    if (load.status === 'delivered' && !documentValidation?.hasPOD) {
+    if (cleanStatus === 'delivered' && !documentValidation?.hasPOD) {
       return {
         text: t('common:loads.actions.upload_pod'),
         icon: Upload,
