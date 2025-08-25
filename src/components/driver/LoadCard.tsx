@@ -213,7 +213,7 @@ export function LoadCard({
         {/* Amount */}
         <div className="pt-2 border-t">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">{t('dashboard:loads.amount')}</span>
+            <span className="text-sm text-muted-foreground">{t('common:loads.amount')}</span>
             <span className="font-semibold text-primary">
               {formatCurrency(load.total_amount)}
             </span>
