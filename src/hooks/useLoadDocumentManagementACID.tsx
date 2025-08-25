@@ -68,11 +68,14 @@ export const useLoadDocumentManagementACID = () => {
     },
     onSuccess: (data: LoadDocumentACIDResponse) => {
       const operation = data.operation;
-      const message = operation === 'CREATE' 
-        ? 'Load document created successfully' 
-        : 'Load document updated successfully';
       
-      showSuccess(message);
+      // No mostrar mensaje de éxito para PODs ya que tienen su propia celebración
+      if (data.document?.document_type !== 'pod') {
+        const message = operation === 'CREATE' 
+          ? 'Load document created successfully' 
+          : 'Load document updated successfully';
+        showSuccess(message);
+      }
       
       // Invalidate relevant cache with more specific queries
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
@@ -161,7 +164,10 @@ export const useLoadDocumentUploadFlowACID = () => {
       }
     },
     onSuccess: (data: LoadDocumentACIDResponse) => {
-      showSuccess('Load document uploaded and validated successfully');
+      // No mostrar mensaje genérico para PODs ya que tienen su propia celebración
+      if (data.document?.document_type !== 'pod') {
+        showSuccess('Load document uploaded and validated successfully');
+      }
       
       // Force immediate refetch of document list for upload flow
       queryClient.refetchQueries({ queryKey: ['load-documents'] });

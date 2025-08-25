@@ -43,7 +43,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
       }
     }, {
       onSuccess: () => {
-        showSuccess(t('pod_upload.upload_success'));
+        // No mostrar mensaje aquí para POD, ya que se maneja en useLoadCompletion con celebración
         setSelectedFile(null);
         
         // Invalidar queries para refrescar datos
