@@ -618,10 +618,6 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
       }
 
       console.log('✅ Company data saved successfully');
-      showSuccess(
-        t('setup.success.title'),
-        "La información de la empresa ha sido guardada exitosamente."
-      );
       return true;
     } catch (error) {
       console.error('Error saving company data:', error);
