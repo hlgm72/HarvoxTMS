@@ -479,6 +479,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('👋 Starting sign out process...');
       
+      // Set loading to true to prevent Index from showing Landing
+      setLoading(true);
+      
       // Clean up auth state first
       enhancedCleanupAuthState();
       
@@ -487,24 +490,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(null);
       setUserRoles(null);
       setCurrentRole(null);
-      setLoading(false);
       
       // Attempt global sign out from Supabase
       try {
         await supabase.auth.signOut({ scope: 'global' });
-        // console.log('✅ Supabase sign out successful');
+        console.log('✅ Supabase sign out successful');
       } catch (err) {
         console.warn('⚠️ Supabase sign out error (continuing anyway):', err);
       }
       
-      // Force page reload to ensure completely clean state
-      // console.log('🔄 Redirecting to auth page...');
-      window.location.href = '/auth';
+      // Force redirect to auth page without going through Index/Landing
+      console.log('🔄 Redirecting directly to auth page...');
+      window.location.replace('/auth');
     } catch (error) {
       console.error('❌ Error in sign out process:', error);
       // Force cleanup and redirect anyway
       enhancedCleanupAuthState();
-      window.location.href = '/auth';
+      window.location.replace('/auth');
     }
   };
 
