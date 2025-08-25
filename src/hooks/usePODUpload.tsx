@@ -47,10 +47,12 @@ function PODUploadModal({ loadId, loadNumber, isOpen, onClose, onSuccess }: PODU
         // No mostrar mensaje aquí para POD, ya que se maneja en useLoadCompletion con celebración
         setSelectedFile(null);
         
-        // Invalidar queries para refrescar datos
-        queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
-        queryClient.invalidateQueries({ queryKey: ['loads'] });
-        queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+        // Retrasar la invalidación de queries para no interrumpir la celebración
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
+          queryClient.invalidateQueries({ queryKey: ['loads'] });
+          queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+        }, 100); // Pequeño delay para permitir que se muestre la celebración primero
         
         onSuccess();
         onClose();
