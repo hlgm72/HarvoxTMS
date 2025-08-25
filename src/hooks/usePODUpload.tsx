@@ -10,12 +10,13 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface PODUploadModalProps {
   loadId: string;
+  loadNumber: string;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalProps) {
+function PODUploadModal({ loadId, loadNumber, isOpen, onClose, onSuccess }: PODUploadModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showSuccess, showError } = useFleetNotifications();
   const { mutate: uploadDocument, isPending: isUploading } = useLoadDocumentUploadFlowACID();
@@ -73,7 +74,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            {t('pod_upload.title')}
+            {t('pod_upload.title_with_number', { loadNumber })}
           </DialogTitle>
         </DialogHeader>
         
@@ -123,28 +124,33 @@ export function usePODUpload() {
   const [uploadModal, setUploadModal] = useState<{
     isOpen: boolean;
     loadId: string;
+    loadNumber: string;
   }>({
     isOpen: false,
-    loadId: ''
+    loadId: '',
+    loadNumber: ''
   });
 
-  const openPODUpload = (loadId: string) => {
+  const openPODUpload = (loadId: string, loadNumber: string) => {
     setUploadModal({
       isOpen: true,
-      loadId
+      loadId,
+      loadNumber
     });
   };
 
   const closePODUpload = () => {
     setUploadModal({
       isOpen: false,
-      loadId: ''
+      loadId: '',
+      loadNumber: ''
     });
   };
 
   const PODUploadComponent = ({ onSuccess }: { onSuccess?: () => void }) => (
     <PODUploadModal
       loadId={uploadModal.loadId}
+      loadNumber={uploadModal.loadNumber}
       isOpen={uploadModal.isOpen}
       onClose={closePODUpload}
       onSuccess={onSuccess || (() => {})}

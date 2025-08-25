@@ -529,7 +529,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                 onUpdateStatus={(loadId, newStatus, actionText, stopId, stopInfo) => {
                   openStatusModal(loadId, newStatus, actionText, stopId, stopInfo);
                 }}
-                onUploadPOD={openPODUpload}
+                onUploadPOD={(loadId) => openPODUpload(loadId, load.load_number)}
                 onViewDetails={() => setDocumentsDialog({ isOpen: true, load })}
                 onCallContact={(load) => {
                   if (load.contact_phone) {

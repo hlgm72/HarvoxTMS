@@ -863,6 +863,7 @@
   },
   "pod_upload": {
     "title": "Subir Proof of Delivery (POD)",
+    "title_with_number": "Subir POD para Carga #{{loadNumber}}",
     "description": "Selecciona el archivo PDF del Proof of Delivery para completar la entrega.",
     "pdf_file_label": "Archivo PDF",
     "selected_file": "Archivo seleccionado",
