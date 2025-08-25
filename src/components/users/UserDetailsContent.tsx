@@ -88,7 +88,9 @@ export function UserDetailsContent({ user }: UserDetailsContentProps) {
   const [driverProfile, setDriverProfile] = useState<DriverProfile | null>(null);
   const [loading, setLoading] = useState(false);
   
+  console.log('🔍 UserDetailsContent - User data:', user);
   const isDriver = user.role.toLowerCase().includes('driver');
+  console.log('🚛 Is driver?', isDriver, 'Role:', user.role);
   
   // Only load driver data if user is a driver
   const { data: assignedEquipment = [], isLoading: equipmentLoading } = useDriverEquipment(isDriver ? user.id : '');
@@ -104,6 +106,7 @@ export function UserDetailsContent({ user }: UserDetailsContentProps) {
   const loadDriverProfile = async () => {
     if (!isDriver) return;
     
+    console.log('🔍 Loading driver profile for user:', user.id, user.email);
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -112,13 +115,17 @@ export function UserDetailsContent({ user }: UserDetailsContentProps) {
         .eq('user_id', user.id)
         .single();
 
+      console.log('📋 Driver profile query result:', { data, error });
+
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('❌ Driver profile error:', error);
         throw error;
       }
       
+      console.log('✅ Driver profile loaded:', data);
       setDriverProfile(data);
     } catch (error) {
-      console.error('Error loading driver profile:', error);
+      console.error('❌ Error loading driver profile:', error);
     } finally {
       setLoading(false);
     }
