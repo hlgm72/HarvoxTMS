@@ -3814,6 +3814,10 @@ export type Database = {
           | { load_data: Json; operation_mode?: string; stops_data: Json }
         Returns: Json
       }
+      sync_existing_user_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       unassign_equipment_with_validation: {
         Args: { assignment_id: string; unassignment_reason?: string }
         Returns: Json
