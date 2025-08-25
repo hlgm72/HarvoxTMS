@@ -478,6 +478,15 @@ export default function Auth() {
       });
 
       if (isLogin) {
+        // Clean up auth state before attempting login to prevent limbo states
+        const { cleanupAuthState, forceSignOut } = await import('@/utils/authCleanup');
+        
+        console.log('🧹 Cleaning auth state before login...');
+        await forceSignOut();
+        
+        // Wait a bit for cleanup to complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         // Sign in existing user
         const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email.trim(),
