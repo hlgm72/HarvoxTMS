@@ -517,6 +517,7 @@
   "create": "Create",
   "delete": "Delete",
   "deleting": "Deleting...",
+  "view_details": "View Details",
   "locale": "en",
   "additional_payments": {
     "title": "Additional Payments",
