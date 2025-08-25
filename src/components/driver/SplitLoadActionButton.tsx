@@ -106,16 +106,16 @@ export function SplitLoadActionButton({
   }
 
   return (
-    <div className="flex">
+    <div className="flex w-full">
       {/* Botón principal */}
       <Button
         onClick={primaryAction.action}
         disabled={isPending}
         size="sm"
-        className="flex-1 rounded-r-none border-r-0"
+        className="flex-1 rounded-r-none border-r-0 min-w-0"
       >
-        <primaryAction.icon className="h-4 w-4 mr-2" />
-        {primaryAction.text}
+        <primaryAction.icon className="h-4 w-4 mr-2 shrink-0" />
+        <span className="truncate">{primaryAction.text}</span>
       </Button>
 
       {/* Dropdown para saltar estados (solo si hay estados disponibles) */}
@@ -126,7 +126,7 @@ export function SplitLoadActionButton({
               variant="default"
               size="sm"
               disabled={isPending}
-              className="px-2 rounded-l-none border-l border-primary/20"
+              className="px-2 rounded-l-none border-l border-primary/20 shrink-0"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>

@@ -169,19 +169,22 @@ export function LoadCard({
 
         {/* Actions */}
         <div className="flex gap-2">
-          <SplitLoadActionButton
-            load={load}
-            onUpdateStatus={(loadId, newStatus, stopId, stopInfo) => {
-              const actionText = getNextActionText(load.status);
-              onUpdateStatus(loadId, newStatus, actionText, stopId, stopInfo);
-            }}
-            onUploadPOD={onUploadPOD}
-            isPending={updateLoadStatus.isPending}
-          />
+          <div className="flex-1">
+            <SplitLoadActionButton
+              load={load}
+              onUpdateStatus={(loadId, newStatus, stopId, stopInfo) => {
+                const actionText = getNextActionText(load.status);
+                onUpdateStatus(loadId, newStatus, actionText, stopId, stopInfo);
+              }}
+              onUploadPOD={onUploadPOD}
+              isPending={updateLoadStatus.isPending}
+            />
+          </div>
           
           <Button 
             variant="outline" 
             size="sm"
+            className="shrink-0"
             onClick={() => onViewDetails(load)}
           >
             <Eye className="h-4 w-4 mr-2" />
