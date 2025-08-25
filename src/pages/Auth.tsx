@@ -313,6 +313,7 @@ export default function Auth() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Always validate the field, even when empty
     validateField(field, value);
     if (error) setError(null);
   };
