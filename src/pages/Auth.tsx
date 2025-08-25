@@ -177,14 +177,20 @@ export default function Auth() {
       // Update form data if values changed
       if (emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
-        validateField('email', emailValue);
+        // Only validate if the field is not empty or if it was previously filled
+        if (emailValue || formData.email) {
+          validateField('email', emailValue);
+        }
         hasChanges = true;
       }
       
-      // Always validate password field if value changed (including when it becomes empty)
+      // Only validate password field if it's being filled, not cleared by user action
       if (passwordValue !== formData.password) {
         setFormData(prev => ({ ...prev, password: passwordValue }));
-        validateField('password', passwordValue);
+        // Only validate if the field is not empty or if it was previously filled
+        if (passwordValue || formData.password) {
+          validateField('password', passwordValue);
+        }
         hasChanges = true;
       }
       
