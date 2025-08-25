@@ -113,7 +113,43 @@ export function LoadCard({
           <div className="flex items-start gap-2 text-sm">
             <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
             <div className="min-w-0 flex-1">
-              <p className="font-medium">{load.origin_city}, {load.origin_state}</p>
+              {load.stops && load.stops.length > 0 ? (
+                // Show address from first pickup stop
+                (() => {
+                  const pickupStop = load.stops.find(stop => stop.stop_type === 'pickup');
+                  return (
+                    <div 
+                      className="cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => pickupStop && openInMaps({
+                        address: pickupStop.address,
+                        city: pickupStop.city,
+                        state: pickupStop.state,
+                        zipCode: pickupStop.zip_code
+                      })}
+                    >
+                      <p className="font-medium">
+                        {pickupStop?.company_name || `${load.origin_city}, ${load.origin_state}`}
+                      </p>
+                      {pickupStop?.address && (
+                        <p className="text-xs text-muted-foreground">{pickupStop.address}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        {pickupStop?.city}, {pickupStop?.state} {pickupStop?.zip_code}
+                      </p>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div 
+                  className="cursor-pointer hover:text-primary transition-colors"
+                  onClick={() => openInMaps({
+                    city: load.origin_city,
+                    state: load.origin_state
+                  })}
+                >
+                  <p className="font-medium">{load.origin_city}, {load.origin_state}</p>
+                </div>
+              )}
               <p className="text-muted-foreground">
                 {formatDateSafe(load.pickup_date) && (
                   <>
@@ -127,7 +163,44 @@ export function LoadCard({
           <div className="flex items-start gap-2 text-sm">
             <Navigation className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
             <div className="min-w-0 flex-1">
-              <p className="font-medium">{load.destination_city}, {load.destination_state}</p>
+              {load.stops && load.stops.length > 0 ? (
+                // Show address from last delivery stop
+                (() => {
+                  const deliveryStops = load.stops.filter(stop => stop.stop_type === 'delivery');
+                  const lastDeliveryStop = deliveryStops[deliveryStops.length - 1];
+                  return (
+                    <div 
+                      className="cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => lastDeliveryStop && openInMaps({
+                        address: lastDeliveryStop.address,
+                        city: lastDeliveryStop.city,
+                        state: lastDeliveryStop.state,
+                        zipCode: lastDeliveryStop.zip_code
+                      })}
+                    >
+                      <p className="font-medium">
+                        {lastDeliveryStop?.company_name || `${load.destination_city}, ${load.destination_state}`}
+                      </p>
+                      {lastDeliveryStop?.address && (
+                        <p className="text-xs text-muted-foreground">{lastDeliveryStop.address}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        {lastDeliveryStop?.city}, {lastDeliveryStop?.state} {lastDeliveryStop?.zip_code}
+                      </p>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div 
+                  className="cursor-pointer hover:text-primary transition-colors"
+                  onClick={() => openInMaps({
+                    city: load.destination_city,
+                    state: load.destination_state
+                  })}
+                >
+                  <p className="font-medium">{load.destination_city}, {load.destination_state}</p>
+                </div>
+              )}
               <p className="text-muted-foreground">
                 {formatDateSafe(load.delivery_date) && (
                   <>
