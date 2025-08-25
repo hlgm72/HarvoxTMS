@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface UseBirthDateInputOptions {
@@ -17,6 +17,8 @@ export function useBirthDateInput({
   const { i18n } = useTranslation();
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
   const isSpanish = i18n.language === 'es';
   const placeholder = isSpanish ? 'dd/mm/aaaa' : 'mm/dd/yyyy';
@@ -109,15 +111,55 @@ export function useBirthDateInput({
     return { isValid: true, error: null, age: actualAge };
   }, [isSpanish, minAge, maxAge]);
 
+  // Efecto para restaurar la posición del cursor después del formateo
+  useEffect(() => {
+    if (inputRef.current && cursorPosition !== null) {
+      inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+      setCursorPosition(null);
+    }
+  }, [value, cursorPosition]);
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatDateInput(e.target.value);
+    const input = e.target;
+    const currentCursorPos = input.selectionStart || 0;
+    const oldValue = value;
+    const newValue = input.value;
+    
+    // Contar cuántos caracteres se agregaron o eliminaron antes del cursor
+    let cursorOffset = 0;
+    const oldValueBeforeCursor = oldValue.slice(0, currentCursorPos);
+    const newValueBeforeCursor = newValue.slice(0, currentCursorPos);
+    
+    // Calcular la diferencia en longitud para ajustar el cursor
+    const lengthDiff = newValueBeforeCursor.length - oldValueBeforeCursor.length;
+    
+    const formatted = formatDateInput(newValue);
     setValue(formatted);
+    
+    // Calcular nueva posición del cursor después del formateo
+    let newCursorPos = currentCursorPos;
+    
+    // Si se formateó el texto, ajustar la posición del cursor
+    if (formatted !== newValue) {
+      // Contar slashes que se agregaron antes de la posición actual
+      const slashesBeforeCursor = (formatted.slice(0, currentCursorPos).match(/\//g) || []).length;
+      const slashesInOriginal = (newValue.slice(0, currentCursorPos).match(/\//g) || []).length;
+      newCursorPos = currentCursorPos + (slashesBeforeCursor - slashesInOriginal);
+    }
+    
+    // Asegurar que el cursor no esté más allá del final del texto
+    newCursorPos = Math.min(newCursorPos, formatted.length);
+    
+    // Si el cursor cambió de posición, guardarlo para restaurarlo
+    if (newCursorPos !== currentCursorPos) {
+      setCursorPosition(newCursorPos);
+    }
 
     const validation = validateDate(formatted);
     setError(validation.error);
     
     onValueChange?.(formatted, validation.isValid, validation.age);
-  }, [formatDateInput, validateDate, onValueChange]);
+  }, [formatDateInput, validateDate, onValueChange, value]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     // Allow navigation keys
@@ -174,5 +216,6 @@ export function useBirthDateInput({
     handlePaste,
     reset,
     setValue: setExternalValue,
+    inputRef,
   };
 }

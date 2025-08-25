@@ -41,6 +41,7 @@ export function BirthDateInput({
     handleKeyDown,
     handlePaste,
     setValue,
+    inputRef,
   } = useBirthDateInput({
     initialValue: externalValue || '',
     onValueChange: (value, isValid, age) => {
@@ -72,6 +73,7 @@ export function BirthDateInput({
       
       <div className="relative">
         <Input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={handleChange}
