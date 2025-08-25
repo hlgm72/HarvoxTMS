@@ -24,6 +24,19 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const [showSetupCompleted, setShowSetupCompleted] = useState(false);
   const steps = useOnboardingSteps(currentRole);
 
+  // Listen for immediate setup activation
+  useEffect(() => {
+    const handleForceSetup = () => {
+      console.log('🎯 OnboardingProvider: Force setup activation received');
+      setShowWelcome(false);
+      setShowTour(false);
+      setShowSetup(true);
+    };
+
+    window.addEventListener('forceSetupActivation', handleForceSetup);
+    return () => window.removeEventListener('forceSetupActivation', handleForceSetup);
+  }, []);
+
   // Controlar el flujo de setup wizard con useEffect
   useEffect(() => {
     const canActivate = !shouldShowOnboarding && shouldShowSetup && !showTour && !showWelcome;

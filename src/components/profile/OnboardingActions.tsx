@@ -51,9 +51,14 @@ export function OnboardingActions({ className }: OnboardingActionsProps) {
     setResetting(true);
     try {
       resetSetup();
+      
+      // Force immediate setup activation instead of waiting for page reload
+      console.log('🎯 OnboardingActions: Dispatching forceSetupActivation event');
+      window.dispatchEvent(new CustomEvent('forceSetupActivation'));
+      
       showSuccess(
-        t('onboarding.actions.setup_reset_title'),
-        t('onboarding.actions.setup_reset_message')
+        'Setup Activado',
+        'El asistente de configuración se ha activado correctamente.'
       );
     } catch (error: any) {
       showError(
