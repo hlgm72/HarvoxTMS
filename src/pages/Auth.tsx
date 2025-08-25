@@ -536,46 +536,38 @@ export default function Auth() {
     } catch (err: any) {
       console.error('Authentication error:', err);
       
-      // Handle specific authentication errors with user-friendly Spanish messages
-      let errorTitle = "Error de autenticación";
-      let errorMessage = "Ocurrió un error durante la autenticación";
+      // Handle specific authentication errors with user-friendly messages using i18n
+      let errorTitle = t('auth:errors.generic_auth_error_title');
+      let errorMessage = t('auth:errors.generic_auth_error_message');
       
       if (err?.message) {
-        switch (err.message.toLowerCase()) {
-          case 'invalid login credentials':
-            errorTitle = "Credenciales incorrectas";
-            errorMessage = "El email o la contraseña son incorrectos. Por favor verifica tus datos e intenta nuevamente.";
-            break;
-          case 'email not confirmed':
-            errorTitle = "Email no verificado";
-            errorMessage = "Por favor verifica tu email antes de iniciar sesión. Revisa tu bandeja de entrada.";
-            break;
-          case 'too many requests':
-            errorTitle = "Demasiados intentos";
-            errorMessage = "Has intentado iniciar sesión demasiadas veces. Por favor espera unos minutos antes de intentar nuevamente.";
-            break;
-          case 'user not found':
-            errorTitle = "Usuario no encontrado";
-            errorMessage = "No existe una cuenta con este email. ¿Te gustaría crear una cuenta nueva?";
-            break;
-          case 'weak password':
-            errorTitle = "Contraseña débil";
-            errorMessage = "La contraseña debe tener al menos 6 caracteres.";
-            break;
-          case 'email already registered':
-          case 'user already registered':
-            errorTitle = "Email ya registrado";
-            errorMessage = "Ya existe una cuenta con este email. ¿Quieres iniciar sesión en su lugar?";
-            break;
-          case 'signup disabled':
-            errorTitle = "Registro deshabilitado";
-            errorMessage = "El registro de nuevos usuarios está temporalmente deshabilitado.";
-            break;
-          default:
-            // Keep generic message for unknown errors but log the actual error
-            console.warn('Unhandled auth error:', err.message);
-            errorMessage = `Error: ${err.message}`;
-            break;
+        const errorMsg = err.message.toLowerCase();
+        
+        if (errorMsg.includes('invalid login credentials') || errorMsg.includes('invalid credentials')) {
+          errorTitle = t('auth:errors.invalid_credentials_title');
+          errorMessage = t('auth:errors.invalid_credentials_message');
+        } else if (errorMsg.includes('email not confirmed')) {
+          errorTitle = t('auth:errors.email_not_confirmed_title');
+          errorMessage = t('auth:errors.email_not_confirmed_message');
+        } else if (errorMsg.includes('too many requests')) {
+          errorTitle = t('auth:errors.too_many_requests_title');
+          errorMessage = t('auth:errors.too_many_requests_message');
+        } else if (errorMsg.includes('user not found')) {
+          errorTitle = t('auth:errors.user_not_found_title');
+          errorMessage = t('auth:errors.user_not_found_message');
+        } else if (errorMsg.includes('weak password')) {
+          errorTitle = t('auth:errors.weak_password_title');
+          errorMessage = t('auth:errors.weak_password_message');
+        } else if (errorMsg.includes('email already registered') || errorMsg.includes('user already registered')) {
+          errorTitle = t('auth:errors.email_already_registered_title');
+          errorMessage = t('auth:errors.email_already_registered_message');
+        } else if (errorMsg.includes('signup disabled')) {
+          errorTitle = t('auth:errors.signup_disabled_title');
+          errorMessage = t('auth:errors.signup_disabled_message');
+        } else {
+          // Keep generic message for unknown errors but log the actual error
+          console.warn('Unhandled auth error:', err.message);
+          errorMessage = `${t('auth:errors.generic_auth_error_message')}: ${err.message}`;
         }
       }
       
