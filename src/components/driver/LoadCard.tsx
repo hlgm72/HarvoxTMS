@@ -18,8 +18,6 @@ import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { SplitLoadActionButton } from "./SplitLoadActionButton";
-import { useLoadCompletion } from '@/hooks/useLoadCompletion';
-import { CelebrationLoadCard } from './CelebrationLoadCard';
 import { cn } from "@/lib/utils";
 
 interface LoadCardProps {
@@ -61,17 +59,6 @@ export function LoadCard({
 }: LoadCardProps) {
   const { t } = useTranslation(['common', 'dashboard']);
   const { openInMaps } = useNavigationMaps();
-  const completionState = useLoadCompletion(load.id, load.status);
-
-  // Si está en celebración, mostrar tarjeta especial
-  if (completionState.showCelebration) {
-    return (
-      <CelebrationLoadCard
-        load={load}
-        showCelebration={true}
-      />
-    );
-  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
