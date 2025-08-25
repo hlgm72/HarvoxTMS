@@ -558,16 +558,26 @@ export default function Users() {
         throw new Error('Not authenticated');
       }
 
-      // Llamar a la función edge para enviar invitación
-      const { data, error } = await supabase.functions.invoke('send-user-invitation', {
-        body: {
-          companyId: userRole.company_id,
-          email: cleanedForm.email,
-          companyName: companyData.name,
-          role: cleanedForm.role,
-          first_name: cleanedForm.first_name,
-          last_name: cleanedForm.last_name,
-        },
+      // Usar la función correcta según el rol
+      const functionName = cleanedForm.role === 'driver' ? 'send-driver-invitation' : 'send-user-invitation';
+      const requestBody = cleanedForm.role === 'driver' 
+        ? {
+            firstName: cleanedForm.first_name,
+            lastName: cleanedForm.last_name,
+            email: cleanedForm.email,
+            hireDate: new Date().toISOString().split('T')[0] // Fecha actual como hire date por defecto
+          }
+        : {
+            companyId: userRole.company_id,
+            email: cleanedForm.email,
+            companyName: companyData.name,
+            role: cleanedForm.role,
+            first_name: cleanedForm.first_name,
+            last_name: cleanedForm.last_name
+          };
+
+      const { data, error } = await supabase.functions.invoke(functionName, {
+        body: requestBody,
         headers: {
           'Authorization': `Bearer ${session.session.access_token}`
         }
