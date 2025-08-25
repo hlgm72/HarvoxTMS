@@ -39,11 +39,20 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
   const { preferences, updatePreferences } = useUserPreferences();
   const [updating, setUpdating] = useState(false);
 
+  // Detectar zona horaria automáticamente
+  const getUserTimezone = () => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return 'America/New_York'; // Fallback
+    }
+  };
+
   const preferencesForm = useForm<PreferencesFormData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
       preferred_language: 'en',
-      timezone: 'America/New_York',
+      timezone: getUserTimezone(),
     },
   });
 
@@ -51,7 +60,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
     if (preferences) {
       preferencesForm.reset({
         preferred_language: preferences.preferred_language || 'en',
-        timezone: preferences.timezone || 'America/New_York',
+        timezone: preferences.timezone || getUserTimezone(),
       });
     }
   }, [preferences, preferencesForm]);
@@ -62,7 +71,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
     try {
       const result = await updatePreferences({
         preferred_language: data.preferred_language || 'en',
-        timezone: data.timezone || 'America/New_York',
+        timezone: data.timezone || getUserTimezone(),
       });
 
       if (!result.success) {
@@ -114,7 +123,7 @@ export const PreferencesForm = forwardRef<PreferencesFormRef, PreferencesFormPro
     if (preferences) {
       preferencesForm.reset({
         preferred_language: preferences.preferred_language || 'en',
-        timezone: preferences.timezone || 'America/New_York',
+        timezone: preferences.timezone || getUserTimezone(),
       });
     }
     onCancel?.();
