@@ -9,6 +9,7 @@ import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { OnboardingPreferencesForm } from './OnboardingPreferencesForm';
 
 const preferencesSchema = z.object({
   language: z.string().min(1, 'El idioma es requerido'),
@@ -175,6 +176,12 @@ export function PreferencesForm({
           </div>
         </form>
       </Form>
+      
+      {showOnboardingSection && (
+        <div className="mt-6">
+          <OnboardingPreferencesForm />
+        </div>
+      )}
     </div>
   );
 }
