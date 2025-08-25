@@ -112,7 +112,7 @@ export function SplitLoadActionButton({
         onClick={primaryAction.action}
         disabled={isPending}
         size="sm"
-        className="flex-1 rounded-r-none border-r-0 min-w-0"
+        className={`flex-1 min-w-0 ${availableStates.length > 1 ? 'rounded-r-none border-r-0' : ''}`}
       >
         <primaryAction.icon className="h-4 w-4 mr-2 shrink-0" />
         <span className="truncate">{primaryAction.text}</span>
