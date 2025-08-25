@@ -558,6 +558,7 @@
     "assign": "Asignar Conductor",
     "documents": "Gestionar Documentos",
     "photos": "Fotos",
+    "skip_to": "Saltar a",
     "assign_status": "Asignar",
     "in_transit_status": "En Tránsito",
     "delivered_status": "Entregado",

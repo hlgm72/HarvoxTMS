@@ -21,7 +21,7 @@ export function SplitLoadActionButton({
 }: SplitLoadActionButtonProps) {
   console.log('🚀 SplitLoadActionButton - INICIO', { loadId: load.id, status: load.status, isPending });
   
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'loads']);
   const { nextStopInfo, hasNextAction } = useLoadStopsNavigation(load);
   const { data: documentValidation } = useLoadDocumentValidation(load.id);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -29,15 +29,15 @@ export function SplitLoadActionButton({
     // Estados base del sistema
     const getAllStates = () => {
       const baseStates = [
-        { key: 'created', label: t('common:loads.status.created') },
-        { key: 'route_planned', label: t('common:loads.status.route_planned') },
-        { key: 'assigned', label: t('common:loads.status.assigned') },
-        { key: 'en_route_pickup', label: t('common:loads.status.en_route_pickup') },
-        { key: 'at_pickup', label: t('common:loads.status.at_pickup') },
-        { key: 'loaded', label: t('common:loads.status.loaded') },
-        { key: 'en_route_delivery', label: t('common:loads.status.en_route_delivery') },
-        { key: 'at_delivery', label: t('common:loads.status.at_delivery') },
-        { key: 'delivered', label: t('common:loads.status.delivered') }
+        { key: 'created', label: t('loads:status.created') },
+        { key: 'route_planned', label: t('loads:status.route_planned') },
+        { key: 'assigned', label: t('loads:status.assigned') },
+        { key: 'en_route_pickup', label: t('loads:status.en_route_pickup') },
+        { key: 'at_pickup', label: t('loads:status.at_pickup') },
+        { key: 'loaded', label: t('loads:status.loaded') },
+        { key: 'en_route_delivery', label: t('loads:status.en_route_delivery') },
+        { key: 'at_delivery', label: t('loads:status.at_delivery') },
+        { key: 'delivered', label: t('loads:status.delivered') }
       ];
 
     // Si hay stops, usar lógica más sofisticada
@@ -168,7 +168,7 @@ export function SplitLoadActionButton({
                 className="cursor-pointer hover:bg-muted"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                {t('common:loads.skip_to')}: {state.label}
+                {t('loads:actions.skip_to')}: {state.label}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

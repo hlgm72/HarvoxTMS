@@ -558,6 +558,7 @@
     "assign": "Assign Driver",
     "documents": "Manage Documents",
     "photos": "Photos",
+    "skip_to": "Skip to",
     "assign_status": "Assign",
     "in_transit_status": "In Transit",
     "delivered_status": "Delivered",
