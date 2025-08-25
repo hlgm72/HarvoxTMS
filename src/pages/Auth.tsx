@@ -175,13 +175,14 @@ export default function Auth() {
       let hasChanges = false;
       
       // Update form data if values changed
-      if (emailValue && emailValue !== formData.email) {
+      if (emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
         validateField('email', emailValue);
         hasChanges = true;
       }
       
-      if (passwordValue && passwordValue !== formData.password) {
+      // Always validate password field if value changed (including when it becomes empty)
+      if (passwordValue !== formData.password) {
         setFormData(prev => ({ ...prev, password: passwordValue }));
         validateField('password', passwordValue);
         hasChanges = true;
