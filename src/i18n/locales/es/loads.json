@@ -857,5 +857,9 @@
       "unknown": "Desconocido"
     }
   },
+  "completed": {
+    "no_loads_title": "No hay cargas completadas",
+    "no_loads_description": "Las cargas completadas aparecerán aquí"
+  },
   "latest_update": "Última Actualización"
 }

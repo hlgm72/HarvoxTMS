@@ -558,9 +558,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             <Card>
               <CardContent className="py-8 text-center">
                 <CheckCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No hay cargas completadas</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('loads:completed.no_loads_title')}</h3>
                 <p className="text-muted-foreground">
-                  Las cargas completadas aparecerán aquí
+                  {t('loads:completed.no_loads_description')}
                 </p>
               </CardContent>
             </Card>
