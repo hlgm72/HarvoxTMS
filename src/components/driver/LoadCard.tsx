@@ -57,7 +57,7 @@ export function LoadCard({
   updateLoadStatus, 
   getNextActionText 
 }: LoadCardProps) {
-  const { t } = useTranslation(['common', 'dashboard']);
+  const { t } = useTranslation(['common', 'dashboard', 'loads']);
   const { openInMaps } = useNavigationMaps();
 
   const formatCurrency = (amount: number) => {
@@ -143,7 +143,7 @@ export function LoadCard({
         {(load.latest_status_notes || load.latest_status_eta) && (
           <div className="space-y-1 p-3 bg-muted/50 rounded-lg">
             <p className="text-xs font-medium text-muted-foreground">
-              {t('dashboard:loads.latest_update')}
+              {t('loads:latest_update')}
             </p>
             {load.latest_status_notes && (
               <p className="text-sm">{load.latest_status_notes}</p>
