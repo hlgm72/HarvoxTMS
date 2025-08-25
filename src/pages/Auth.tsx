@@ -159,9 +159,11 @@ export default function Auth() {
     try {
       // Don't interfere if there are active validation errors
       if (Object.keys(fieldErrors).length > 0 || loading) {
+        console.log('🚫 detectCredentialAutofill blocked - validation errors present:', fieldErrors);
         return;
       }
 
+      console.log('✅ detectCredentialAutofill executing - no validation errors');
       const emailInput = document.getElementById('email') as HTMLInputElement;
       const passwordInput = document.getElementById('password') as HTMLInputElement;
       
@@ -300,9 +302,11 @@ export default function Auth() {
   const handlePasswordFocus = () => {
     // Don't interfere if there are active validation errors
     if (Object.keys(fieldErrors).length > 0 || loading) {
+      console.log('🚫 handlePasswordFocus blocked - validation errors present:', fieldErrors);
       return;
     }
     
+    console.log('✅ handlePasswordFocus executing - no validation errors');
     setTimeout(detectCredentialAutofill, 50);
     setTimeout(detectCredentialAutofill, 200);
   };
