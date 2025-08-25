@@ -192,7 +192,7 @@
     },
     "success": {
       "title": "Setup completed!",
-      "message": "All your data has been saved successfully. Configured timezone:"
+      "message": "All your data has been saved successfully."
     },
     "error": {
       "title": "Error completing setup",
