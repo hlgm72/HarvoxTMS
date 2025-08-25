@@ -188,25 +188,31 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   };
 
   const handleComplete = async () => {
+    // Capture refs BEFORE setting any state that could cause re-renders
+    const currentPersonalInfoRef = personalInfoFormRef.current;
+    const currentPreferencesRef = preferencesFormRef.current;
+    const currentDriverInfoRef = driverInfoFormRef.current;
+    const currentCompanySetupRef = companySetupRef.current;
+    
+    console.log('🚀 SetupWizard: Starting final save with all data...');
+    console.log('🔍 SetupWizard: Captured refs status:');
+    console.log('  - personalInfoFormRef:', currentPersonalInfoRef);
+    console.log('  - preferencesFormRef:', currentPreferencesRef);
+    console.log('  - driverInfoFormRef:', currentDriverInfoRef);
+    console.log('  - companySetupRef:', currentCompanySetupRef);
+    
     setIsCompleting(true);
     
     try {
-      console.log('🚀 SetupWizard: Starting final save with all data...');
-      console.log('🔍 SetupWizard: Current refs status:');
-      console.log('  - personalInfoFormRef.current:', personalInfoFormRef.current);
-      console.log('  - preferencesFormRef.current:', preferencesFormRef.current);
-      console.log('  - driverInfoFormRef.current:', driverInfoFormRef.current);
-      console.log('  - companySetupRef.current:', companySetupRef.current);
-      
       const saveResults: Array<{ step: string; success: boolean; error?: string }> = [];
       
-      // Save all data directly from refs (no navigation needed since all forms are mounted)
+      // Save all data using captured refs (prevents null refs during async operations)
       
       // 1) Guardar Datos Personales
       try {
-        if (personalInfoFormRef.current) {
+        if (currentPersonalInfoRef) {
           console.log('🔄 SetupWizard: Saving personal info...');
-          const result = await personalInfoFormRef.current.saveData();
+          const result = await currentPersonalInfoRef.saveData();
           console.log('✅ SetupWizard: Personal info result:', result);
           saveResults.push({ step: 'Información Personal', ...result });
         } else {
@@ -220,9 +226,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       
       // 2) Guardar Preferencias
       try {
-        if (preferencesFormRef.current) {
+        if (currentPreferencesRef) {
           console.log('🔄 SetupWizard: Saving preferences...');
-          const result = await preferencesFormRef.current.saveData();
+          const result = await currentPreferencesRef.saveData();
           console.log('✅ SetupWizard: Preferences result:', result);
           saveResults.push({ step: 'Preferencias', ...result });
         } else {
@@ -249,9 +255,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // 3) Guardar datos de Conductor (si aplica)
       if (isDriver) {
         try {
-          if (driverInfoFormRef.current) {
+          if (currentDriverInfoRef) {
             console.log('🔄 SetupWizard: Saving driver info...');
-            const result = await driverInfoFormRef.current.saveData();
+            const result = await currentDriverInfoRef.saveData();
             console.log('✅ SetupWizard: Driver info result:', result);
             saveResults.push({ step: 'Información del Conductor', ...result });
           } else {
@@ -267,9 +273,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // 4) Guardar datos de Empresa (si aplica)
       if (isCompanyOwner) {
         try {
-          if (companySetupRef.current) {
+          if (currentCompanySetupRef) {
             console.log('🔄 SetupWizard: Saving company info...');
-            const result = await companySetupRef.current.saveData();
+            const result = await currentCompanySetupRef.saveData();
             console.log('✅ SetupWizard: Company info result:', result);
             saveResults.push({ 
               step: 'Información de la Empresa', 
