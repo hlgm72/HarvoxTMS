@@ -699,7 +699,7 @@ export default function Auth() {
           <CardContent className="pt-0">
             {/* Forgot Password Form */}
             {showForgotPassword && (
-              <form onSubmit={handleForgotPassword} className="space-y-4">
+              <form onSubmit={handleForgotPassword} className="space-y-4" noValidate>
                 <div className="space-y-2">
                   <Label htmlFor="resetEmail" className="font-body font-medium text-foreground">
                     {t('auth:forgot_password.email_label')}
@@ -781,7 +781,7 @@ export default function Auth() {
 
             {/* Reset Password Form */}
             {showResetPassword && (
-              <form onSubmit={handleResetPassword} className="space-y-4">
+              <form onSubmit={handleResetPassword} className="space-y-4" noValidate>
                 <div className="space-y-2">
                   <Label htmlFor="newPassword" className="font-body font-medium text-foreground">
                     Nueva Contraseña
@@ -854,7 +854,7 @@ export default function Auth() {
             {/* Main Login/Signup Form */}
             {!showForgotPassword && (
               <>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   {!isLogin && (
                     <div className="space-y-4 animate-fade-in">
                       <div className="grid grid-cols-2 gap-4">
