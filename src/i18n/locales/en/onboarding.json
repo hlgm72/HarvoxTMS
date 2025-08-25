@@ -148,7 +148,13 @@
   },
   "setup": {
     "title": "Initial Setup",
-    "subtitle": "Let's configure your account to get started",
+    "subtitle": "Let's configure your account step by step",
+    "description": "Initial setup wizard to complete user profile",
+    "progress": "Setup Progress",
+    "saving": "Saving configuration...",
+    "savingDescription": "We're saving all your setup data.",
+    "timezoneDetected": "Detected timezone:",
+    "dataWillBeSaved": "Data will be saved when completing the full wizard",
     "steps": {
       "personal": {
         "title": "Personal Information",
@@ -156,22 +162,42 @@
       },
       "preferences": {
         "title": "Preferences",
-        "description": "Set your language and timezone"
+        "description": "Set your language and timezone",
+        "configTitle": "Preferences Configuration",
+        "autoDetected": "Timezone detected automatically:"
       },
       "driver": {
-        "title": "Driver Information",
-        "description": "Complete your driver profile and licenses"
+        "title": "Driver",
+        "description": "License and contact information",
+        "configTitle": "Driver Information",
+        "configDescription": "Complete your license and emergency contact information"
       },
       "company": {
-        "title": "Company Setup",
-        "description": "Configure your company information"
+        "title": "Company Data",
+        "description": "Your company information",
+        "configTitle": "Company Setup",
+        "configDescription": "Configure your company's basic information",
+        "warning": "Important: DOT and MC numbers are required for commercial operations in the United States. Data will be saved when completing the full wizard."
       }
     },
     "actions": {
       "previous": "Previous",
       "next": "Next",
-      "skip": "Skip this step",
-      "finish": "Complete Setup"
+      "skip": "Skip setup",
+      "finish": "Finish"
+    },
+    "validation": {
+      "required": "Validation required",
+      "completeFields": "Please complete all required fields before continuing."
+    },
+    "success": {
+      "title": "Setup completed!",
+      "message": "All your data has been saved successfully. Configured timezone:"
+    },
+    "error": {
+      "title": "Error completing setup",
+      "message": "Some data could not be saved. Please try again.",
+      "inSteps": "Error in the following steps:"
     },
     "completion": {
       "title": "Setup Complete!",
@@ -186,18 +212,22 @@
     },
     "company": {
       "title": "Company Information",
+      "description": "Configure your transportation company's basic information",
       "fields": {
         "name": "Company Name",
-        "namePlaceholder": "Enter your company name",
+        "namePlaceholder": "ABC Transport LLC",
         "dotNumber": "DOT Number",
-        "dotPlaceholder": "Enter DOT number",
+        "dotPlaceholder": "1234567",
         "mcNumber": "MC Number", 
-        "mcPlaceholder": "Enter MC number",
-        "phone": "Phone Number",
-        "phonePlaceholder": "Enter phone number",
-        "email": "Email Address",
-        "emailPlaceholder": "Enter email address",
-        "address": "Company Address"
+        "mcPlaceholder": "MC-123456",
+        "phone": "Phone",
+        "phonePlaceholder": "+1 (555) 123-4567",
+        "email": "Company Email",
+        "emailPlaceholder": "info@abctransport.com",
+        "address": "Address",
+        "state": "State",
+        "city": "City",
+        "zipCode": "ZIP Code"
       }
     }
   }

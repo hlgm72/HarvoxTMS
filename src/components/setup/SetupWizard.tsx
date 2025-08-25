@@ -16,6 +16,7 @@ import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { supabase } from '@/integrations/supabase/client';
 import { AddressForm } from '@/components/ui/AddressForm';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 
 interface SetupStep {
@@ -49,6 +50,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   const { user, isDriver, isCompanyOwner } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { updatePreferences } = useUserPreferences();
+  const { t } = useTranslation('onboarding');
 
   // Estados centralizados para todos los datos del wizard
   const [wizardData, setWizardData] = useState({
@@ -70,29 +72,29 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
   const steps: SetupStep[] = [
     {
       id: 'profile',
-      title: 'Datos Personales',
-      description: 'Completa tu información personal',
+      title: t('setup.steps.personal.title'),
+      description: t('setup.steps.personal.description'),
       icon: User,
       completed: false
     },
     {
       id: 'preferences',
-      title: 'Preferencias',
-      description: 'Configura idioma y zona horaria',
+      title: t('setup.steps.preferences.title'),
+      description: t('setup.steps.preferences.description'),
       icon: Settings,
       completed: false
     },
     ...(isDriver ? [{
       id: 'driver',
-      title: 'Conductor',
-      description: 'Información de licencia y contactos',
+      title: t('setup.steps.driver.title'),
+      description: t('setup.steps.driver.description'),
       icon: Truck,
       completed: false
     }] : []),
     ...(isCompanyOwner ? [{
       id: 'company',
-      title: 'Datos de Empresa',
-      description: 'Información de tu empresa',
+      title: t('setup.steps.company.title'),
+      description: t('setup.steps.company.description'),
       icon: Building,
       completed: false
     }] : [])
@@ -168,8 +170,8 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     
     if (!isValid) {
       showError(
-        "Validación requerida",
-        "Por favor completa todos los campos requeridos antes de continuar."
+        t('setup.validation.required'),
+        t('setup.validation.completeFields')
       );
       return;
     }
@@ -315,18 +317,18 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       // Check if all saves were successful
       const failedSaves = saveResults.filter(result => !result.success);
       
-      if (failedSaves.length > 0) {
+        if (failedSaves.length > 0) {
         console.error('❌ SetupWizard: Failed saves:', failedSaves);
         const errorMessage = failedSaves.map(fail => `${fail.step}: ${fail.error}`).join('\n');
-        throw new Error(`Error en los siguientes pasos:\n${errorMessage}`);
+        throw new Error(t('setup.error.inSteps') + '\n' + errorMessage);
       }
       
       console.log('🎉 SetupWizard: All data saved successfully');
       
       // Show success message
       showSuccess(
-        "¡Configuración completada!",
-        `Todos tus datos han sido guardados exitosamente. Zona horaria configurada: ${wizardData.preferences.timezone}`
+        t('setup.success.title'),
+        t('setup.success.message') + ' ' + wizardData.preferences.timezone
       );
       
       // Call completion callback
@@ -335,8 +337,8 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
     } catch (error: any) {
       console.error('💥 SetupWizard: Error during setup completion:', error);
       showError(
-        "Error al completar la configuración",
-        error.message || "Algunos datos no pudieron ser guardados. Por favor, inténtalo nuevamente."
+        t('setup.error.title'),
+        error.message || t('setup.error.message')
       );
     } finally {
       setIsCompleting(false);
@@ -357,15 +359,15 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
       <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0">
         <VisuallyHidden>
           <DialogDescription>
-            Asistente de configuración inicial para completar el perfil del usuario
+            {t('setup.description')}
           </DialogDescription>
         </VisuallyHidden>
         <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b">
           <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-center">
-            Configuración Inicial
+            {t('setup.title')}
           </DialogTitle>
           <p className="text-sm sm:text-base text-muted-foreground text-center px-2">
-            Vamos a configurar tu cuenta paso a paso
+            {t('setup.subtitle')}
           </p>
         </DialogHeader>
 
@@ -373,7 +375,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
           {/* Progress Bar */}
           <div className="space-y-2 flex-shrink-0 p-4 sm:p-6 pb-3">
             <div className="flex justify-between text-sm">
-              <span>Progreso de configuración</span>
+              <span>{t('setup.progress')}</span>
               <span>{Math.round(progress)}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -427,10 +429,10 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
               {isCompleting ? (
                 <div className="flex flex-col items-center justify-center h-full">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-                  <h3 className="text-lg font-semibold mb-2">Guardando configuración...</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('setup.saving')}</h3>
                   <p className="text-muted-foreground text-center">
-                    Estamos guardando todos tus datos de configuración.<br/>
-                    Zona horaria detectada: <strong>{wizardData.preferences.timezone}</strong>
+                    {t('setup.savingDescription')}<br/>
+                    {t('setup.timezoneDetected')} <strong>{wizardData.preferences.timezone}</strong>
                   </p>
                 </div>
               ) : (
@@ -438,9 +440,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   {/* Personal Info Form - Always present */}
                   <div className={currentStep === 0 ? 'block' : 'hidden'}>
                     <div className="text-center mb-4">
-                      <h3 className="text-lg font-semibold mb-2">Información Personal</h3>
+                      <h3 className="text-lg font-semibold mb-2">{t('setup.steps.personal.title')}</h3>
                       <p className="text-muted-foreground">
-                        Los datos se guardarán al finalizar el wizard completo
+                        {t('setup.dataWillBeSaved')}
                       </p>
                     </div>
                     <PersonalInfoForm 
@@ -454,9 +456,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   {/* Preferences Form - Always present */}
                   <div className={currentStep === 1 ? 'block' : 'hidden'}>
                     <div className="text-center mb-4">
-                      <h3 className="text-lg font-semibold mb-2">Configuración de Preferencias</h3>
+                      <h3 className="text-lg font-semibold mb-2">{t('setup.steps.preferences.configTitle')}</h3>
                       <p className="text-muted-foreground">
-                        Zona horaria detectada automáticamente: <strong>{wizardData.preferences.timezone}</strong>
+                        {t('setup.steps.preferences.autoDetected')} <strong>{wizardData.preferences.timezone}</strong>
                       </p>
                     </div>
                     <PreferencesForm 
@@ -471,9 +473,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   {isDriver && (
                     <div className={currentStep === 2 ? 'block' : 'hidden'}>
                       <div className="text-center mb-4">
-                        <h3 className="text-lg font-semibold mb-2">Información del Conductor</h3>
+                        <h3 className="text-lg font-semibold mb-2">{t('setup.steps.driver.configTitle')}</h3>
                         <p className="text-muted-foreground">
-                          Completa tu información de licencia y contactos de emergencia
+                          {t('setup.steps.driver.configDescription')}
                         </p>
                       </div>
                       <DriverInfoForm 
@@ -488,9 +490,9 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   {isCompanyOwner && (
                     <div className={currentStep === (isDriver ? 3 : 2) ? 'block' : 'hidden'}>
                       <div className="text-center mb-4">
-                        <h3 className="text-lg font-semibold mb-2">Configuración de Empresa</h3>
+                        <h3 className="text-lg font-semibold mb-2">{t('setup.steps.company.configTitle')}</h3>
                         <p className="text-muted-foreground">
-                          Configura los datos básicos de tu empresa
+                          {t('setup.steps.company.configDescription')}
                         </p>
                       </div>
                       <CompanySetupStep 
@@ -513,15 +515,15 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                 className="text-sm sm:text-base"
               >
                 <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                Anterior
+                {t('setup.actions.previous')}
               </Button>
 
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
                 <Button variant="ghost" onClick={onClose} className="text-sm sm:text-base order-2 sm:order-1">
-                  Saltar configuración
+                  {t('setup.actions.skip')}
                 </Button>
                 <Button onClick={handleNext} className="text-sm sm:text-base order-1 sm:order-2">
-                  {currentStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
+                  {currentStep === steps.length - 1 ? t('setup.actions.finish') : t('setup.actions.next')}
                   <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-2" />
                 </Button>
               </div>
@@ -538,6 +540,7 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
 const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>((props, ref) => {
   const { userCompany } = useCompanyCache();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('onboarding');
   const [loading, setLoading] = useState(false);
   const [companyData, setCompanyData] = useState({
     name: '',
@@ -598,7 +601,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
 
     // Validar campos requeridos
     if (!companyData.name.trim() || !companyData.address.trim() || !companyData.stateId || !companyData.zipCode.trim()) {
-      alert('Por favor completa todos los campos requeridos (*)');
+      alert(t('setup.validation.completeFields'));
       return false;
     }
 
@@ -623,7 +626,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
       if (error) {
         console.error('Error updating company:', error);
         showError(
-          "Error al guardar",
+          t('setup.error.title'),
           "No se pudieron guardar los datos de la empresa. Inténtalo nuevamente."
         );
         return false;
@@ -631,7 +634,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
 
       console.log('✅ Company data saved successfully');
       showSuccess(
-        "Datos guardados",
+        t('setup.success.title'),
         "La información de la empresa ha sido guardada exitosamente."
       );
       return true;
@@ -652,19 +655,19 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
   return (
     <div className="space-y-4 sm:space-y-6 pb-6">
       <div className="text-center mb-4 sm:mb-6">
-        <h3 className="text-lg font-semibold mb-2">Información de la Empresa</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('setup.company.title')}</h3>
         <p className="text-muted-foreground">
-          Configura los datos básicos de tu empresa de transporte
+          {t('setup.company.description')}
         </p>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="company-name" className="text-sm font-medium">Nombre de la Empresa *</Label>
+          <Label htmlFor="company-name" className="text-sm font-medium">{t('setup.company.fields.name')} *</Label>
           <Input
             id="company-name"
             type="text"
-            placeholder="Transportes ABC LLC"
+            placeholder={t('setup.company.fields.namePlaceholder')}
             value={companyData.name}
             onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
           />
@@ -672,22 +675,22 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="space-y-2">
-            <Label htmlFor="dot-number" className="text-sm font-medium">Número DOT</Label>
+            <Label htmlFor="dot-number" className="text-sm font-medium">{t('setup.company.fields.dotNumber')}</Label>
             <Input
               id="dot-number"
               type="text"
-              placeholder="1234567"
+              placeholder={t('setup.company.fields.dotPlaceholder')}
               value={companyData.dotNumber}
               onChange={(e) => setCompanyData({ ...companyData, dotNumber: e.target.value })}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="mc-number" className="text-sm font-medium">Número MC</Label>
+            <Label htmlFor="mc-number" className="text-sm font-medium">{t('setup.company.fields.mcNumber')}</Label>
             <Input
               id="mc-number"
               type="text"
-              placeholder="MC-123456"
+              placeholder={t('setup.company.fields.mcPlaceholder')}
               value={companyData.mcNumber}
               onChange={(e) => setCompanyData({ ...companyData, mcNumber: e.target.value })}
             />
@@ -708,32 +711,32 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
             zipCode={companyData.zipCode}
             onZipCodeChange={(value) => setCompanyData({ ...companyData, zipCode: value })}
             required={true}
-            streetAddressLabel="Dirección"
-            stateLabel="Estado"
-            cityLabel="Ciudad"
-            zipCodeLabel="Código Postal"
+            streetAddressLabel={t('setup.company.fields.address')}
+            stateLabel={t('setup.company.fields.state')}
+            cityLabel={t('setup.company.fields.city')}
+            zipCodeLabel={t('setup.company.fields.zipCode')}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div className="space-y-2">
-          <Label htmlFor="company-phone" className="text-sm font-medium">Teléfono</Label>
+          <Label htmlFor="company-phone" className="text-sm font-medium">{t('setup.company.fields.phone')}</Label>
           <Input
             id="company-phone"
             type="tel"
-            placeholder="+1 (555) 123-4567"
+            placeholder={t('setup.company.fields.phonePlaceholder')}
             value={companyData.phone}
             onChange={(e) => setCompanyData({ ...companyData, phone: e.target.value })}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="company-email" className="text-sm font-medium">Email de la Empresa</Label>
+          <Label htmlFor="company-email" className="text-sm font-medium">{t('setup.company.fields.email')}</Label>
           <Input
             id="company-email"
             type="email"
-            placeholder="info@transportesabc.com"
+            placeholder={t('setup.company.fields.emailPlaceholder')}
             value={companyData.email}
             onChange={(e) => setCompanyData({ ...companyData, email: e.target.value })}
           />
@@ -742,8 +745,7 @@ const CompanySetupStep = React.forwardRef<{ saveData: () => Promise<boolean> }>(
 
       <div className="bg-amber-50 p-4 rounded-lg">
         <p className="text-sm text-amber-800">
-          ⚠️ <strong>Importante:</strong> Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos. 
-          Los datos se guardarán al finalizar el wizard completo.
+          ⚠️ <strong>Importante:</strong> {t('setup.steps.company.warning')}
         </p>
       </div>
     </div>

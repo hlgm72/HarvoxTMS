@@ -148,30 +148,56 @@
   },
   "setup": {
     "title": "Configuración Inicial",
-    "subtitle": "Configuremos tu cuenta para comenzar",
+    "subtitle": "Vamos a configurar tu cuenta paso a paso",
+    "description": "Asistente de configuración inicial para completar el perfil del usuario",
+    "progress": "Progreso de configuración",
+    "saving": "Guardando configuración...",
+    "savingDescription": "Estamos guardando todos tus datos de configuración.",
+    "timezoneDetected": "Zona horaria detectada:",
+    "dataWillBeSaved": "Los datos se guardarán al finalizar el wizard completo",
     "steps": {
       "personal": {
-        "title": "Información Personal",
-        "description": "Completa tu perfil personal"
+        "title": "Datos Personales",
+        "description": "Completa tu información personal"
       },
       "preferences": {
         "title": "Preferencias",
-        "description": "Establece tu idioma y zona horaria"
+        "description": "Configura idioma y zona horaria",
+        "configTitle": "Configuración de Preferencias",
+        "autoDetected": "Zona horaria detectada automáticamente:"
       },
       "driver": {
-        "title": "Información del Conductor",
-        "description": "Completa tu perfil de conductor y licencias"
+        "title": "Conductor",
+        "description": "Información de licencia y contactos",
+        "configTitle": "Información del Conductor",
+        "configDescription": "Completa tu información de licencia y contactos de emergencia"
       },
       "company": {
-        "title": "Configuración de Empresa",
-        "description": "Configura la información de tu empresa"
+        "title": "Datos de Empresa",
+        "description": "Información de tu empresa",
+        "configTitle": "Configuración de Empresa",
+        "configDescription": "Configura los datos básicos de tu empresa",
+        "warning": "Importante: Los números DOT y MC son requeridos para operaciones comerciales en Estados Unidos. Los datos se guardarán al finalizar el wizard completo."
       }
     },
     "actions": {
       "previous": "Anterior",
       "next": "Siguiente",
-      "skip": "Omitir este paso",
-      "finish": "Completar Configuración"
+      "skip": "Saltar configuración",
+      "finish": "Finalizar"
+    },
+    "validation": {
+      "required": "Validación requerida",
+      "completeFields": "Por favor completa todos los campos requeridos antes de continuar."
+    },
+    "success": {
+      "title": "¡Configuración completada!",
+      "message": "Todos tus datos han sido guardados exitosamente. Zona horaria configurada:"
+    },
+    "error": {
+      "title": "Error al completar la configuración",
+      "message": "Algunos datos no pudieron ser guardados. Por favor, inténtalo nuevamente.",
+      "inSteps": "Error en los siguientes pasos:"
     },
     "completion": {
       "title": "¡Configuración Completa!",
@@ -186,18 +212,22 @@
     },
     "company": {
       "title": "Información de la Empresa",
+      "description": "Configura los datos básicos de tu empresa de transporte",
       "fields": {
         "name": "Nombre de la Empresa",
-        "namePlaceholder": "Ingresa el nombre de tu empresa",
+        "namePlaceholder": "Transportes ABC LLC",
         "dotNumber": "Número DOT",
-        "dotPlaceholder": "Ingresa el número DOT",
+        "dotPlaceholder": "1234567",
         "mcNumber": "Número MC",
-        "mcPlaceholder": "Ingresa el número MC", 
-        "phone": "Número de Teléfono",
-        "phonePlaceholder": "Ingresa el número de teléfono",
-        "email": "Dirección de Email",
-        "emailPlaceholder": "Ingresa la dirección de email",
-        "address": "Dirección de la Empresa"
+        "mcPlaceholder": "MC-123456", 
+        "phone": "Teléfono",
+        "phonePlaceholder": "+1 (555) 123-4567",
+        "email": "Email de la Empresa",
+        "emailPlaceholder": "info@transportesabc.com",
+        "address": "Dirección",
+        "state": "Estado",
+        "city": "Ciudad",
+        "zipCode": "Código Postal"
       }
     }
   }
