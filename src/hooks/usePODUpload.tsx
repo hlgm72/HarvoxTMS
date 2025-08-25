@@ -5,6 +5,7 @@ import { Upload, FileText } from "lucide-react";
 import { useLoadDocumentUploadFlowACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface PODUploadModalProps {
   loadId: string;
@@ -17,6 +18,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showSuccess, showError } = useFleetNotifications();
   const { mutate: uploadDocument, isPending: isUploading } = useLoadDocumentUploadFlowACID();
+  const { t } = useTranslation('loads');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -27,7 +29,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
 
   const handleUpload = () => {
     if (!selectedFile) {
-      showError('Por favor selecciona un archivo PDF');
+      showError(t('pod_upload.select_file_error'));
       return;
     }
 
@@ -39,14 +41,14 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
       }
     }, {
       onSuccess: () => {
-        showSuccess('POD subido exitosamente');
+        showSuccess(t('pod_upload.upload_success'));
         setSelectedFile(null);
         onSuccess();
         onClose();
       },
       onError: (error) => {
         console.error('Error uploading POD:', error);
-        showError('Error al subir el POD');
+        showError(t('pod_upload.upload_error'));
       }
     });
   };
@@ -63,18 +65,18 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Subir Proof of Delivery (POD)
+            {t('pod_upload.title')}
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            Selecciona el archivo PDF del Proof of Delivery para completar la entrega.
+            {t('pod_upload.description')}
           </div>
           
           <div className="space-y-2">
             <label htmlFor="pod-file" className="text-sm font-medium">
-              Archivo PDF
+              {t('pod_upload.pdf_file_label')}
             </label>
             <input
               id="pod-file"
@@ -85,14 +87,14 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
             />
             {selectedFile && (
               <div className="text-xs text-muted-foreground">
-                Archivo seleccionado: {selectedFile.name}
+                {t('pod_upload.selected_file')}: {selectedFile.name}
               </div>
             )}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-2 pt-4">
             <Button onClick={handleClose} variant="outline" className="flex-1 text-sm">
-              Cancelar
+              {t('pod_upload.cancel')}
             </Button>
             <Button 
               onClick={handleUpload} 
@@ -100,7 +102,7 @@ function PODUploadModal({ loadId, isOpen, onClose, onSuccess }: PODUploadModalPr
               className="flex-1 text-sm"
             >
               <Upload className="h-4 w-4 mr-2" />
-              {isUploading ? 'Subiendo...' : 'Subir POD'}
+              {isUploading ? t('pod_upload.uploading') : t('pod_upload.upload_button')}
             </Button>
           </div>
         </div>

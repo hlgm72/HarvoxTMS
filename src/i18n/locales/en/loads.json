@@ -861,5 +861,17 @@
     "no_loads_title": "No completed loads",
     "no_loads_description": "Completed loads will appear here"
   },
+  "pod_upload": {
+    "title": "Upload Proof of Delivery (POD)",
+    "description": "Select the PDF file of the Proof of Delivery to complete the delivery.",
+    "pdf_file_label": "PDF File",
+    "selected_file": "Selected file",
+    "cancel": "Cancel",
+    "upload_button": "Upload POD",
+    "uploading": "Uploading...",
+    "select_file_error": "Please select a PDF file",
+    "upload_success": "POD uploaded successfully",
+    "upload_error": "Error uploading POD"
+  },
   "latest_update": "Latest Update"
 }
