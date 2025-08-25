@@ -458,6 +458,7 @@
     "load": "load",
     "load_plural": "loads",
     "my_loads": "My Loads",
+    "amount": "Amount",
     "skip_to": "Skip to",
     "status": {
       "assigned": "Assigned",

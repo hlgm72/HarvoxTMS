@@ -458,6 +458,7 @@
     "load": "carga",
     "load_plural": "cargas",
     "my_loads": "Mis Cargas",
+    "amount": "Monto",
     "skip_to": "Saltar a",
     "status": {
       "assigned": "Asignada",
