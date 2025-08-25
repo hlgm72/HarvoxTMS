@@ -816,6 +816,7 @@
     "created": "Created",
     "view": "View",
     "edit": "Edit",
+    "delete_load": "Delete Load",
     "commodity_info": "Commodity Info",
     "dates_schedule": "Dates & Schedule",
     "pickup": "Pickup:",
