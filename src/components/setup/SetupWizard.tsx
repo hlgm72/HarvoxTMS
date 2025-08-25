@@ -415,41 +415,68 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                   </div>
               ) : (
                 <div className="space-y-6">
-                  {/* Personal Info Form - Always present */}
-                  <div className={currentStep === 0 ? 'block' : 'hidden'}>
-                    <div className="text-center mb-4">
-                      <h3 className="text-lg font-semibold mb-2">{t('setup.steps.personal.title')}</h3>
-                      <p className="text-muted-foreground">
-                        {t('setup.dataWillBeSaved')}
-                      </p>
-                    </div>
+                  {/* Montar TODOS los formularios desde el inicio para asegurar que los refs estén disponibles */}
+                  
+                  {/* Formularios ocultos pero siempre montados */}
+                  <div style={{ display: 'none' }}>
                     <PersonalInfoForm 
                       ref={personalInfoFormRef}
                       showCancelButton={false}
                       showSaveButton={false}
-                      className="space-y-6"
                     />
-                  </div>
-
-                  {/* Preferences Form - Always present */}
-                  <div className={currentStep === 1 ? 'block' : 'hidden'}>
-                    <div className="text-center mb-4">
-                      <h3 className="text-lg font-semibold mb-2">{t('setup.steps.preferences.configTitle')}</h3>
-                      <p className="text-muted-foreground">
-                        {t('setup.steps.preferences.autoDetected')} <strong>{wizardData.preferences.timezone}</strong>
-                      </p>
-                    </div>
                     <PreferencesForm 
                       ref={preferencesFormRef}
                       showCancelButton={false}
                       showSaveButton={false}
-                      className="space-y-6"
                     />
+                    {isDriver && (
+                      <DriverInfoForm 
+                        ref={driverInfoFormRef}
+                        showCancelButton={false}
+                      />
+                    )}
+                    {isCompanyOwner && (
+                      <CompanySetupStep 
+                        ref={companySetupRef}
+                      />
+                    )}
                   </div>
 
-                  {/* Driver Info Form - Only for drivers */}
-                  {isDriver && (
-                    <div className={currentStep === 2 ? 'block' : 'hidden'}>
+                  {/* Contenido visual que cambia según el paso actual */}
+                  {currentStep === 0 && (
+                    <div>
+                      <div className="text-center mb-4">
+                        <h3 className="text-lg font-semibold mb-2">{t('setup.steps.personal.title')}</h3>
+                        <p className="text-muted-foreground">
+                          {t('setup.dataWillBeSaved')}
+                        </p>
+                      </div>
+                      <PersonalInfoForm 
+                        showCancelButton={false}
+                        showSaveButton={false}
+                        className="space-y-6"
+                      />
+                    </div>
+                  )}
+
+                  {currentStep === 1 && (
+                    <div>
+                      <div className="text-center mb-4">
+                        <h3 className="text-lg font-semibold mb-2">{t('setup.steps.preferences.configTitle')}</h3>
+                        <p className="text-muted-foreground">
+                          {t('setup.steps.preferences.autoDetected')} <strong>{wizardData.preferences.timezone}</strong>
+                        </p>
+                      </div>
+                      <PreferencesForm 
+                        showCancelButton={false}
+                        showSaveButton={false}
+                        className="space-y-6"
+                      />
+                    </div>
+                  )}
+
+                  {currentStep === 2 && isDriver && (
+                    <div>
                       <div className="text-center mb-4">
                         <h3 className="text-lg font-semibold mb-2">{t('setup.steps.driver.configTitle')}</h3>
                         <p className="text-muted-foreground">
@@ -457,25 +484,21 @@ export function SetupWizard({ isOpen, onClose, onComplete, userRole }: SetupWiza
                         </p>
                       </div>
                       <DriverInfoForm 
-                        ref={driverInfoFormRef}
                         showCancelButton={false}
                         className="space-y-6"
                       />
                     </div>
                   )}
 
-                  {/* Company Setup Form - Only for company owners */}
-                  {isCompanyOwner && (
-                    <div className={currentStep === (isDriver ? 3 : 2) ? 'block' : 'hidden'}>
+                  {currentStep === (isDriver ? 3 : 2) && isCompanyOwner && (
+                    <div>
                       <div className="text-center mb-4">
                         <h3 className="text-lg font-semibold mb-2">{t('setup.steps.company.configTitle')}</h3>
                         <p className="text-muted-foreground">
                           {t('setup.steps.company.configDescription')}
                         </p>
                       </div>
-                      <CompanySetupStep 
-                        ref={companySetupRef}
-                      />
+                      <CompanySetupStep />
                     </div>
                   )}
                 </div>
