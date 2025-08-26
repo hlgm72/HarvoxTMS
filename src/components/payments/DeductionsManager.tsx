@@ -432,18 +432,6 @@ export function DeductionsManager({
                         <p className="text-sm text-muted-foreground">
                           {template.expense_types?.name}
                         </p>
-                        
-                        {!isInactive && (
-                          <div className="mt-2 text-xs text-muted-foreground">
-                            <span>{t("deductions.labels.valid_from")} {formatDateOnly(template.start_date)}</span>
-                          </div>
-                        )}
-                        
-                        {template.notes && (
-                          <div className="text-xs text-muted-foreground">
-                            <strong>{t("deductions.labels.notes")}</strong> {template.notes}
-                          </div>
-                        )}
                       </div>
                     </div>
                     
@@ -469,7 +457,15 @@ export function DeductionsManager({
                     </div>
                   </div>
                   
-                  <div className="flex justify-end">
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+                      {!isInactive && (
+                        <span>{t("deductions.labels.valid_from")} {formatDateOnly(template.start_date)}</span>
+                      )}
+                      {template.notes && (
+                        <span><strong>{t("deductions.labels.notes")}</strong> {template.notes}</span>
+                      )}
+                    </div>
                     <div className="flex gap-2">
                       {isInactive ? (
                         <>
