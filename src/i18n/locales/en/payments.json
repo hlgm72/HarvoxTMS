@@ -356,5 +356,12 @@
       "period": "Period:",
       "selected": "Selected"
     }
+  },
+  "notifications": {
+    "success": "Operation successful",
+    "error": "Operation error", 
+    "created": "Item created successfully",
+    "updated": "Item updated successfully",
+    "deleted": "Item deleted successfully"
   }
 }
