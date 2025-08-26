@@ -31,24 +31,3 @@ export function calculateNetPayment(calculation: PaymentCalculation): number {
 export function calculateHasNegativeBalance(calculation: PaymentCalculation): boolean {
   return calculateNetPayment(calculation) < 0;
 }
-
-/**
- * ✅ REEMPLAZADO: Las funciones a continuación están obsoletas.
- * Usar formatCurrency() de @/lib/dateFormatting en su lugar.
- */
-export function formatCurrency(amount: number): string {
-  console.warn('⚠️ formatCurrency obsoleto - usar formatCurrency de @/lib/dateFormatting');
-  return amount.toLocaleString('es-US', { 
-    style: 'currency', 
-    currency: 'USD',
-    minimumFractionDigits: 2 
-  });
-}
-
-/**
- * ✅ REEMPLAZADO: Función obsoleta - usar formatCurrency() de @/lib/dateFormatting
- */
-export function formatAmount(amount: number): string {
-  console.warn('⚠️ formatAmount obsoleto - usar formatCurrency de @/lib/dateFormatting');
-  return amount.toLocaleString('es-US', { minimumFractionDigits: 2 });
-}

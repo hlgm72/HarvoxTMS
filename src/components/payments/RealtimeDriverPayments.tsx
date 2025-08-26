@@ -7,8 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DollarSign, TrendingUp, User, Circle } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { formatCurrency } from '@/lib/paymentCalculations';
-import { formatPaymentPeriod } from '@/lib/dateFormatting';
+import { formatCurrency, formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
 
 interface DriverPayment {

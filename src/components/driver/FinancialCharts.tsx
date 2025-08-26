@@ -18,7 +18,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { TrendingUp, BarChart3, PieChart as PieChartIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/paymentCalculations";
+import { formatCurrency } from "@/lib/dateFormatting";
 import { formatInternationalized } from "@/lib/dateFormatting";
 
 interface WeeklyData {

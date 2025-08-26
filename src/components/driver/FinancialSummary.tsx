@@ -19,8 +19,8 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { formatCurrency, calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculations";
-import { getCurrentUTC, formatDateAuto, formatDateInUserTimeZone, formatNumber } from "@/lib/dateFormatting";
+import { calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculations";
+import { formatCurrency, getCurrentUTC, formatDateAuto, formatDateInUserTimeZone, formatNumber } from "@/lib/dateFormatting";
 import { FinancialCharts } from "./FinancialCharts";
 
 interface FinancialData {
