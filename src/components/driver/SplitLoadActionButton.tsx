@@ -152,7 +152,7 @@ export function SplitLoadActionButton({
               variant="default"
               size="sm"
               disabled={isPending}
-              className="px-2 rounded-l-none border-l border-primary/20 shrink-0"
+              className="px-2 rounded-l-none border-l border-primary/20 shrink-0 hover:bg-orange-500 hover:border-orange-500 transition-colors duration-200"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
