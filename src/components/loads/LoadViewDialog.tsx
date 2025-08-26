@@ -3,8 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, DollarSign, Calendar, Package, User, Building, Clock, FileText, Truck, ArrowRight, CheckCircle } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import { formatDateOnly, formatDateTime, formatPaymentPeriod, formatNumber } from '@/lib/dateFormatting';
+import { formatCurrency, formatDateOnly, formatDateTime, formatPaymentPeriod, formatNumber } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusColors = {

@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Calendar, Truck, DollarSign, Fuel, Receipt, Plus } from 'lucide-react';
 import { usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { useReassignLoadPeriod } from '@/hooks/useReassignLoadPeriod';
-import { formatCurrency } from '@/lib/utils';
-import { formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
+import { formatCurrency, formatPaymentPeriod, formatDateOnly } from '@/lib/dateFormatting';
 import { useFleetNotifications } from '@/components/notifications';
 
 interface PeriodReassignmentDialogProps {

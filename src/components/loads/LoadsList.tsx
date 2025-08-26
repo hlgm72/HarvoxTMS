@@ -7,8 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatCurrency } from "@/lib/utils";
-import { formatDateTimeAuto, formatNumber } from '@/lib/dateFormatting';
+import { formatCurrency, formatDateTimeAuto, formatNumber } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { useUpdateLoadStatusWithValidation } from "@/hooks/useUpdateLoadStatusWithValidation";
