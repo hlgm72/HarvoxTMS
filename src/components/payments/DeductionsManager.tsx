@@ -10,8 +10,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
+import { RecurringExpenseExclusionsDialog } from "./RecurringExpenseExclusionsDialog";
 import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
-import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History, X } from "lucide-react";
+import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History, X, CalendarDays } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { useTranslation } from 'react-i18next';
 
@@ -52,6 +53,7 @@ export function DeductionsManager({
   const [deletingTemplate, setDeletingTemplate] = useState<any>(null);
   const [reactivatingTemplate, setReactivatingTemplate] = useState<any>(null);
   const [permanentlyDeletingTemplate, setPermanentlyDeletingTemplate] = useState<any>(null);
+  const [exclusionsTemplate, setExclusionsTemplate] = useState<any>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Obtener plantillas de deducciones activas
@@ -360,6 +362,10 @@ export function DeductionsManager({
     setPermanentlyDeletingTemplate(template);
   };
 
+  const handleManageExclusions = (template: any) => {
+    setExclusionsTemplate(template);
+  };
+
   const confirmReactivateTemplate = () => {
     if (reactivatingTemplate) {
       reactivateTemplateMutation.mutate(reactivatingTemplate.id);
@@ -476,6 +482,14 @@ export function DeductionsManager({
                         </>
                       ) : (
                         <>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleManageExclusions(template)}
+                            title="Gestionar exclusiones de períodos"
+                          >
+                            <CalendarDays className="h-4 w-4" />
+                          </Button>
                           <Button 
                             variant="ghost" 
                             size="sm"
@@ -640,6 +654,13 @@ export function DeductionsManager({
         isOpen={isEventualDialogOpen}
         onClose={() => setIsEventualDialogOpen(false)}
         onSuccess={handleEventualSuccess}
+      />
+
+      {/* Dialog para gestionar exclusiones */}
+      <RecurringExpenseExclusionsDialog
+        isOpen={!!exclusionsTemplate}
+        onClose={() => setExclusionsTemplate(null)}
+        template={exclusionsTemplate}
       />
 
       {/* Dialog de confirmación para eliminar plantilla */}
