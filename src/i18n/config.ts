@@ -30,7 +30,6 @@ import authEs from './locales/es/auth.json';
 import fleetEs from './locales/es/fleet.json';
 import equipmentEs from './locales/es/equipment.json';
 import legalEs from './locales/es/legal.json';
-import adminEs from './locales/es/admin.json';
 import dashboardEs from './locales/es/dashboard.json';
 import paymentsEs from './locales/es/payments.json';
 import loadsEs from './locales/es/loads.json';
@@ -41,6 +40,11 @@ import fuelEs from './locales/es/fuel.json';
 import usersEs from './locales/es/users.json';
 import settingsEs from './locales/es/settings.json';
 import invitationEs from './locales/es/invitation.json';
+
+// Import Spanish admin sub-modules
+import adminPagesEs from './locales/es/admin/pages.json';
+import adminNavigationEs from './locales/es/admin/navigation.json';
+import adminCommonEs from './locales/es/admin/common.json';
 
 const resources = {
   en: {
@@ -83,7 +87,11 @@ const resources = {
     users: usersEs,
     settings: settingsEs,
     invitation: invitationEs,
-    admin: adminEs,
+    admin: {
+      pages: adminPagesEs,
+      navigation: adminNavigationEs,
+      common: adminCommonEs,
+    },
   },
 };
 
