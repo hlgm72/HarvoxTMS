@@ -18,7 +18,8 @@ export const useLoadCompletion = (loadId: string, status: string) => {
     showCelebration: false
   });
 
-  const isCompleted = status === 'delivered' && documentValidation?.hasPOD;
+  // ✅ VALIDACIÓN ESTRICTA: Solo cargas delivered con POD pueden estar completadas
+  const isCompleted = status === 'delivered' && documentValidation?.hasPOD === true;
 
   console.log('🎉 useLoadCompletion - State:', { 
     loadId, 

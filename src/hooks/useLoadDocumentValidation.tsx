@@ -46,6 +46,15 @@ export const useLoadDocumentValidation = (loadId: string) => {
         doc.archived_at === null
       ) || false;
 
+      // ⚠️ LOG: POD encontrado - esto debería solo ocurrir en cargas 'delivered'
+      if (hasPOD) {
+        console.log('📋 useLoadDocumentValidation - POD encontrado para load:', {
+          loadId,
+          hasPOD,
+          message: 'Verificar que esta carga esté en estado delivered'
+        });
+      }
+
       // Determine active work document (LO has priority over RC)
       const activeWorkDocument = hasLoadOrder ? 'load_order' : 
                                hasRateConfirmation ? 'rate_confirmation' : null;

@@ -412,15 +412,31 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
   // Lógica mejorada para determinar cargas completadas
   const isLoadCompleted = (load: Load): boolean => {
-    const completed = load.status === 'delivered' && 
-           load.documents?.some(doc => doc.document_type === 'pod') === true;
+    // ✅ VALIDACIÓN CRÍTICA: Solo una carga en estado 'delivered' puede estar completada
+    // Esto previene inconsistencias de datos donde cargas en otros estados tengan POD
+    const isDelivered = load.status === 'delivered';
+    const hasPOD = load.documents?.some(doc => doc.document_type === 'pod') === true;
+    const completed = isDelivered && hasPOD;
+    
+    // ⚠️ DETECTAR INCONSISTENCIAS DE DATOS
+    if (!isDelivered && hasPOD) {
+      console.error('❌ INCONSISTENCIA DE DATOS:', { 
+        loadId: load.id, 
+        loadNumber: load.load_number,
+        status: load.status, 
+        hasPOD,
+        message: 'Una carga no puede tener POD si no está en estado delivered'
+      });
+    }
     
     console.log('🎉 LoadsManager - isLoadCompleted:', { 
       loadId: load.id, 
       loadNumber: load.load_number,
       status: load.status, 
-      hasPOD: load.documents?.some(doc => doc.document_type === 'pod'), 
-      completed 
+      isDelivered,
+      hasPOD, 
+      completed,
+      hasInconsistency: !isDelivered && hasPOD
     });
     
     return completed;
@@ -430,14 +446,15 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     // Excluir cargas canceladas
     if (['cancelled'].includes(load.status)) return false;
     
-    // Si la carga está completada, verificar si está en celebración
+    // ✅ CORRECCIÓN CRÍTICA: Excluir cargas que están realmente completadas
+    // Solo una carga 'delivered' con POD se considera completada
     if (isLoadCompleted(load)) {
-      // Temporalmente mantener las cargas completadas para permitir celebración
-      // El hook useLoadCompletion manejará cuando mostrar/ocultar
-      return true; // Permitir que se muestre, useLoadCompletion decidirá el render
+      // ⚠️ Las cargas completadas NO deben aparecer en la lista activa
+      // Esto previene duplicados entre Active y Completed
+      return false;
     }
     
-    return true; // Mostrar cargas no completadas
+    return true; // Mostrar cargas activas (no completadas)
   });
   const completedLoads = loads.filter(load => isLoadCompleted(load));
 
