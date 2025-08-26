@@ -126,7 +126,7 @@ export default function PaymentReports() {
             payment_date
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('company_payment_periods.period_start_date', { ascending: false });
 
       // Filtrar por períodos específicos si no es filtro personalizado
       if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
