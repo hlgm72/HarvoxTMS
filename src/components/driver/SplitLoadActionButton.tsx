@@ -21,13 +21,16 @@ export function SplitLoadActionButton({
 }: SplitLoadActionButtonProps) {
   console.log('🚀 SplitLoadActionButton - INICIO', { loadId: load.id, status: load.status, isPending });
   
-  const { t } = useTranslation(['common', 'loads']);
+  const { t, i18n } = useTranslation(['common', 'loads']);
   const { nextStopInfo, hasNextAction } = useLoadStopsNavigation(load);
   const { data: documentValidation } = useLoadDocumentValidation(load.id);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
     // Estados base del sistema
     const getAllStates = () => {
+      console.log('🔍 Translation test for assigned:', t('loads:status.assigned'));
+      console.log('🔍 Current language:', i18n.language);
+      
       const baseStates = [
         { key: 'created', label: t('loads:status.created') },
         { key: 'route_planned', label: t('loads:status.route_planned') },
