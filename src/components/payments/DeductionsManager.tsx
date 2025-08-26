@@ -420,40 +420,37 @@ export function DeductionsManager({
             <Card key={template.id} className={`hover:shadow-md transition-shadow ${isInactive ? 'border-muted' : ''}`}>
               <CardContent className="p-6">
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${isInactive ? 'bg-muted' : 'bg-blue-100'}`}>
-                        <DollarSign className={`h-5 w-5 ${isInactive ? 'text-muted-foreground' : 'text-blue-600'}`} />
-                      </div>
-                      <div>
-                        <h3 className={`font-semibold ${isInactive ? 'text-muted-foreground' : ''}`}>
-                          {template.driver_profile?.first_name} {template.driver_profile?.last_name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {template.expense_types?.name}
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className={`p-2 rounded-lg ${isInactive ? 'bg-muted' : 'bg-blue-100'}`}>
+                      <DollarSign className={`h-5 w-5 ${isInactive ? 'text-muted-foreground' : 'text-blue-600'}`} />
                     </div>
-                    
-                    <div className="text-right">
-                      <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
-                        {formatCurrency(parseFloat(template.amount || 0))}
+                    <div className="flex-1">
+                      <h3 className={`font-semibold ${isInactive ? 'text-muted-foreground' : ''}`}>
+                        {template.driver_profile?.first_name} {template.driver_profile?.last_name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {template.expense_types?.name}
                       </p>
-                      <Badge variant={
-                        isInactive ? "secondary" : 
-                        template.frequency === 'weekly' ? "success" :
-                        template.frequency === 'biweekly' ? "warning" : "default"
-                      }>
-                         {isInactive && 'Inactiva • '}
-                         {template.frequency === 'weekly' ? t("deductions.frequency.weekly") : 
-                          template.frequency === 'biweekly' ? t("deductions.frequency.biweekly") : 
-                          template.frequency === 'monthly' ? 
-                            `${t("deductions.frequency.monthly")} - ${template.month_week === 1 ? t("deductions.frequency.weekly_1") : 
-                                         template.month_week === 2 ? t("deductions.frequency.weekly_2") : 
-                                         template.month_week === 3 ? t("deductions.frequency.weekly_3") : 
-                                         template.month_week === 4 ? t("deductions.frequency.weekly_4") : t("deductions.frequency.weekly_last")}` : 
-                          t("deductions.frequency.monthly")}
-                      </Badge>
+                      <div className="flex items-center gap-3">
+                        <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
+                          {formatCurrency(parseFloat(template.amount || 0))}
+                        </p>
+                        <Badge variant={
+                          isInactive ? "secondary" : 
+                          template.frequency === 'weekly' ? "success" :
+                          template.frequency === 'biweekly' ? "warning" : "default"
+                        }>
+                           {isInactive && 'Inactiva • '}
+                           {template.frequency === 'weekly' ? t("deductions.frequency.weekly") : 
+                            template.frequency === 'biweekly' ? t("deductions.frequency.biweekly") : 
+                            template.frequency === 'monthly' ? 
+                              `${t("deductions.frequency.monthly")} - ${template.month_week === 1 ? t("deductions.frequency.weekly_1") : 
+                                           template.month_week === 2 ? t("deductions.frequency.weekly_2") : 
+                                           template.month_week === 3 ? t("deductions.frequency.weekly_3") : 
+                                           template.month_week === 4 ? t("deductions.frequency.weekly_4") : t("deductions.frequency.weekly_last")}` : 
+                            t("deductions.frequency.monthly")}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                   
