@@ -341,7 +341,7 @@ export default function PaymentReports() {
           />
           <StatsCard
             title={t('reports.stats.total_net_payment')}
-            value={`{formatCurrency(totalEarnings)}`}
+            value={formatCurrency(totalEarnings)}
             icon={<Wallet className="h-5 w-5 md:h-6 md:w-6 text-green-600" />}
             variant="success"
           />
