@@ -179,7 +179,7 @@ export default function Clients() {
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-blue-600">
-                ${formatCurrency(stats.totalRevenue)}
+                {formatCurrency(stats.totalRevenue)}
               </div>
               <p className="text-xs text-muted-foreground">
                 {t('clients:stats.this_month')}
