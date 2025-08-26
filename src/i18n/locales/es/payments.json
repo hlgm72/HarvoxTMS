@@ -153,6 +153,18 @@
       "valid_until": "Vigente hasta:",
       "notes": "Notas:"
     },
+    "tooltips": {
+      "manage_exclusions": "Gestionar Exclusiones de Períodos",
+      "edit_template": "Editar Plantilla",
+      "delete_template": "Eliminar Plantilla",
+      "reactivate_template": "Reactivar Plantilla",
+      "permanently_delete": "Eliminar Permanentemente"
+    },
+    "buttons": {
+      "manage_exclusions": "Gestionar Exclusiones",
+      "reactivate": "Reactivar",
+      "delete": "Eliminar"
+    },
     "history": {
       "title": "Historial de Cambios", 
       "coming_soon": "Próximamente: Historial de modificaciones en plantillas de deducción"

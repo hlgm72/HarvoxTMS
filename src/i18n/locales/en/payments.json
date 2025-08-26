@@ -153,6 +153,18 @@
       "valid_until": "Valid until:",
       "notes": "Notes:"
     },
+    "tooltips": {
+      "manage_exclusions": "Manage Period Exclusions",
+      "edit_template": "Edit Template",
+      "delete_template": "Delete Template",
+      "reactivate_template": "Reactivate Template",
+      "permanently_delete": "Delete Permanently"
+    },
+    "buttons": {
+      "manage_exclusions": "Manage Exclusions",
+      "reactivate": "Reactivate",
+      "delete": "Delete"
+    },
     "history": {
       "title": "Change History",
       "coming_soon": "Coming soon: History of deduction template modifications"
