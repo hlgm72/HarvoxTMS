@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
 import { useLoadDocumentValidation } from './useLoadDocumentValidation';
+import { formatDateSafe } from '@/lib/dateFormatting';
 
 interface UpdateLoadStatusParams {
   loadId: string;
@@ -84,11 +85,11 @@ export const useUpdateLoadStatusWithValidation = () => {
         };
 
         if (params.eta) {
-          // CORREGIDO: Convertir la fecha local del usuario a UTC primero
+          // ✅ CORREGIDO: Usar funciones centralizadas para formatear fechas UTC
           const utcDate = new Date(params.eta.getTime() - (params.eta.getTimezoneOffset() * 60000));
           
           // Separar fecha y hora para los nuevos campos (ahora en UTC)
-          const etaDate = utcDate.toISOString().split('T')[0];
+          const etaDate = formatDateSafe(utcDate, 'yyyy-MM-dd');
           const hours = utcDate.getUTCHours().toString().padStart(2, '0');
           const minutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
           const etaTime = `${hours}:${minutes}`;

@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import greenPinSvg from '../assets/pin_green.svg';
 import redPinSvg from '../assets/pin_red.svg';
+import { formatDateAuto, formatDateTimeShort } from '@/lib/dateFormatting';
 
 interface LoadOrderData {
   load_number: string;
@@ -80,7 +81,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text("Page 1", margin + 3, yPosition + 6);
-    doc.text(new Date().toLocaleDateString('es-ES'), margin + 3, yPosition + 11);
+    doc.text(formatDateAuto(new Date()), margin + 3, yPosition + 11);
     
     // Título central
     doc.setFontSize(12);
@@ -433,7 +434,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
     doc.text(
-      `Generated on ${new Date().toLocaleDateString('en-US')} at ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`,
+      `Generated on ${formatDateAuto(new Date())} at ${formatDateTimeShort(new Date())}`,
       pageWidth / 2,
       pageHeight - 25,
       { align: "center" }

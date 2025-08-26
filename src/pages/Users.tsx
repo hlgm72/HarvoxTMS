@@ -59,7 +59,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { GenericFloatingActions, StandardActionConfig, FloatingActionSheet } from "@/components/ui/GenericFloatingActions";
 import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
-import { formatDateAuto, getCurrentUTC } from '@/lib/dateFormatting';
+import { formatDateAuto, getCurrentUTC, formatDateSafe } from '@/lib/dateFormatting';
 import { UserDetailsContent } from "@/components/users/UserDetailsContent";
 
 type UserRole = Database["public"]["Enums"]["user_role"];
@@ -565,7 +565,7 @@ export default function Users() {
             firstName: cleanedForm.first_name,
             lastName: cleanedForm.last_name,
             email: cleanedForm.email,
-            hireDate: new Date().toISOString().split('T')[0] // Fecha actual como hire date por defecto
+            hireDate: formatDateSafe(getCurrentUTC(), 'yyyy-MM-dd') // ✅ Fecha actual UTC como hire date por defecto
           }
         : {
             companyId: userRole.company_id,

@@ -18,6 +18,7 @@ import { useGPSTracking } from '@/hooks/useGPSTracking';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import { useFleetNotifications } from '@/components/notifications';
+import { formatDateTimeShort } from '@/lib/dateFormatting';
 
 export const DriverTrackingInterface = () => {
   const { t } = useTranslation('fleet');
@@ -212,7 +213,7 @@ export const DriverTrackingInterface = () => {
                   <span>{t('driver_interface.last_update')}</span>
                 </div>
                 <span className="text-xs">
-                  {new Date(position.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                  {formatDateTimeShort(new Date(position.timestamp))}
                 </span>
               </div>
             </div>

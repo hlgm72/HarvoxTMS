@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFleetNotifications } from '@/components/notifications';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, convertUserDateToUTC } from '@/lib/dateFormatting';
 
 export interface FuelExpenseFilters {
   driverId?: string;
@@ -85,12 +85,12 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
       }
 
       if (filters.startDate && filters.endDate) {
-        // CORREGIDO: Convertir fechas del usuario a UTC para consultas de BD
-        const startUTC = new Date(filters.startDate).toISOString().split('T')[0];
-        const endUTC = new Date(filters.endDate).toISOString().split('T')[0];
+        // ✅ CORREGIDO: Usar funciones centralizadas para conversión UTC
+        const startUTC = convertUserDateToUTC(new Date(filters.startDate));
+        const endUTC = convertUserDateToUTC(new Date(filters.endDate));
         query = query
-          .gte('transaction_date', startUTC)
-          .lte('transaction_date', endUTC);
+          .gte('transaction_date', startUTC.split('T')[0])
+          .lte('transaction_date', endUTC.split('T')[0]);
       }
 
       const { data, error } = await query;

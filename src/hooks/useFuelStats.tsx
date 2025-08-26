@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserCompanies } from '@/hooks/useUserCompanies';
-import { formatDateInUserTimeZone, formatMediumDate } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatMediumDate, convertUserDateToUTC } from '@/lib/dateFormatting';
 
 export interface FuelStatsFilters {
   periodId?: string;
@@ -45,12 +45,12 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
       }
 
       if (filters.startDate && filters.endDate) {
-        // CORREGIDO: Convertir fechas del usuario a UTC para consultas de BD
-        const startUTC = new Date(filters.startDate).toISOString().split('T')[0];
-        const endUTC = new Date(filters.endDate).toISOString().split('T')[0];
+        // ✅ CORREGIDO: Usar funciones centralizadas para conversión UTC
+        const startUTC = convertUserDateToUTC(new Date(filters.startDate));
+        const endUTC = convertUserDateToUTC(new Date(filters.endDate));
         query = query
-          .gte('transaction_date', startUTC)
-          .lte('transaction_date', endUTC);
+          .gte('transaction_date', startUTC.split('T')[0])
+          .lte('transaction_date', endUTC.split('T')[0]);
       }
 
       const { data, error } = await query;
