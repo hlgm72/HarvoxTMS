@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { formatCurrency } from "@/lib/dateFormatting";
+import { useTranslation } from 'react-i18next';
 
 export interface DriverCalculation {
   id: string;
@@ -21,6 +22,7 @@ export interface DriverCalculation {
 export function useDriverPaymentActions() {
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation('common');
 
   const markDriverAsPaid = async (
     calculationId: string,
@@ -44,15 +46,15 @@ export function useDriverPaymentActions() {
         // Provide specific error messages
         let errorMessage = error.message;
         if (errorMessage.includes('Sin permisos')) {
-          showError('Sin permisos', 'No tienes autorización para marcar este conductor como pagado.');
+          showError(t('payments.no_permissions'), t('payments.no_payment_permissions'));
         } else if (errorMessage.includes('Período bloqueado')) {
-          showError('Período bloqueado', 'No se pueden procesar pagos en un período bloqueado.');
+          showError(t('payments.period_locked'), t('payments.period_locked_desc'));
         } else if (errorMessage.includes('ya está marcado como pagado')) {
-          showError('Ya pagado', 'El conductor ya está marcado como pagado.');
+          showError(t('payments.already_paid'), t('payments.already_paid_desc'));
         } else if (errorMessage.includes('no permite el pago')) {
-          showError('Estado no válido', 'El estado del cálculo no permite el pago en este momento.');
+          showError(t('payments.invalid_state'), t('payments.invalid_state_desc'));
         } else {
-          showError('Error en pago', errorMessage);
+          showError(t('messages.error'), errorMessage);
         }
         return { success: false, error: errorMessage };
       }
@@ -60,12 +62,12 @@ export function useDriverPaymentActions() {
       const result = data as any;
       if (result?.success) {
         showSuccess(
-          "Pago ACID Registrado", 
-          `Conductor marcado como pagado con validaciones ACID. Monto: $${formatCurrency(result.net_payment || 0)}`
+          t("payments.payment_registered"), 
+          t("payments.payment_registered_desc", { amount: formatCurrency(result.net_payment || 0) })
         );
         return { success: true, data };
       } else {
-        showError(result?.message || "No se pudo registrar el pago ACID");
+        showError(result?.message || t('messages.error'));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
@@ -90,12 +92,12 @@ export function useDriverPaymentActions() {
       const result = data as any;
       if (result?.success) {
         showSuccess(
-          "Cálculo ACID Completado", 
-          `Período calculado con garantías ACID. Pago neto: $${formatCurrency(result.net_payment || 0)}`
+          t("payments.calculation_completed"), 
+          t("payments.calculation_completed_desc", { amount: formatCurrency(result.net_payment || 0) })
         );
         return { success: true, data };
       } else {
-        showError(result?.message || "No se pudo calcular el período con ACID");
+        showError(result?.message || t('messages.error'));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
@@ -121,7 +123,7 @@ export function useDriverPaymentActions() {
         .map(calc => calc.id);
 
       if (calculationIds.length === 0) {
-        showError("No hay conductores pendientes de pago");
+        showError(t("payments.no_pending_drivers"));
         return { success: false, error: "No pending drivers" };
       }
 
@@ -138,8 +140,8 @@ export function useDriverPaymentActions() {
       const result = data as any;
       if (result?.success) {
         showSuccess(
-          "Pagos Masivos ACID Procesados", 
-          result.message || `${result.success_count} conductor(es) marcado(s) como pagado(s)`
+          t("payments.bulk_payments_processed"), 
+          result.message || t('payments.bulk_payments_processed')
         );
         return { 
           success: true, 
@@ -148,12 +150,12 @@ export function useDriverPaymentActions() {
           results: result.detailed_results 
         };
       } else {
-        showError(result?.message || "Error en pago masivo ACID");
+        showError(result?.message || t("payments.bulk_payments_error"));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
       console.error('Error in ACID bulk payment:', error);
-      showError("Error en pago masivo ACID");
+      showError(t("payments.bulk_payments_error"));
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
@@ -186,15 +188,15 @@ export function useDriverPaymentActions() {
 
       const result = data as { success?: boolean; message?: string };
       if (result?.success) {
-        showSuccess("Período Cerrado", result.message || "Período cerrado exitosamente");
+        showSuccess(t("payments.period_closed_auto"), result.message || t("payments.period_closed_auto_desc"));
         return { success: true, data };
       } else {
-        showError(result?.message || "No se pudo cerrar el período");
+        showError(result?.message || t('messages.error'));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
       console.error('Error closing period:', error);
-      showError(error.message || "Error al cerrar el período");
+      showError(error.message || t('messages.error'));
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);

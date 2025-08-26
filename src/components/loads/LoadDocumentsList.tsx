@@ -103,9 +103,9 @@ export function LoadDocumentsList({
   useEffect(() => {
     if (error) {
       console.error('Error fetching load documents:', error);
-      showError("Error", "No se pudieron cargar los documentos");
+      showError(t("documents.load_error"), t("documents.load_error_desc"));
     }
-  }, [error, showError]);
+  }, [error, showError, t]);
 
   const handleDownload = async (doc: LoadDocument) => {
     try {
@@ -120,7 +120,7 @@ export function LoadDocumentsList({
 
       if (urlError) {
         console.error('Error generating signed URL for download:', urlError);
-        showError("Error", "No se pudo generar el enlace de descarga");
+        showError(t("documents.download_error"), t("documents.download_error_desc"));
         return;
       }
 
@@ -136,8 +136,8 @@ export function LoadDocumentsList({
     } catch (error) {
       console.error('Error downloading document:', error);
       showError(
-        "Error",
-        "No se pudo descargar el documento"
+        t("documents.download_error"),
+        t("documents.download_error_desc")
       );
     }
   };
@@ -147,7 +147,7 @@ export function LoadDocumentsList({
     
     // Drivers can't delete any documents
     if (userRole === 'driver') {
-      showError("Acción no permitida", "Los conductores no pueden eliminar documentos");
+      showError(t("documents.delete_not_allowed"), t("documents.delete_not_allowed_desc"));
       return;
     }
     
@@ -158,7 +158,7 @@ export function LoadDocumentsList({
     );
     
     if (!validation.canDelete) {
-      showError("Acción no permitida", validation.reason || "No se puede eliminar este documento");
+      showError(t("documents.delete_not_allowed"), validation.reason || t("documents.delete_error_desc"));
       return;
     }
     
@@ -169,13 +169,13 @@ export function LoadDocumentsList({
       
       if (error) throw error;
       
-      showSuccess("Documento eliminado exitosamente");
+      showSuccess(t("documents.deleted_successfully"));
       // Invalidate cache to refresh the list
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
       queryClient.invalidateQueries({ queryKey: ['load-document-validation'] });
     } catch (error) {
       console.error('Error deleting document:', error);
-      showError("Error", "No se pudo eliminar el documento");
+      showError(t("documents.delete_error"), t("documents.delete_error_desc"));
     }
   };
 
@@ -211,7 +211,7 @@ export function LoadDocumentsList({
 
       if (urlError) {
         console.error('❌ LoadDocumentsList - Error generating signed URL:', urlError);
-        showError("Error", "No se pudo generar el enlace para ver el documento");
+        showError(t("documents.view_error"), t("documents.view_error_desc"));
         return;
       }
 
@@ -220,11 +220,11 @@ export function LoadDocumentsList({
         window.open(signedUrlData.signedUrl, '_blank');
       } else {
         console.error('❌ LoadDocumentsList - No signed URL returned');
-        showError("Error", "No se pudo generar el enlace para ver el documento");
+        showError(t("documents.view_error"), t("documents.view_error_desc"));
       }
     } catch (error) {
       console.error('❌ LoadDocumentsList - Error viewing document:', error);
-      showError("Error", "No se pudo abrir el documento");
+      showError(t("documents.open_error"), t("documents.open_error_desc"));
     }
   };
 
@@ -240,7 +240,7 @@ export function LoadDocumentsList({
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" />
-        Cargando documentos...
+        {t("documents.loading")}
       </div>
     );
   }

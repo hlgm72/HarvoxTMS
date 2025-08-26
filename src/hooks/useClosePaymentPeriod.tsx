@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface ClosePaymentPeriodParams {
   companyPeriodId: string;
@@ -27,6 +28,7 @@ export const useClosePaymentPeriod = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<ClosePaymentPeriodResponse, Error, ClosePaymentPeriodParams>({
     mutationFn: async (params: ClosePaymentPeriodParams): Promise<ClosePaymentPeriodResponse> => {
@@ -65,8 +67,12 @@ export const useClosePaymentPeriod = () => {
       // Mostrar mensaje de éxito detallado
       const summary = data.summary;
       showSuccess(
-        'Período cerrado exitosamente',
-        `Se completaron los pagos para ${summary.paid_drivers} conductores del período ${summary.period_start} al ${summary.period_end}`
+        t('payments.period_closed'),
+        t('payments.period_closed_desc', { 
+          count: summary.paid_drivers, 
+          start: summary.period_start, 
+          end: summary.period_end 
+        })
       );
     },
     onError: (error: Error) => {
@@ -75,15 +81,15 @@ export const useClosePaymentPeriod = () => {
       // Proporcionar mensajes de error más específicos
       let errorMessage = error.message;
       if (errorMessage.includes('conductores pendientes')) {
-        showError('No se puede cerrar el período', 'Hay conductores pendientes de pago. Completa todos los pagos antes de cerrar.');
+        showError(t('payments.cannot_close_pending'), t('payments.cannot_close_pending_desc'));
       } else if (errorMessage.includes('pagos fallidos')) {
-        showError('No se puede cerrar el período', 'Hay pagos fallidos que requieren atención. Revisa y corrige los errores.');
+        showError(t('payments.cannot_close_failed'), t('payments.cannot_close_failed_desc'));
       } else if (errorMessage.includes('no hay conductores')) {
-        showError('No se puede cerrar el período', 'No hay conductores registrados en este período.');
+        showError(t('payments.cannot_close_no_drivers'), t('payments.cannot_close_no_drivers_desc'));
       } else if (errorMessage.includes('permisos de administrador')) {
-        showError('Sin permisos', 'Solo los administradores pueden cerrar períodos de pago.');
+        showError(t('payments.no_admin_permissions'), t('payments.no_admin_permissions_desc'));
       } else {
-        showError('Error cerrando período', errorMessage);
+        showError(t('payments.closing_period_error'), errorMessage);
       }
     },
   });

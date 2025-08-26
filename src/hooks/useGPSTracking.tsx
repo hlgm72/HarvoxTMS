@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 // Global Capacitor interface declaration
 declare global {
@@ -37,6 +38,7 @@ interface GPSTrackingState {
 export const useGPSTracking = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
   const [state, setState] = useState<GPSTrackingState>({
     position: null,
     isTracking: false,
@@ -58,14 +60,14 @@ export const useGPSTracking = () => {
         setState(prev => ({ ...prev, isPermissionGranted: isGranted }));
         
         if (!isGranted) {
-          showError("Permisos de ubicación requeridos", "Para rastrear el vehículo necesitamos acceso a la ubicación");
+          showError(t("tracking.permissions_required"), t("tracking.permissions_required_desc"));
         }
         
         return isGranted;
       } else {
         // Web environment - check navigator.geolocation
         if (!navigator.geolocation) {
-          showError("Geolocalización no disponible", "Tu navegador no soporta geolocalización");
+          showError(t("tracking.geolocation_unavailable"), t("tracking.geolocation_unavailable_desc"));
           return false;
         }
         
@@ -75,7 +77,7 @@ export const useGPSTracking = () => {
       }
     } catch (error) {
       console.error('Error requesting permissions:', error);
-      showError("Error de permisos", "No se pudieron solicitar los permisos de ubicación");
+      showError(t("tracking.permissions_error"), t("tracking.permissions_error_desc"));
       return false;
     }
   }, [showError]);
@@ -127,7 +129,7 @@ export const useGPSTracking = () => {
       return position;
     } catch (error) {
       console.error('Error getting position:', error);
-      showError("Error de ubicación", "No se pudo obtener la ubicación actual");
+      showError(t("tracking.location_error"), t("tracking.location_error_desc"));
       return null;
     }
   }, [showError]);
@@ -232,12 +234,12 @@ export const useGPSTracking = () => {
 
       setState(prev => ({ ...prev, isTracking: true }));
       
-      showSuccess("Tracking iniciado", "La ubicación del vehículo se está rastreando");
+      showSuccess(t("tracking.tracking_started"), t("tracking.tracking_started_desc"));
 
       return watchId.toString();
     } catch (error) {
       console.error('Error starting tracking:', error);
-      showError("Error de tracking", "No se pudo iniciar el rastreo de ubicación");
+      showError(t("tracking.tracking_error"), t("tracking.tracking_error_desc"));
     }
   }, [state.isPermissionGranted, requestPermissions, saveLocationToDatabase, showSuccess, showError]);
 
@@ -253,7 +255,7 @@ export const useGPSTracking = () => {
       
       setState(prev => ({ ...prev, isTracking: false }));
       
-      showSuccess("Tracking detenido", "El rastreo de ubicación se ha detenido");
+      showSuccess(t("tracking.tracking_stopped"), t("tracking.tracking_stopped_desc"));
     } catch (error) {
       console.error('Error stopping tracking:', error);
     }
