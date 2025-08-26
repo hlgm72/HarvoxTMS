@@ -138,14 +138,32 @@ export function LoadCard({
                          zipCode: pickupStop.zip_code
                        })}
                      >
-                       <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
-                         {pickupStop?.company_name || `${load.origin_city}, ${load.origin_state}`}
-                         {formatDateSafe(load.pickup_date) && (
-                           <span className="font-normal text-muted-foreground ml-1">
-                             ({formatDateTimeAuto(load.pickup_date)})
-                           </span>
-                         )}
-                       </p>
+                        <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
+                          {pickupStop?.company_name || `${load.origin_city}, ${load.origin_state}`}
+                          {(() => {
+                            // Priorizar fecha/hora del stop si está disponible
+                            if (pickupStop?.scheduled_date) {
+                              const dateStr = formatDateSafe(pickupStop.scheduled_date);
+                              const timeStr = pickupStop.scheduled_time ? 
+                                (pickupStop.scheduled_time.length > 5 ? pickupStop.scheduled_time.substring(0, 5) : pickupStop.scheduled_time) : 
+                                null;
+                              return (
+                                <span className="font-normal text-muted-foreground ml-1">
+                                  ({dateStr}{timeStr ? ` ${timeStr}` : ''})
+                                </span>
+                              );
+                            }
+                            // Fallback a pickup_date si no hay stop
+                            if (load.pickup_date) {
+                              return (
+                                <span className="font-normal text-muted-foreground ml-1">
+                                  ({formatDateSafe(load.pickup_date)})
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </p>
                        {pickupStop?.address && (
                          <p className="text-xs text-muted-foreground">{pickupStop.address}</p>
                        )}
@@ -163,14 +181,14 @@ export function LoadCard({
                      state: load.origin_state
                    })}
                  >
-                   <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
-                     {load.origin_city}, {load.origin_state}
-                     {formatDateSafe(load.pickup_date) && (
-                       <span className="font-normal text-muted-foreground ml-1">
-                         ({formatDateTimeAuto(load.pickup_date)})
-                       </span>
-                     )}
-                   </p>
+                    <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
+                      {load.origin_city}, {load.origin_state}
+                      {load.pickup_date && (
+                        <span className="font-normal text-muted-foreground ml-1">
+                          ({formatDateSafe(load.pickup_date)})
+                        </span>
+                      )}
+                    </p>
                  </div>
                )}
              </div>
@@ -194,14 +212,32 @@ export function LoadCard({
                          zipCode: lastDeliveryStop.zip_code
                        })}
                      >
-                       <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
-                         {lastDeliveryStop?.company_name || `${load.destination_city}, ${load.destination_state}`}
-                         {formatDateSafe(load.delivery_date) && (
-                           <span className="font-normal text-muted-foreground ml-1">
-                             ({formatDateTimeAuto(load.delivery_date)})
-                           </span>
-                         )}
-                       </p>
+                        <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
+                          {lastDeliveryStop?.company_name || `${load.destination_city}, ${load.destination_state}`}
+                          {(() => {
+                            // Priorizar fecha/hora del stop si está disponible
+                            if (lastDeliveryStop?.scheduled_date) {
+                              const dateStr = formatDateSafe(lastDeliveryStop.scheduled_date);
+                              const timeStr = lastDeliveryStop.scheduled_time ? 
+                                (lastDeliveryStop.scheduled_time.length > 5 ? lastDeliveryStop.scheduled_time.substring(0, 5) : lastDeliveryStop.scheduled_time) : 
+                                null;
+                              return (
+                                <span className="font-normal text-muted-foreground ml-1">
+                                  ({dateStr}{timeStr ? ` ${timeStr}` : ''})
+                                </span>
+                              );
+                            }
+                            // Fallback a delivery_date si no hay stop
+                            if (load.delivery_date) {
+                              return (
+                                <span className="font-normal text-muted-foreground ml-1">
+                                  ({formatDateSafe(load.delivery_date)})
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </p>
                        {lastDeliveryStop?.address && (
                          <p className="text-xs text-muted-foreground">{lastDeliveryStop.address}</p>
                        )}
@@ -219,14 +255,14 @@ export function LoadCard({
                      state: load.destination_state
                    })}
                  >
-                   <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
-                     {load.destination_city}, {load.destination_state}
-                     {formatDateSafe(load.delivery_date) && (
-                       <span className="font-normal text-muted-foreground ml-1">
-                         ({formatDateTimeAuto(load.delivery_date)})
-                       </span>
-                     )}
-                   </p>
+                    <p className="font-medium group-hover:underline decoration-2 underline-offset-2">
+                      {load.destination_city}, {load.destination_state}
+                      {load.delivery_date && (
+                        <span className="font-normal text-muted-foreground ml-1">
+                          ({formatDateSafe(load.delivery_date)})
+                        </span>
+                      )}
+                    </p>
                  </div>
                )}
              </div>
