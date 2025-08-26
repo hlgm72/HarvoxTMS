@@ -15,9 +15,7 @@ import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
 import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
-import { PaymentFilters, PaymentFiltersType } from "@/components/payments/PaymentFilters";
-import { PaymentFiltersSheet } from "@/components/payments/PaymentFiltersSheet";
-import { PaymentReportsFloatingActions } from "@/components/payments/PaymentReportsFloatingActions";
+import { PaymentReportsFloatingActions, PaymentFiltersType } from "@/components/payments/PaymentReportsFloatingActions";
 import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, useNextPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
@@ -361,27 +359,6 @@ export default function PaymentReports() {
             icon={<ClockIcon className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />}
             variant={pendingReports > 0 ? "warning" : "default"}
           />
-        </div>
-
-        {/* Filtros */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Filtros principales en desktop */}
-          <div className="hidden lg:block flex-1">
-            <PaymentFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              drivers={drivers}
-            />
-          </div>
-          
-          {/* Filtros móviles con sheet */}
-          <div className="lg:hidden">
-            <PaymentFiltersSheet
-              filters={filters}
-              onFiltersChange={setFilters}
-              drivers={drivers}
-            />
-          </div>
         </div>
 
         {/* Lista de Reportes */}
