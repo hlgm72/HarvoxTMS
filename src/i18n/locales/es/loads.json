@@ -42,6 +42,7 @@
         "description": "Ubicaciones y horarios",
         "card_description": "Configura las ubicaciones de recogida y entrega",
         "card_title": "Configura las ubicaciones de recogida y entrega",
+        "valid_configuration": "Configuración válida de ruta",
         "stop_number": "Parada {{number}}",
         "pickup": "Recogida",
         "delivery": "Entrega", 
@@ -98,7 +99,21 @@
         "card_title": "Asigna personal para manejar esta carga",
         "driver_section": {
           "title": "Conductor (Requerido)",
-          "placeholder": "Selecciona un conductor..."
+          "placeholder": "Selecciona un conductor...",
+          "selected_label": "Conductor:"
+        },
+        "dispatcher_section": {
+          "title": "Dispatcher Interno (Opcional)",
+          "placeholder": "Selecciona un dispatcher (opcional)...",
+          "selected_label": "Dispatcher:"
+        },
+        "owner_operator": {
+          "badge": "Propietario Operador",
+          "percentages_title": "Porcentajes de Propietario Operador",
+          "percentages_description": "Estos porcentajes se aplicarán específicamente a esta carga. Puedes modificarlos según sea necesario.",
+          "leasing_label": "Arrendamiento (%)",
+          "factoring_label": "Factoraje (%)",
+          "dispatching_label": "Despacho (%)"
         },
         "dispatcher_section": {
           "title": "Dispatcher Interno (Opcional)",
@@ -234,7 +249,8 @@
       "previous": "Anterior",
       "cancel": "Cancelar", 
       "next": "Siguiente",
-      "create_load": "Crear Carga"
+      "create_load": "Crear Carga",
+      "save_changes": "Guardar Cambios"
     },
     "navigation": {
       "previous": "Anterior",
