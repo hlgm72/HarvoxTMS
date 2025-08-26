@@ -24,6 +24,10 @@
       "edit": "Modifica la información de esta carga siguiendo los pasos",
       "duplicate": "Duplica esta carga usando la información existente como base"
     },
+    "loading": {
+      "load_data": "Cargando datos de la carga...",
+      "duplicate_data": "Cargando datos para duplicar..."
+    },
     "steps": {
       "load_info": "Información de Carga",
       "pickup": "Recogida",
@@ -114,11 +118,6 @@
           "leasing_label": "Arrendamiento (%)",
           "factoring_label": "Factoraje (%)",
           "dispatching_label": "Despacho (%)"
-        },
-        "dispatcher_section": {
-          "title": "Dispatcher Interno (Opcional)",
-          "placeholder": "Selecciona un dispatcher (opcional)...",
-          "no_assignment": "Ningún dispatcher asignado"
         },
         "important_info": {
           "title": "ℹ️ Información importante",
