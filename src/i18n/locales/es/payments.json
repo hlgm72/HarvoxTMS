@@ -136,18 +136,23 @@
       "create_first_template": "Crear Primera Deducción",
       "no_inactive_templates": "No hay plantillas inactivas"
     },
+    "status_labels": {
+      "planned": "Planificado",
+      "applied": "Aplicado",
+      "deferred": "Diferido", 
+      "critical": "Crítico"
+    },
+    "labels": {
+      "period": "Período:",
+      "type": "Tipo:",
+      "date": "Fecha:",
+      "description": "Descripción:",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    },
     "groups": {
       "driver_deductions": "Descuentos a Conductores",
       "dispatcher_deductions": "Descuentos a Despachadores"
-    },
-    "labels": {
-      "effective_from": "Vigente desde",
-      "effective_until": "Vigente hasta",
-      "applied_role": "Rol Aplicado",
-      "user": "Usuario",
-      "valid_from": "Vigente desde:",
-      "valid_until": "Vigente hasta:",
-      "notes": "Notas:"
     },
     "form": {
       "driver": "Conductor",

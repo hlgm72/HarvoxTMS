@@ -187,9 +187,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      planned: { variant: "outline" as const, label: "Planificado" },
-      applied: { variant: "default" as const, label: "Aplicado" },
-      deferred: { variant: "secondary" as const, label: "Diferido" }
+      planned: { variant: "outline" as const, label: t("deductions.status_labels.planned") },
+      applied: { variant: "default" as const, label: t("deductions.status_labels.applied") },
+      deferred: { variant: "secondary" as const, label: t("deductions.status_labels.deferred") }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || 
@@ -232,7 +232,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    Período: {' '}
+                    {t("deductions.labels.period")} {' '}
                     {deduction.company_payment_periods && 
                       formatPaymentPeriod(
                         deduction.company_payment_periods.period_start_date,
@@ -246,7 +246,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   {deduction.is_critical && (
                     <Badge variant="destructive" className="flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
-                      Crítico
+                      {t("deductions.status_labels.critical")}
                     </Badge>
                   )}
                 </div>
@@ -260,10 +260,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                     <span className="font-semibold text-lg">${Number(deduction.amount).toFixed(2)}</span>
                   </div>
                   <div className="text-sm">
-                    <span className="text-muted-foreground">Tipo:</span> <span className="font-medium">{deduction.expense_types?.name}</span>
+                    <span className="text-muted-foreground">{t("deductions.labels.type")}</span> <span className="font-medium">{deduction.expense_types?.name}</span>
                   </div>
                   <div className="text-sm">
-                    <span className="text-muted-foreground">Fecha:</span> <span>{formatDeductionDate(deduction.expense_date)}</span>
+                    <span className="text-muted-foreground">{t("deductions.labels.date")}</span> <span>{formatDeductionDate(deduction.expense_date)}</span>
                   </div>
                 </div>
                 
@@ -292,7 +292,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
               {deduction.description && (
                 <div className="pt-1">
-                  <span className="text-sm text-muted-foreground">Descripción:</span>
+                  <span className="text-sm text-muted-foreground">{t("deductions.labels.description")}</span>
                   <span className="text-sm ml-1">{deduction.description}</span>
                 </div>
               )}
@@ -311,9 +311,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t("deductions.labels.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteExpense} className="bg-destructive text-destructive-foreground">
-              Eliminar
+              {t("deductions.labels.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
