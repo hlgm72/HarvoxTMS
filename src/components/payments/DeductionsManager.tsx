@@ -487,7 +487,7 @@ export function DeductionsManager({
                             variant="outline" 
                             size="sm"
                             onClick={() => handleManageExclusions(template)}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 hover:border-blue-300"
+                            className="hover:bg-green-50 border-green-200 hover:border-green-300"
                             title={t("deductions.tooltips.manage_exclusions")}
                           >
                             <CalendarDays className="h-4 w-4" />
@@ -496,7 +496,7 @@ export function DeductionsManager({
                             variant="outline" 
                             size="sm"
                             onClick={() => setEditingTemplate(template)}
-                            className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200 hover:border-amber-300"
+                            className="hover:bg-blue-50 border-blue-200 hover:border-blue-300"
                             title={t("deductions.tooltips.edit_template")}
                           >
                             <Edit className="h-4 w-4" />
