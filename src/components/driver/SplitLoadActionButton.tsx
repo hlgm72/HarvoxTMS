@@ -21,7 +21,7 @@ export function SplitLoadActionButton({
 }: SplitLoadActionButtonProps) {
   console.log('🚀 SplitLoadActionButton - INICIO', { loadId: load.id, status: load.status, isPending });
   
-  const { t, i18n } = useTranslation(['common', 'loads']);
+  const { t, i18n } = useTranslation(['loads', 'common']);
   const { nextStopInfo, hasNextAction } = useLoadStopsNavigation(load);
   const { data: documentValidation } = useLoadDocumentValidation(load.id);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -171,7 +171,7 @@ export function SplitLoadActionButton({
                 className="cursor-pointer hover:bg-muted"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                {t('loads:actions.skip_to')}: {state.label}
+                {t('actions.skip_to')}: {state.label}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

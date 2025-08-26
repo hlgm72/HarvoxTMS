@@ -57,8 +57,17 @@ export function LoadCard({
   updateLoadStatus, 
   getNextActionText 
 }: LoadCardProps) {
-  const { t } = useTranslation(['common', 'dashboard', 'loads']);
+  const { t, i18n } = useTranslation(['loads', 'common', 'dashboard']);
   const { openInMaps } = useNavigationMaps();
+
+  console.log('🔍 LoadCard - Translation test:', {
+    status: load.status,
+    translationKey: `status.${load.status}`,
+    result: t(`status.${load.status}`),
+    namespace: 'loads',
+    language: i18n.language,
+    loadStatus: load.status
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
