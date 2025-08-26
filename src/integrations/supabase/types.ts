@@ -2555,6 +2555,54 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_expense_exclusions: {
+        Row: {
+          created_at: string
+          excluded_at: string
+          excluded_by: string
+          id: string
+          payment_period_id: string
+          reason: string | null
+          recurring_template_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          excluded_at?: string
+          excluded_by: string
+          id?: string
+          payment_period_id: string
+          reason?: string | null
+          recurring_template_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          excluded_at?: string
+          excluded_by?: string
+          id?: string
+          payment_period_id?: string
+          reason?: string | null
+          recurring_template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_expense_exclusions_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recurring_expense_exclusions_recurring_template_id_fkey"
+            columns: ["recurring_template_id"]
+            isOneToOne: false
+            referencedRelation: "expense_recurring_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_audit_log: {
         Row: {
           action_type: string
@@ -3267,6 +3315,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      exclude_recurring_expense_from_period: {
+        Args: {
+          exclusion_reason?: string
+          period_id: string
+          target_user_id: string
+          template_id: string
+        }
+        Returns: Json
+      }
       fix_fuel_expenses_separation: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -3822,6 +3879,10 @@ export type Database = {
       }
       restore_document_with_validation: {
         Args: { document_id_param: string }
+        Returns: Json
+      }
+      restore_recurring_expense_to_period: {
+        Args: { period_id: string; target_user_id: string; template_id: string }
         Returns: Json
       }
       simple_load_operation: {
