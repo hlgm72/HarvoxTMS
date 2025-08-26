@@ -420,10 +420,10 @@ export default function PaymentReports() {
                               })()}
                             </h4>
                             <span className="text-sm font-medium text-primary/70">
-                              {formatPeriodLabel(
+                              ({formatPeriodLabel(
                                 calculation.company_payment_periods.period_start_date,
                                 calculation.company_payment_periods.period_end_date
-                              )}
+                              )})
                             </span>
                           </div>
                           {getStatusBadge(calculation)}
