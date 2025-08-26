@@ -132,6 +132,9 @@
       "eventual_deductions_short": "Eventuales",
       "history": "Historial"
     },
+    "empty_states": {
+      "create_first_template": "Crear Primera Deducción"
+    },
     "groups": {
       "driver_deductions": "Descuentos a Conductores",
       "dispatcher_deductions": "Descuentos a Despachadores"

@@ -132,6 +132,9 @@
       "eventual_deductions_short": "Eventual",
       "history": "History"
     },
+    "empty_states": {
+      "create_first_template": "Create First Deduction"
+    },
     "groups": {
       "driver_deductions": "Driver Deductions", 
       "dispatcher_deductions": "Dispatcher Deductions"
