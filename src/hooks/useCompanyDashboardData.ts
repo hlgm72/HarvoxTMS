@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Company } from "@/types/company";
+import { formatMonthName } from "@/lib/dateFormatting";
 
 export function useCompanyDashboardData(companies: Company[]) {
   return useMemo(() => {
@@ -51,7 +52,7 @@ export function useCompanyDashboardData(companies: Company[]) {
       }).length;
 
       return {
-        month: date.toLocaleDateString('es-ES', { month: 'short' }),
+        month: formatMonthName(date),
         empresas: count,
       };
     }).reverse();

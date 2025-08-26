@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import greenPinSvg from '../assets/pin_green.svg';
 import redPinSvg from '../assets/pin_red.svg';
-import { formatDateAuto, formatDateTimeShort } from '@/lib/dateFormatting';
+import { formatDateAuto, formatDateTimeShort, formatInternationalized } from '@/lib/dateFormatting';
 
 interface LoadOrderData {
   load_number: string;
@@ -166,11 +166,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
       // Fecha pegada al título Pickup
       if (pickup.scheduled_date) {
         const date = new Date(pickup.scheduled_date);
-        const formattedDate = date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
+        const formattedDate = formatInternationalized(date, 'MMM d, yyyy');
         doc.text(formattedDate, margin + 60, yPosition + 14); // Más cerca
         if (pickup.scheduled_time) {
           doc.text(pickup.scheduled_time, margin + 60, yPosition + 20);
@@ -239,11 +235,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
       // Fecha pegada al título Delivery
       if (delivery.scheduled_date) {
         const date = new Date(delivery.scheduled_date);
-        const formattedDate = date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
+        const formattedDate = formatInternationalized(date, 'MMM d, yyyy');
         doc.text(formattedDate, margin + 60, yPosition + 14); // Más cerca
         if (delivery.scheduled_time) {
           doc.text(delivery.scheduled_time, margin + 60, yPosition + 20);

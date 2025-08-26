@@ -906,11 +906,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   leftY += 6;
   const signDate = new Date();
-  addText(`Date: ${signDate.toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric'
-  })}`, leftColumnX, leftY, {
+  addText(`Date: ${formatDateAuto(signDate)}`, leftColumnX, leftY, {
     fontSize: 9,
     color: '#003366' // Color de fuente #003366
   });
@@ -1046,7 +1042,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Fecha de generación (centro)
     const reportDate = new Date();
-    addText(`Generated on ${reportDate.toLocaleDateString('en-US')} at ${reportDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`,
+    addText(`Generated on ${formatDateAuto(reportDate)} at ${formatDateTimeShort(reportDate)}`,
       pageWidth / 2, footerY, {
         fontSize: 8,
         color: '#003366', // Color de fuente #003366

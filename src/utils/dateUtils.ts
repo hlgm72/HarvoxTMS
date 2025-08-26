@@ -1,6 +1,7 @@
 import { format, parseISO, isValid } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { es } from 'date-fns/locale';
+import { formatDateAuto, formatDateTimeAuto } from '@/lib/dateFormatting';
 
 /**
  * Obtiene la zona horaria del usuario desde el navegador
@@ -38,10 +39,15 @@ export const createDateInUserTimeZone = (year: number, month: number, day: numbe
  */
 export const formatDateSafe = (
   dateInput: string | Date | null | undefined, 
-  formatPattern: string = 'dd/MM/yyyy',
-  options: { locale?: any } = { locale: es }
+  formatPattern?: string,
+  options: { locale?: any } = {}
 ): string => {
   if (!dateInput) return 'No definida';
+  
+  // ✅ CORREGIDO: Usar patrón internacionalizado por defecto
+  if (!formatPattern) {
+    return formatDateAuto(dateInput);
+  }
   
   try {
     let dateToFormat: Date;
@@ -102,8 +108,12 @@ export const formatDateSafe = (
  */
 export const formatDatabaseDate = (
   dateString: string | null | undefined,
-  formatPattern: string = 'dd/MM/yyyy'
+  formatPattern?: string
 ): string => {
+  // ✅ CORREGIDO: Usar patrón internacionalizado por defecto
+  if (!formatPattern) {
+    return formatDateAuto(dateString);
+  }
   return formatDateSafe(dateString, formatPattern);
 };
 
@@ -112,8 +122,12 @@ export const formatDatabaseDate = (
  */
 export const formatDateTime = (
   dateInput: string | Date | null | undefined,
-  formatPattern: string = 'dd/MM/yyyy HH:mm'
+  formatPattern?: string
 ): string => {
+  // ✅ CORREGIDO: Usar patrón internacionalizado por defecto
+  if (!formatPattern) {
+    return formatDateTimeAuto(dateInput);
+  }
   return formatDateSafe(dateInput, formatPattern);
 };
 
@@ -138,14 +152,14 @@ export const formatDateOnly = (
           return 'Fecha inválida';
         }
         
-        // Crear fecha local directamente para evitar problemas de zona horaria
+        // ✅ CORREGIDO: Usar internacionalización automática
         const localDate = new Date(year, month - 1, day, 12, 0, 0, 0);
-        return format(localDate, 'dd/MM/yyyy', { locale: es });
+        return formatDateAuto(localDate);
       }
     }
     
-    // Para otros casos, usar la función segura existente
-    return formatDateSafe(dateInput, 'dd/MM/yyyy');
+    // Para otros casos, usar formatDateAuto para internacionalización
+    return formatDateAuto(dateInput);
   } catch (error) {
     console.error('Error formatting date only:', error, 'Input:', dateInput);
     return 'Error en fecha';

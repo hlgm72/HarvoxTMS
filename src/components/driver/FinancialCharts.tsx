@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import { TrendingUp, BarChart3, PieChart as PieChartIcon } from "lucide-react";
 import { formatCurrency } from "@/lib/paymentCalculations";
+import { formatInternationalized } from "@/lib/dateFormatting";
 
 interface WeeklyData {
   week: string;
@@ -62,10 +63,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
       const weekDate = new Date(currentDate);
       weekDate.setDate(currentDate.getDate() - (i * 7));
       
-      const weekLabel = weekDate.toLocaleDateString('es-ES', { 
-        month: 'short', 
-        day: 'numeric' 
-      });
+      const weekLabel = formatInternationalized(weekDate, 'MMM d');
       
       // Generate realistic trending data
       const baseIncome = 1200 + (Math.random() * 400);
@@ -100,10 +98,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
     
     for (let i = 5; i >= 0; i--) {
       const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-      const monthLabel = monthDate.toLocaleDateString('es-ES', { 
-        month: 'short',
-        year: '2-digit'
-      });
+      const monthLabel = formatInternationalized(monthDate, 'MMM yy');
       
       const income = 4800 + (Math.random() * 1600);
       const fuel = 600 + (Math.random() * 400);
