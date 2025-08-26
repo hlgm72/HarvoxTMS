@@ -32,8 +32,15 @@ interface LoadCardWithCompletionProps {
 export function LoadCardWithCompletion(props: LoadCardWithCompletionProps) {
   const completionState = useLoadCompletion(props.load.id, props.load.status);
 
+  console.log('🎉 LoadCardWithCompletion - Render:', { 
+    loadId: props.load.id, 
+    status: props.load.status, 
+    showCelebration: completionState.showCelebration 
+  });
+
   // Si está en celebración, mostrar tarjeta especial
   if (completionState.showCelebration) {
+    console.log('🎉 LoadCardWithCompletion - SHOWING CELEBRATION CARD!', props.load.id);
     return (
       <CelebrationLoadCard
         load={props.load}

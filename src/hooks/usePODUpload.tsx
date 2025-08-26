@@ -52,7 +52,7 @@ function PODUploadModal({ loadId, loadNumber, isOpen, onClose, onSuccess }: PODU
           queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
           queryClient.invalidateQueries({ queryKey: ['loads'] });
           queryClient.invalidateQueries({ queryKey: ['load-documents'] });
-        }, 100); // Pequeño delay para permitir que se muestre la celebración primero
+        }, 6000); // Aumentar delay a 6 segundos para permitir la celebración completa
         
         onSuccess();
         onClose();

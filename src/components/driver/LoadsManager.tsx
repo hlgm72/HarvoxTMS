@@ -412,14 +412,41 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
 
   // Lógica mejorada para determinar cargas completadas
   const isLoadCompleted = (load: Load): boolean => {
-    return load.status === 'delivered' && 
+    const completed = load.status === 'delivered' && 
            load.documents?.some(doc => doc.document_type === 'pod') === true;
+    
+    console.log('🎉 LoadsManager - isLoadCompleted:', { 
+      loadId: load.id, 
+      loadNumber: load.load_number,
+      status: load.status, 
+      hasPOD: load.documents?.some(doc => doc.document_type === 'pod'), 
+      completed 
+    });
+    
+    return completed;
   };
 
-  const activeLoads = loads.filter(load => 
-    !['cancelled'].includes(load.status) && !isLoadCompleted(load)
-  );
+  const activeLoads = loads.filter(load => {
+    // Excluir cargas canceladas
+    if (['cancelled'].includes(load.status)) return false;
+    
+    // Si la carga está completada, verificar si está en celebración
+    if (isLoadCompleted(load)) {
+      // Temporalmente mantener las cargas completadas para permitir celebración
+      // El hook useLoadCompletion manejará cuando mostrar/ocultar
+      return true; // Permitir que se muestre, useLoadCompletion decidirá el render
+    }
+    
+    return true; // Mostrar cargas no completadas
+  });
   const completedLoads = loads.filter(load => isLoadCompleted(load));
+
+  console.log('🎉 LoadsManager - Lists:', { 
+    totalLoads: loads.length,
+    activeLoads: activeLoads.length,
+    completedLoads: completedLoads.length,
+    activeLoadIds: activeLoads.map(l => l.id)
+  });
 
   // Determinar la carga actual (más prioritaria) para mostrar en el dashboard
   const getCurrentLoad = (loads: Load[]): Load | null => {

@@ -20,12 +20,28 @@ export const useLoadCompletion = (loadId: string, status: string) => {
 
   const isCompleted = status === 'delivered' && documentValidation?.hasPOD;
 
+  console.log('🎉 useLoadCompletion - State:', { 
+    loadId, 
+    status, 
+    hasPOD: documentValidation?.hasPOD, 
+    isCompleted, 
+    completionState 
+  });
+
   useEffect(() => {
     const wasCompleted = completionState.isCompleted;
     const isNowCompleted = isCompleted;
 
+    console.log('🎉 useLoadCompletion - Effect:', { 
+      loadId, 
+      wasCompleted, 
+      isNowCompleted, 
+      showCelebration: completionState.showCelebration 
+    });
+
     if (!wasCompleted && isNowCompleted && !completionState.showCelebration) {
       // ¡Se acaba de completar!
+      console.log('🎉 useLoadCompletion - TRIGGERING CELEBRATION!', { loadId });
       setCompletionState({
         isCompleted: true,
         justCompleted: true,  
@@ -42,6 +58,7 @@ export const useLoadCompletion = (loadId: string, status: string) => {
 
       // Después de 5 segundos, quitar la celebración
       celebrationTimeoutRef.current = setTimeout(() => {
+        console.log('🎉 useLoadCompletion - ENDING CELEBRATION', { loadId });
         setCompletionState(prev => ({
           ...prev,
           showCelebration: false,
@@ -62,6 +79,7 @@ export const useLoadCompletion = (loadId: string, status: string) => {
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
+      console.log('🎉 useLoadCompletion - CLEANUP', { loadId });
       if (celebrationTimeoutRef.current) {
         clearTimeout(celebrationTimeoutRef.current);
       }
