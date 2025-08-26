@@ -91,8 +91,8 @@ export function PaymentReportsFloatingActions({
       icon: Filter,
       label: hasActiveFilters ? t('floating_actions.filters_active', 'Filtros Activos') : t('floating_actions.filters', 'Filtros'),
       onClick: () => openSheet('filters'),
-      variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
-      className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
+      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive',
+      className: hasActiveFilters ? '!bg-blue-500 !hover:bg-blue-600 !text-white !border-blue-500' : ''
     },
     {
       icon: Download,
