@@ -344,6 +344,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getStatusText = (status: string): string => {
+    console.log('🔍 LoadsManager getStatusText:', { status, translationKey: `dashboard:loads.status.${status}`, result: t(`dashboard:loads.status.${status}`, { defaultValue: status }) });
     return t(`dashboard:loads.status.${status}`, { defaultValue: status });
   };
 
