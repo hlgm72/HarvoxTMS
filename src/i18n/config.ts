@@ -113,4 +113,17 @@ i18n
     },
   });
 
+// Force Spanish language after initialization
+setTimeout(() => {
+  console.log('🌐 i18n current language:', i18n.language);
+  
+  // Clear any cached language preference to force Spanish
+  localStorage.removeItem('i18nextLng');
+  
+  if (i18n.language !== 'es') {
+    console.log('🔄 Forcing language change to Spanish...');
+    i18n.changeLanguage('es');
+  }
+}, 100);
+
 export default i18n;
