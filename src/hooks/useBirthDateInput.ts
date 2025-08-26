@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getDatePickerFormat } from '@/lib/dateFormatting';
 
 interface UseBirthDateInputOptions {
   initialValue?: string;
@@ -22,7 +23,8 @@ export function useBirthDateInput({
 
   const isSpanish = i18n.language === 'es';
   const placeholder = isSpanish ? 'dd/mm/aaaa' : 'mm/dd/yyyy';
-  const format = isSpanish ? 'DD/MM/YYYY' : 'MM/DD/YYYY';
+  // ✅ CORREGIDO: Usar función centralizada, pero uppercase para el formato de validación
+  const format = getDatePickerFormat(i18n.language).toUpperCase().replace('YYYY', 'YYYY');
 
   const formatDateInput = useCallback((input: string) => {
     // Remove all non-numeric characters

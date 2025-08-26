@@ -13,6 +13,7 @@ import { BirthDateInput } from '@/components/ui/BirthDateInput';
 import { createTextHandlers } from '@/lib/textUtils';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
 import { useTranslation } from 'react-i18next';
+import { formatDateAuto } from '@/lib/dateFormatting';
 
 const driverInfoSchema = z.object({
   emergency_contact_name: z.string().optional(),
@@ -99,12 +100,8 @@ export const DriverInfoForm = forwardRef<DriverInfoFormRef, DriverInfoFormProps>
         return dateString;
       }
       
-      if (isNaN(year) || isNaN(month) || isNaN(day)) {
-        return dateString;
-      }
-      
-      // Return in dd/mm/yyyy format for Spanish locale (you can adjust based on i18n)
-      return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+      // ✅ CORREGIDO: Usar función centralizada para formato automático
+      return formatDateAuto(`${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
     } catch (error) {
       console.error('Error formatting date for display:', error);
       return dateString;

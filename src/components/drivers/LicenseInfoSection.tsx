@@ -7,6 +7,7 @@ import { StateCombobox } from "@/components/ui/StateCombobox";
 import { Shield } from "lucide-react";
 import DatePicker from 'react-datepicker';
 import { enUS, es } from "date-fns/locale";
+import { getDatePickerFormat } from '@/lib/dateFormatting';
 import 'react-datepicker/dist/react-datepicker.css';
 
 interface LicenseInfoData {
@@ -89,7 +90,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false, currentLan
               id="license_issue_date"
               selected={data.license_issue_date}
               onChange={(date: Date | null) => onUpdate('license_issue_date', date)}
-              dateFormat={currentLanguage === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
+              dateFormat={getDatePickerFormat(currentLanguage)}
               placeholderText="Select date"
               showYearDropdown
               showMonthDropdown
@@ -109,7 +110,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false, currentLan
               id="license_expiry_date"
               selected={data.license_expiry_date}
               onChange={(date: Date | null) => onUpdate('license_expiry_date', date)}
-              dateFormat={currentLanguage === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
+              dateFormat={getDatePickerFormat(currentLanguage)}
               placeholderText="Select date"
               showYearDropdown
               showMonthDropdown

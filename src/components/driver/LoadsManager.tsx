@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatDateSafe, formatInternationalized, getDateFormats } from '@/lib/dateFormatting';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +30,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatusUpdateModal } from './StatusUpdateModal';
-import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort, formatDateAuto } from '@/lib/dateFormatting';
+import { formatDateAuto, formatDateTimeAuto, formatDateTimeShort } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
@@ -125,7 +126,8 @@ function CurrentStopInfo({ load }: { load: Load }) {
     // Priorizar ETA si está disponible
     if (stop.eta_date) {
       const language = i18n.language;
-      const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+      const formats = getDateFormats();
+      const pattern = language === 'es' ? formats.SHORT_DATE_ES.replace('/yyyy', '') : formats.SHORT_DATE_EN.replace('/yyyy', '');
       let result = `🎯 ETA: ${formatInternationalized(stop.eta_date, pattern)}`;
       if (stop.eta_time) {
         // Formatear hora para remover segundos si los tiene
@@ -138,7 +140,8 @@ function CurrentStopInfo({ load }: { load: Load }) {
     // Mostrar fecha programada como fallback
     if (stop.scheduled_date) {
       const language = i18n.language;
-      const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+      const formats = getDateFormats();
+      const pattern = language === 'es' ? formats.SHORT_DATE_ES.replace('/yyyy', '') : formats.SHORT_DATE_EN.replace('/yyyy', '');
       let result = `${formatDateSafe(stop.scheduled_date, pattern)}`;
       if (stop.scheduled_time) {
         // Formatear hora para remover segundos si los tiene

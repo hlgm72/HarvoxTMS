@@ -22,7 +22,7 @@ import { createPhoneHandlers, handleTextBlur } from '@/lib/textUtils';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { enUS, es } from "date-fns/locale";
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, getDatePickerFormat } from '@/lib/dateFormatting';
 import { LicenseInfoSection } from '@/components/drivers/LicenseInfoSection';
 import { useTranslation } from 'react-i18next';
 
@@ -622,7 +622,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                         id="date_of_birth"
                         selected={driverData.date_of_birth}
                         onChange={(date: Date | null) => updateDriverData('date_of_birth', date)}
-                        dateFormat={i18n.language === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
+                        dateFormat={getDatePickerFormat(i18n.language)}
                         placeholderText="Select date"
                         showYearDropdown
                         showMonthDropdown
@@ -705,7 +705,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                           id="hire_date"
                           selected={driverData.hire_date}
                           onChange={(date: Date | null) => updateDriverData('hire_date', date)}
-                          dateFormat={i18n.language === 'es' ? "dd/MM/yyyy" : "MM/dd/yyyy"}
+                          dateFormat={getDatePickerFormat(i18n.language)}
                           placeholderText="Select date"
                           showYearDropdown
                           showMonthDropdown

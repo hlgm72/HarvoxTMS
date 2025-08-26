@@ -15,6 +15,7 @@ import { Save, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createTextHandlers } from '@/lib/textUtils';
 import { BirthDateInput } from '@/components/ui/BirthDateInput';
+import { formatDateAuto } from '@/lib/dateFormatting';
 
 const createPersonalInfoSchema = (t: any) => z.object({
   first_name: z.string().min(1, t('profile.personal_info.validation.first_name_required')),
@@ -80,14 +81,8 @@ export const PersonalInfoForm = forwardRef<PersonalInfoFormRef, PersonalInfoForm
       const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})$/);
       if (match) {
         const [, year, month, day] = match;
-        // Locale-aware display
-        if (i18n.language === 'es') {
-          // DD/MM/YYYY
-          return `${day}/${month}/${year}`;
-        } else {
-          // MM/DD/YYYY
-          return `${month}/${day}/${year}`;
-        }
+        // ✅ CORREGIDO: Usar función centralizada para formato de fecha
+        return formatDateAuto(match[0]); // Usa el formato ISO detectado
       }
       return dateString;
     } catch (error) {

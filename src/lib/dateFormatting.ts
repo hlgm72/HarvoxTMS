@@ -55,6 +55,15 @@ export const DATE_PATTERNS = {
   YEAR_ONLY: 'yyyy'
 } as const;
 
+// Exportar constantes para que otros componentes puedan acceder
+export const getDateFormats = () => DATE_PATTERNS;
+
+// Helper para obtener el formato de fecha para DatePicker
+export const getDatePickerFormat = (language?: string): string => {
+  const lang = language || getGlobalLanguage();
+  return lang === 'es' ? DATE_PATTERNS.SHORT_DATE_ES : DATE_PATTERNS.SHORT_DATE_EN;
+};
+
 /**
  * Funciones específicas para contextos comunes
  */
