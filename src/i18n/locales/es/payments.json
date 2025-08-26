@@ -224,6 +224,13 @@
       "closing": "Cerrando...",
       "close_period": "Cerrar Período",
       "station": "Estación"
+    },
+    "notifications": {
+      "success": "Plantilla de deducción actualizada exitosamente",
+      "error": "Error al actualizar la plantilla de deducción",
+      "created": "Deducción creada exitosamente",
+      "updated": "Deducción actualizada exitosamente",
+      "deleted": "Deducción eliminada exitosamente"
     }
   },
   "income": {
