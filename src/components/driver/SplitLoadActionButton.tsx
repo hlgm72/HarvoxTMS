@@ -36,10 +36,10 @@ export function SplitLoadActionButton({
         { key: 'route_planned', label: t('common:status.route_planned') },
         { key: 'assigned', label: t('common:status.assigned') },
         { key: 'en_route_pickup', label: t('common:status.en_route_pickup') },
-        { key: 'arrived_pickup', label: t('common:status.arrived_pickup') },
+        { key: 'at_pickup', label: t('common:status.at_pickup') },
         { key: 'loaded', label: t('common:status.loaded') },
         { key: 'en_route_delivery', label: t('common:status.en_route_delivery') },
-        { key: 'arrived_delivery', label: t('common:status.arrived_delivery') },
+        { key: 'at_delivery', label: t('common:status.at_delivery') },
         { key: 'delivered', label: t('common:status.delivered') }
       ];
 
