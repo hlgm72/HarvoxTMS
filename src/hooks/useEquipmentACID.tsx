@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface EquipmentData {
   [key: string]: any;
@@ -43,6 +44,7 @@ export const useEquipmentACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<EquipmentResponse, Error, CreateOrUpdateEquipmentParams>({
     mutationFn: async (params: CreateOrUpdateEquipmentParams): Promise<EquipmentResponse> => {
@@ -91,17 +93,17 @@ export const useEquipmentACID = () => {
       // Proporcionar mensajes de error específicos
       let errorMessage = error.message;
       if (errorMessage.includes('equipment_number es requerido')) {
-        showError('Datos incompletos', 'Debe especificar el número de equipo.');
+        showError(t('messages.equipment.incomplete_data'), t('messages.equipment.number_required'));
       } else if (errorMessage.includes('equipment_type es requerido')) {
-        showError('Datos incompletos', 'Debe seleccionar el tipo de equipo.');
+        showError(t('messages.equipment.incomplete_data'), t('messages.equipment.type_required'));
       } else if (errorMessage.includes('Ya existe un equipo')) {
-        showError('Número duplicado', 'Ya existe un equipo con ese número en la empresa.');
+        showError(t('messages.equipment.duplicate_number'), t('messages.equipment.number_exists'));
       } else if (errorMessage.includes('Sin permisos')) {
-        showError('Sin permisos', 'No tienes autorización para gestionar equipos en esta empresa.');
+        showError(t('messages.equipment.no_permissions'), t('messages.equipment.no_manage_permissions'));
       } else if (errorMessage.includes('Equipo no encontrado')) {
-        showError('Equipo no encontrado', 'El equipo que intentas editar no existe o no tienes permisos.');
+        showError(t('messages.equipment.not_found'), t('messages.equipment.equipment_not_found'));
       } else {
-        showError('Error en equipo', errorMessage);
+        showError(t('messages.error'), errorMessage);
       }
     },
   });
@@ -112,6 +114,7 @@ export const useEquipmentAssignmentACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<any, Error, { equipment_id: string; driver_user_id: string; assignment_type?: string; assigned_date?: string; notes?: string }>({
     mutationFn: async (params) => {
@@ -147,8 +150,8 @@ export const useEquipmentAssignmentACID = () => {
       queryClient.invalidateQueries({ queryKey: ['driver-equipment'] });
       
       showSuccess(
-        'Equipo asignado',
-        'El equipo se asignó exitosamente al conductor con validaciones ACID.'
+        t('messages.equipment.assigned'),
+        t('messages.equipment.assigned_desc')
       );
     },
     onError: (error: Error) => {
@@ -156,13 +159,13 @@ export const useEquipmentAssignmentACID = () => {
       
       let errorMessage = error.message;
       if (errorMessage.includes('Sin permisos para asignar')) {
-        showError('Sin permisos', 'No tienes autorización para asignar este equipo.');
+        showError(t('messages.equipment.no_permissions'), t('messages.equipment.no_assign_permissions'));
       } else if (errorMessage.includes('Conductor no encontrado')) {
-        showError('Conductor no válido', 'El conductor seleccionado no pertenece a esta empresa.');
+        showError(t('messages.equipment.invalid_driver'), t('messages.equipment.driver_not_found'));
       } else if (errorMessage.includes('ya está asignado')) {
-        showError('Equipo ocupado', 'El equipo ya está asignado a otro conductor activo.');
+        showError(t('messages.equipment.equipment_busy'), t('messages.equipment.already_assigned'));
       } else {
-        showError('Error asignando equipo', errorMessage);
+        showError(t('messages.equipment.error_assigning'), errorMessage);
       }
     },
   });

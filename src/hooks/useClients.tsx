@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
+import { useCompanyCache } from "./useCompanyCache";
+import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from 'react-i18next';
 
 export interface Client {
   id: string;
@@ -121,12 +123,13 @@ export const useClientContactCount = (clientId: string) => {
 export const useCreateClient = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: async (clientData: Omit<Client, "id" | "created_at" | "updated_at">) => {
       const { data, error } = await supabase
         .from("company_clients")
-        .insert([clientData])
+        .insert(clientData)
         .select()
         .single();
 
@@ -135,10 +138,10 @@ export const useCreateClient = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      showSuccess("Cliente creado", "El cliente ha sido creado exitosamente.");
+      showSuccess(t('messages.clients.created'), t('messages.clients.created_desc'));
     },
     onError: (error) => {
-      showError("Error", `No se pudo crear el cliente: ${error.message}`);
+      showError(t('messages.error'), t('messages.clients.error_create', { message: error.message }));
     },
   });
 };
@@ -147,6 +150,7 @@ export const useCreateClient = () => {
 export const useUpdateClient = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: async ({ id, ...updateData }: Partial<Client> & { id: string }) => {
@@ -162,10 +166,10 @@ export const useUpdateClient = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      showSuccess("Cliente actualizado", "Los datos del cliente han sido actualizados exitosamente.");
+      showSuccess(t('messages.clients.updated'), t('messages.clients.updated_desc'));
     },
     onError: (error) => {
-      showError("Error", `No se pudo actualizar el cliente: ${error.message}`);
+      showError(t('messages.error'), t('messages.clients.error_update', { message: error.message }));
     },
   });
 };
@@ -174,6 +178,7 @@ export const useUpdateClient = () => {
 export const useDeleteClient = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: async (clientId: string) => {
@@ -186,10 +191,10 @@ export const useDeleteClient = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      showSuccess("Cliente eliminado", "El cliente ha sido eliminado exitosamente.");
+      showSuccess(t('messages.clients.deleted'), t('messages.clients.deleted_desc'));
     },
     onError: (error) => {
-      showError("Error", `No se pudo eliminar el cliente: ${error.message}`);
+      showError(t('messages.error'), t('messages.clients.error_delete', { message: error.message }));
     },
   });
 };
@@ -198,12 +203,13 @@ export const useDeleteClient = () => {
 export const useCreateContact = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: async (contactData: Omit<ClientContact, "id" | "created_at" | "updated_at">) => {
       const { data, error } = await supabase
         .from("company_client_contacts")
-        .insert([contactData])
+        .insert(contactData)
         .select()
         .single();
 
@@ -212,10 +218,10 @@ export const useCreateContact = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["client-contacts", variables.client_id] });
-      showSuccess("Contacto creado", "El contacto ha sido creado exitosamente.");
+      showSuccess(t('messages.contacts.created'), t('messages.contacts.created_desc'));
     },
     onError: (error) => {
-      showError("Error", `No se pudo crear el contacto: ${error.message}`);
+      showError(t('messages.error'), t('messages.contacts.error_create', { message: error.message }));
     },
   });
 };
@@ -224,6 +230,7 @@ export const useCreateContact = () => {
 export const useUpdateContact = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: async ({ id, client_id, ...updateData }: Partial<ClientContact> & { id: string; client_id: string }) => {
@@ -239,10 +246,10 @@ export const useUpdateContact = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["client-contacts", variables.client_id] });
-      showSuccess("Contacto actualizado", "Los datos del contacto han sido actualizados exitosamente.");
+      showSuccess(t('messages.contacts.updated'), t('messages.contacts.updated_desc'));
     },
     onError: (error) => {
-      showError("Error", `No se pudo actualizar el contacto: ${error.message}`);
+      showError(t('messages.error'), t('messages.contacts.error_update', { message: error.message }));
     },
   });
 };
@@ -251,6 +258,7 @@ export const useUpdateContact = () => {
 export const useDeleteContact = () => {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('common');
 
   return useMutation({
     mutationFn: async ({ id, client_id }: { id: string; client_id: string }) => {
@@ -272,10 +280,10 @@ export const useDeleteContact = () => {
         exact: false
       });
       
-      showSuccess("Contacto eliminado", "El contacto ha sido eliminado exitosamente.");
+      showSuccess(t('messages.contacts.deleted'), t('messages.contacts.deleted_desc'));
     },
     onError: (error) => {
-      showError("Error", `No se pudo eliminar el contacto: ${error.message}`);
+      showError(t('messages.error'), t('messages.contacts.error_delete', { message: error.message }));
     },
   });
 };

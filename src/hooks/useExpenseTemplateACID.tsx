@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface ExpenseTemplateData {
   [key: string]: any;
@@ -36,6 +37,7 @@ export const useExpenseTemplateACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<ExpenseTemplateResponse, Error, CreateOrUpdateExpenseTemplateParams>({
     mutationFn: async (params: CreateOrUpdateExpenseTemplateParams): Promise<ExpenseTemplateResponse> => {
@@ -87,15 +89,15 @@ export const useExpenseTemplateACID = () => {
       if (errorMessage.includes('user_id es requerido')) {
         showError('Datos incompletos', 'Debe especificar el conductor para la deducción.');
       } else if (errorMessage.includes('expense_type_id es requerido')) {
-        showError('Datos incompletos', 'Debe seleccionar el tipo de deducción.');
+        showError(t('messages.templates.incomplete_data'), t('messages.templates.type_required'));
       } else if (errorMessage.includes('amount es requerido')) {
-        showError('Datos incompletos', 'Debe especificar el monto de la deducción.');
+        showError(t('messages.templates.incomplete_data'), t('messages.templates.amount_required'));
       } else if (errorMessage.includes('Sin permisos')) {
-        showError('Sin permisos', 'No tienes autorización para gestionar plantillas de este conductor.');
+        showError(t('messages.templates.no_permissions'), t('messages.templates.no_manage_permissions'));
       } else if (errorMessage.includes('Plantilla no encontrada')) {
-        showError('Plantilla no encontrada', 'La plantilla que intentas editar no existe o no tienes permisos.');
+        showError(t('messages.templates.not_found'), t('messages.templates.template_not_found'));
       } else {
-        showError('Error en plantilla de deducción', errorMessage);
+        showError(t('messages.error'), errorMessage);
       }
     },
   });
@@ -106,6 +108,7 @@ export const useDeactivateExpenseTemplate = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<any, Error, { templateId: string; reason?: string }>({
     mutationFn: async (params: { templateId: string; reason?: string }) => {
@@ -141,8 +144,8 @@ export const useDeactivateExpenseTemplate = () => {
       queryClient.invalidateQueries({ queryKey: ['expense-template-history'] });
       
       showSuccess(
-        'Plantilla desactivada',
-        'La plantilla de deducción se desactivó exitosamente y no se aplicará a futuros períodos.'
+        t('messages.templates.deactivated'),
+        t('messages.templates.deactivated_desc')
       );
     },
     onError: (error: Error) => {

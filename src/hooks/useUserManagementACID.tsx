@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface UserData {
   [key: string]: any;
@@ -46,6 +47,7 @@ export const useUserManagementACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<UserResponse, Error, CreateOrUpdateUserParams>({
     mutationFn: async (params: CreateOrUpdateUserParams): Promise<UserResponse> => {
@@ -97,15 +99,15 @@ export const useUserManagementACID = () => {
       // Proporcionar mensajes de error específicos
       let errorMessage = error.message;
       if (errorMessage.includes('user_id es requerido')) {
-        showError('Datos incompletos', 'Debe especificar el ID del usuario.');
+        showError(t('messages.users.incomplete_data'), t('messages.users.user_id_required'));
       } else if (errorMessage.includes('company_id es requerido')) {
-        showError('Datos incompletos', 'Debe especificar la empresa cuando se asigna un rol.');
+        showError(t('messages.users.incomplete_data'), t('messages.users.company_required'));
       } else if (errorMessage.includes('Sin permisos para gestionar usuarios')) {
-        showError('Sin permisos', 'No tienes autorización para gestionar usuarios en esta empresa.');
+        showError(t('messages.users.no_permissions'), t('messages.users.no_manage_permissions'));
       } else if (errorMessage.includes('no existe en el sistema de autenticación')) {
-        showError('Usuario no válido', 'El usuario especificado no existe en el sistema.');
+        showError(t('messages.users.invalid_user'), t('messages.users.user_not_found'));
       } else {
-        showError('Error en gestión de usuario', errorMessage);
+        showError(t('messages.error'), errorMessage);
       }
     },
   });
@@ -116,6 +118,7 @@ export const useUserRoleACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<any, Error, { userId: string; companyId: string; role: 'superadmin' | 'company_owner' | 'operations_manager' | 'senior_dispatcher' | 'dispatcher' | 'driver'; isActive?: boolean }>({
     mutationFn: async (params) => {
@@ -154,8 +157,8 @@ export const useUserRoleACID = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       
       showSuccess(
-        'Rol actualizado',
-        'El rol del usuario se actualizó exitosamente con validaciones ACID.'
+        t('messages.users.role_updated'),
+        t('messages.users.role_updated_desc')
       );
     },
     onError: (error: Error) => {
@@ -163,13 +166,13 @@ export const useUserRoleACID = () => {
       
       let errorMessage = error.message;
       if (errorMessage.includes('Sin permisos para gestionar roles')) {
-        showError('Sin permisos', 'No tienes autorización para gestionar roles en esta empresa.');
+        showError(t('messages.users.no_permissions'), t('messages.users.no_role_permissions'));
       } else if (errorMessage.includes('no existe')) {
-        showError('Usuario no encontrado', 'El usuario especificado no existe.');
+        showError(t('messages.users.not_found'), t('messages.users.user_not_exists'));
       } else if (errorMessage.includes('No puedes modificar tu propio rol')) {
-        showError('Operación no permitida', 'No puedes modificar tu propio rol por seguridad.');
+        showError(t('messages.users.cannot_modify_own_role'), t('messages.users.cannot_modify_own_role_desc'));
       } else {
-        showError('Error actualizando rol', errorMessage);
+        showError(t('messages.error'), errorMessage);
       }
     },
   });
@@ -180,6 +183,7 @@ export const useUserDeactivationACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<any, Error, { userId: string; companyId: string; reason?: string }>({
     mutationFn: async (params) => {
@@ -219,8 +223,8 @@ export const useUserDeactivationACID = () => {
       queryClient.invalidateQueries({ queryKey: ['user-roles'] });
       
       showSuccess(
-        'Usuario desactivado',
-        `Usuario desactivado exitosamente. Roles afectados: ${data.affected_roles}, Perfiles: ${data.affected_profiles}`
+        t('messages.users.deactivated'),
+        t('messages.users.deactivated_desc')
       );
     },
     onError: (error: Error) => {
@@ -230,9 +234,9 @@ export const useUserDeactivationACID = () => {
       if (errorMessage.includes('Sin permisos para desactivar')) {
         showError('Sin permisos', 'No tienes autorización para desactivar usuarios en esta empresa.');
       } else if (errorMessage.includes('No puedes desactivar tu propia cuenta')) {
-        showError('Operación no permitida', 'No puedes desactivar tu propia cuenta por seguridad.');
+        showError(t('messages.users.cannot_modify_own_role'), t('messages.users.cannot_deactivate_self'));
       } else {
-        showError('Error desactivando usuario', errorMessage);
+        showError(t('messages.error'), errorMessage);
       }
     },
   });

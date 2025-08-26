@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
 
 interface CompanyData {
   [key: string]: any;
@@ -53,6 +54,7 @@ export const useCompanyManagementACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<CompanyResponse, Error, CreateOrUpdateCompanyParams>({
     mutationFn: async (params: CreateOrUpdateCompanyParams): Promise<CompanyResponse> => {
@@ -102,25 +104,25 @@ export const useCompanyManagementACID = () => {
       // Proporcionar mensajes de error específicos
       let errorMessage = error.message;
       if (errorMessage.includes('name es requerido')) {
-        showError('Datos incompletos', 'Debe especificar el nombre de la empresa.');
+        showError(t('messages.companies.incomplete_data'), t('messages.companies.name_required'));
       } else if (errorMessage.includes('street_address es requerido')) {
-        showError('Datos incompletos', 'Debe especificar la dirección.');
+        showError(t('messages.companies.incomplete_data'), t('messages.companies.address_required'));
       } else if (errorMessage.includes('state_id es requerido')) {
-        showError('Datos incompletos', 'Debe seleccionar el estado.');
+        showError(t('messages.companies.incomplete_data'), t('messages.companies.state_required'));
       } else if (errorMessage.includes('zip_code es requerido')) {
-        showError('Datos incompletos', 'Debe especificar el código postal.');
+        showError(t('messages.companies.incomplete_data'), t('messages.companies.zip_required'));
       } else if (errorMessage.includes('Ya existe una empresa con el nombre')) {
-        showError('Nombre duplicado', 'Ya existe una empresa con ese nombre.');
+        showError(t('messages.companies.duplicate_name'), t('messages.companies.name_exists'));
       } else if (errorMessage.includes('Ya existe una empresa con el número DOT')) {
-        showError('DOT duplicado', 'Ya existe una empresa con ese número DOT.');
+        showError(t('messages.companies.duplicate_dot'), t('messages.companies.dot_exists'));
       } else if (errorMessage.includes('Ya existe una empresa con el número MC')) {
-        showError('MC duplicado', 'Ya existe una empresa con ese número MC.');
+        showError(t('messages.companies.duplicate_mc'), t('messages.companies.mc_exists'));
       } else if (errorMessage.includes('Solo los superadministradores pueden crear empresas')) {
-        showError('Sin permisos', 'Solo los superadministradores pueden crear empresas.');
+        showError(t('messages.companies.no_permissions'), t('messages.companies.superadmin_only'));
       } else if (errorMessage.includes('Sin permisos para modificar esta empresa')) {
-        showError('Sin permisos', 'No tienes autorización para modificar esta empresa.');
+        showError(t('messages.companies.no_permissions'), t('messages.companies.no_modify_permissions'));  
       } else {
-        showError('Error en gestión de empresa', errorMessage);
+        showError(t('messages.error'), errorMessage);
       }
     },
   });
@@ -131,6 +133,7 @@ export const useCompanyStatusACID = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('common');
 
   return useMutation<any, Error, { companyId: string; newStatus: 'active' | 'inactive' | 'suspended' | 'pending'; reason?: string }>({
     mutationFn: async (params) => {
@@ -168,8 +171,8 @@ export const useCompanyStatusACID = () => {
       queryClient.invalidateQueries({ queryKey: ['company-dashboard'] });
       
       showSuccess(
-        'Estado actualizado',
-        `El estado de la empresa se cambió a "${params.newStatus}" exitosamente con validaciones ACID.`
+        t('messages.companies.status_updated'),
+        t('messages.companies.status_updated_desc', { status: params.newStatus })
       );
     },
     onError: (error: Error) => {
@@ -177,11 +180,11 @@ export const useCompanyStatusACID = () => {
       
       let errorMessage = error.message;
       if (errorMessage.includes('Sin permisos para cambiar el estado')) {
-        showError('Sin permisos', 'No tienes autorización para cambiar el estado de esta empresa.');
+        showError(t('messages.companies.no_permissions'), t('messages.companies.no_modify_permissions'));
       } else if (errorMessage.includes('Empresa no encontrada')) {
-        showError('Empresa no encontrada', 'La empresa especificada no existe.');
+        showError(t('messages.companies.not_found'), t('messages.companies.company_not_found'));
       } else if (errorMessage.includes('Estado no válido')) {
-        showError('Estado no válido', 'El estado especificado no es válido.');
+        showError(t('messages.companies.invalid_status'), t('messages.companies.status_invalid'));
       } else if (errorMessage.includes('ya está en estado')) {
         showError('Sin cambios', 'La empresa ya está en ese estado.');
       } else {
