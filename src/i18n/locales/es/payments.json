@@ -363,5 +363,12 @@
       "period": "Período:",
       "selected": "Seleccionado"
     }
+  },
+  "notifications": {
+    "success": "Operación exitosa",
+    "error": "Error en la operación",
+    "created": "Elemento creado exitosamente",
+    "updated": "Elemento actualizado exitosamente", 
+    "deleted": "Elemento eliminado exitosamente"
   }
 }
