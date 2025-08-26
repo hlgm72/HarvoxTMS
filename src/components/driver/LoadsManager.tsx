@@ -167,7 +167,7 @@ function CurrentStopInfo({ load }: { load: Load }) {
 }
 
 export function LoadsManager({ className, dashboardMode = false }: LoadsManagerProps) {
-  const { t, i18n } = useTranslation(['common', 'fleet', 'dashboard']);
+  const { t, i18n } = useTranslation(['loads', 'common', 'fleet', 'dashboard']);
   const { user } = useAuth();
   const { showSuccess } = useFleetNotifications();
   const updateLoadStatus = useUpdateLoadStatus();
@@ -344,8 +344,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getStatusText = (status: string): string => {
-    console.log('🔍 LoadsManager getStatusText:', { status, translationKey: `dashboard:loads.status.${status}`, result: t(`dashboard:loads.status.${status}`, { defaultValue: status }) });
-    return t(`dashboard:loads.status.${status}`, { defaultValue: status });
+    console.log('🔍 LoadsManager getStatusText:', { status, translationKey: `loads:status.${status}`, result: t(`loads:status.${status}`, { defaultValue: status }) });
+    return t(`loads:status.${status}`, { defaultValue: status });
   };
 
   // Función para abrir el modal de actualización de estado
@@ -575,8 +575,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                       <CardTitle className="text-base">{load.load_number}</CardTitle>
                     </div>
                      <Badge className="bg-success/10 text-success border-success/20 hover:bg-success/15 hover:border-success/30">
-                       Entregada
-                     </Badge>
+                        {getStatusText('delivered')}
+                      </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{load.client_name}</p>
                 </CardHeader>

@@ -98,7 +98,7 @@ export function LoadCard({
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={getStatusVariant(load.status)}>
-              {t(`common:loads.status.${load.status}`)}
+              {t(`loads:status.${load.status}`)}
             </Badge>
           </div>
         </CardTitle>

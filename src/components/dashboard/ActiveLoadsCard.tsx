@@ -29,12 +29,16 @@ export function ActiveLoadsCard({
   
   // Helper function to translate status text
   const getTranslatedStatus = (statusText: string) => {
+    console.log('🔍 ActiveLoadsCard - getTranslatedStatus called with:', statusText);
     // If it's a translation key, translate it
     if (statusText.startsWith('loads.status.')) {
       const key = statusText.replace('loads.status.', '');
-      return t(`status.${key}`);
+      const result = t(`status.${key}`);
+      console.log('🔍 ActiveLoadsCard - translating key:', key, 'result:', result);
+      return result;
     }
     // If it's already translated text, return as is
+    console.log('🔍 ActiveLoadsCard - returning as-is:', statusText);
     return statusText;
   };
   
