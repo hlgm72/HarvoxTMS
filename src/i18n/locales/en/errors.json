@@ -37,6 +37,7 @@
   "ERROR_CALCULATION_NOT_FOUND": "Calculation not found",
   "ERROR_PERIOD_NOT_FOUND": "Period not found",
   "ERROR_INVITATION_NOT_FOUND": "Invitation not found",
+  "ERROR_DOCUMENT_NOT_FOUND": "Document not found or you don't have permissions to modify it",
   
   "ERROR_EMAIL_FORMAT_INVALID": "Invalid email format",
   "ERROR_ALREADY_PAID": "Driver is already marked as paid",

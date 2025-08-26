@@ -37,6 +37,7 @@
   "ERROR_CALCULATION_NOT_FOUND": "Cálculo no encontrado",
   "ERROR_PERIOD_NOT_FOUND": "Período no encontrado",
   "ERROR_INVITATION_NOT_FOUND": "Invitación no encontrada",
+  "ERROR_DOCUMENT_NOT_FOUND": "Documento no encontrado o sin permisos para modificarlo",
   
   "ERROR_EMAIL_FORMAT_INVALID": "Formato de email inválido",
   "ERROR_ALREADY_PAID": "El conductor ya está marcado como pagado",
