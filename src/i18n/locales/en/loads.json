@@ -20,7 +20,13 @@
       "step": "Step {{current}} of {{total}}"
     },
     "description": {
-      "create": "Follow these steps to create a complete load with all necessary information"
+      "create": "Follow these steps to create a complete load with all necessary information",
+      "edit": "Modify this load's information by following the steps",
+      "duplicate": "Duplicate this load using existing information as base"
+    },
+    "loading": {
+      "load_data": "Loading load data...",
+      "duplicate_data": "Loading data to duplicate..."
     },
     "steps": {
       "load_info": "Load Information",
@@ -40,6 +46,7 @@
         "description": "Locations and schedules",
         "card_description": "Configure pickup and delivery locations",
         "card_title": "Configure pickup and delivery locations",
+        "valid_configuration": "Valid route configuration",
         "stop_number": "Stop {{number}}",
         "pickup": "Pickup",
         "delivery": "Delivery",
@@ -96,12 +103,22 @@
         "card_title": "Assign personnel to handle this load",
         "driver_section": {
           "title": "Driver (Required)",
-          "placeholder": "Select a driver..."
+          "placeholder": "Select a driver...",
+          "selected_label": "Driver:"
         },
         "dispatcher_section": {
           "title": "Internal Dispatcher (Optional)",
           "placeholder": "Select a dispatcher (optional)...",
-          "no_assignment": "No dispatcher assigned"
+          "no_assignment": "No dispatcher assigned",
+          "selected_label": "Dispatcher:"
+        },
+        "owner_operator": {
+          "badge": "Owner Operator",
+          "percentages_title": "Owner Operator Percentages",
+          "percentages_description": "These percentages will be applied specifically to this load. You can modify them as needed.",
+          "leasing_label": "Leasing (%)",
+          "factoring_label": "Factoring (%)",
+          "dispatching_label": "Dispatching (%)"
         },
         "important_info": {
           "title": "ℹ️ Important Information",
@@ -232,7 +249,8 @@
       "previous": "Previous",
       "cancel": "Cancel", 
       "next": "Next",
-      "create_load": "Create Load"
+      "create_load": "Create Load",
+      "save_changes": "Save Changes"
     },
     "navigation": {
       "previous": "Previous",
