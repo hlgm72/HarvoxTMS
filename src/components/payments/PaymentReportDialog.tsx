@@ -648,7 +648,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Ingresos Brutos</span>
                   </span>
                   <span className="font-semibold text-xs sm:text-sm">
-                    ${formatCurrency(calculation.gross_earnings)}
+                    {formatCurrency(calculation.gross_earnings)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -657,7 +657,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Otros Ingresos</span>
                   </span>
                   <span className="font-semibold text-success text-xs sm:text-sm">
-                    ${formatCurrency(calculation.other_income)}
+                    {formatCurrency(calculation.other_income)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -666,7 +666,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Combustible</span>
                   </span>
                   <span className="font-semibold text-warning text-xs sm:text-sm">
-                    -${formatCurrency(calculation.fuel_expenses)}
+                    -{formatCurrency(calculation.fuel_expenses)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -675,7 +675,7 @@ export function PaymentReportDialog({
                     <span className="truncate">Deducciones</span>
                   </span>
                   <span className="font-semibold text-destructive text-xs sm:text-sm">
-                    -${formatCurrency(calculation.total_deductions)}
+                    -{formatCurrency(calculation.total_deductions)}
                   </span>
                 </div>
               </div>
@@ -685,7 +685,7 @@ export function PaymentReportDialog({
               <div className="flex items-center justify-between text-base sm:text-lg font-bold">
                 <span>Pago Neto:</span>
                 <span className={calculateNetPayment(calculation) >= 0 ? 'text-success' : 'text-destructive'}>
-                  ${formatCurrency(calculateNetPayment(calculation))}
+                  {formatCurrency(calculateNetPayment(calculation))}
                 </span>
               </div>
             </CardContent>
@@ -735,17 +735,17 @@ export function PaymentReportDialog({
                             <>
                               {load.dispatching_percentage > 0 && (
                                 <Badge variant="outline" className="text-xs">
-                                  Despacho: {load.dispatching_percentage}% (${formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
+                                  Despacho: {load.dispatching_percentage}% ({formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
                                 </Badge>
                               )}
                               {load.factoring_percentage > 0 && (
                                 <Badge variant="outline" className="text-xs">
-                                  Factoring: {load.factoring_percentage}% (${formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
+                                  Factoring: {load.factoring_percentage}% ({formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
                                 </Badge>
                               )}
                               {load.leasing_percentage > 0 && (
                                 <Badge variant="outline" className="text-xs">
-                                  Leasing: {load.leasing_percentage}% (${formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
+                                  Leasing: {load.leasing_percentage}% ({formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
                                 </Badge>
                               )}
                             </>
@@ -754,7 +754,7 @@ export function PaymentReportDialog({
                           )}
                         </div>
                         <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
-                          ${formatCurrency(load.total_amount)}
+                          {formatCurrency(load.total_amount)}
                         </div>
                       </div>
                     </div>
@@ -784,7 +784,7 @@ export function PaymentReportDialog({
                         </div>
                       </div>
                       <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
-                        ${formatCurrency(expense.total_amount)}
+                        {formatCurrency(expense.total_amount)}
                       </div>
                     </div>
                   ))}
@@ -813,7 +813,7 @@ export function PaymentReportDialog({
                         </div>
                       </div>
                       <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
-                        -${formatCurrency(deduction.amount)}
+                        -{formatCurrency(deduction.amount)}
                       </div>
                     </div>
                   ))}

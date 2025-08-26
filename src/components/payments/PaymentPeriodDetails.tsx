@@ -257,7 +257,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight">
-                  ${formatCurrency(totalGrossEarnings)}
+                  {formatCurrency(totalGrossEarnings)}
                 </p>
               </div>
             </div>
@@ -273,7 +273,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight text-success">
-                  ${formatCurrency(totalOtherIncome)}
+                  {formatCurrency(totalOtherIncome)}
                 </p>
               </div>
             </div>
@@ -289,7 +289,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight text-destructive">
-                  -${formatCurrency(totalDeductions)}
+                  -{formatCurrency(totalDeductions)}
                 </p>
               </div>
             </div>
@@ -305,7 +305,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-1">
                 <p className="text-2xl font-bold tracking-tight text-warning">
-                  -${formatCurrency(totalFuelExpenses)}
+                  -{formatCurrency(totalFuelExpenses)}
                 </p>
               </div>
             </div>
@@ -321,7 +321,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               </div>
               <div className="space-y-2">
                 <p className="text-2xl font-bold tracking-tight">
-                  ${formatCurrency(totalNetPayment)}
+                  {formatCurrency(totalNetPayment)}
                 </p>
                 <div className="flex flex-col space-y-1">
                   <span className="text-xs text-muted-foreground">
@@ -462,31 +462,31 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                   <div>
                     <p className="text-muted-foreground">{t('summary.gross_income')}</p>
                     <p className="font-semibold">
-                      ${formatCurrency(calc.gross_earnings || 0)}
+                      {formatCurrency(calc.gross_earnings || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('summary.other_income')}</p>
                     <p className="font-semibold text-success">
-                      ${formatCurrency(calc.other_income || 0)}
+                      {formatCurrency(calc.other_income || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Deducciones</p>
                     <p className="font-semibold text-destructive">
-                      -${formatCurrency(calc.total_deductions || 0)}
+                      -{formatCurrency(calc.total_deductions || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                     <p className="font-semibold text-warning">
-                      -${formatCurrency(calc.fuel_expenses || 0)}
+                      -{formatCurrency(calc.fuel_expenses || 0)}
                     </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Pago Neto</p>
                     <p className={`font-semibold ${calculateNetPayment(calc) < 0 ? 'text-destructive' : ''}`}>
-                      ${formatCurrency(calculateNetPayment(calc))}
+                      {formatCurrency(calculateNetPayment(calc))}
                     </p>
                   </div>
                 </div>

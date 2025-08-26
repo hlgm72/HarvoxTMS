@@ -444,7 +444,7 @@ export function LoadsActionSheet({ filters, onFiltersChange }: LoadsActionSheetP
                   <div className="text-xs text-muted-foreground">Total Cargas</div>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
-                  <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalValue)}</div>
+                  <div className="text-2xl font-bold text-green-600">{formatCurrency(mockStats.totalValue)}</div>
                   <div className="text-xs text-muted-foreground">Valor Total</div>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
@@ -489,7 +489,7 @@ export function LoadsActionSheet({ filters, onFiltersChange }: LoadsActionSheetP
             <div>
               <h3 className="text-sm font-medium mb-3">Promedio por Carga</h3>
               <div className="bg-muted rounded-lg p-3">
-                <div className="text-xl font-bold text-primary">${formatCurrency(mockStats.averageValue)}</div>
+                <div className="text-xl font-bold text-primary">{formatCurrency(mockStats.averageValue)}</div>
                 <div className="text-xs text-muted-foreground">Valor promedio por carga</div>
               </div>
             </div>

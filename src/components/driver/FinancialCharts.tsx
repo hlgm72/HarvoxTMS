@@ -168,7 +168,7 @@ export function FinancialCharts({ currentPeriodData, className }: FinancialChart
                  entry.dataKey === 'income' ? t('dashboard:financial.charts.comparison.income') :
                  entry.dataKey === 'fuel' ? t('dashboard:financial.charts.comparison.fuel') :
                  entry.dataKey === 'otherExpenses' ? t('dashboard:financial.charts.comparison.other_expenses') :
-                 entry.dataKey}: ${formatCurrency(entry.value)}`}
+                 entry.dataKey}: {formatCurrency(entry.value)}`}
             </p>
           ))}
         </div>

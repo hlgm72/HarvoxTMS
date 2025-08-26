@@ -202,7 +202,7 @@ export function PaymentPeriodsManager() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.gross_income')}</p>
                         <p className="text-sm font-medium">
-                          ${formatCurrency(summary.gross_earnings || 0)}
+                          {formatCurrency(summary.gross_earnings || 0)}
                         </p>
                       </div>
                     </div>
@@ -214,9 +214,9 @@ export function PaymentPeriodsManager() {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.other_income')}</p>
-                        <p className="text-sm font-medium text-success">
-                          ${formatCurrency(summary.other_income || 0)}
-                        </p>
+                         <p className="text-sm font-medium text-success">
+                           {formatCurrency(summary.other_income || 0)}
+                         </p>
                       </div>
                     </div>
 
@@ -227,9 +227,9 @@ export function PaymentPeriodsManager() {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.total_deductions')}</p>
-                        <p className="text-sm font-medium text-destructive">
-                          -${formatCurrency(summary.deductions || 0)}
-                        </p>
+                         <p className="text-sm font-medium text-destructive">
+                           -{formatCurrency(summary.deductions || 0)}
+                         </p>
                       </div>
                     </div>
 
@@ -240,9 +240,9 @@ export function PaymentPeriodsManager() {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">{t('tabs.fuel_expenses')}</p>
-                        <p className="text-sm font-medium text-warning">
-                          -${formatCurrency(summary.fuel_expenses || 0)}
-                        </p>
+                         <p className="text-sm font-medium text-warning">
+                           -{formatCurrency(summary.fuel_expenses || 0)}
+                         </p>
                       </div>
                     </div>
 
@@ -254,11 +254,11 @@ export function PaymentPeriodsManager() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t('summary.net_payment')}</p>
                         <div className="flex items-center gap-1">
-                          <p className={`text-sm font-medium ${
-                            (summary.net_payment || 0) < 0 ? 'text-destructive' : ''
-                          }`}>
-                            ${formatCurrency(summary.net_payment || 0)}
-                          </p>
+                           <p className={`text-sm font-medium ${
+                             (summary.net_payment || 0) < 0 ? 'text-destructive' : ''
+                           }`}>
+                             {formatCurrency(summary.net_payment || 0)}
+                           </p>
                           {summary.drivers_with_negative_balance > 0 && (
                             <AlertTriangle className="h-3 w-3 text-destructive" />
                           )}

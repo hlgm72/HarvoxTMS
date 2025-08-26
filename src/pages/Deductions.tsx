@@ -67,7 +67,7 @@ export default function Deductions() {
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
     
-    return `${activeTemplates} ${t("deductions.activeTemplates")} • $${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
+    return `${activeTemplates} ${t("deductions.activeTemplates")} • {formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
   };
 
   return (

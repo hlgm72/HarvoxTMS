@@ -341,7 +341,7 @@ export default function PaymentReports() {
           />
           <StatsCard
             title={t('reports.stats.total_net_payment')}
-            value={`$${formatCurrency(totalEarnings)}`}
+            value={`{formatCurrency(totalEarnings)}`}
             icon={<Wallet className="h-5 w-5 md:h-6 md:w-6 text-green-600" />}
             variant="success"
           />
@@ -414,7 +414,7 @@ export default function PaymentReports() {
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-2 font-semibold text-foreground">
                             <Banknote className="h-4 w-4 text-green-600" />
-                            {t('reports.net')} ${formatCurrency(calculateNetPayment(calculation))}
+                            {t('reports.net')} {formatCurrency(calculateNetPayment(calculation))}
                           </span>
                           <span className="flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-blue-600" />

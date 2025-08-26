@@ -101,7 +101,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.gross_income')}</p>
                 <p className="text-lg sm:text-xl font-semibold">
-                  ${formatCurrency(currentPeriodSummary?.gross_earnings || 0)}
+                  {formatCurrency(currentPeriodSummary?.gross_earnings || 0)}
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.other_income')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-success">
-                  ${formatCurrency(currentPeriodSummary?.other_income || 0)}
+                  {formatCurrency(currentPeriodSummary?.other_income || 0)}
                 </p>
               </div>
             </div>
@@ -133,7 +133,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.total_deductions')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-destructive">
-                  -${formatCurrency(currentPeriodSummary?.deductions || 0)}
+                  -{formatCurrency(currentPeriodSummary?.deductions || 0)}
                 </p>
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function Payments() {
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('tabs.fuel_expenses')}</p>
                 <p className="text-lg sm:text-xl font-semibold text-warning">
-                  -${formatCurrency(currentPeriodSummary?.fuel_expenses || 0)}
+                  -{formatCurrency(currentPeriodSummary?.fuel_expenses || 0)}
                 </p>
               </div>
             </div>

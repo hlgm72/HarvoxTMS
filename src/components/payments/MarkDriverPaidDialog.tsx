@@ -100,7 +100,7 @@ export function MarkDriverPaidDialog({
           <div className="bg-muted/50 p-3 rounded-lg">
             <p className="font-medium">{driverName}</p>
             <p className="text-lg font-bold text-green-600">
-              ${formatCurrency(netPayment)}
+              {formatCurrency(netPayment)}
             </p>
           </div>
 

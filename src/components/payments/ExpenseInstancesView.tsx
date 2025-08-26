@@ -111,7 +111,7 @@ export function ExpenseInstancesView() {
           <CardContent>
             <div className="text-2xl font-bold">{appliedInstances.length}</div>
             <p className="text-xs text-muted-foreground">
-              ${formatCurrency(totalAppliedAmount)}
+              {formatCurrency(totalAppliedAmount)}
             </p>
           </CardContent>
         </Card>
@@ -124,7 +124,7 @@ export function ExpenseInstancesView() {
           <CardContent>
             <div className="text-2xl font-bold">{deferredInstances.length}</div>
             <p className="text-xs text-muted-foreground">
-              ${formatCurrency(totalDeferredAmount)}
+              {formatCurrency(totalDeferredAmount)}
             </p>
           </CardContent>
         </Card>
@@ -167,7 +167,7 @@ export function ExpenseInstancesView() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">
-                    ${formatCurrency(instance.amount || 0)}
+                    {formatCurrency(instance.amount || 0)}
                   </Badge>
                   <Badge variant={getStatusBadgeVariant(instance.status)}>
                     {getStatusLabel(instance.status)}

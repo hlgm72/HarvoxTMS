@@ -547,7 +547,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                       <div className="text-xs text-muted-foreground">{t('floating_actions.stats.total_loads')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
-                      <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalValue)}</div>
+                      <div className="text-2xl font-bold text-green-600">{formatCurrency(mockStats.totalValue)}</div>
                       <div className="text-xs text-muted-foreground">{t('floating_actions.stats.total_value')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
@@ -592,7 +592,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.average_per_load')}</h3>
                   <div className="bg-muted rounded-lg p-3">
-                    <div className="text-xl font-bold text-primary">${formatCurrency(mockStats.averageValue)}</div>
+                    <div className="text-xl font-bold text-primary">{formatCurrency(mockStats.averageValue)}</div>
                     <div className="text-xs text-muted-foreground">{t('floating_actions.stats.average_value')}</div>
                   </div>
                 </div>

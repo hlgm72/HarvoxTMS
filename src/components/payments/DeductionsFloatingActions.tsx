@@ -500,7 +500,7 @@ export function DeductionsFloatingActions({
                       <div className="text-xs text-muted-foreground">{t('floating_actions.history.total_deductions')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">
-                      <div className="text-2xl font-bold text-green-600">${formatCurrency(mockStats.totalAmount)}</div>
+                      <div className="text-2xl font-bold text-green-600">{formatCurrency(mockStats.totalAmount)}</div>
                       <div className="text-xs text-muted-foreground">{t('floating_actions.history.total_amount')}</div>
                     </div>
                     <div className="bg-muted rounded-lg p-3">

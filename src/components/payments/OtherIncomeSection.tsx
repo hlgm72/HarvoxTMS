@@ -177,7 +177,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('additional_payments.stats.approved')}</p>
-                <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalApproved)}</p>
+                <p className="text-lg sm:text-xl font-semibold">{formatCurrency(totalApproved)}</p>
               </div>
             </div>
           </CardContent>
@@ -191,7 +191,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('additional_payments.stats.pending')}</p>
-                <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalPending)}</p>
+                <p className="text-lg sm:text-xl font-semibold">{formatCurrency(totalPending)}</p>
               </div>
             </div>
           </CardContent>
@@ -205,7 +205,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               </div>
               <div>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('additional_payments.stats.total')}</p>
-                <p className="text-lg sm:text-xl font-semibold">${formatCurrency(totalApproved + totalPending)}</p>
+                <p className="text-lg sm:text-xl font-semibold">{formatCurrency(totalApproved + totalPending)}</p>
               </div>
             </div>
           </CardContent>
@@ -258,9 +258,9 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                       {t('additional_payments.section_title')} - {roleName}
                     </CardTitle>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{t('additional_payments.stats.approved')}: ${formatCurrency(roleStats.approved)}</span>
-                      <span>{t('additional_payments.stats.pending')}: ${formatCurrency(roleStats.pending)}</span>
-                      <span className="font-medium">{t('additional_payments.stats.total')}: ${formatCurrency(roleStats.total)}</span>
+                       <span>{t('additional_payments.stats.approved')}: {formatCurrency(roleStats.approved)}</span>
+                       <span>{t('additional_payments.stats.pending')}: {formatCurrency(roleStats.pending)}</span>
+                       <span className="font-medium">{t('additional_payments.stats.total')}: {formatCurrency(roleStats.total)}</span>
                     </div>
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.description}</TableCell>
                         <TableCell>{getIncomeTypeLabel(item.income_type)}</TableCell>
-                        <TableCell className="font-semibold">${formatCurrency(item.amount)}</TableCell>
+                        <TableCell className="font-semibold">{formatCurrency(item.amount)}</TableCell>
                         <TableCell>{formatDateOnly(item.income_date)}</TableCell>
                         {!isDriver && <TableCell>{getUserName(item.user_id, item.applied_to_role)}</TableCell>}
                         <TableCell>{getStatusBadge(item.status)}</TableCell>
@@ -349,7 +349,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 </div>
                 <div>
                   <Label className="text-sm font-medium">{t('additional_payments.detail_labels.amount')}</Label>
-                  <p className="text-sm font-semibold text-green-600">${formatCurrency(selectedItem.amount)}</p>
+                  <p className="text-sm font-semibold text-green-600">{formatCurrency(selectedItem.amount)}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">{t('additional_payments.detail_labels.date')}</Label>
