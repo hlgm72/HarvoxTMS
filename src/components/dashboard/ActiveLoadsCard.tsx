@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from 'react-i18next';
 
 interface LoadItem {
   id: string;
@@ -24,6 +25,18 @@ export function ActiveLoadsCard({
   isPositive, 
   loads 
 }: ActiveLoadsCardProps) {
+  const { t } = useTranslation(['loads']);
+  
+  // Helper function to translate status text
+  const getTranslatedStatus = (statusText: string) => {
+    // If it's a translation key, translate it
+    if (statusText.startsWith('loads.status.')) {
+      const key = statusText.replace('loads.status.', '');
+      return t(`status.${key}`);
+    }
+    // If it's already translated text, return as is
+    return statusText;
+  };
   return (
     <Card className="h-[360px] bg-gradient-to-br from-background to-muted/20 border-primary/20 hover:shadow-elegant transition-all duration-300">
       <CardHeader className="pb-2 border-l-4 border-l-primary">
@@ -78,7 +91,7 @@ export function ActiveLoadsCard({
                         load.status === "delayed" ? "destructive" : "secondary"}
                 className="text-xs"
               >
-                {load.statusText}
+                {getTranslatedStatus(load.statusText)}
               </Badge>
             </div>
           ))}
