@@ -347,8 +347,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
   };
 
   const getStatusText = (status: string): string => {
-    console.log('🔍 LoadsManager getStatusText:', { status, translationKey: `status.${status}`, result: t(`status.${status}`, { defaultValue: status }) });
-    return t(`status.${status}`, { defaultValue: status });
+    console.log('🔍 LoadsManager getStatusText:', { status, translationKey: `status.${status}`, result: t(`common:status.${status}`, { defaultValue: status }) });
+    return t(`common:status.${status}`, { defaultValue: status });
   };
 
   // Función para abrir el modal de actualización de estado

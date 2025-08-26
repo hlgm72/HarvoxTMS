@@ -185,7 +185,8 @@
     "unknown": "Desconocido",
     "total": "Total",
     "expiring": "Venciendo",
-    "expired": "Vencido"
+    "expired": "Vencido",
+    "in_transit": "En Tránsito"
   },
   "messages": {
     "error": "Error",

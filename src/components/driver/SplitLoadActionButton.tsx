@@ -32,15 +32,15 @@ export function SplitLoadActionButton({
       console.log('🔍 Current language:', i18n.language);
       
       const baseStates = [
-        { key: 'created', label: t('status.created') },
-        { key: 'route_planned', label: t('status.route_planned') },
-        { key: 'assigned', label: t('status.assigned') },
-        { key: 'en_route_pickup', label: t('status.en_route_pickup') },
-        { key: 'arrived_pickup', label: t('status.arrived_pickup') },
-        { key: 'loaded', label: t('status.loaded') },
-        { key: 'en_route_delivery', label: t('status.en_route_delivery') },
-        { key: 'arrived_delivery', label: t('status.arrived_delivery') },
-        { key: 'delivered', label: t('status.delivered') }
+        { key: 'created', label: t('common:status.created') },
+        { key: 'route_planned', label: t('common:status.route_planned') },
+        { key: 'assigned', label: t('common:status.assigned') },
+        { key: 'en_route_pickup', label: t('common:status.en_route_pickup') },
+        { key: 'arrived_pickup', label: t('common:status.arrived_pickup') },
+        { key: 'loaded', label: t('common:status.loaded') },
+        { key: 'en_route_delivery', label: t('common:status.en_route_delivery') },
+        { key: 'arrived_delivery', label: t('common:status.arrived_delivery') },
+        { key: 'delivered', label: t('common:status.delivered') }
       ];
 
     // Si hay stops, usar lógica más sofisticada

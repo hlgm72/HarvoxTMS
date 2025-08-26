@@ -33,7 +33,7 @@ export function ActiveLoadsCard({
     // If it's a translation key, translate it
     if (statusText.startsWith('loads.status.')) {
       const key = statusText.replace('loads.status.', '');
-      const result = t(`status.${key}`);
+      const result = t(`common:status.${key}`);
       console.log('🔍 ActiveLoadsCard - translating key:', key, 'result:', result);
       return result;
     }

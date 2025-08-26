@@ -47,18 +47,18 @@ interface LoadsFloatingActionsProps {
 }
 
 export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, onPeriodFilterChange }: LoadsFloatingActionsProps) {
-  const { t } = useTranslation('loads');
+  const { t } = useTranslation(['loads', 'common']);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
   
   const statusOptions = [
     { value: "all", label: t('floating_actions.filters.options.status.all') },
-    { value: "created", label: t('status.created') },
-    { value: "route_planned", label: t('status.route_planned') },
-    { value: "assigned", label: t('status.assigned') },
-    { value: "in_transit", label: t('status.in_transit') },
-    { value: "delivered", label: t('status.delivered') },
-    { value: "completed", label: t('status.completed') }
+    { value: "created", label: t('common:status.created') },
+    { value: "route_planned", label: t('common:status.route_planned') },
+    { value: "assigned", label: t('common:status.assigned') },
+    { value: "in_transit", label: t('common:status.in_transit') },
+    { value: "delivered", label: t('common:status.delivered') },
+    { value: "completed", label: t('common:status.completed') }
   ];
 
   const brokerOptions = [
