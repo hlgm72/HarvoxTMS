@@ -126,7 +126,7 @@ export default function PaymentReports() {
             payment_date
           )
         `)
-        .order('company_payment_periods.period_start_date', { ascending: false });
+        .order('created_at', { ascending: false });
 
       // Filtrar por períodos específicos si no es filtro personalizado
       if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
@@ -155,7 +155,15 @@ export default function PaymentReports() {
       }
       
       console.log('✅ PaymentReports Query Result:', data?.length, 'calculations found');
-      return data || [];
+      
+      // Ordenar por fecha de inicio del período (más reciente primero)
+      const sortedData = (data || []).sort((a, b) => {
+        const dateA = new Date(a.company_payment_periods.period_start_date);
+        const dateB = new Date(b.company_payment_periods.period_start_date);
+        return dateB.getTime() - dateA.getTime(); // Descendente (más reciente primero)
+      });
+      
+      return sortedData;
     },
     enabled: !!user && (
       filters.periodFilter.type === 'all' || 
