@@ -293,7 +293,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
 
             {/* Filtro de período usando el sistema que funciona bien */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Período de Pago</label>
+              <label className="text-sm font-medium">{t('payments:filters.period_label')}</label>
               <Select 
                 value={value.type || 'current'} 
                 onValueChange={(type) => {
@@ -313,20 +313,20 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar período" />
+                  <SelectValue placeholder={t('payments:filters.select_period_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="current">{t('periods.current')}</SelectItem>
                   <SelectItem value="previous">{t('periods.previous')}</SelectItem>
-                  <SelectItem value="next">Período Siguiente</SelectItem>
-                  <SelectItem value="all">Todos los Períodos</SelectItem>
-                  <SelectItem value="this_month">Este Mes</SelectItem>
-                  <SelectItem value="last_month">Mes Pasado</SelectItem>
-                  <SelectItem value="this_quarter">Este Trimestre</SelectItem>
-                  <SelectItem value="last_quarter">Trimestre Pasado</SelectItem>
-                  <SelectItem value="this_year">Este Año</SelectItem>
-                  <SelectItem value="last_year">Año Pasado</SelectItem>
-                  <SelectItem value="specific">Período Específico...</SelectItem>
+                  <SelectItem value="next">{t('payments:filters.period_options.next')}</SelectItem>
+                  <SelectItem value="all">{t('payments:filters.period_options.all')}</SelectItem>
+                  <SelectItem value="this_month">{t('payments:filters.period_options.this_month')}</SelectItem>
+                  <SelectItem value="last_month">{t('payments:filters.period_options.last_month')}</SelectItem>
+                  <SelectItem value="this_quarter">{t('payments:filters.period_options.this_quarter')}</SelectItem>
+                  <SelectItem value="last_quarter">{t('payments:filters.period_options.last_quarter')}</SelectItem>
+                  <SelectItem value="this_year">{t('payments:filters.period_options.this_year')}</SelectItem>
+                  <SelectItem value="last_year">{t('payments:filters.period_options.last_year')}</SelectItem>
+                  <SelectItem value="specific">{t('payments:filters.period_options.specific')}</SelectItem>
                 </SelectContent>
               </Select>
               {value.type && value.type !== 'current' && (
