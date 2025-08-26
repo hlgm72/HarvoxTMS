@@ -432,6 +432,18 @@ export function DeductionsManager({
                         <p className="text-sm text-muted-foreground">
                           {template.expense_types?.name}
                         </p>
+                        
+                        {!isInactive && (
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            <span>{t("deductions.labels.valid_from")} {formatDateOnly(template.start_date)}</span>
+                          </div>
+                        )}
+                        
+                        {template.notes && (
+                          <div className="text-xs text-muted-foreground">
+                            <strong>{t("deductions.labels.notes")}</strong> {template.notes}
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -518,25 +530,6 @@ export function DeductionsManager({
                     </div>
                   </div>
                 </div>
-                
-                {!isInactive && (
-                  <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">{t("deductions.labels.valid_from")} {formatDateOnly(template.start_date)}</span>
-                    </div>
-                    {template.end_date && (
-                      <div>
-                        <span className="text-muted-foreground">{t("deductions.labels.valid_until")} {formatDateOnly(template.end_date)}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {template.notes && (
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    <strong>{t("deductions.labels.notes")}</strong> {template.notes}
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}
