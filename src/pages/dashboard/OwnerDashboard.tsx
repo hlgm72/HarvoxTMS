@@ -68,9 +68,9 @@ export default function OwnerDashboard() {
 
   // Mock data para las nuevas cards
   const mockLoads = [
-    { id: "1", driverName: "Me alvari-2...n", vehicleNumber: "Volrus", status: "on-time" as const, statusText: "En Ruta" },
-    { id: "2", driverName: "Carlos Rodriguez", vehicleNumber: "FL-001", status: "delayed" as const, statusText: "Retrasado" },
-    { id: "3", driverName: "Ana Martinez", vehicleNumber: "TX-205", status: "delivered" as const, statusText: "Entregado" },
+    { id: "1", driverName: "Me alvari-2...n", vehicleNumber: "Volrus", status: "on-time" as const, statusText: "loads.status.en_route_pickup" },
+    { id: "2", driverName: "Carlos Rodriguez", vehicleNumber: "FL-001", status: "delayed" as const, statusText: "loads.status.delayed" },
+    { id: "3", driverName: "Ana Martinez", vehicleNumber: "TX-205", status: "delivered" as const, statusText: "loads.status.delivered" },
   ];
 
   const mockVehicles = [

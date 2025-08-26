@@ -37,6 +37,13 @@ export function ActiveLoadsCard({
     // If it's already translated text, return as is
     return statusText;
   };
+  
+  // Also handle mock data specifically
+  const mockStatusTranslations: Record<string, string> = {
+    'loads.status.en_route_pickup': t('status.en_route_pickup'),
+    'loads.status.delayed': t('status.delayed') || 'Delayed',
+    'loads.status.delivered': t('status.delivered'),
+  };
   return (
     <Card className="h-[360px] bg-gradient-to-br from-background to-muted/20 border-primary/20 hover:shadow-elegant transition-all duration-300">
       <CardHeader className="pb-2 border-l-4 border-l-primary">
@@ -91,7 +98,7 @@ export function ActiveLoadsCard({
                         load.status === "delayed" ? "destructive" : "secondary"}
                 className="text-xs"
               >
-                {getTranslatedStatus(load.statusText)}
+                {mockStatusTranslations[load.statusText] || getTranslatedStatus(load.statusText)}
               </Badge>
             </div>
           ))}
