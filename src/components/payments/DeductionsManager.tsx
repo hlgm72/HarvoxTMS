@@ -464,18 +464,17 @@ export function DeductionsManager({
                             size="sm"
                             onClick={() => handleReactivateTemplate(template)}
                             disabled={reactivateTemplateMutation.isPending}
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200 hover:border-green-300"
                             title={t("deductions.tooltips.reactivate_template")}
                           >
                             <RotateCcw className="h-4 w-4 mr-1" />
                             {t("deductions.buttons.reactivate")}
                           </Button>
                           <Button 
-                            variant="outline" 
+                            variant="destructive" 
                             size="sm"
                             onClick={() => handlePermanentlyDeleteTemplate(template)}
                             disabled={permanentlyDeleteTemplateMutation.isPending}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
                             title={t("deductions.tooltips.permanently_delete")}
                           >
                             <X className="h-4 w-4 mr-1" />
@@ -485,26 +484,29 @@ export function DeductionsManager({
                       ) : (
                         <>
                           <Button 
-                            variant="ghost" 
+                            variant="outline" 
                             size="sm"
                             onClick={() => handleManageExclusions(template)}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 hover:border-blue-300"
                             title={t("deductions.tooltips.manage_exclusions")}
                           >
                             <CalendarDays className="h-4 w-4" />
                           </Button>
                           <Button 
-                            variant="ghost" 
+                            variant="outline" 
                             size="sm"
                             onClick={() => setEditingTemplate(template)}
+                            className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200 hover:border-amber-300"
                             title={t("deductions.tooltips.edit_template")}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button 
-                            variant="ghost" 
+                            variant="outline" 
                             size="sm"
                             onClick={() => handleDeleteTemplate(template)}
                             disabled={deleteTemplateMutation.isPending}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300"
                             title={t("deductions.tooltips.delete_template")}
                           >
                             <Trash2 className="h-4 w-4" />
