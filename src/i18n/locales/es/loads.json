@@ -546,6 +546,7 @@
     "closed": "Cerrado", 
     "paid": "Pagado",
     "locked": "Bloqueado",
+    "more_periods": "más períodos",
     "status": {
       "open": "Abierto",
       "paid": "Pagado",
