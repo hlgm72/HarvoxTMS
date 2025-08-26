@@ -1,7 +1,6 @@
 import { format, parseISO, isValid } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
-import { es } from 'date-fns/locale';
-import { formatDateAuto, formatDateTimeAuto } from '@/lib/dateFormatting';
+import { es, enUS } from 'date-fns/locale';
 
 /**
  * Obtiene la zona horaria del usuario desde el navegador
@@ -44,9 +43,10 @@ export const formatDateSafe = (
 ): string => {
   if (!dateInput) return 'No definida';
   
-  // ✅ CORREGIDO: Usar patrón internacionalizado por defecto
+  // Use default internationalized pattern
   if (!formatPattern) {
-    return formatDateAuto(dateInput);
+    const language = getGlobalLanguage();
+    formatPattern = language === 'es' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
   }
   
   try {
@@ -110,9 +110,10 @@ export const formatDatabaseDate = (
   dateString: string | null | undefined,
   formatPattern?: string
 ): string => {
-  // ✅ CORREGIDO: Usar patrón internacionalizado por defecto
+  // Use default internationalized pattern
   if (!formatPattern) {
-    return formatDateAuto(dateString);
+    const language = getGlobalLanguage();
+    formatPattern = language === 'es' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
   }
   return formatDateSafe(dateString, formatPattern);
 };
@@ -124,9 +125,10 @@ export const formatDateTime = (
   dateInput: string | Date | null | undefined,
   formatPattern?: string
 ): string => {
-  // ✅ CORREGIDO: Usar patrón internacionalizado por defecto
+  // Use default internationalized pattern  
   if (!formatPattern) {
-    return formatDateTimeAuto(dateInput);
+    const language = getGlobalLanguage();
+    formatPattern = language === 'es' ? 'dd/MM/yyyy HH:mm' : 'MM/dd/yyyy HH:mm';
   }
   return formatDateSafe(dateInput, formatPattern);
 };
@@ -152,14 +154,20 @@ export const formatDateOnly = (
           return 'Fecha inválida';
         }
         
-        // ✅ CORREGIDO: Usar internacionalización automática
+        // Use internationalized formatting
         const localDate = new Date(year, month - 1, day, 12, 0, 0, 0);
-        return formatDateAuto(localDate);
+        const language = getGlobalLanguage();
+        const locale = language === 'es' ? es : enUS;
+        const pattern = language === 'es' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
+        return format(localDate, pattern, { locale });
       }
     }
     
-    // Para otros casos, usar formatDateAuto para internacionalización
-    return formatDateAuto(dateInput);
+    // For other cases, use direct internationalization
+    const language = getGlobalLanguage();
+    const locale = language === 'es' ? es : enUS;
+    const pattern = language === 'es' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
+    return formatDateSafe(dateInput, pattern, { locale });
   } catch (error) {
     console.error('Error formatting date only:', error, 'Input:', dateInput);
     return 'Error en fecha';
@@ -208,4 +216,16 @@ export const convertDateToUTC = (dateString: string): string => {
   const utcDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
   
   return utcDate.toISOString();
+};
+
+/**
+ * Function to get global language from i18n
+ */
+const getGlobalLanguage = (): string => {
+  try {
+    const i18n = (window as any).i18n;
+    return i18n?.language || 'en';
+  } catch {
+    return 'en';
+  }
 };
