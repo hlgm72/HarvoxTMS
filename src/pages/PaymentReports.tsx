@@ -21,6 +21,7 @@ import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, u
 import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
 import { FinancialLockWarning, FinancialLockIndicator } from "@/components/payments/FinancialLockWarning";
+import { formatPeriodLabel } from "@/utils/periodUtils";
 
 export default function PaymentReports() {
   const { t } = useTranslation(['payments', 'common']);
@@ -411,12 +412,20 @@ export default function PaymentReports() {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                       <div className="space-y-2 min-w-0">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <h4 className="font-semibold truncate">
-                            {(() => {
-                              const driver = drivers.find(d => d.user_id === calculation.driver_user_id);
-                              return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
-                            })()}
-                          </h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold truncate">
+                              {(() => {
+                                const driver = drivers.find(d => d.user_id === calculation.driver_user_id);
+                                return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
+                              })()}
+                            </h4>
+                            <span className="text-sm font-medium text-primary/70">
+                              {formatPeriodLabel(
+                                calculation.company_payment_periods.period_start_date,
+                                calculation.company_payment_periods.period_end_date
+                              )}
+                            </span>
+                          </div>
                           {getStatusBadge(calculation)}
                         </div>
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">

@@ -1,0 +1,54 @@
+import { format, getWeek, getYear, differenceInDays } from 'date-fns';
+import { es, enUS } from 'date-fns/locale';
+
+/**
+ * Obtiene el idioma global de la aplicación
+ */
+const getGlobalLanguage = (): string => {
+  try {
+    const i18n = (window as any).i18n;
+    return i18n?.language || 'en';
+  } catch {
+    return 'en';
+  }
+};
+
+/**
+ * Genera el formato de período para mostrar en las tarjetas
+ * Ejemplos: "WK32 - 2025" para semanal, "AGO - 2025" para mensual
+ */
+export const formatPeriodLabel = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const year = getYear(start);
+  const language = getGlobalLanguage();
+  
+  // Calcular la duración del período
+  const durationDays = differenceInDays(end, start) + 1;
+  
+  // Si es semanal (7-10 días), mostrar número de semana
+  if (durationDays <= 10) {
+    const weekNumber = getWeek(start, { weekStartsOn: 1 }); // Lunes como primer día
+    return `WK${weekNumber.toString().padStart(2, '0')} - ${year}`;
+  }
+  
+  // Si es mensual (25-35 días), mostrar nombre del mes
+  if (durationDays >= 25 && durationDays <= 35) {
+    const locale = language === 'es' ? es : enUS;
+    const monthName = format(start, 'MMM', { locale }).toUpperCase();
+    return `${monthName} - ${year}`;
+  }
+  
+  // Para otros períodos (quincenales, etc.), mostrar mes y parte del período
+  if (durationDays >= 10 && durationDays < 25) {
+    const locale = language === 'es' ? es : enUS;
+    const monthName = format(start, 'MMM', { locale }).toUpperCase();
+    const startDay = format(start, 'dd');
+    return `${monthName}${startDay} - ${year}`;
+  }
+  
+  // Fallback para períodos atípicos
+  const locale = language === 'es' ? es : enUS;
+  const monthName = format(start, 'MMM', { locale }).toUpperCase();
+  return `${monthName} - ${year}`;
+};
