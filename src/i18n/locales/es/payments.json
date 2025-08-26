@@ -150,6 +150,10 @@
       "cancel": "Cancelar",
       "delete": "Eliminar"
     },
+    "history": {
+      "title": "Historial de Cambios", 
+      "coming_soon": "Próximamente: Historial de modificaciones en plantillas de deducción"
+    },
     "groups": {
       "driver_deductions": "Descuentos a Conductores",
       "dispatcher_deductions": "Descuentos a Despachadores"

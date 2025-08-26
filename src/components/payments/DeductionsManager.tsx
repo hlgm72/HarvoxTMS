@@ -613,9 +613,9 @@ export function DeductionsManager({
 
         <TabsContent value="history" className="space-y-4 mt-6 md:mt-8">
           <div className="text-center py-8 text-muted-foreground">
-            <h3 className="text-lg font-medium mb-2">Historial de Cambios</h3>
+            <h3 className="text-lg font-medium mb-2">{t("deductions.history.title")}</h3>
             <p className="text-sm">
-              Próximamente: Historial de modificaciones en plantillas de deducción
+              {t("deductions.history.coming_soon")}
             </p>
           </div>
         </TabsContent>

@@ -150,6 +150,10 @@
       "cancel": "Cancel",
       "delete": "Delete"
     },
+    "history": {
+      "title": "Change History",
+      "coming_soon": "Coming soon: History of deduction template modifications"
+    },
     "groups": {
       "driver_deductions": "Driver Deductions", 
       "dispatcher_deductions": "Dispatcher Deductions"
