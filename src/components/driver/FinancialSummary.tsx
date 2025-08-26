@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency, calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculations";
-import { getCurrentUTC, formatDateAuto, formatDateInUserTimeZone } from "@/lib/dateFormatting";
+import { getCurrentUTC, formatDateAuto, formatDateInUserTimeZone, formatNumber } from "@/lib/dateFormatting";
 import { FinancialCharts } from "./FinancialCharts";
 
 interface FinancialData {
@@ -230,7 +230,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('dashboard:financial.stats.miles')}</p>
-                    <p className="text-2xl font-bold">{weeklyStats.miles_driven.toLocaleString()}</p>
+                    <p className="text-2xl font-bold">{formatNumber(weeklyStats.miles_driven)}</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-purple-500" />
                 </div>

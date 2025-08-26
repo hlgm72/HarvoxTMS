@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatDateSafe, formatInternationalized, getDateFormats } from '@/lib/dateFormatting';
+import { formatDateSafe, formatInternationalized, getDateFormats, formatNumber } from '@/lib/dateFormatting';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -600,7 +600,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                         size="sm"
                         showText={false}
                       />
-                      <p className="font-bold text-green-600">${load.total_amount.toLocaleString()}</p>
+                      <p className="font-bold text-green-600">${formatNumber(load.total_amount, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                     </div>
                   </div>
                 </CardContent>

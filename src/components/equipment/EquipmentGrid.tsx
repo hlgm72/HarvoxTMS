@@ -11,7 +11,7 @@ import { es } from "date-fns/locale";
 import type { Equipment } from "@/hooks/useEquipment";
 import { useEquipment } from "@/hooks/useEquipment";
 import { capitalizeWords } from "@/lib/textUtils";
-import { formatInternationalized } from '@/lib/dateFormatting';
+import { formatInternationalized, formatNumber } from '@/lib/dateFormatting';
 
 interface EquipmentGridProps {
   equipment: Equipment[];
@@ -173,7 +173,7 @@ export function EquipmentGrid({ equipment }: EquipmentGridProps) {
                   {item.current_mileage && (
                     <div className="flex justify-between py-1">
                       <span className="text-muted-foreground">{t("fields.currentMileage")}:</span>
-                       <span className="font-medium">{item.current_mileage.toLocaleString()} km</span>
+                       <span className="font-medium">{formatNumber(item.current_mileage)} km</span>
                     </div>
                   )}
                 </div>

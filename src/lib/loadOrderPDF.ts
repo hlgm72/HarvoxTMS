@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import greenPinSvg from '../assets/pin_green.svg';
 import redPinSvg from '../assets/pin_red.svg';
-import { formatDateAuto, formatDateTimeShort, formatInternationalized } from '@/lib/dateFormatting';
+import { formatDateAuto, formatDateTimeShort, formatInternationalized, formatNumber } from '@/lib/dateFormatting';
 
 interface LoadOrderData {
   load_number: string;
@@ -326,7 +326,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     if (data.weight_lbs) {
-      doc.text(`48 ft• ${data.weight_lbs.toLocaleString()}.00lbs`, margin + 40, yPosition);
+      doc.text(`48 ft• ${formatNumber(data.weight_lbs)}.00lbs`, margin + 40, yPosition);
     }
     yPosition += 20;
 
@@ -355,7 +355,7 @@ export async function generateLoadOrderPDF(data: LoadOrderData): Promise<Blob> {
     
     // Información de peso y dimensiones
     if (data.weight_lbs) {
-      doc.text(`${data.weight_lbs.toLocaleString()}lb• 48.0ft• 8.0ft• 6.0ft•`, margin + 40, yPosition);
+      doc.text(`${formatNumber(data.weight_lbs)}lb• 48.0ft• 8.0ft• 6.0ft•`, margin + 40, yPosition);
       yPosition += 8;
       doc.text("1 Truckload", margin + 40, yPosition);
       yPosition += 20;

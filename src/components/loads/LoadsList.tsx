@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatCurrency } from "@/lib/utils";
-import { formatDateTimeAuto } from '@/lib/dateFormatting';
+import { formatDateTimeAuto, formatNumber } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { useUpdateLoadStatusWithValidation } from "@/hooks/useUpdateLoadStatusWithValidation";
@@ -445,7 +445,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     {t('list.commodity')}
                   </label>
                   <p className="text-sm font-medium">{load.commodity}</p>
-                  <p className="text-xs text-muted-foreground">{load.weight_lbs?.toLocaleString()} lbs</p>
+                  <p className="text-xs text-muted-foreground">{formatNumber(load.weight_lbs || 0)} lbs</p>
                 </div>
               </div>
               

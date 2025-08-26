@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, DollarSign, Calendar, Package, User, Building, Clock, FileText, Truck, ArrowRight, CheckCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { formatDateOnly, formatDateTime, formatPaymentPeriod } from '@/lib/dateFormatting';
+import { formatDateOnly, formatDateTime, formatPaymentPeriod, formatNumber } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 const statusColors = {
@@ -158,7 +158,7 @@ export function LoadViewDialog({ isOpen, onClose, load }: LoadViewDialogProps) {
                     <p className="text-sm font-medium">{load.commodity}</p>
                     {load.weight_lbs && (
                       <p className="text-xs text-muted-foreground">
-                        ⚖️ {load.weight_lbs.toLocaleString()} lbs
+                        ⚖️ {formatNumber(load.weight_lbs)} lbs
                       </p>
                     )}
                   </div>

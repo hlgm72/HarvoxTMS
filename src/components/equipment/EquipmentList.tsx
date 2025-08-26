@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatDateAuto } from '@/lib/dateFormatting';
+import { formatDateAuto, formatNumber } from '@/lib/dateFormatting';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -140,7 +140,7 @@ export function EquipmentList({ equipment }: EquipmentListProps) {
                       <div className="space-y-2 text-muted-foreground">
                         <p><span className="font-medium">{t("fields.licensePlate")}:</span> {item.license_plate || "N/A"}</p>
                         <p><span className="font-medium">{t("fields.vin")}:</span> {item.vin_number ? item.vin_number.substring(0, 10) + "..." : "N/A"}</p>
-                        <p><span className="font-medium">{t("fields.currentMileage")}:</span> {item.current_mileage ? `${item.current_mileage.toLocaleString()} km` : "N/A"}</p>
+                        <p><span className="font-medium">{t("fields.currentMileage")}:</span> {item.current_mileage ? `${formatNumber(item.current_mileage)} km` : "N/A"}</p>
                       </div>
                     </div>
                     

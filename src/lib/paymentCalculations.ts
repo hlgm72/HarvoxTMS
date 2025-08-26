@@ -33,9 +33,11 @@ export function calculateHasNegativeBalance(calculation: PaymentCalculation): bo
 }
 
 /**
- * Formatea un monto como moneda
+ * ✅ REEMPLAZADO: Las funciones a continuación están obsoletas.
+ * Usar formatCurrency() de @/lib/dateFormatting en su lugar.
  */
 export function formatCurrency(amount: number): string {
+  console.warn('⚠️ formatCurrency obsoleto - usar formatCurrency de @/lib/dateFormatting');
   return amount.toLocaleString('es-US', { 
     style: 'currency', 
     currency: 'USD',
@@ -44,8 +46,9 @@ export function formatCurrency(amount: number): string {
 }
 
 /**
- * Versión simplificada sin símbolo de moneda
+ * ✅ REEMPLAZADO: Función obsoleta - usar formatCurrency() de @/lib/dateFormatting
  */
 export function formatAmount(amount: number): string {
+  console.warn('⚠️ formatAmount obsoleto - usar formatCurrency de @/lib/dateFormatting');
   return amount.toLocaleString('es-US', { minimumFractionDigits: 2 });
 }

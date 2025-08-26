@@ -227,8 +227,8 @@ const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, l
   
   try {
     const locale = language === 'es' ? es : enUS;
-    // Usar diferentes patrones según el idioma
-    const pattern = language === 'es' ? 'dd/MM/yyyy' : 'MM/dd/yyyy';
+    // ✅ CORREGIDO: Usar patrones centralizados
+    const pattern = language === 'es' ? DATE_PATTERNS.SHORT_DATE_ES : DATE_PATTERNS.SHORT_DATE_EN;
     return formatDateSafe(dateInput, pattern, { locale });
   } catch (error) {
     console.error('Error formatting date with locale:', error);
@@ -333,10 +333,36 @@ export const formatCurrency = (
   }
 };
 
+// Función para formatear números respetando idioma
+export const formatNumber = (
+  number: number,
+  options: {
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+  } = {}
+): string => {
+  const language = getGlobalLanguage();
+  const {
+    minimumFractionDigits = 0,
+    maximumFractionDigits = 0
+  } = options;
+  
+  try {
+    return new Intl.NumberFormat(language === 'es' ? 'es-US' : 'en-US', {
+      minimumFractionDigits,
+      maximumFractionDigits
+    }).format(number);
+  } catch (error) {
+    console.error('Error formatting number:', error);
+    return number.toString();
+  }
+};
+
 export const formatDateTimeAuto = (dateInput: string | Date | null | undefined): string => {
   const language = getGlobalLanguage();
   const locale = language === 'es' ? es : enUS;
-  const pattern = language === 'es' ? 'dd/MM/yyyy HH:mm' : 'MM/dd/yyyy HH:mm';
+  // ✅ CORREGIDO: Usar patrones centralizados
+  const pattern = language === 'es' ? DATE_PATTERNS.DATE_TIME_ES : DATE_PATTERNS.DATE_TIME_EN;
   
   if (!dateInput) return language === 'es' ? 'No definida' : 'Not defined';
   
