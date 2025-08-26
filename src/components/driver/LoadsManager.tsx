@@ -29,7 +29,7 @@ import { useLoads } from "@/hooks/useLoads";
 import { useUpdateLoadStatus } from "@/hooks/useUpdateLoadStatus";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatusUpdateModal } from './StatusUpdateModal';
-import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort } from '@/lib/dateFormatting';
+import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort, formatDateAuto } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { useLoadStopsNavigation } from '@/hooks/useLoadStopsNavigation';
 import { LoadDocumentStatusIndicator } from '@/components/loads/LoadDocumentStatusIndicator';
@@ -114,12 +114,12 @@ function CurrentStopInfo({ load }: { load: Load }) {
   const getTimeDisplayText = (status: string, stop: any) => {
     // Priorizar tiempo de finalización si está disponible
     if (stop.completion_datetime) {
-      return `🏁 Completada: ${formatDateSafe(stop.completion_datetime, 'dd/MM HH:mm')}`;
+      return `🏁 Completada: ${formatDateTimeShort(stop.completion_datetime)}`;
     }
 
     // Si hay llegada real, mostrarla
     if (stop.actual_arrival_datetime) {
-      return `✅ Llegó: ${formatDateSafe(stop.actual_arrival_datetime, 'dd/MM HH:mm')}`;
+      return `✅ Llegó: ${formatDateTimeShort(stop.actual_arrival_datetime)}`;
     }
 
     // Priorizar ETA si está disponible
@@ -586,7 +586,7 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
                     <div className="text-sm">
                       <p>{load.origin_city} → {load.destination_city}</p>
                       <p className="text-muted-foreground">
-                        {load.delivery_date ? formatDateSafe(load.delivery_date, 'dd/MM/yyyy') : 'Sin fecha'}
+                        {load.delivery_date ? formatDateAuto(load.delivery_date) : 'Sin fecha'}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">

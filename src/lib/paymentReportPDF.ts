@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { formatDateSafe, formatDateOnly } from './dateFormatting';
+import { formatDateSafe, formatDateOnly, formatDateAuto, formatDateTimeShort } from './dateFormatting';
 
 interface PaymentReportData {
   driver: {
@@ -228,7 +228,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       week: `Week ${week} / ${year}`,
       dateRange: `${startFormatted} - ${endFormatted}`,
       paymentDate: data.period.payment_date ? 
-        `Payment Date: ${formatDateSafe(data.period.payment_date, 'MM/dd/yyyy')}` :
+        `Payment Date: ${formatDateAuto(data.period.payment_date)}` :
         'Payment Date: Not Set'
     };
   };
@@ -547,7 +547,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       if (allStops.length === 0) {
         // Mostrar PUP con fecha
         if (load.pickup_date) {
-          const pupDate = formatDateSafe(load.pickup_date, 'MM/dd/yyyy');
+          const pupDate = formatDateAuto(load.pickup_date);
           const pupLocation = load.pickup_location || load.pickup_company || '';
           
           const stopPosition = colonPosition - maxPickupDeliveryWidth;
@@ -572,7 +572,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         
         // Mostrar DEL con fecha
         if (load.delivery_date) {
-          const delDate = formatDateSafe(load.delivery_date, 'MM/dd/yyyy');
+          const delDate = formatDateAuto(load.delivery_date);
           const delLocation = load.delivery_location || load.delivery_company || '';
           
           const stopPosition = colonPosition - maxPickupDeliveryWidth;
@@ -600,11 +600,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
           // Usar la fecha principal de pickup o delivery si está disponible, sino usar scheduled_date
           let stopDate = 'N/A';
           if (stop.stop_type === 'pickup' && load.pickup_date) {
-            stopDate = formatDateSafe(load.pickup_date, 'MM/dd/yyyy');
+            stopDate = formatDateAuto(load.pickup_date);
           } else if (stop.stop_type === 'delivery' && load.delivery_date) {
-            stopDate = formatDateSafe(load.delivery_date, 'MM/dd/yyyy');
+            stopDate = formatDateAuto(load.delivery_date);
           } else if (stop.scheduled_date) {
-            stopDate = formatDateSafe(stop.scheduled_date, 'MM/dd/yyyy');
+            stopDate = formatDateAuto(stop.scheduled_date);
           }
           
           const stopCompany = stop.company_name || '';
@@ -793,7 +793,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.fuelExpenses && data.fuelExpenses.length > 0) {
     data.fuelExpenses.forEach(fuel => {
-      // Convertir fecha UTC a formato local MM/dd/yyyy
+      // ✅ CORREGIDO: Usar formatDateAuto para internacionalización
       const dateStr = (() => {
         try {
           if (fuel.transaction_date.includes('T00:00:00') && fuel.transaction_date.includes('+00')) {
@@ -802,8 +802,8 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
             const [year, month, day] = datePart.split('-').map(Number);
             return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
           } else {
-            // Usar formatDateOnly como fallback
-            return formatDateOnly(fuel.transaction_date).replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'); // Convertir dd/MM/yyyy a MM/dd/yyyy
+            // Usar formatDateAuto como fallback
+            return formatDateAuto(fuel.transaction_date);
           }
         } catch (error) {
           console.error('Error formatting fuel date:', error);
