@@ -1,4 +1,7 @@
 
+// Import console filter to suppress development environment noise
+import './utils/consoleFilter';
+
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
