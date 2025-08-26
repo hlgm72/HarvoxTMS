@@ -19,7 +19,27 @@ export function usePaymentPeriodSummary(periodId?: string) {
     queryFn: async (): Promise<PaymentPeriodSummary | null> => {
       if (!periodId) throw new Error('Period ID is required');
       
-      // Obtener todos los cálculos de conductores para este período
+      // Primero obtener el company_id del período para verificar integridad
+      const { data: periodData, error: periodError } = await supabase
+        .from('company_payment_periods')
+        .select('company_id')
+        .eq('id', periodId)
+        .single();
+
+      if (periodError) throw periodError;
+
+      // Verificar y recalcular automáticamente la integridad de todos los cálculos de la empresa
+      const { data: integrityResult, error: integrityError } = await supabase
+        .rpc('verify_and_recalculate_company_payments', {
+          target_company_id: periodData.company_id
+        });
+
+      if (integrityError) {
+        console.warn('Error verificando integridad de cálculos:', integrityError);
+        // Continuar con los datos disponibles aunque haya error en la verificación
+      }
+      
+      // Obtener todos los cálculos de conductores para este período (ya actualizados)
       const { data: driverCalculations, error } = await supabase
         .from('driver_period_calculations')
         .select('*')
@@ -78,6 +98,17 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
     queryFn: async (): Promise<PaymentPeriodSummary[]> => {
       if (!companyId) throw new Error('Company ID is required');
       
+      // Verificar y recalcular automáticamente la integridad de todos los cálculos de la empresa
+      const { data: integrityResult, error: integrityError } = await supabase
+        .rpc('verify_and_recalculate_company_payments', {
+          target_company_id: companyId
+        });
+
+      if (integrityError) {
+        console.warn('Error verificando integridad de cálculos:', integrityError);
+        // Continuar con los datos disponibles aunque haya error en la verificación
+      }
+      
       // Obtener todos los períodos de la empresa
       const { data: periods, error: periodsError } = await supabase
         .from('company_payment_periods')
@@ -91,7 +122,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
         return [];
       }
 
-      // Obtener los cálculos para todos los períodos
+      // Obtener los cálculos para todos los períodos (ya actualizados)
       const { data: allCalculations, error: calcError } = await supabase
         .from('driver_period_calculations')
         .select('*')

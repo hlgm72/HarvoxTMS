@@ -3501,6 +3501,10 @@ export type Database = {
           uploaded_by: string
         }[]
       }
+      get_payment_calculations_integrity_status: {
+        Args: { target_company_id: string }
+        Returns: Json
+      }
       get_payment_period_elements: {
         Args: { period_id_param: string }
         Returns: Json
@@ -3961,6 +3965,10 @@ export type Database = {
           is_valid: boolean
           user_email: string
         }[]
+      }
+      verify_and_recalculate_company_payments: {
+        Args: { target_company_id: string }
+        Returns: Json
       }
     }
     Enums: {
