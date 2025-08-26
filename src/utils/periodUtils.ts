@@ -20,15 +20,21 @@ const getGlobalLanguage = (): string => {
 export const formatPeriodLabel = (startDate: string, endDate: string): string => {
   console.log('🔍 formatPeriodLabel input:', { startDate, endDate });
   
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  // Crear fechas locales para evitar problemas de zona horaria
+  const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+  const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+  
+  const start = new Date(startYear, startMonth - 1, startDay); // Fecha local
+  const end = new Date(endYear, endMonth - 1, endDay); // Fecha local
   const year = getYear(start);
   const language = getGlobalLanguage();
   
   console.log('🔍 Parsed dates:', { 
     start: start.toISOString(), 
     end: end.toISOString(),
-    year 
+    year,
+    startLocal: start.toLocaleDateString(),
+    endLocal: end.toLocaleDateString()
   });
   
   // Calcular la duración del período
