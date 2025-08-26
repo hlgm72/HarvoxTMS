@@ -227,6 +227,13 @@
       "closing": "Closing...",
       "close_period": "Close Period",
       "station": "Station"
+    },
+    "notifications": {
+      "success": "Deduction template updated successfully",
+      "error": "Error updating deduction template",
+      "created": "Deduction created successfully",
+      "updated": "Deduction updated successfully",
+      "deleted": "Deduction deleted successfully"
     }
   },
   "income": {
@@ -359,12 +366,4 @@
       "period": "Period:",
       "selected": "Selected"
     }
-  },
-  "notifications": {
-    "success": "Operation successful",
-    "error": "Operation error", 
-    "created": "Item created successfully",
-    "updated": "Item updated successfully",
-    "deleted": "Item deleted successfully"
-  }
 }
