@@ -18,18 +18,35 @@ const getGlobalLanguage = (): string => {
  * Ejemplos: "WK32 - 2025" para semanal, "AGO - 2025" para mensual
  */
 export const formatPeriodLabel = (startDate: string, endDate: string): string => {
+  console.log('🔍 formatPeriodLabel input:', { startDate, endDate });
+  
   const start = new Date(startDate);
   const end = new Date(endDate);
   const year = getYear(start);
   const language = getGlobalLanguage();
   
+  console.log('🔍 Parsed dates:', { 
+    start: start.toISOString(), 
+    end: end.toISOString(),
+    year 
+  });
+  
   // Calcular la duración del período
   const durationDays = differenceInDays(end, start) + 1;
+  console.log('🔍 Duration days:', durationDays);
   
   // Si es semanal (7-10 días), mostrar número de semana
   if (durationDays <= 10) {
     const weekNumber = getISOWeek(start); // Semana ISO estándar (lunes como primer día)
     const weekYear = getISOWeekYear(start); // Año ISO de la semana (puede diferir del año calendario)
+    
+    console.log('🔍 Week calculation:', { 
+      weekNumber, 
+      weekYear,
+      startDate: start.toISOString(),
+      startDateLocalString: start.toLocaleDateString()
+    });
+    
     return `WK${weekNumber.toString().padStart(2, '0')} - ${weekYear}`;
   }
   
