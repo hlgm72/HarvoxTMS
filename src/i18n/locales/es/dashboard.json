@@ -115,7 +115,10 @@
     "stop_types": {
       "pickup": "Recoger",
       "delivery": "Entregar"
-    }
+    },
+    "completed_loads_all": "Todas las Cargas Completadas",
+    "view_all_completed": "Ver Todas las Completadas",
+    "more": "más"
   },
   "driver": {
     "title": "Panel del Conductor",

@@ -115,7 +115,10 @@
     "stop_types": {
       "pickup": "Pickup",
       "delivery": "Delivery"
-    }
+    },
+    "completed_loads_all": "All Completed Loads",
+    "view_all_completed": "View All Completed",
+    "more": "more"
   },
   "driver": {
     "title": "Driver Dashboard",

@@ -42,6 +42,7 @@ import { usePODUpload } from "@/hooks/usePODUpload";
 import { useLoadCompletion } from '@/hooks/useLoadCompletion';
 import { ActiveLoadsWithCelebration } from './ActiveLoadsWithCelebration';
 import { LoadCardWithCompletion } from './LoadCardWithCompletion';
+import { CompletedLoadsModal } from './CompletedLoadsModal';
 
 interface Load {
   id: string;
@@ -197,6 +198,8 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     isOpen: boolean;
     load?: any;
   }>({ isOpen: false });
+
+  const [completedLoadsModal, setCompletedLoadsModal] = useState(false);
 
   const calculateProgress = (status: string, stopsData?: any[], hasPOD?: boolean): number => {
     // Casos especiales
@@ -620,43 +623,61 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
               </CardContent>
             </Card>
           ) : (
-            completedLoads.map((load) => (
-              <Card key={load.id} className="opacity-75">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                      <CardTitle className="text-base">{load.load_number}</CardTitle>
+            <>
+              {/* Mostrar máximo 2 cargas completadas */}
+              {completedLoads.slice(0, 2).map((load) => (
+                <Card key={load.id} className="opacity-75">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <CardTitle className="text-base">{load.load_number}</CardTitle>
+                      </div>
+                       <Badge className="bg-success/10 text-success border-success/20 hover:bg-success/15 hover:border-success/30">
+                          {getStatusText('delivered')}
+                        </Badge>
                     </div>
-                     <Badge className="bg-success/10 text-success border-success/20 hover:bg-success/15 hover:border-success/30">
-                        {getStatusText('delivered')}
-                      </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{load.client_name}</p>
-                </CardHeader>
+                    <p className="text-sm text-muted-foreground">{load.client_name}</p>
+                  </CardHeader>
 
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div className="text-sm">
-                      <p>{load.origin_city} → {load.destination_city}</p>
-                      <p className="text-muted-foreground">
-                        {load.delivery_date ? formatDateAuto(load.delivery_date) : 'Sin fecha'}
-                      </p>
+                  <CardContent>
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm">
+                        <p>{load.origin_city} → {load.destination_city}</p>
+                        <p className="text-muted-foreground">
+                          {load.delivery_date ? formatDateAuto(load.delivery_date) : 'Sin fecha'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <LoadStatusHistoryButton
+                          loadId={load.id}
+                          loadNumber={load.load_number}
+                          variant="outline"
+                          size="sm"
+                          showText={false}
+                        />
+                        <p className="font-bold text-green-600">${formatNumber(load.total_amount, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <LoadStatusHistoryButton
-                        loadId={load.id}
-                        loadNumber={load.load_number}
-                        variant="outline"
-                        size="sm"
-                        showText={false}
-                      />
-                      <p className="font-bold text-green-600">${formatNumber(load.total_amount, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {/* Botón "Ver todas" si hay más de 2 cargas completadas */}
+              {completedLoads.length > 2 && (
+                <Card className="border-dashed">
+                  <CardContent className="py-6 text-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setCompletedLoadsModal(true)}
+                      className="w-full"
+                    >
+                      {t('dashboard:loads.view_all_completed')} ({completedLoads.length - 2} {t('dashboard:loads.more')})
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </>
           )}
         </TabsContent>
       </Tabs>
@@ -690,6 +711,19 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
        <PODUploadComponent onSuccess={() => {
          refetch(); // Refrescar datos cuando se sube el POD
        }} />
+
+       {/* Modal de todas las cargas completadas */}
+       <CompletedLoadsModal
+         isOpen={completedLoadsModal}
+         onOpenChange={setCompletedLoadsModal}
+         completedLoads={completedLoads}
+         onNavigateToStop={handleNavigateToStop}
+         isNavigating={isNavigating}
+         getStatusColor={getStatusColor}
+         getStatusText={getStatusText}
+         openPODUpload={openPODUpload}
+         setDocumentsDialog={setDocumentsDialog}
+       />
     </div>
   );
 }
