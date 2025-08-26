@@ -133,7 +133,8 @@
       "history": "History"
     },
     "empty_states": {
-      "create_first_template": "Create First Deduction"
+      "create_first_template": "Create First Deduction",
+      "no_inactive_templates": "No inactive templates"
     },
     "groups": {
       "driver_deductions": "Driver Deductions", 
@@ -366,4 +367,5 @@
       "period": "Period:",
       "selected": "Selected"
     }
+  }
 }

@@ -133,7 +133,8 @@
       "history": "Historial"
     },
     "empty_states": {
-      "create_first_template": "Crear Primera Deducción"
+      "create_first_template": "Crear Primera Deducción",
+      "no_inactive_templates": "No hay plantillas inactivas"
     },
     "groups": {
       "driver_deductions": "Descuentos a Conductores",
@@ -366,4 +367,5 @@
       "period": "Período:",
       "selected": "Seleccionado"
     }
+  }
 }
