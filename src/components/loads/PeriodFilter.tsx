@@ -369,7 +369,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 ))}
                 {openPeriods.length > 3 && (
                   <div className="text-xs text-muted-foreground text-center">
-                    +{openPeriods.length - 3} {t('period_filter.more_periods')}
+                    +{openPeriods.length - 3} {t('period_filter.more_periods', 'más períodos')}
                   </div>
                 )}
               </div>
@@ -438,7 +438,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 ))}
                 {otherPeriods.length > 2 && (
                   <div className="text-xs text-muted-foreground text-center">
-                    +{otherPeriods.length - 2} {t('period_filter.more_periods')}
+                    +{otherPeriods.length - 2} {t('period_filter.more_periods', 'más períodos')}
                   </div>
                 )}
               </div>
