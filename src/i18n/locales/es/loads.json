@@ -20,7 +20,9 @@
       "step": "Paso {{current}} de {{total}}"
     },
     "description": {
-      "create": "Sigue estos pasos para crear una carga completa con toda la información necesaria"
+      "create": "Sigue estos pasos para crear una carga completa con toda la información necesaria",
+      "edit": "Modifica la información de esta carga siguiendo los pasos",
+      "duplicate": "Duplica esta carga usando la información existente como base"
     },
     "steps": {
       "load_info": "Información de Carga",
