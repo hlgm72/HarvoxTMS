@@ -62,8 +62,9 @@ export function LoadCard({
 
   console.log('🔍 LoadCard - Translation test:', {
     status: load.status,
-    translationKey: `status.${load.status}`,
-    result: t(`status.${load.status}`),
+    statusTrimmed: load.status.trim(),
+    translationKey: `status.${load.status.trim()}`,
+    result: t(`status.${load.status.trim()}`),
     namespace: 'loads',
     language: i18n.language,
     loadStatus: load.status
@@ -79,7 +80,8 @@ export function LoadCard({
   };
 
   const getStatusVariant = (status: string) => {
-    switch (status) {
+    const cleanStatus = status.trim(); // Limpiar espacios y saltos de línea
+    switch (cleanStatus) {
       case 'assigned': return 'outline';
       case 'en_route_pickup': return 'secondary';
       case 'at_pickup': return 'secondary';
@@ -106,8 +108,8 @@ export function LoadCard({
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={getStatusVariant(load.status)}>
-              {t('status.' + load.status)}
+            <Badge variant={getStatusVariant(load.status.trim())}>
+              {t('status.' + load.status.trim())}
             </Badge>
           </div>
         </CardTitle>

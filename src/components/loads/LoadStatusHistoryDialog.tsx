@@ -34,14 +34,14 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  assigned: "status.assigned",
-  en_route_pickup: "status.en_route_pickup",
-  at_pickup: "status.at_pickup",
-  loaded: "status.loaded",
-  en_route_delivery: "status.en_route_delivery",
-  at_delivery: "status.at_delivery",
-  delivered: "status.delivered",
-  completed: "status.completed",
+  assigned: "Assigned",
+  en_route_pickup: "En Route to Pickup", 
+  at_pickup: "At Pickup",
+  loaded: "Loaded",
+  en_route_delivery: "En Route to Delivery",
+  at_delivery: "At Delivery", 
+  delivered: "Delivered",
+  completed: "Completed",
 };
 
 export function LoadStatusHistoryDialog({ 
