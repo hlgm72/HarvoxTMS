@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useFleetNotifications } from '@/components/notifications';
-import { getTodayInUserTimeZone, formatDateInUserTimeZone } from '@/utils/dateUtils';
+import { getTodayInUserTimeZone, formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { usePaymentPeriodGenerator } from './usePaymentPeriodGenerator';
 
 export interface PaymentPeriod {

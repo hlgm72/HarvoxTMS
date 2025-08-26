@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useMemo } from 'react';
 import { useCompanyCache } from './useCompanyCache';
-import { getTodayInUserTimeZone, createDateInUserTimeZone } from '@/utils/dateUtils';
+import { getTodayInUserTimeZone, createDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface LoadStop {
   id?: string;

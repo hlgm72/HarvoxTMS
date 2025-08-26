@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
-import { formatDateOnly, formatDateInUserTimeZone } from "@/utils/dateUtils";
+import { formatDateOnly, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 import { useATMInput } from "@/hooks/useATMInput";
 import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useCompanyCache } from './useCompanyCache';
-import { getTodayInUserTimeZone } from '@/utils/dateUtils';
+import { getTodayInUserTimeZone } from '@/lib/dateFormatting';
 
 /**
  * Hook para obtener el contador de cargas del período actual

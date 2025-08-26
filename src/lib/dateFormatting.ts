@@ -3,32 +3,9 @@
  * Este archivo centraliza todas las funciones de formateo de fechas para asegurar consistencia
  */
 
-import { format } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { es, enUS } from 'date-fns/locale';
-import { 
-  formatDateSafe,
-  formatDateTime,
-  formatDateOnly,
-  formatDatabaseDate,
-  getTodayInUserTimeZone,
-  formatDateInUserTimeZone,
-  getYearSafe,
-  getUserTimeZone,
-  createDateInUserTimeZone
-} from '@/utils/dateUtils';
-
-export { 
-  formatDateSafe,
-  formatDatabaseDate,
-  formatDateTime,
-  formatDateOnly,
-  getYearSafe,
-  formatDateInUserTimeZone,
-  getUserTimeZone,
-  getTodayInUserTimeZone,
-  createDateInUserTimeZone
-};
 
 /**
  * Constantes para patrones de fecha comunes
@@ -143,6 +120,142 @@ export const formatPaymentPeriodBadge = (startDate: string | null, endDate: stri
   const start = formatDateSafe(startDate, startPattern);
   const end = formatDateSafe(endDate, endPattern);
   return `${start} - ${end}`;
+};
+
+/**
+ * Core date utilities (moved from dateUtils to break circular dependency)
+ */
+export const getUserTimeZone = (): string => {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+};
+
+export const formatDateInUserTimeZone = (date: Date): string => {
+  const userTimeZone = getUserTimeZone();
+  return formatInTimeZone(date, userTimeZone, 'yyyy-MM-dd');
+};
+
+export const getTodayInUserTimeZone = (): string => {
+  return formatDateInUserTimeZone(new Date());
+};
+
+export const createDateInUserTimeZone = (year: number, month: number, day: number): string => {
+  const date = new Date(year, month, day);
+  return formatDateInUserTimeZone(date);
+};
+
+export const formatDateSafe = (
+  dateInput: string | Date | null | undefined, 
+  formatPattern?: string,
+  options: { locale?: any } = {}
+): string => {
+  if (!dateInput) return 'No definida';
+  
+  if (!formatPattern) {
+    return formatDateAuto(dateInput);
+  }
+  
+  try {
+    let dateToFormat: Date;
+    
+    if (typeof dateInput === 'string') {
+      if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
+        dateToFormat = parseISO(dateInput);
+        if (!isValid(dateToFormat)) {
+          return 'Fecha inválida';
+        }
+      } else {
+        let year: number, month: number, day: number;
+        
+        if (dateInput.includes('T')) {
+          const datePart = dateInput.split('T')[0];
+          [year, month, day] = datePart.split('-').map(Number);
+        } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          [year, month, day] = dateInput.split('-').map(Number);
+        } else {
+          dateToFormat = parseISO(dateInput);
+          if (!isValid(dateToFormat)) {
+            return 'Fecha inválida';
+          }
+          return format(dateToFormat, formatPattern, options);
+        }
+        
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          return 'Fecha inválida';
+        }
+        
+        dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
+      }
+    } else {
+      dateToFormat = dateInput;
+    }
+    
+    if (!isValid(dateToFormat)) {
+      return 'Fecha inválida';
+    }
+    
+    return format(dateToFormat, formatPattern, options);
+  } catch (error) {
+    console.error('Error formatting date:', error, 'Input:', dateInput);
+    return 'Error en fecha';
+  }
+};
+
+export const formatDatabaseDate = (
+  dateString: string | null | undefined,
+  formatPattern?: string
+): string => {
+  if (!formatPattern) {
+    return formatDateAuto(dateString);
+  }
+  return formatDateSafe(dateString, formatPattern);
+};
+
+export const formatDateTime = (
+  dateInput: string | Date | null | undefined,
+  formatPattern?: string
+): string => {
+  if (!formatPattern) {
+    return formatDateTimeAuto(dateInput);
+  }
+  return formatDateSafe(dateInput, formatPattern);
+};
+
+export const formatDateOnly = (
+  dateInput: string | Date | null | undefined
+): string => {
+  if (!dateInput) return 'No definida';
+  
+  try {
+    if (typeof dateInput === 'string') {
+      if (dateInput.includes('T00:00:00') && dateInput.includes('+00')) {
+        const datePart = dateInput.split('T')[0];
+        const [year, month, day] = datePart.split('-').map(Number);
+        
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          return 'Fecha inválida';
+        }
+        
+        const localDate = new Date(year, month - 1, day, 12, 0, 0, 0);
+        return formatDateAuto(localDate);
+      }
+    }
+    
+    return formatDateAuto(dateInput);
+  } catch (error) {
+    console.error('Error formatting date only:', error, 'Input:', dateInput);
+    return 'Error en fecha';
+  }
+};
+
+export const getYearSafe = (dateInput: string | Date | null | undefined): number | null => {
+  if (!dateInput) return null;
+  
+  try {
+    const formatted = formatDateSafe(dateInput, 'yyyy');
+    return parseInt(formatted, 10);
+  } catch {
+    return null;
+  }
 };
 
 /**
