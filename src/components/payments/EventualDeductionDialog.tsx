@@ -323,8 +323,13 @@ export function EventualDeductionDialog({
   // Función helper para determinar el tipo de período
   const getPeriodLabel = (period: any) => {
     const today = new Date();
-    const startDate = parseISO(period.company_payment_periods.period_start_date);
-    const endDate = parseISO(period.company_payment_periods.period_end_date);
+    
+    // Crear fechas locales para evitar problemas de zona horaria
+    const [startYear, startMonth, startDay] = period.company_payment_periods.period_start_date.split('-').map(Number);
+    const [endYear, endMonth, endDay] = period.company_payment_periods.period_end_date.split('-').map(Number);
+    
+    const startDate = new Date(startYear, startMonth - 1, startDay);
+    const endDate = new Date(endYear, endMonth - 1, endDay);
     
     // Verificar si es el período actual
     if (isWithinInterval(today, { start: startDate, end: endDate })) {

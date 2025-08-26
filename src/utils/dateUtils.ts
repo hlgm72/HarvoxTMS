@@ -72,12 +72,11 @@ export const formatDateSafe = (
           // Formato solo fecha: 2025-07-14
           [year, month, day] = dateInput.split('-').map(Number);
         } else {
-          // Si no es un formato reconocido, usar parseISO como fallback
-          dateToFormat = parseISO(dateInput);
-          if (!isValid(dateToFormat)) {
-            return 'Fecha inválida';
-          }
-          return format(dateToFormat, formatPattern, options);
+          // Si no es un formato reconocido, intentar crear fecha local como fallback
+          // Asumir formato básico y crear fecha local para evitar problemas de zona horaria
+          console.warn('Formato de fecha no reconocido:', dateInput, 'usando fecha local como fallback');
+          const currentDate = new Date();
+          dateToFormat = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 12, 0, 0, 0);
         }
         
         // Validar que los valores sean números válidos

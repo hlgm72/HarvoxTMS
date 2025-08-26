@@ -138,7 +138,7 @@ export function CreateOtherIncomeForm({ onClose }: { onClose: () => void }) {
                   setFormData({ ...formData, income_date: date || null });
                   setIsDatePickerOpen(false);
                 }}
-                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                disabled={(date) => date > new Date() || date < new Date(1900, 0, 1)}
                 initialFocus
               />
             </PopoverContent>

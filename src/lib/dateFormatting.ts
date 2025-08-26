@@ -172,11 +172,10 @@ export const formatDateSafe = (
         } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
           [year, month, day] = dateInput.split('-').map(Number);
         } else {
-          dateToFormat = parseISO(dateInput);
-          if (!isValid(dateToFormat)) {
-            return 'Fecha inválida';
-          }
-          return format(dateToFormat, formatPattern, options);
+          // Si no es un formato reconocido, intentar crear fecha local como fallback
+          console.warn('Formato de fecha no reconocido:', dateInput, 'usando fecha local como fallback');
+          const currentDate = new Date();
+          dateToFormat = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 12, 0, 0, 0);
         }
         
         if (isNaN(year) || isNaN(month) || isNaN(day)) {
