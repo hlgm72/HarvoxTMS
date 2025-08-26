@@ -139,18 +139,12 @@ const statusColors = {
 };
 
 const getStatusLabel = (status: string, t: any) => {
-  // Map specific statuses to proper labels
-  const statusMap: Record<string, string> = {
-    draft: "Borrador",
-    created: "Creado", 
-    assigned: "Asignado",
-    route_planned: "Ruta Planificada",
-    in_transit: "En Tránsito",
-    delivered: "Entregado",
-    completed: "Completado"
-  };
+  // Clean the status and use proper translations
+  const cleanStatus = status.trim();
+  console.log('🔍 LoadsList getStatusLabel:', { originalStatus: status, cleanStatus, translationResult: t(`status.${cleanStatus}`) });
   
-  return statusMap[status] || t(`status.${status}`) || status;
+  // Use translation system consistently
+  return t(`status.${cleanStatus}`) || cleanStatus;
 };
 
 interface LoadsListProps {
@@ -165,7 +159,7 @@ interface LoadsListProps {
 }
 
 export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
-  const { t } = useTranslation('loads');
+  const { t } = useTranslation(['loads']);
   const { refreshTrigger } = useLoadDocuments();
   const { userRole } = useAuth();
   
@@ -376,7 +370,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                 <div className="flex items-center gap-2">
                    <Badge 
                      variant="outline" 
-                     className={statusColors[load.status as keyof typeof statusColors]}
+                     className={statusColors[load.status.trim() as keyof typeof statusColors]}
                    >
                      {getStatusLabel(load.status, t)}
                    </Badge>
