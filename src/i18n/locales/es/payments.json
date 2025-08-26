@@ -391,5 +391,22 @@
       "period": "Período:",
       "selected": "Seleccionado"
     }
+  },
+  "floating_actions": {
+    "main_label": "Acciones",
+    "filters": "Filtros",
+    "filters_active": "Filtros Activos",
+    "export": "Exportar",
+    "stats": "Estadísticas",
+    "filters_title": "Filtrar Reportes",
+    "export_title": "Exportar Datos",
+    "stats_title": "Estadísticas",
+    "filters_description": "Aplica filtros para encontrar reportes específicos",
+    "export_description": "Exporta los datos de reportes en diferentes formatos",
+    "stats_description": "Ve estadísticas detalladas de los reportes de pago",
+    "applied_filters": "Filtros Aplicados",
+    "export_pdf": "Exportar como PDF",
+    "export_excel": "Exportar como Excel",
+    "export_csv": "Exportar como CSV"
   }
 }

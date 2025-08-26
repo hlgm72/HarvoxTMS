@@ -17,6 +17,7 @@ import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { PaymentFilters, PaymentFiltersType } from "@/components/payments/PaymentFilters";
 import { PaymentFiltersSheet } from "@/components/payments/PaymentFiltersSheet";
+import { PaymentReportsFloatingActions } from "@/components/payments/PaymentReportsFloatingActions";
 import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, useNextPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
@@ -489,6 +490,19 @@ export default function PaymentReports() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Floating Actions */}
+      <PaymentReportsFloatingActions
+        filters={filters}
+        onFiltersChange={setFilters}
+        drivers={drivers}
+        stats={{
+          totalReports,
+          totalEarnings,
+          totalDrivers,
+          pendingReports
+        }}
+      />
 
       <PaymentReportDialog
         open={reportDialogOpen}

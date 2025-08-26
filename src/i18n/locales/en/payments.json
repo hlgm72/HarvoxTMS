@@ -391,5 +391,22 @@
       "period": "Period:",
       "selected": "Selected"
     }
+  },
+  "floating_actions": {
+    "main_label": "Actions",
+    "filters": "Filters",
+    "filters_active": "Active Filters",
+    "export": "Export",
+    "stats": "Statistics",
+    "filters_title": "Filter Reports",
+    "export_title": "Export Data",
+    "stats_title": "Statistics",
+    "filters_description": "Apply filters to find specific reports",
+    "export_description": "Export report data in different formats",
+    "stats_description": "View detailed payment report statistics",
+    "applied_filters": "Applied Filters",
+    "export_pdf": "Export as PDF",
+    "export_excel": "Export as Excel",
+    "export_csv": "Export as CSV"
   }
 }
