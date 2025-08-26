@@ -1,4 +1,4 @@
-import { format, getWeek, getYear, differenceInDays } from 'date-fns';
+import { format, getISOWeek, getISOWeekYear, getYear, differenceInDays } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 
 /**
@@ -28,8 +28,9 @@ export const formatPeriodLabel = (startDate: string, endDate: string): string =>
   
   // Si es semanal (7-10 días), mostrar número de semana
   if (durationDays <= 10) {
-    const weekNumber = getWeek(start, { weekStartsOn: 1 }); // Lunes como primer día
-    return `WK${weekNumber.toString().padStart(2, '0')} - ${year}`;
+    const weekNumber = getISOWeek(start); // Semana ISO estándar (lunes como primer día)
+    const weekYear = getISOWeekYear(start); // Año ISO de la semana (puede diferir del año calendario)
+    return `WK${weekNumber.toString().padStart(2, '0')} - ${weekYear}`;
   }
   
   // Si es mensual (25-35 días), mostrar nombre del mes
