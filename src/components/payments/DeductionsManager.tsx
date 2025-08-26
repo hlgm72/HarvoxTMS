@@ -463,7 +463,7 @@ export function DeductionsManager({
                         <span>{t("deductions.labels.valid_from")} {formatDateOnly(template.start_date)}</span>
                       )}
                       {template.notes && (
-                        <span><strong>{t("deductions.labels.notes")}</strong> {template.notes}</span>
+                        <span className="text-sm"><strong>{t("deductions.labels.notes")}</strong> {template.notes}</span>
                       )}
                     </div>
                     <div className="flex gap-2">
