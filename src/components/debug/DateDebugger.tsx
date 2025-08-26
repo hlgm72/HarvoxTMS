@@ -1,10 +1,11 @@
 import { getTodayInUserTimeZone, getUserTimeZone, getCurrentUTC } from '@/utils/dateUtils';
+import { formatDateSafe } from '@/lib/dateFormatting';
 
 // Componente temporal para debug
 export const DateDebugger = () => {
   const userTimeZone = getUserTimeZone();
   const todayInUserTZ = getTodayInUserTimeZone();
-  const utcToday = getCurrentUTC().split('T')[0];
+  const utcToday = formatDateSafe(getCurrentUTC(), 'yyyy-MM-dd');
   
   console.log('🕐 Debug timezone info:', {
     userTimeZone,

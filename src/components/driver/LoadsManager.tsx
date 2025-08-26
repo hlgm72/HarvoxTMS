@@ -315,9 +315,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     if (!dashboardMode) {
       return transformedLoads.sort((a, b) => {
         // Si ambas tienen fecha de recogida, ordenar por fecha
-        // CORREGIDO: Usar parseISO para manejar fechas de BD correctamente
+        // ✅ CORREGIDO: Usar funciones centralizadas para comparar fechas de BD
         if (a.pickup_date && b.pickup_date) {
-          return new Date(a.pickup_date).getTime() - new Date(b.pickup_date).getTime();
+          return formatDateSafe(a.pickup_date, 'yyyy-MM-dd').localeCompare(formatDateSafe(b.pickup_date, 'yyyy-MM-dd'));
         }
         // Si solo una tiene fecha, ponerla primero
         if (a.pickup_date && !b.pickup_date) return -1;
@@ -443,9 +443,9 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
       }
       
       // Si tienen la misma prioridad, ordenar por fecha de entrega más cercana
-      // CORREGIDO: Usar parseISO para manejar fechas de BD correctamente
+      // ✅ CORREGIDO: Usar funciones centralizadas para comparar fechas de BD
       if (a.delivery_date && b.delivery_date) {
-        return new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime();
+        return formatDateSafe(a.delivery_date, 'yyyy-MM-dd').localeCompare(formatDateSafe(b.delivery_date, 'yyyy-MM-dd'));
       }
       
       return 0;

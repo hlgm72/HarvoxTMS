@@ -477,7 +477,7 @@ export function PaymentReportDialog({
         driverName: reportData.driver.name,
         startDate: formatDateSafe(reportData.period.start_date),
         endDate: formatDateSafe(reportData.period.end_date),
-        period: format(new Date(reportData.period.end_date), "yyyy/'W'ww")
+        period: formatDateSafe(reportData.period.end_date, "yyyy/'W'ww")
       };
 
       // Crear HTML profesional con traducciones dinámicas
@@ -563,7 +563,7 @@ export function PaymentReportDialog({
           subject: interpolateText(translations.subject, variables),
           html: emailHTML,
           pdf_data: pdfArray,
-          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${format(new Date(reportData.period.end_date), "yyyy/'W'ww").replace(/\//g, '-')}.pdf`
+          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${formatDateSafe(reportData.period.end_date, "yyyy/'W'ww").replace(/\//g, '-')}.pdf`
         }
       });
 
