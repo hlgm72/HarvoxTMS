@@ -166,7 +166,7 @@ export default function Payments() {
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('summary.net_payment')}</p>
                 <div className="flex items-center gap-2">
                   <p className="text-lg sm:text-xl font-semibold">
-                    ${formatCurrency(currentPeriodSummary?.net_payment || 0)}
+                    {formatCurrency(currentPeriodSummary?.net_payment || 0)}
                   </p>
                   {getStatusBadge(currentPeriod?.status || 'open')}
                 </div>
@@ -187,7 +187,7 @@ export default function Payments() {
                   <span className="font-semibold">{t('period.current')}</span> {previousPeriod ? `(${previousPeriod.period_start_date} - ${previousPeriod.period_end_date})` : '(No disponible)'}
                 </p>
                 <p className="font-medium">
-                  ${formatCurrency(previousPeriodSummary?.net_payment || 0)}
+                  {formatCurrency(previousPeriodSummary?.net_payment || 0)}
                 </p>
               </div>
             </div>
