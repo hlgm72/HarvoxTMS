@@ -1,0 +1,52 @@
+{
+  "ERROR_USER_NOT_AUTHENTICATED": "User not authenticated",
+  "ERROR_USER_NOT_FOUND": "User not found",
+  
+  "ERROR_NO_PERMISSIONS": "You don't have permissions for this operation",
+  "ERROR_NO_PERMISSIONS_MANAGE_USERS": "You don't have permissions to manage users in this company",
+  "ERROR_NO_PERMISSIONS_MANAGE_EQUIPMENT": "You don't have permissions to manage equipment in this company",
+  "ERROR_NO_PERMISSIONS_MANAGE_CLIENTS": "You don't have permissions to manage clients in this company",
+  "ERROR_NO_PERMISSIONS_MANAGE_CLIENT_CONTACTS": "You don't have permissions to manage client contacts in this company",
+  "ERROR_NO_PERMISSIONS_MANAGE_DOCUMENTS": "You don't have permissions to manage documents in this company",
+  "ERROR_NO_PERMISSIONS_MANAGE_COMPANY": "You don't have permissions to modify this company",
+  "ERROR_NO_PERMISSIONS_CREATE_COMPANIES": "Only superadministrators can create companies",
+  
+  "ERROR_FIELD_REQUIRED": "This field is required",
+  "ERROR_COMPANY_ID_REQUIRED": "Company ID is required",
+  "ERROR_USER_ID_REQUIRED": "User ID is required",
+  "ERROR_CLIENT_ID_REQUIRED": "Client ID is required",
+  "ERROR_EQUIPMENT_NUMBER_REQUIRED": "Equipment number is required",
+  "ERROR_EQUIPMENT_TYPE_REQUIRED": "Equipment type is required",
+  "ERROR_NAME_REQUIRED": "Name is required",
+  "ERROR_STREET_ADDRESS_REQUIRED": "Street address is required",
+  "ERROR_STATE_ID_REQUIRED": "State ID is required",
+  "ERROR_ZIP_CODE_REQUIRED": "ZIP code is required",
+  
+  "ERROR_USER_ALREADY_HAS_ROLE": "User already has an active role in this company",
+  "ERROR_EQUIPMENT_NUMBER_EXISTS": "Equipment with number {{number}} already exists",
+  "ERROR_CLIENT_NAME_EXISTS": "An active client with name \"{{name}}\" already exists",
+  "ERROR_DOT_NUMBER_EXISTS": "A client with DOT number {{number}} already exists",
+  "ERROR_MC_NUMBER_EXISTS": "A client with MC number {{number}} already exists",
+  "ERROR_COMPANY_NAME_EXISTS": "A company with name \"{{name}}\" already exists",
+  "ERROR_CONTACT_NAME_EXISTS": "An active contact with name \"{{name}}\" already exists for this client",
+  
+  "ERROR_EQUIPMENT_NOT_FOUND": "Equipment not found or you don't have permissions to modify it",
+  "ERROR_CLIENT_NOT_FOUND": "Client not found or you don't have permissions to modify it",
+  "ERROR_CONTACT_NOT_FOUND": "Contact not found or you don't have permissions to modify it",
+  "ERROR_COMPANY_NOT_FOUND": "Company not found",
+  "ERROR_CALCULATION_NOT_FOUND": "Calculation not found",
+  "ERROR_PERIOD_NOT_FOUND": "Period not found",
+  "ERROR_INVITATION_NOT_FOUND": "Invitation not found",
+  
+  "ERROR_EMAIL_FORMAT_INVALID": "Invalid email format",
+  "ERROR_ALREADY_PAID": "Driver is already marked as paid",
+  "ERROR_PERIOD_ALREADY_CLOSED": "Period is already closed",
+  "ERROR_CANNOT_CLOSE_PERIOD": "Cannot close period: {{reason}}",
+  
+  "ERROR_OPERATION_FAILED": "Operation failed",
+  "ERROR_DRIVER_NOT_FOUND": "Driver not found",
+  "ERROR_DISPATCHER_NOT_FOUND": "Dispatcher not found",
+  
+  "ERROR_AUTH_USER_NOT_FOUND": "The specified user does not exist in the authentication system",
+  "ERROR_COMPANY_OPERATIONAL_DATA": "This company cannot be deleted: Company has operational data"
+}

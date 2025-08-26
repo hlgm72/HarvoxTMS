@@ -1,0 +1,52 @@
+{
+  "ERROR_USER_NOT_AUTHENTICATED": "Usuario no autenticado",
+  "ERROR_USER_NOT_FOUND": "Usuario no encontrado",
+  
+  "ERROR_NO_PERMISSIONS": "No tienes permisos para esta operación",
+  "ERROR_NO_PERMISSIONS_MANAGE_USERS": "No tienes permisos para gestionar usuarios en esta empresa",
+  "ERROR_NO_PERMISSIONS_MANAGE_EQUIPMENT": "Sin permisos para gestionar equipos en esta empresa", 
+  "ERROR_NO_PERMISSIONS_MANAGE_CLIENTS": "Sin permisos para gestionar clientes en esta empresa",
+  "ERROR_NO_PERMISSIONS_MANAGE_CLIENT_CONTACTS": "Sin permisos para gestionar contactos de clientes en esta empresa",
+  "ERROR_NO_PERMISSIONS_MANAGE_DOCUMENTS": "Sin permisos para gestionar documentos en esta empresa",
+  "ERROR_NO_PERMISSIONS_MANAGE_COMPANY": "Sin permisos para modificar esta empresa",
+  "ERROR_NO_PERMISSIONS_CREATE_COMPANIES": "Solo los superadministradores pueden crear empresas",
+  
+  "ERROR_FIELD_REQUIRED": "Este campo es requerido",
+  "ERROR_COMPANY_ID_REQUIRED": "company_id es requerido",
+  "ERROR_USER_ID_REQUIRED": "user_id es requerido",
+  "ERROR_CLIENT_ID_REQUIRED": "client_id es requerido",
+  "ERROR_EQUIPMENT_NUMBER_REQUIRED": "equipment_number es requerido",
+  "ERROR_EQUIPMENT_TYPE_REQUIRED": "equipment_type es requerido",
+  "ERROR_NAME_REQUIRED": "name es requerido",
+  "ERROR_STREET_ADDRESS_REQUIRED": "street_address es requerido",
+  "ERROR_STATE_ID_REQUIRED": "state_id es requerido",
+  "ERROR_ZIP_CODE_REQUIRED": "zip_code es requerido",
+  
+  "ERROR_USER_ALREADY_HAS_ROLE": "El usuario ya tiene un rol activo en esta empresa",
+  "ERROR_EQUIPMENT_NUMBER_EXISTS": "Ya existe un equipo con el número {{number}}",
+  "ERROR_CLIENT_NAME_EXISTS": "Ya existe un cliente activo con el nombre \"{{name}}\"",
+  "ERROR_DOT_NUMBER_EXISTS": "Ya existe un cliente con el número DOT {{number}}",
+  "ERROR_MC_NUMBER_EXISTS": "Ya existe un cliente con el número MC {{number}}",
+  "ERROR_COMPANY_NAME_EXISTS": "Ya existe una empresa con el nombre \"{{name}}\"",
+  "ERROR_CONTACT_NAME_EXISTS": "Ya existe un contacto activo con el nombre \"{{name}}\" para este cliente",
+  
+  "ERROR_EQUIPMENT_NOT_FOUND": "Equipo no encontrado o sin permisos para modificarlo",
+  "ERROR_CLIENT_NOT_FOUND": "Cliente no encontrado o sin permisos para modificarlo",
+  "ERROR_CONTACT_NOT_FOUND": "Contacto no encontrado o sin permisos para modificarlo",
+  "ERROR_COMPANY_NOT_FOUND": "Empresa no encontrada",
+  "ERROR_CALCULATION_NOT_FOUND": "Cálculo no encontrado",
+  "ERROR_PERIOD_NOT_FOUND": "Período no encontrado",
+  "ERROR_INVITATION_NOT_FOUND": "Invitación no encontrada",
+  
+  "ERROR_EMAIL_FORMAT_INVALID": "Formato de email inválido",
+  "ERROR_ALREADY_PAID": "El conductor ya está marcado como pagado",
+  "ERROR_PERIOD_ALREADY_CLOSED": "El período ya está cerrado",
+  "ERROR_CANNOT_CLOSE_PERIOD": "No se puede cerrar el período: {{reason}}",
+  
+  "ERROR_OPERATION_FAILED": "La operación falló",
+  "ERROR_DRIVER_NOT_FOUND": "Conductor no encontrado",
+  "ERROR_DISPATCHER_NOT_FOUND": "Despachador no encontrado",
+  
+  "ERROR_AUTH_USER_NOT_FOUND": "El usuario especificado no existe en el sistema de autenticación",
+  "ERROR_COMPANY_OPERATIONAL_DATA": "Esta empresa no se puede eliminar: La empresa tiene datos operativos"
+}
