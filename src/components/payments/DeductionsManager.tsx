@@ -431,7 +431,7 @@ export function DeductionsManager({
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className={`font-semibold text-lg ${isInactive ? 'text-muted-foreground' : ''}`}>
-                        ${formatCurrency(parseFloat(template.amount || 0))}
+                        {formatCurrency(parseFloat(template.amount || 0))}
                       </p>
                       <Badge variant={
                         isInactive ? "secondary" : 
@@ -698,7 +698,7 @@ export function DeductionsManager({
                       <div>
                         <span className="text-muted-foreground">Monto:</span>
                         <div className="font-medium text-green-700">
-                          ${formatCurrency(parseFloat(reactivatingTemplate.amount || 0))}
+                          {formatCurrency(parseFloat(reactivatingTemplate.amount || 0))}
                         </div>
                       </div>
                       
@@ -798,7 +798,7 @@ export function DeductionsManager({
                       <div>
                         <span className="text-muted-foreground">Monto:</span>
                         <div className="font-medium text-red-700">
-                          ${formatCurrency(parseFloat(permanentlyDeletingTemplate.amount || 0))}
+                          {formatCurrency(parseFloat(permanentlyDeletingTemplate.amount || 0))}
                         </div>
                       </div>
                       
