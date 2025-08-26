@@ -1,8 +1,8 @@
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { 
   Calendar, 
   MapPin, 
@@ -14,7 +14,7 @@ import {
   Package
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { formatDateSafe, formatInternationalized, formatDateTimeAuto, formatDateTimeShort } from '@/lib/dateFormatting';
+import { formatDateSafe, formatDateAuto, formatCurrency } from '@/lib/dateFormatting';
 import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 import { LoadStatusHistoryButton } from '@/components/loads/LoadStatusHistoryButton';
 import { SplitLoadActionButton } from "./SplitLoadActionButton";
@@ -70,13 +70,12 @@ export function LoadCard({
     loadStatus: load.status
   });
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
+  const formatCurrencyAmount = (amount: number) => {
+    return formatCurrency(amount, { 
+      minimumFractionDigits: 0, 
       maximumFractionDigits: 0,
-    }).format(amount);
+      style: 'currency'
+    });
   };
 
   const getStatusVariant = (status: string) => {
@@ -104,7 +103,7 @@ export function LoadCard({
             <span>
               {/* "Load #" visible solo en pantallas grandes */}
               <span className="hidden md:inline">Load #</span>
-              {load.load_number} ({formatCurrency(load.total_amount)})
+              {load.load_number} ({formatCurrencyAmount(load.total_amount)})
             </span>
           </div>
           <div className="flex items-center gap-2">

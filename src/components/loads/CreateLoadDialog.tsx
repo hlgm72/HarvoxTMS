@@ -40,7 +40,7 @@ interface CreateLoadDialogProps {
 }
 
 export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: externalLoadData }: CreateLoadDialogProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { userRole } = useAuth();
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -888,10 +888,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        control={form.control}
                        name="weight_lbs"
                        render={({ field }) => {
-                         const formatWeight = (value) => {
-                           if (!value) return '';
-                           return value.toLocaleString('en-US');
-                         };
+                          const formatWeight = (value) => {
+                            if (!value) return '';
+                            return new Intl.NumberFormat(i18n.language === 'es' ? 'es-US' : 'en-US').format(value);
+                          };
 
                          const parseWeight = (value) => {
                            if (!value) return undefined;

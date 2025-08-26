@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
+  // Deprecated: Use formatCurrencyAuto from @/lib/dateFormatting instead
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

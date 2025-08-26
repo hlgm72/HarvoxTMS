@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import { formatDateSafe, formatDateOnly, formatDateAuto, formatDateTimeShort } from './dateFormatting';
+import { formatDateSafe, formatDateOnly, formatDateAuto, formatDateTimeShort, formatCurrency as formatCurrencyLib } from './dateFormatting';
 
 interface PaymentReportData {
   driver: {
@@ -205,9 +205,11 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   };
 
   const formatCurrency = (amount: number) => {
-    return amount >= 0 ? 
-      `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}` :
-      `-$${Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    return formatCurrencyLib(amount, { 
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      style: 'decimal'
+    });
   };
 
   const formatWeekInfo = () => {
@@ -794,22 +796,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   if (data.fuelExpenses && data.fuelExpenses.length > 0) {
     data.fuelExpenses.forEach(fuel => {
       // ✅ CORREGIDO: Usar formatDateAuto para internacionalización
-      const dateStr = (() => {
-        try {
-          if (fuel.transaction_date.includes('T00:00:00') && fuel.transaction_date.includes('+00')) {
-            // Fecha UTC en medianoche - extraer solo la parte de fecha
-            const datePart = fuel.transaction_date.split('T')[0];
-            const [year, month, day] = datePart.split('-').map(Number);
-            return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
-          } else {
-            // Usar formatDateAuto como fallback
-            return formatDateAuto(fuel.transaction_date);
-          }
-        } catch (error) {
-          console.error('Error formatting fuel date:', error);
-          return 'Invalid Date';
-        }
-      })();
+      const dateStr = formatDateAuto(fuel.transaction_date);
       
       addText(dateStr, margin + 2, currentY, {
         fontSize: 9,

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { formatCurrency } from '@/lib/dateFormatting';
 
 interface UseATMInputOptions {
   initialValue?: number;
@@ -10,11 +11,11 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
 
   const formatDisplay = useCallback((cents: number) => {
     const dollars = cents / 100;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return formatCurrency(dollars, { 
       minimumFractionDigits: 2,
-    }).format(dollars);
+      maximumFractionDigits: 2,
+      style: 'currency'
+    });
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {

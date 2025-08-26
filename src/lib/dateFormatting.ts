@@ -285,24 +285,42 @@ export const formatMonthName = (date: Date): string => {
 };
 
 // Función para formatear dinero respetando idioma
-export const formatCurrency = (amount: number): string => {
+export const formatCurrency = (
+  amount: number, 
+  options: { 
+    minimumFractionDigits?: number, 
+    maximumFractionDigits?: number,
+    style?: 'currency' | 'decimal'
+  } = {}
+): string => {
   const language = getGlobalLanguage();
   
+  const {
+    minimumFractionDigits = 2,
+    maximumFractionDigits = 2,
+    style = 'decimal'
+  } = options;
+  
   try {
-    if (language === 'es') {
-      return amount.toLocaleString('es-US', { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
+    if (style === 'currency') {
+      const formatter = new Intl.NumberFormat(language === 'es' ? 'es-US' : 'en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits,
+        maximumFractionDigits
       });
+      return formatter.format(amount);
     } else {
-      return amount.toLocaleString('en-US', { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
+      // Format as decimal with currency symbol prefix
+      const formatted = amount.toLocaleString(language === 'es' ? 'es-US' : 'en-US', { 
+        minimumFractionDigits, 
+        maximumFractionDigits 
       });
+      return `$${formatted}`;
     }
   } catch (error) {
     console.error('Error formatting currency:', error);
-    return amount.toFixed(2);
+    return `$${amount.toFixed(minimumFractionDigits)}`;
   }
 };
 
