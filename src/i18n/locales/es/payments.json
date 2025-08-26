@@ -148,7 +148,10 @@
       "date": "Fecha:",
       "description": "Descripción:",
       "cancel": "Cancelar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "valid_from": "Vigente desde:",
+      "valid_until": "Vigente hasta:",
+      "notes": "Notas:"
     },
     "history": {
       "title": "Historial de Cambios", 

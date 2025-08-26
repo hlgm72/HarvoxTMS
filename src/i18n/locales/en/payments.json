@@ -148,7 +148,10 @@
       "date": "Date:",
       "description": "Description:",
       "cancel": "Cancel",
-      "delete": "Delete"
+      "delete": "Delete",
+      "valid_from": "Valid from:",
+      "valid_until": "Valid until:",
+      "notes": "Notes:"
     },
     "history": {
       "title": "Change History",
