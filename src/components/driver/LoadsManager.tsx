@@ -40,6 +40,7 @@ import { LoadDocumentsProvider } from '@/contexts/LoadDocumentsContext';
 import { SplitLoadActionButton } from "./SplitLoadActionButton";
 import { usePODUpload } from "@/hooks/usePODUpload";
 import { useLoadCompletion } from '@/hooks/useLoadCompletion';
+import { ActiveLoadsWithCelebration } from './ActiveLoadsWithCelebration';
 import { LoadCardWithCompletion } from './LoadCardWithCompletion';
 
 interface Load {
@@ -446,15 +447,23 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
     // Excluir cargas canceladas
     if (['cancelled'].includes(load.status)) return false;
     
-    // ✅ CORRECCIÓN CRÍTICA: Excluir cargas que están realmente completadas
-    // Solo una carga 'delivered' con POD se considera completada
-    if (isLoadCompleted(load)) {
-      // ⚠️ Las cargas completadas NO deben aparecer en la lista activa
-      // Esto previene duplicados entre Active y Completed
-      return false;
+    // ✅ LÓGICA CORREGIDA PARA CELEBRACIÓN
+    const isCompleted = isLoadCompleted(load);
+    
+    if (isCompleted) {
+      // Si está completada, verificar si está en celebración usando el hook
+      // Para esto necesitamos verificar si hay alguna celebración activa
+      // Las cargas completadas solo permanecen en activeLoads durante celebración
+      return false; // Por ahora excluir, pero usaremos otro enfoque
     }
     
-    return true; // Mostrar cargas activas (no completadas)
+    // Incluir cargas delivered SIN POD (pueden subir POD y celebrar)
+    if (load.status === 'delivered' && !load.documents?.some(doc => doc.document_type === 'pod')) {
+      return true;
+    }
+    
+    // Incluir todas las demás cargas no completadas
+    return !isCompleted;
   });
   const completedLoads = loads.filter(load => isLoadCompleted(load));
 
@@ -570,34 +579,32 @@ export function LoadsManager({ className, dashboardMode = false }: LoadsManagerP
             </Card>
           ) : (
             // En dashboard mode mostrar solo la carga actual, en modo completo mostrar todas
-            (dashboardMode ? [currentLoad].filter(Boolean) : activeLoads).map((load, index) => (
-              <LoadCardWithCompletion
-                key={load.id}
-                load={load}
-                onUpdateStatus={(loadId, newStatus, actionText, stopId, stopInfo) => {
-                  openStatusModal(loadId, newStatus, actionText, stopId, stopInfo);
-                }}
-                onUploadPOD={(loadId) => openPODUpload(loadId, load.load_number)}
-                onViewDetails={() => setDocumentsDialog({ isOpen: true, load })}
-                onCallContact={(load) => {
-                  if (load.contact_phone) {
-                    window.open(`tel:${load.contact_phone}`, '_self');
-                  }
-                }}
-                onViewRoute={(load) => {
-                  if (load.destination_city && load.destination_state) {
-                    openInMaps({
-                      address: `${load.destination_city}, ${load.destination_state}`,
-                      city: load.destination_city,
-                      state: load.destination_state,
-                      zipCode: ''
-                    });
-                  }
-                }}
-                updateLoadStatus={updateLoadStatus}
-                getNextActionText={getNextActionText}
-               />
-             ))
+            <ActiveLoadsWithCelebration
+              loads={dashboardMode ? [currentLoad].filter(Boolean) : activeLoads}
+              completedLoads={completedLoads}
+              onUpdateStatus={(loadId, newStatus, actionText, stopId, stopInfo) => {
+                openStatusModal(loadId, newStatus, actionText, stopId, stopInfo);
+              }}
+              onUploadPOD={(loadId, loadNumber) => openPODUpload(loadId, loadNumber)}
+              onViewDetails={(load) => setDocumentsDialog({ isOpen: true, load })}
+              onCallContact={(load) => {
+                if (load.contact_phone) {
+                  window.open(`tel:${load.contact_phone}`, '_self');
+                }
+              }}
+              onViewRoute={(load) => {
+                if (load.destination_city && load.destination_state) {
+                  openInMaps({
+                    address: `${load.destination_city}, ${load.destination_state}`,
+                    city: load.destination_city,
+                    state: load.destination_state,
+                    zipCode: ''
+                  });
+                }
+              }}
+              updateLoadStatus={updateLoadStatus}
+              getNextActionText={getNextActionText}
+            />
            )}
         </TabsContent>
 
