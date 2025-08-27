@@ -77,7 +77,7 @@ interface PaymentReportData {
   }>;
 }
 
-export async function generatePaymentReportPDF(data: PaymentReportData, isPreview?: boolean): Promise<jsPDF | void> {
+export async function generatePaymentReportPDF(data: PaymentReportData, isPreview?: boolean, targetWindow?: Window | null): Promise<jsPDF | void> {
   console.log('🔍 PDF Generation - Data received:', data);
   console.log('🔍 PDF Generation - Deductions data:', data.deductions);
   console.log('🔍 PDF Generation - Deductions length:', data.deductions?.length || 0);
@@ -1118,18 +1118,26 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       // Siempre usar el wrapper HTML con título personalizado
       try {
-        const newWindow = window.open('about:blank', '_blank');
-        if (newWindow) {
-          newWindow.document.write(htmlContent);
-          newWindow.document.close();
-          // Establecer el título después de escribir el contenido
-          newWindow.document.title = fileName.replace('.pdf', '');
-          console.log('✅ PDF wrapper abierto en nueva ventana con título:', fileName);
+        if (targetWindow && !targetWindow.closed) {
+          // Use the provided window reference
+          targetWindow.document.write(htmlContent);
+          targetWindow.document.close();
+          targetWindow.document.title = fileName.replace('.pdf', '');
+          console.log('✅ PDF wrapper abierto en ventana existente con título:', fileName);
         } else {
-          console.log('⚠️ Popup bloqueado, usando data URI...');
-          // Fallback usando data URI para evitar el UUID
-          const dataUri = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
-          window.open(dataUri, '_blank');
+          // Fallback to creating a new window if none provided or closed
+          const newWindow = window.open('about:blank', '_blank');
+          if (newWindow) {
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+            newWindow.document.title = fileName.replace('.pdf', '');
+            console.log('✅ PDF wrapper abierto en nueva ventana con título:', fileName);
+          } else {
+            console.log('⚠️ Popup bloqueado, usando data URI...');
+            // Fallback usando data URI para evitar el UUID
+            const dataUri = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+            window.open(dataUri, '_blank');
+          }
         }
       } catch (error) {
         console.error('❌ Error abriendo PDF wrapper:', error);

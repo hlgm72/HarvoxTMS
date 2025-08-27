@@ -414,12 +414,51 @@ export function PaymentReportDialog({
     const reportData = getReportData();
     if (!reportData) return;
     
+    // Create window reference immediately to prevent popup blocking
+    const newWindow = window.open('about:blank', '_blank');
+    if (!newWindow) {
+      showError("Error", "El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio.");
+      return;
+    }
+
+    // Show loading content in the new window
+    newWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Generando reporte...</title>
+          <style>
+            body { 
+              font-family: system-ui, -apple-system, sans-serif; 
+              display: flex; 
+              justify-content: center; 
+              align-items: center; 
+              height: 100vh; 
+              margin: 0;
+              background: #f5f5f5;
+            }
+            .loader { 
+              text-align: center;
+              color: #666;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="loader">
+            <div>Generando reporte PDF...</div>
+            <div style="margin-top: 10px;">Por favor espera...</div>
+          </div>
+        </body>
+      </html>
+    `);
+    
     setIsGeneratingPDF(true);
     try {
-      await generatePaymentReportPDF(reportData, true); // true for preview mode
+      await generatePaymentReportPDF(reportData, true, newWindow); // Pass window reference
       showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
     } catch (error: any) {
       console.error('Error previewing PDF:', error);
+      newWindow.close(); // Close the window if there's an error
       showError("Error", "No se pudo abrir la vista previa");
     } finally {
       setIsGeneratingPDF(false);
