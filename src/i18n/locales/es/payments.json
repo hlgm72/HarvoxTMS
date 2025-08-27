@@ -420,5 +420,35 @@
     "export_pdf": "Exportar como PDF",
     "export_excel": "Exportar como Excel",
     "export_csv": "Exportar como CSV"
+  },
+  "mark_paid_dialog": {
+    "title": "Marcar como Pagado",
+    "payment_method": "Método de Pago",
+    "payment_method_required": "Método de Pago *",
+    "payment_method_placeholder": "Seleccionar método de pago",
+    "payment_methods": {
+      "bank_transfer": "Transferencia Bancaria",
+      "check": "Cheque", 
+      "cash": "Efectivo",
+      "payment_app": "App de Pago (Zelle, etc.)",
+      "other": "Otro"
+    },
+    "reference_number": "Número de Referencia",
+    "reference_placeholder": "Ej: #12345, TXN-ABC123, Cheque #456",
+    "reference_description": "Número de transacción, cheque, o referencia del pago",
+    "notes": "Notas (Opcional)",
+    "notes_placeholder": "Información adicional sobre el pago...",
+    "cancel": "Cancelar",
+    "submit": "Marcar como Pagado",
+    "processing": "Procesando...",
+    "validation": {
+      "method_required": "Selecciona un método de pago"
+    },
+    "notifications": {
+      "success_title": "Pago Registrado",
+      "success_message": "Se ha marcado a {{driverName}} como pagado exitosamente",
+      "error_default": "No se pudo registrar el pago",
+      "error_unexpected": "Error al registrar el pago"
+    }
   }
 }

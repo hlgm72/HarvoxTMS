@@ -9,6 +9,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from '@/lib/dateFormatting';
 import { DollarSign, CreditCard, Building, Check } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface MarkDriverPaidDialogProps {
   open: boolean;
@@ -27,6 +28,7 @@ export function MarkDriverPaidDialog({
   netPayment,
   onSuccess
 }: MarkDriverPaidDialogProps) {
+  const { t } = useTranslation();
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,18 +38,18 @@ export function MarkDriverPaidDialog({
   });
 
   const paymentMethods = [
-    { value: "bank_transfer", label: "Transferencia Bancaria", icon: Building },
-    { value: "check", label: "Cheque", icon: CreditCard },
-    { value: "cash", label: "Efectivo", icon: DollarSign },
-    { value: "payment_app", label: "App de Pago (Zelle, etc.)", icon: CreditCard },
-    { value: "other", label: "Otro", icon: CreditCard }
+    { value: "bank_transfer", label: t("payments.mark_paid_dialog.payment_methods.bank_transfer"), icon: Building },
+    { value: "check", label: t("payments.mark_paid_dialog.payment_methods.check"), icon: CreditCard },
+    { value: "cash", label: t("payments.mark_paid_dialog.payment_methods.cash"), icon: DollarSign },
+    { value: "payment_app", label: t("payments.mark_paid_dialog.payment_methods.payment_app"), icon: CreditCard },
+    { value: "other", label: t("payments.mark_paid_dialog.payment_methods.other"), icon: CreditCard }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.paymentMethod) {
-      showError("Selecciona un método de pago");
+      showError(t("payments.mark_paid_dialog.validation.method_required"));
       return;
     }
 
@@ -64,7 +66,10 @@ export function MarkDriverPaidDialog({
 
       const result = data as { success?: boolean; message?: string };
       if (result?.success) {
-        showSuccess("Pago Registrado", `Se ha marcado a ${driverName} como pagado exitosamente`);
+        showSuccess(
+          t("payments.mark_paid_dialog.notifications.success_title"), 
+          t("payments.mark_paid_dialog.notifications.success_message", { driverName })
+        );
         onOpenChange(false);
         onSuccess?.();
         
@@ -75,11 +80,11 @@ export function MarkDriverPaidDialog({
           notes: ""
         });
       } else {
-        showError(result?.message || "No se pudo registrar el pago");
+        showError(result?.message || t("payments.mark_paid_dialog.notifications.error_default"));
       }
     } catch (error: any) {
       console.error('Error marking driver as paid:', error);
-      showError(error.message || "Error al registrar el pago");
+      showError(error.message || t("payments.mark_paid_dialog.notifications.error_unexpected"));
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +96,7 @@ export function MarkDriverPaidDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Check className="h-5 w-5 text-green-600" />
-            Marcar como Pagado
+            {t("payments.mark_paid_dialog.title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -106,13 +111,13 @@ export function MarkDriverPaidDialog({
 
           {/* Payment Method */}
           <div className="space-y-2">
-            <Label htmlFor="paymentMethod">Método de Pago *</Label>
+            <Label htmlFor="paymentMethod">{t("payments.mark_paid_dialog.payment_method_required")}</Label>
             <Select
               value={formData.paymentMethod}
               onValueChange={(value) => setFormData(prev => ({ ...prev, paymentMethod: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar método de pago" />
+                <SelectValue placeholder={t("payments.mark_paid_dialog.payment_method_placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {paymentMethods.map((method) => {
@@ -132,24 +137,24 @@ export function MarkDriverPaidDialog({
 
           {/* Payment Reference */}
           <div className="space-y-2">
-            <Label htmlFor="paymentReference">Número de Referencia</Label>
+            <Label htmlFor="paymentReference">{t("payments.mark_paid_dialog.reference_number")}</Label>
             <Input
               id="paymentReference"
-              placeholder="Ej: #12345, TXN-ABC123, Cheque #456"
+              placeholder={t("payments.mark_paid_dialog.reference_placeholder")}
               value={formData.paymentReference}
               onChange={(e) => setFormData(prev => ({ ...prev, paymentReference: e.target.value }))}
             />
             <p className="text-xs text-muted-foreground">
-              Número de transacción, cheque, o referencia del pago
+              {t("payments.mark_paid_dialog.reference_description")}
             </p>
           </div>
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas (Opcional)</Label>
+            <Label htmlFor="notes">{t("payments.mark_paid_dialog.notes")}</Label>
             <Textarea
               id="notes"
-              placeholder="Información adicional sobre el pago..."
+              placeholder={t("payments.mark_paid_dialog.notes_placeholder")}
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
@@ -164,14 +169,14 @@ export function MarkDriverPaidDialog({
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
-              Cancelar
+              {t("payments.mark_paid_dialog.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={isLoading || !formData.paymentMethod}
               className="flex-1"
             >
-              {isLoading ? "Procesando..." : "Marcar como Pagado"}
+              {isLoading ? t("payments.mark_paid_dialog.processing") : t("payments.mark_paid_dialog.submit")}
             </Button>
           </div>
         </form>

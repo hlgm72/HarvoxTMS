@@ -420,5 +420,35 @@
     "export_pdf": "Export as PDF",
     "export_excel": "Export as Excel",
     "export_csv": "Export as CSV"
+  },
+  "mark_paid_dialog": {
+    "title": "Mark as Paid",
+    "payment_method": "Payment Method",
+    "payment_method_required": "Payment Method *",
+    "payment_method_placeholder": "Select payment method",
+    "payment_methods": {
+      "bank_transfer": "Bank Transfer",
+      "check": "Check",
+      "cash": "Cash",
+      "payment_app": "Payment App (Zelle, etc.)",
+      "other": "Other"
+    },
+    "reference_number": "Reference Number",
+    "reference_placeholder": "Ex: #12345, TXN-ABC123, Check #456",
+    "reference_description": "Transaction number, check, or payment reference",
+    "notes": "Notes (Optional)",
+    "notes_placeholder": "Additional payment information...",
+    "cancel": "Cancel",
+    "submit": "Mark as Paid",
+    "processing": "Processing...",
+    "validation": {
+      "method_required": "Please select a payment method"
+    },
+    "notifications": {
+      "success_title": "Payment Recorded",
+      "success_message": "{{driverName}} has been successfully marked as paid",
+      "error_default": "Could not record payment",
+      "error_unexpected": "Error recording payment"
+    }
   }
 }
