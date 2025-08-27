@@ -426,45 +426,16 @@ export function PaymentReportDialog({
       const pdfDoc = await generatePaymentReportPDF(reportData, false);
       
       if (pdfDoc) {
-        console.log('✅ handlePreviewPDF: PDF generado, creando blob...');
-        const pdfBlob = pdfDoc.output('blob');
-        const pdfUrl = URL.createObjectURL(pdfBlob);
+        console.log('✅ handlePreviewPDF: PDF generado, iniciando descarga directa...');
         
-        console.log('✅ handlePreviewPDF: Blob URL creado, abriendo ventana...');
+        // Crear nombre de archivo descriptivo
+        const fileName = `PayReport_${reportData.period.start_date.replace(/-/g, '')}_${reportData.driver.name.replace(/\s+/g, '_')}.pdf`;
         
-        // Intentar abrir en nueva ventana, si falla descargar automáticamente
-        const newWindow = window.open(
-          pdfUrl, 
-          '_blank',
-          'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1200,height=900'
-        );
+        // Descargar directamente usando jsPDF save method
+        pdfDoc.save(fileName);
         
-        if (newWindow) {
-          console.log('✅ handlePreviewPDF: PDF abierto exitosamente');
-          showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
-          
-          // Limpiar URL después de 30 segundos
-          setTimeout(() => {
-            URL.revokeObjectURL(pdfUrl);
-          }, 30000);
-        } else {
-          console.log('❌ handlePreviewPDF: Ventana bloqueada, iniciando descarga automática');
-          
-          // Crear enlace de descarga automática
-          const downloadLink = document.createElement('a');
-          downloadLink.href = pdfUrl;
-          downloadLink.download = `PayReport_${reportData.period.start_date.replace(/-/g, '')}_${reportData.driver.name.replace(/\s+/g, '_')}.pdf`;
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-          
-          showSuccess("PDF Descargado", "El reporte se ha descargado automáticamente");
-          
-          // Limpiar URL después de 5 segundos
-          setTimeout(() => {
-            URL.revokeObjectURL(pdfUrl);
-          }, 5000);
-        }
+        console.log('✅ handlePreviewPDF: PDF descargado exitosamente');
+        showSuccess("PDF Descargado", "El reporte se ha descargado automáticamente en tu carpeta de descargas");
       } else {
         console.log('❌ handlePreviewPDF: No se pudo generar el documento PDF');
         showError("Error", "No se pudo generar el documento PDF");
