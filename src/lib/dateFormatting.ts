@@ -148,7 +148,7 @@ export const formatDateSafe = (
   formatPattern?: string,
   options: { locale?: any } = {}
 ): string => {
-  if (!dateInput) return 'No definida';
+        if (!dateInput || dateInput === 'N/A') return 'No definida';
   
   if (!formatPattern) {
     return formatDateAuto(dateInput);
@@ -222,7 +222,7 @@ export const formatDateTime = (
 export const formatDateOnly = (
   dateInput: string | Date | null | undefined
 ): string => {
-  if (!dateInput) return 'No definida';
+  if (!dateInput || dateInput === 'N/A') return 'No definida';
   
   try {
     if (typeof dateInput === 'string') {
@@ -268,7 +268,7 @@ export const formatDeductionDate = (date: string | Date | null | undefined): str
  * Formateo específico para documentos con fecha de vencimiento
  */
 export const formatExpiryDate = (date: string | null | undefined): string => {
-  if (!date) return 'Sin vencimiento';
+  if (!date || date === 'N/A') return 'Sin vencimiento';
   return formatDateOnly(date);
 };
 
@@ -294,7 +294,7 @@ export const getExpiryInfo = (date: string | null | undefined, currentLanguage?:
   
   const noExpiryText = detectedLanguage === 'es' ? 'Sin vencimiento' : 'No expiry';
   
-  if (!date) return { text: noExpiryText, isExpiring: false, isExpired: false };
+  if (!date || date === 'N/A') return { text: noExpiryText, isExpiring: false, isExpired: false };
   
   try {
     // Parsear fecha de forma segura evitando problemas de zona horaria
@@ -335,7 +335,7 @@ export const getExpiryInfo = (date: string | null | undefined, currentLanguage?:
 
 // Nueva función para formatear fechas según el idioma
 const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, language: string = 'en'): string => {
-  if (!dateInput) return language === 'es' ? 'No definida' : 'Not defined';
+  if (!dateInput || dateInput === 'N/A') return language === 'es' ? 'No definida' : 'Not defined';
   
   try {
     const locale = language === 'es' ? es : enUS;
@@ -476,7 +476,7 @@ export const formatDateTimeAuto = (dateInput: string | Date | null | undefined):
   // ✅ CORREGIDO: Usar patrones centralizados
   const pattern = language === 'es' ? DATE_PATTERNS.DATE_TIME_ES : DATE_PATTERNS.DATE_TIME_EN;
   
-  if (!dateInput) return language === 'es' ? 'No definida' : 'Not defined';
+  if (!dateInput || dateInput === 'N/A') return language === 'es' ? 'No definida' : 'Not defined';
   
   try {
     // Obtener zona horaria del usuario
