@@ -418,60 +418,46 @@ export function PaymentReportDialog({
       return;
     }
     
-    console.log('✅ handlePreviewPDF: reportData obtenido:', reportData);
-    
-    // Create window reference immediately to prevent popup blocking
-    const newWindow = window.open('about:blank', '_blank');
-    if (!newWindow) {
-      console.log('❌ handlePreviewPDF: Ventana bloqueada por navegador');
-      showError("Error", "El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio.");
-      return;
-    }
-
-    console.log('✅ handlePreviewPDF: Ventana creada exitosamente');
-
-    // Show loading content in the new window
-    newWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Generando reporte...</title>
-          <style>
-            body { 
-              font-family: system-ui, -apple-system, sans-serif; 
-              display: flex; 
-              justify-content: center; 
-              align-items: center; 
-              height: 100vh; 
-              margin: 0;
-              background: #f5f5f5;
-            }
-            .loader { 
-              text-align: center;
-              color: #666;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="loader">
-            <div>Generando reporte PDF...</div>
-            <div style="margin-top: 10px;">Por favor espera...</div>
-          </div>
-        </body>
-      </html>
-    `);
-    
-    console.log('✅ handlePreviewPDF: Loading HTML escrito en ventana');
-    
     setIsGeneratingPDF(true);
     try {
-      console.log('🔄 handlePreviewPDF: Llamando generatePaymentReportPDF...');
-      await generatePaymentReportPDF(reportData, true, newWindow); // Pass window reference
-      console.log('✅ handlePreviewPDF: PDF generado exitosamente');
-      showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
+      console.log('🔄 handlePreviewPDF: Generando PDF documento...');
+      
+      // Generar el PDF y obtener el documento jsPDF directamente
+      const pdfDoc = await generatePaymentReportPDF(reportData, false);
+      
+      if (pdfDoc) {
+        console.log('✅ handlePreviewPDF: PDF generado, creando blob...');
+        const pdfBlob = pdfDoc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        console.log('✅ handlePreviewPDF: Blob URL creado, abriendo ventana...');
+        
+        // Abrir en nueva ventana con configuración específica para PDF
+        const newWindow = window.open(
+          pdfUrl, 
+          '_blank',
+          'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1200,height=900'
+        );
+        
+        if (newWindow) {
+          console.log('✅ handlePreviewPDF: PDF abierto exitosamente');
+          showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
+          
+          // Limpiar URL después de 30 segundos
+          setTimeout(() => {
+            URL.revokeObjectURL(pdfUrl);
+          }, 30000);
+        } else {
+          console.log('❌ handlePreviewPDF: Ventana bloqueada por navegador');
+          showError("Error", "El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio.");
+        }
+      } else {
+        console.log('❌ handlePreviewPDF: No se pudo generar el documento PDF');
+        showError("Error", "No se pudo generar el documento PDF");
+      }
+      
     } catch (error: any) {
       console.error('❌ handlePreviewPDF: Error previewing PDF:', error);
-      newWindow.close(); // Close the window if there's an error
       showError("Error", "No se pudo abrir la vista previa");
     } finally {
       setIsGeneratingPDF(false);
