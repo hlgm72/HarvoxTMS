@@ -638,6 +638,9 @@ export function PaymentReportDialog({
         <div className="p-4 sm:p-6 border-b shrink-0">
           <DialogHeader>
             <DialogTitle>Detalle del Reporte</DialogTitle>
+            <DialogDescription>
+              Cargando información del reporte de pago
+            </DialogDescription>
           </DialogHeader>
         </div>
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">

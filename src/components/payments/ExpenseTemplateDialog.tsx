@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CalendarIcon, AlertTriangle, Check, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
@@ -348,6 +348,12 @@ export function ExpenseTemplateDialog({
           <DialogTitle>
             {mode === 'create' ? t("deductions.template.create_title") : t("deductions.template.edit_title")}
           </DialogTitle>
+          <DialogDescription>
+            {mode === 'create' 
+              ? "Crear una nueva plantilla de deducción para aplicar automáticamente"
+              : "Editar la configuración de la plantilla de deducción existente"
+            }
+          </DialogDescription>
         </DialogHeader>
 
         {inactiveTemplate && mode === 'create' && (
