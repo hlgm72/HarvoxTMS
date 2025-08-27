@@ -28,7 +28,7 @@ export function MarkDriverPaidDialog({
   netPayment,
   onSuccess
 }: MarkDriverPaidDialogProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -38,18 +38,18 @@ export function MarkDriverPaidDialog({
   });
 
   const paymentMethods = [
-    { value: "bank_transfer", label: t("payments.mark_paid_dialog.payment_methods.bank_transfer"), icon: Building },
-    { value: "check", label: t("payments.mark_paid_dialog.payment_methods.check"), icon: CreditCard },
-    { value: "cash", label: t("payments.mark_paid_dialog.payment_methods.cash"), icon: DollarSign },
-    { value: "payment_app", label: t("payments.mark_paid_dialog.payment_methods.payment_app"), icon: CreditCard },
-    { value: "other", label: t("payments.mark_paid_dialog.payment_methods.other"), icon: CreditCard }
+    { value: "bank_transfer", label: t("mark_paid_dialog.payment_methods.bank_transfer"), icon: Building },
+    { value: "check", label: t("mark_paid_dialog.payment_methods.check"), icon: CreditCard },
+    { value: "cash", label: t("mark_paid_dialog.payment_methods.cash"), icon: DollarSign },
+    { value: "payment_app", label: t("mark_paid_dialog.payment_methods.payment_app"), icon: CreditCard },
+    { value: "other", label: t("mark_paid_dialog.payment_methods.other"), icon: CreditCard }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.paymentMethod) {
-      showError(t("payments.mark_paid_dialog.validation.method_required"));
+      showError(t("mark_paid_dialog.validation.method_required"));
       return;
     }
 
@@ -67,8 +67,8 @@ export function MarkDriverPaidDialog({
       const result = data as { success?: boolean; message?: string };
       if (result?.success) {
         showSuccess(
-          t("payments.mark_paid_dialog.notifications.success_title"), 
-          t("payments.mark_paid_dialog.notifications.success_message", { driverName })
+          t("mark_paid_dialog.notifications.success_title"), 
+          t("mark_paid_dialog.notifications.success_message", { driverName })
         );
         onOpenChange(false);
         onSuccess?.();
@@ -80,11 +80,11 @@ export function MarkDriverPaidDialog({
           notes: ""
         });
       } else {
-        showError(result?.message || t("payments.mark_paid_dialog.notifications.error_default"));
+        showError(result?.message || t("mark_paid_dialog.notifications.error_default"));
       }
     } catch (error: any) {
       console.error('Error marking driver as paid:', error);
-      showError(error.message || t("payments.mark_paid_dialog.notifications.error_unexpected"));
+      showError(error.message || t("mark_paid_dialog.notifications.error_unexpected"));
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +96,7 @@ export function MarkDriverPaidDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Check className="h-5 w-5 text-green-600" />
-            {t("payments.mark_paid_dialog.title")}
+            {t("mark_paid_dialog.title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -111,13 +111,13 @@ export function MarkDriverPaidDialog({
 
           {/* Payment Method */}
           <div className="space-y-2">
-            <Label htmlFor="paymentMethod">{t("payments.mark_paid_dialog.payment_method_required")}</Label>
+            <Label htmlFor="paymentMethod">{t("mark_paid_dialog.payment_method_required")}</Label>
             <Select
               value={formData.paymentMethod}
               onValueChange={(value) => setFormData(prev => ({ ...prev, paymentMethod: value }))}
             >
               <SelectTrigger>
-                <SelectValue placeholder={t("payments.mark_paid_dialog.payment_method_placeholder")} />
+                <SelectValue placeholder={t("mark_paid_dialog.payment_method_placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {paymentMethods.map((method) => {
@@ -137,24 +137,24 @@ export function MarkDriverPaidDialog({
 
           {/* Payment Reference */}
           <div className="space-y-2">
-            <Label htmlFor="paymentReference">{t("payments.mark_paid_dialog.reference_number")}</Label>
+            <Label htmlFor="paymentReference">{t("mark_paid_dialog.reference_number")}</Label>
             <Input
               id="paymentReference"
-              placeholder={t("payments.mark_paid_dialog.reference_placeholder")}
+              placeholder={t("mark_paid_dialog.reference_placeholder")}
               value={formData.paymentReference}
               onChange={(e) => setFormData(prev => ({ ...prev, paymentReference: e.target.value }))}
             />
             <p className="text-xs text-muted-foreground">
-              {t("payments.mark_paid_dialog.reference_description")}
+              {t("mark_paid_dialog.reference_description")}
             </p>
           </div>
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">{t("payments.mark_paid_dialog.notes")}</Label>
+            <Label htmlFor="notes">{t("mark_paid_dialog.notes")}</Label>
             <Textarea
               id="notes"
-              placeholder={t("payments.mark_paid_dialog.notes_placeholder")}
+              placeholder={t("mark_paid_dialog.notes_placeholder")}
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
@@ -169,14 +169,14 @@ export function MarkDriverPaidDialog({
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
-              {t("payments.mark_paid_dialog.cancel")}
+              {t("mark_paid_dialog.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={isLoading || !formData.paymentMethod}
               className="flex-1"
             >
-              {isLoading ? t("payments.mark_paid_dialog.processing") : t("payments.mark_paid_dialog.submit")}
+              {isLoading ? t("mark_paid_dialog.processing") : t("mark_paid_dialog.submit")}
             </Button>
           </div>
         </form>
