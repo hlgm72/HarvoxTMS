@@ -148,10 +148,19 @@ export const formatDateSafe = (
   formatPattern?: string,
   options: { locale?: any } = {}
 ): string => {
-        if (!dateInput || dateInput === 'N/A') return 'No definida';
+  // ✅ VALIDACIÓN MEJORADA - Detectar todos los casos de valores no válidos
+  if (!dateInput || 
+      dateInput === 'N/A' || 
+      dateInput === 'n/a' ||
+      dateInput === 'NA' ||
+      (typeof dateInput === 'string' && dateInput.trim() === '')) {
+    return 'No definida';
+  }
   
   if (!formatPattern) {
-    return formatDateAuto(dateInput);
+    // ✅ EVITAR RECURSIÓN - No usar formatDateAuto aquí para prevenir ciclos infinitos
+    const language = getGlobalLanguage();
+    return formatDateOnlyWithLocale(dateInput, language);
   }
   
   try {
@@ -335,13 +344,56 @@ export const getExpiryInfo = (date: string | null | undefined, currentLanguage?:
 
 // Nueva función para formatear fechas según el idioma
 const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, language: string = 'en'): string => {
-  if (!dateInput || dateInput === 'N/A') return language === 'es' ? 'No definida' : 'Not defined';
+  // ✅ VALIDACIÓN MEJORADA - Detectar todos los casos de valores no válidos
+  if (!dateInput || 
+      dateInput === 'N/A' || 
+      dateInput === 'n/a' ||
+      dateInput === 'NA' ||
+      (typeof dateInput === 'string' && dateInput.trim() === '')) {
+    return language === 'es' ? 'No definida' : 'Not defined';
+  }
   
   try {
     const locale = language === 'es' ? es : enUS;
-    // ✅ CORREGIDO: Usar patrones centralizados
+    // ✅ CORREGIDO: Usar patrones centralizados y evitar recursión
     const pattern = language === 'es' ? DATE_PATTERNS.SHORT_DATE_ES : DATE_PATTERNS.SHORT_DATE_EN;
-    return formatDateSafe(dateInput, pattern, { locale });
+    
+    // ✅ LLAMAR DIRECTAMENTE A format() PARA EVITAR RECURSIÓN
+    let dateToFormat: Date;
+    
+    if (typeof dateInput === 'string') {
+      if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
+        dateToFormat = parseISO(dateInput);
+        if (!isValid(dateToFormat)) {
+          return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+        }
+      } else {
+        let year: number, month: number, day: number;
+        
+        if (dateInput.includes('T')) {
+          const datePart = dateInput.split('T')[0];
+          [year, month, day] = datePart.split('-').map(Number);
+        } else if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          [year, month, day] = dateInput.split('-').map(Number);
+        } else {
+          return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+        }
+        
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+        }
+        
+        dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
+      }
+    } else {
+      dateToFormat = dateInput;
+    }
+    
+    if (!isValid(dateToFormat)) {
+      return language === 'es' ? 'Fecha inválida' : 'Invalid date';
+    }
+    
+    return format(dateToFormat, pattern, { locale });
   } catch (error) {
     console.error('Error formatting date with locale:', error);
     return language === 'es' ? 'Fecha inválida' : 'Invalid date';
