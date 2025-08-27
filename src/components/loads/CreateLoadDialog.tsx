@@ -620,7 +620,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         {/* Mobile compact step indicator */}
         <div className="sm:hidden mb-4 px-2">
           <div className="flex items-center justify-between text-sm">
-            <span>{t("loads:create_wizard.progress.step_x_of_y", { current: currentPhase, total: phases.length })}</span>
+            <span>{t("loads:create_wizard.progress.step_x_of_y", { x: currentPhase, y: phases.length })}</span>
             <div className="flex items-center gap-1">
               {phases.map((p) => (
                 <span
