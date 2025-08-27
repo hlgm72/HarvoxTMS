@@ -411,15 +411,24 @@ export function PaymentReportDialog({
   };
 
   const handlePreviewPDF = async () => {
+    console.log('🚀 handlePreviewPDF: Iniciando...');
     const reportData = getReportData();
-    if (!reportData) return;
+    if (!reportData) {
+      console.log('❌ handlePreviewPDF: No hay reportData');
+      return;
+    }
+    
+    console.log('✅ handlePreviewPDF: reportData obtenido:', reportData);
     
     // Create window reference immediately to prevent popup blocking
     const newWindow = window.open('about:blank', '_blank');
     if (!newWindow) {
+      console.log('❌ handlePreviewPDF: Ventana bloqueada por navegador');
       showError("Error", "El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio.");
       return;
     }
+
+    console.log('✅ handlePreviewPDF: Ventana creada exitosamente');
 
     // Show loading content in the new window
     newWindow.document.write(`
@@ -452,16 +461,21 @@ export function PaymentReportDialog({
       </html>
     `);
     
+    console.log('✅ handlePreviewPDF: Loading HTML escrito en ventana');
+    
     setIsGeneratingPDF(true);
     try {
+      console.log('🔄 handlePreviewPDF: Llamando generatePaymentReportPDF...');
       await generatePaymentReportPDF(reportData, true, newWindow); // Pass window reference
+      console.log('✅ handlePreviewPDF: PDF generado exitosamente');
       showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña");
     } catch (error: any) {
-      console.error('Error previewing PDF:', error);
+      console.error('❌ handlePreviewPDF: Error previewing PDF:', error);
       newWindow.close(); // Close the window if there's an error
       showError("Error", "No se pudo abrir la vista previa");
     } finally {
       setIsGeneratingPDF(false);
+      console.log('🏁 handlePreviewPDF: Proceso completado');
     }
   };
 
