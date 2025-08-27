@@ -47,6 +47,7 @@ export function PaymentReportDialog({
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -426,35 +427,28 @@ export function PaymentReportDialog({
       const pdfDoc = await generatePaymentReportPDF(reportData, false);
       
       if (pdfDoc) {
-        console.log('✅ handlePreviewPDF: PDF generado, creando data URI...');
+        console.log('✅ handlePreviewPDF: PDF generado, creando blob URL...');
         
-        // Usar data URI en lugar de blob URL - más confiable para abrir en navegador
-        const pdfDataUri = pdfDoc.output('datauristring');
-        
-        console.log('✅ handlePreviewPDF: Data URI creado, abriendo en nueva pestaña...');
-        
-        // Abrir en nueva pestaña usando data URI
-        const newWindow = window.open(pdfDataUri, '_blank');
-        
-        if (newWindow) {
-          console.log('✅ handlePreviewPDF: PDF abierto exitosamente en nueva pestaña');
-          showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña del navegador");
-        } else {
-          console.log('❌ handlePreviewPDF: Ventana bloqueada, usando descarga como fallback');
-          
-          // Fallback: descargar si la ventana está bloqueada
-          const fileName = `PayReport_${reportData.period.start_date.replace(/-/g, '')}_${reportData.driver.name.replace(/\s+/g, '_')}.pdf`;
-          pdfDoc.save(fileName);
-          showSuccess("PDF Descargado", "El navegador bloqueó la ventana emergente, se descargó el PDF automáticamente");
+        // Limpiar URL anterior si existe
+        if (pdfUrl) {
+          URL.revokeObjectURL(pdfUrl);
         }
+        
+        // Crear nuevo blob URL
+        const pdfBlob = pdfDoc.output('blob');
+        const newPdfUrl = URL.createObjectURL(pdfBlob);
+        setPdfUrl(newPdfUrl);
+        
+        console.log('✅ handlePreviewPDF: PDF listo para mostrar en iframe');
+        showSuccess("PDF Generado", "El reporte está listo para visualizar");
       } else {
         console.log('❌ handlePreviewPDF: No se pudo generar el documento PDF');
         showError("Error", "No se pudo generar el documento PDF");
       }
       
     } catch (error: any) {
-      console.error('❌ handlePreviewPDF: Error previewing PDF:', error);
-      showError("Error", "No se pudo abrir la vista previa");
+      console.error('❌ handlePreviewPDF: Error generating PDF:', error);
+      showError("Error", "No se pudo generar el PDF");
     } finally {
       setIsGeneratingPDF(false);
       console.log('🏁 handlePreviewPDF: Proceso completado');
@@ -636,7 +630,58 @@ export function PaymentReportDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      {pdfUrl ? (
+        // Vista del PDF en iframe
+        <Dialog open={open} onOpenChange={(newOpen) => {
+          if (!newOpen) {
+            // Limpiar PDF URL cuando se cierra
+            if (pdfUrl) {
+              URL.revokeObjectURL(pdfUrl);
+              setPdfUrl(null);
+            }
+          }
+          onOpenChange(newOpen);
+        }}>
+          <DialogContent className="w-[95vw] max-w-none sm:max-w-6xl h-[95vh] sm:max-h-[95vh] overflow-hidden flex flex-col p-0">
+            <div className="p-4 border-b shrink-0 flex items-center justify-between">
+              <div>
+                <DialogTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Reporte PDF - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+                </DialogTitle>
+                <DialogDescription className="text-sm mt-1">
+                  Período: {formatPaymentPeriod(
+                    calculation.company_payment_periods.period_start_date,
+                    calculation.company_payment_periods.period_end_date
+                  )}
+                </DialogDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  if (pdfUrl) {
+                    URL.revokeObjectURL(pdfUrl);
+                    setPdfUrl(null);
+                  }
+                }}
+              >
+                Volver al Reporte
+              </Button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src={pdfUrl}
+                className="w-full h-full border-0"
+                title="PDF Viewer"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        // Vista normal del reporte
+        <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-none sm:max-w-4xl h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-lg">
         {/* Header fijo */}
         <div className="p-4 sm:p-6 border-b shrink-0">
@@ -910,7 +955,9 @@ export function PaymentReportDialog({
             </Button>
           </div>
         </div>
-      </DialogContent>
+        </DialogContent>
+        </Dialog>
+      )}
       
       <EmailConfirmationDialog
         open={showEmailConfirm}
@@ -920,6 +967,6 @@ export function PaymentReportDialog({
         driverName={driver?.display_name || `${driver?.first_name} ${driver?.last_name}`}
         isSending={isSendingEmail}
       />
-    </Dialog>
+    </>
   );
 }
