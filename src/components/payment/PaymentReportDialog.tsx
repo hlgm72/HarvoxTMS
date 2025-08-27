@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { handleTextBlur } from '@/lib/textUtils';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -99,6 +99,9 @@ export const PaymentReportDialog = ({
             <DollarSign className="h-5 w-5" />
             Reportar Pago
           </DialogTitle>
+          <DialogDescription>
+            Registra un pago realizado para este período de pago. Selecciona el método utilizado e ingresa los detalles correspondientes.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
