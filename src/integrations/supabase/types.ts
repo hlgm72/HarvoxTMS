@@ -3122,6 +3122,10 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
+      can_access_recurring_exclusion: {
+        Args: { target_period_id: string; target_user_id: string }
+        Returns: boolean
+      }
       can_access_sensitive_company_data: {
         Args: { company_id_param: string }
         Returns: boolean
