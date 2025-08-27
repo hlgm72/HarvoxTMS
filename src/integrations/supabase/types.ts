@@ -3620,6 +3620,14 @@ export type Database = {
           user_id: string
         }[]
       }
+      has_exclusion_access: {
+        Args: {
+          current_user_id: string
+          target_period_id: string
+          target_user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["user_role"]
