@@ -426,16 +426,27 @@ export function PaymentReportDialog({
       const pdfDoc = await generatePaymentReportPDF(reportData, false);
       
       if (pdfDoc) {
-        console.log('✅ handlePreviewPDF: PDF generado, iniciando descarga directa...');
+        console.log('✅ handlePreviewPDF: PDF generado, creando data URI...');
         
-        // Crear nombre de archivo descriptivo
-        const fileName = `PayReport_${reportData.period.start_date.replace(/-/g, '')}_${reportData.driver.name.replace(/\s+/g, '_')}.pdf`;
+        // Usar data URI en lugar de blob URL - más confiable para abrir en navegador
+        const pdfDataUri = pdfDoc.output('datauristring');
         
-        // Descargar directamente usando jsPDF save method
-        pdfDoc.save(fileName);
+        console.log('✅ handlePreviewPDF: Data URI creado, abriendo en nueva pestaña...');
         
-        console.log('✅ handlePreviewPDF: PDF descargado exitosamente');
-        showSuccess("PDF Descargado", "El reporte se ha descargado automáticamente en tu carpeta de descargas");
+        // Abrir en nueva pestaña usando data URI
+        const newWindow = window.open(pdfDataUri, '_blank');
+        
+        if (newWindow) {
+          console.log('✅ handlePreviewPDF: PDF abierto exitosamente en nueva pestaña');
+          showSuccess("PDF Abierto", "El reporte se ha abierto en una nueva pestaña del navegador");
+        } else {
+          console.log('❌ handlePreviewPDF: Ventana bloqueada, usando descarga como fallback');
+          
+          // Fallback: descargar si la ventana está bloqueada
+          const fileName = `PayReport_${reportData.period.start_date.replace(/-/g, '')}_${reportData.driver.name.replace(/\s+/g, '_')}.pdf`;
+          pdfDoc.save(fileName);
+          showSuccess("PDF Descargado", "El navegador bloqueó la ventana emergente, se descargó el PDF automáticamente");
+        }
       } else {
         console.log('❌ handlePreviewPDF: No se pudo generar el documento PDF');
         showError("Error", "No se pudo generar el documento PDF");
