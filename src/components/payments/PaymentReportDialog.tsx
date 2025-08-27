@@ -432,7 +432,7 @@ export function PaymentReportDialog({
         
         console.log('✅ handlePreviewPDF: Blob URL creado, abriendo ventana...');
         
-        // Abrir en nueva ventana con configuración específica para PDF
+        // Intentar abrir en nueva ventana, si falla descargar automáticamente
         const newWindow = window.open(
           pdfUrl, 
           '_blank',
@@ -448,8 +448,22 @@ export function PaymentReportDialog({
             URL.revokeObjectURL(pdfUrl);
           }, 30000);
         } else {
-          console.log('❌ handlePreviewPDF: Ventana bloqueada por navegador');
-          showError("Error", "El navegador bloqueó la ventana emergente. Por favor, permite ventanas emergentes para este sitio.");
+          console.log('❌ handlePreviewPDF: Ventana bloqueada, iniciando descarga automática');
+          
+          // Crear enlace de descarga automática
+          const downloadLink = document.createElement('a');
+          downloadLink.href = pdfUrl;
+          downloadLink.download = `PayReport_${reportData.period.start_date.replace(/-/g, '')}_${reportData.driver.name.replace(/\s+/g, '_')}.pdf`;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          
+          showSuccess("PDF Descargado", "El reporte se ha descargado automáticamente");
+          
+          // Limpiar URL después de 5 segundos
+          setTimeout(() => {
+            URL.revokeObjectURL(pdfUrl);
+          }, 5000);
         }
       } else {
         console.log('❌ handlePreviewPDF: No se pudo generar el documento PDF');
