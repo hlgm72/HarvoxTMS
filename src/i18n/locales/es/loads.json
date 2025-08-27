@@ -24,6 +24,9 @@
       "edit": "Modifica la información de esta carga siguiendo los pasos",
       "duplicate": "Duplica esta carga usando la información existente como base"
     },
+    "progress": {
+      "step_x_of_y": "Paso {{x}} de {{y}}"
+    },
     "loading": {
       "load_data": "Cargando datos de la carga...",
       "duplicate_data": "Cargando datos para duplicar..."

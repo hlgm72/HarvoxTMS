@@ -24,6 +24,9 @@
       "edit": "Modify this load's information by following the steps",
       "duplicate": "Duplicate this load using existing information as base"
     },
+    "progress": {
+      "step_x_of_y": "Step {{x}} of {{y}}"
+    },
     "loading": {
       "load_data": "Loading load data...",
       "duplicate_data": "Loading data to duplicate..."
