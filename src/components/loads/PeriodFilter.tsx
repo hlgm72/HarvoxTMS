@@ -199,7 +199,15 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             <ChevronDown className="h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-72 sm:w-80 p-0 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100] max-h-[80vh] overflow-y-auto" align="start">
+        <PopoverContent 
+          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100] max-h-[70vh] overflow-y-auto" 
+          align="center" 
+          side="bottom"
+          sideOffset={4}
+          alignOffset={0}
+          avoidCollisions={true}
+          collisionPadding={8}
+        >
           <div className="p-4 space-y-4">
             {/* Opciones rápidas */}
             <div className="space-y-2">
