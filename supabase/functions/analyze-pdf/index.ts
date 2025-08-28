@@ -47,7 +47,6 @@ serve(async (req) => {
       extractedText = pdfData.text;
       console.log('PDF text extracted, length:', extractedText.length);
       console.log('First 500 chars:', extractedText.substring(0, 500));
-      console.log('Full PDF text:', extractedText);
     } catch (pdfError) {
       console.error('PDF parsing error:', pdfError);
       return new Response(
@@ -72,7 +71,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
