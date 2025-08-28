@@ -47,6 +47,7 @@ serve(async (req) => {
       extractedText = pdfData.text;
       console.log('PDF text extracted, length:', extractedText.length);
       console.log('First 500 chars:', extractedText.substring(0, 500));
+      console.log('Full PDF text:', extractedText);
     } catch (pdfError) {
       console.error('PDF parsing error:', pdfError);
       return new Response(
@@ -85,7 +86,11 @@ Primero lee TODO el texto del PDF y identifica:
 
 PASO 2 - IDENTIFICACIÓN DE DATOS:
 Para cada transacción de combustible:
-- NÚMEROS DE TARJETA: Busca secuencias de 10-20 dígitos que representen tarjetas de combustible
+- NÚMEROS DE TARJETA: CUIDADOSAMENTE busca TODOS los números de tarjeta diferentes
+  * Pueden estar en columnas como "Card #", "Card Number", o similar
+  * Cada fila de transacción debe tener su propio número de tarjeta
+  * NO asumas que todas las transacciones usan la misma tarjeta
+  * Verifica CADA FILA individualmente
 - MONTOS: Lee los números completos exactamente como aparecen, SIN cortar ni modificar
 - FECHAS: En formato MM/DD/YYYY o DD/MM/YYYY o similar
 
@@ -96,10 +101,12 @@ REGLAS CRÍTICAS PARA MONTOS:
 - Si ves "$155.75" escribe 155.75
 - NUNCA cortes números - extrae el valor completo
 
-REGLAS PARA NÚMEROS DE TARJETA:
-- Extrae la secuencia completa de dígitos
+REGLAS CRÍTICAS PARA NÚMEROS DE TARJETA:
+- Extrae la secuencia completa de dígitos de CADA FILA
 - Puede tener espacios o guiones, pero extrae solo los números
 - Longitud típica: 10-20 dígitos
+- IMPORTANTE: Diferentes filas pueden tener diferentes números de tarjeta
+- NO copies el número de tarjeta de una fila a otra
 
 Texto completo del PDF para analizar:
 ${extractedText}
