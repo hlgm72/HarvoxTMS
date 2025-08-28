@@ -150,7 +150,7 @@ export function DeductionsFloatingActions({
 
       {/* Sheet Modal */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-[400px] sm:w-[440px]">
+        <SheetContent className="w-[400px] sm:w-[440px] max-h-screen overflow-y-auto">
           <SheetHeader>
             <SheetTitle>
               {activeTab === 'filters' && t('floating_actions.filters.title')}
@@ -191,7 +191,7 @@ export function DeductionsFloatingActions({
                       <SelectTrigger>
                         <SelectValue placeholder={t('floating_actions.filters.placeholders.status')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-[40vh]">
                         {statusOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {t(option.label)}
@@ -211,7 +211,7 @@ export function DeductionsFloatingActions({
                       <SelectTrigger>
                         <SelectValue placeholder={t('floating_actions.filters.placeholders.driver')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-[40vh]">
                         <SelectItem value="all">{t('floating_actions.filters.options.driver.all')}</SelectItem>
                         {drivers.map((driver) => (
                           <SelectItem key={driver.user_id} value={driver.user_id}>
@@ -232,7 +232,7 @@ export function DeductionsFloatingActions({
                       <SelectTrigger>
                         <SelectValue placeholder={t('floating_actions.filters.placeholders.expense_type')} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="max-h-[40vh]">
                         <SelectItem value="all">{t('floating_actions.filters.all_types')}</SelectItem>
                         {expenseTypes.map((type) => (
                           <SelectItem key={type.id} value={type.id}>
@@ -297,7 +297,7 @@ export function DeductionsFloatingActions({
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="max-h-[40vh]">
                                 <SelectItem value="enero">{t('months.january', { ns: 'payments' })}</SelectItem>
                                 <SelectItem value="febrero">{t('months.february', { ns: 'payments' })}</SelectItem>
                                 <SelectItem value="marzo">{t('months.march', { ns: 'payments' })}</SelectItem>
@@ -324,7 +324,7 @@ export function DeductionsFloatingActions({
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="max-h-[40vh]">
                                 <SelectItem value="2024">2024</SelectItem>
                                 <SelectItem value="2025">2025</SelectItem>
                                 <SelectItem value="2026">2026</SelectItem>

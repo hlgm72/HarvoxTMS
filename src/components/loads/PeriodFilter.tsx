@@ -199,7 +199,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             <ChevronDown className="h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-72 sm:w-80 p-0 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-50" align="start">
+        <PopoverContent className="w-72 sm:w-80 p-0 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100] max-h-[80vh] overflow-y-auto" align="start">
           <div className="p-4 space-y-4">
             {/* Opciones rápidas */}
             <div className="space-y-2">
@@ -315,7 +315,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <SelectTrigger>
                   <SelectValue placeholder={t('payments:filters.select_period_placeholder')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[40vh]">
                   <SelectItem value="current">{t('periods.current')}</SelectItem>
                   <SelectItem value="previous">{t('periods.previous')}</SelectItem>
                   <SelectItem value="next">{t('payments:filters.period_options.next')}</SelectItem>
