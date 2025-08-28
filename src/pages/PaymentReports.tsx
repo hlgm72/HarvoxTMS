@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { FileText, Plus, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useCompanyCache } from "@/hooks/useCompanyCache";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
@@ -25,6 +26,7 @@ import { formatPeriodLabel } from "@/utils/periodUtils";
 export default function PaymentReports() {
   const { t } = useTranslation(['payments', 'common']);
   const { user } = useAuth();
+  const { userCompany } = useCompanyCache();
   const { showSuccess, showError } = useFleetNotifications();
   
   // Obtener períodos para inicializar con el período actual
@@ -107,12 +109,27 @@ export default function PaymentReports() {
     }
   }, [filters.periodFilter, currentPeriod, previousPeriod, nextPeriod, allPeriods]);
 
-  // Obtener reportes existentes filtrados por período
+  // Obtener reportes existentes filtrados por período con verificación automática de integridad
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
     queryKey: ['payment-calculations-reports', getFilterPeriodIds, filters.periodFilter],
     queryFn: async () => {
       console.log('🔍 PaymentReports Query - getFilterPeriodIds:', getFilterPeriodIds);
       console.log('🔍 PaymentReports Query - periodFilter:', filters.periodFilter);
+      
+      // ✅ VERIFICACIÓN AUTOMÁTICA DE INTEGRIDAD DE CÁLCULOS
+      if (userCompany?.company_id) {
+        console.log('🔄 Verificando integridad de cálculos automáticamente...');
+        const { data: integrityResult, error: integrityError } = await supabase
+          .rpc('verify_and_recalculate_company_payments', {
+            target_company_id: userCompany.company_id
+          });
+
+        if (integrityError) {
+          console.warn('⚠️ Error verificando integridad de cálculos:', integrityError);
+        } else {
+          console.log('✅ Integridad verificada:', integrityResult);
+        }
+      }
       
       let query = supabase
         .from('driver_period_calculations')
