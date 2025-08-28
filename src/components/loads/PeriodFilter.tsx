@@ -200,7 +200,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100]" 
+          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] max-h-[50vh] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100] overflow-hidden" 
           align="center" 
           side="bottom"
           sideOffset={4}
@@ -208,7 +208,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           avoidCollisions={true}
           collisionPadding={8}
         >
-          <div className="max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+          <div className="max-h-[50vh] overflow-y-auto overscroll-contain touch-pan-y">
             <div className="p-4 space-y-4">
             {/* Opciones rápidas */}
             <div className="space-y-2">
