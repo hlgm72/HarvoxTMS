@@ -12,6 +12,9 @@ export const useLoadCompletion = (loadId: string, status: string) => {
   const { data: documentValidation } = useLoadDocumentValidation(loadId);
   const { showSuccess } = useFleetNotifications();
   const celebrationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // ✅ ARREGLO: Usar useRef para evitar loops infinitos
+  const previousStatusRef = useRef({ isCompleted: false, hasTriggered: false });
+  
   const [completionState, setCompletionState] = useState<LoadCompletionState>({
     isCompleted: false,
     justCompleted: false,
@@ -30,24 +33,31 @@ export const useLoadCompletion = (loadId: string, status: string) => {
   });
 
   useEffect(() => {
-    const wasCompleted = completionState.isCompleted;
+    const wasCompleted = previousStatusRef.current.isCompleted;
     const isNowCompleted = isCompleted;
+    const hasAlreadyTriggered = previousStatusRef.current.hasTriggered;
 
     console.log('🎉 useLoadCompletion - Effect:', { 
       loadId, 
       wasCompleted, 
       isNowCompleted, 
+      hasAlreadyTriggered,
       showCelebration: completionState.showCelebration 
     });
 
-    if (!wasCompleted && isNowCompleted && !completionState.showCelebration) {
+    // Si cambió a completado y no hemos disparado celebración para esta carga
+    if (!wasCompleted && isNowCompleted && !hasAlreadyTriggered && !completionState.showCelebration) {
       // ¡Se acaba de completar!
       console.log('🎉 useLoadCompletion - TRIGGERING CELEBRATION!', { loadId });
+      
       setCompletionState({
         isCompleted: true,
         justCompleted: true,  
         showCelebration: true
       });
+
+      // Marcar que ya triggereamos la celebración para esta carga
+      previousStatusRef.current = { isCompleted: true, hasTriggered: true };
 
       // Mostrar toast celebratorio
       showSuccess("🎉 ¡Carga Completada! POD subido exitosamente. Moviendo a historial...");
@@ -66,8 +76,10 @@ export const useLoadCompletion = (loadId: string, status: string) => {
           justCompleted: false
         }));
       }, 5000);
-    } else if (completionState.isCompleted !== isNowCompleted && !completionState.showCelebration) {
-      // Solo actualizar si no está en celebración
+    } 
+    // Si el estado cambió pero no está en celebración, actualizar silenciosamente
+    else if (wasCompleted !== isNowCompleted && !completionState.showCelebration) {
+      console.log('🎉 useLoadCompletion - UPDATING STATE SILENTLY', { loadId, wasCompleted, isNowCompleted });
       setCompletionState(prev => ({
         ...prev,
         isCompleted: isNowCompleted,
@@ -75,7 +87,15 @@ export const useLoadCompletion = (loadId: string, status: string) => {
         showCelebration: false
       }));
     }
-  }, [isCompleted, completionState.isCompleted, completionState.showCelebration]);
+    
+    // Actualizar referencia solo cuando sea necesario
+    if (wasCompleted !== isNowCompleted || !hasAlreadyTriggered) {
+      previousStatusRef.current = { 
+        isCompleted: isNowCompleted, 
+        hasTriggered: hasAlreadyTriggered || (!wasCompleted && isNowCompleted)
+      };
+    }
+  }, [isCompleted, loadId, showSuccess]); // ✅ ARREGLADO: Removidas las dependencias problemáticas
 
   // Cleanup timeout on unmount
   useEffect(() => {
