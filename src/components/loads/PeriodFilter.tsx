@@ -200,16 +200,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] max-h-[50vh] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100] overflow-hidden" 
+          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100]" 
           align="center" 
           side="bottom"
           sideOffset={4}
           alignOffset={0}
           avoidCollisions={true}
           collisionPadding={8}
+          style={{ maxHeight: '50vh', overflow: 'auto' }}
         >
-          <div className="max-h-[50vh] overflow-y-auto overscroll-contain touch-pan-y">
-            <div className="p-4 space-y-4">
+          <div className="p-4 space-y-4" style={{ maxHeight: '48vh', overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
             {/* Opciones rápidas */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
@@ -452,7 +452,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 )}
               </div>
             )}
-            </div>
           </div>
         </PopoverContent>
       </Popover>
