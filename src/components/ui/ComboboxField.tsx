@@ -21,6 +21,7 @@ interface ComboboxFieldProps {
   emptyText?: string;
   allowCustom?: boolean;
   customText?: string;
+  searchHook?: (searchTerm: string) => { commodities: ComboboxOption[]; isLoading: boolean };
 }
 
 export function ComboboxField({
@@ -30,16 +31,21 @@ export function ComboboxField({
   placeholder = "Selecciona una opción...",
   emptyText = "No se encontraron opciones.",
   allowCustom = true,
-  customText = "Agregar personalizado"
+  customText = "Agregar personalizado",
+  searchHook
 }: ComboboxFieldProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  // Buscar la opción seleccionada
-  const selectedOption = options.find((option) => option.value === value);
+  // Use search hook if provided, otherwise use static options
+  const searchResults = searchHook ? searchHook(search) : { commodities: [], isLoading: false };
+  const displayOptions = searchHook ? searchResults.commodities : options;
 
-  // Filtrar opciones basado en la búsqueda
-  const filteredOptions = options.filter((option) =>
+  // Buscar la opción seleccionada
+  const selectedOption = displayOptions.find((option) => option.value === value);
+
+  // Filtrar opciones basado en la búsqueda (solo para opciones estáticas)
+  const filteredOptions = searchHook ? displayOptions : displayOptions.filter((option) =>
     option.label.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -58,9 +64,8 @@ export function ComboboxField({
   };
 
   const handleCustomAdd = () => {
-    if (search.trim() && !options.find(opt => opt.label.toLowerCase() === search.toLowerCase())) {
-      const customValue = search.toLowerCase().replace(/\s+/g, '-');
-      onValueChange(customValue);
+    if (search.trim() && !displayOptions.find(opt => opt.label.toLowerCase() === search.toLowerCase())) {
+      onValueChange(search.trim());
       setOpen(false);
       setSearch("");
     }
@@ -100,29 +105,35 @@ export function ComboboxField({
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-white z-50" align="start">
         <Command>
           <CommandInput
-            placeholder="Buscar marca..."
+            placeholder={searchHook ? "Escribe para buscar commodities..." : "Buscar marca..."}
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
             <CommandEmpty>
               <div className="text-center py-2">
-                <p className="text-sm text-muted-foreground mb-2">{emptyText}</p>
-                {allowCustom && search.trim() && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCustomAdd}
-                    className="text-xs"
-                  >
-                    {customText}: "{search}"
-                  </Button>
+                {searchHook && searchResults.isLoading ? (
+                  <p className="text-sm text-muted-foreground">Buscando...</p>
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground mb-2">{emptyText}</p>
+                    {allowCustom && search.trim() && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCustomAdd}
+                        className="text-xs"
+                      >
+                        {customText}: "{search}"
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </CommandEmpty>
             
             {popularOptions.length > 0 && (
-              <CommandGroup heading="Marcas Populares">
+              <CommandGroup heading={searchHook ? "Commodities Frecuentes" : "Marcas Populares"}>
                 {popularOptions.map((option) => (
                   <CommandItem
                     key={option.value}
@@ -137,9 +148,11 @@ export function ComboboxField({
                     />
                     <div className="flex items-center gap-2">
                       {option.label}
-                      <Badge variant="secondary" className="text-xs">
-                        Popular
-                      </Badge>
+                      {option.popular && (
+                        <Badge variant="secondary" className="text-xs">
+                          Popular
+                        </Badge>
+                      )}
                     </div>
                   </CommandItem>
                 ))}
@@ -147,7 +160,7 @@ export function ComboboxField({
             )}
 
             {regularOptions.length > 0 && (
-              <CommandGroup heading={popularOptions.length > 0 ? "Otras Marcas" : "Marcas Disponibles"}>
+              <CommandGroup heading={popularOptions.length > 0 ? (searchHook ? "Otras Commodities" : "Otras Marcas") : (searchHook ? "Commodities Disponibles" : "Marcas Disponibles")}>
                 {regularOptions.map((option) => (
                   <CommandItem
                     key={option.value}

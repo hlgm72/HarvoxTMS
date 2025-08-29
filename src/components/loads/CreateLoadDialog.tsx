@@ -11,6 +11,7 @@ import { usePONumberValidation } from "@/hooks/usePONumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
+import { useCommodityAutocomplete } from "@/hooks/useCommodityAutocomplete";
 import { LoadStop } from "@/hooks/useLoadStops";
 import { createTextHandlers } from "@/lib/textUtils";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -25,6 +26,7 @@ import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { CreateDispatcherDialog } from "@/components/clients/CreateDispatcherDialog";
+import { ComboboxField } from "@/components/ui/ComboboxField";
 import { LoadStopsManager } from "./LoadStopsManager";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
@@ -851,36 +853,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                       />
 
                      {/* Commodity */}
-                     <FormField
-                       control={form.control}
-                       name="commodity"
-                       render={({ field }) => {
-                          const textHandlers = createTextHandlers(
-                            (value) => {
-                              field.onChange(value);
-                              // Limpiar error cuando el usuario comience a escribir
-                              if (form.formState.errors.commodity) {
-                                form.clearErrors("commodity");
-                              }
-                            },
-                            'text'
-                          );
-                         
-                         return (
-                            <FormItem>
-                              <FormLabel>{t("loads:create_wizard.form.commodity")} {t("loads:create_wizard.form.commodity_required")}</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  placeholder={t("loads:create_wizard.form.commodity_placeholder")}
-                                  value={field.value || ''}
-                                  onChange={textHandlers.onChange}
-                                  onBlur={textHandlers.onBlur}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                         );
-                       }}
+                      <FormField
+                        control={form.control}
+                        name="commodity"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("loads:create_wizard.form.commodity")} {t("loads:create_wizard.form.commodity_required")}</FormLabel>
+                            <FormControl>
+                              <ComboboxField
+                                options={[]}
+                                value={field.value || ''}
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  if (form.formState.errors.commodity) {
+                                    form.clearErrors("commodity");
+                                  }
+                                }}
+                                placeholder={t("loads:create_wizard.form.commodity_placeholder")}
+                                allowCustom={true}
+                                customText="Usar commodity personalizada"
+                                emptyText="No se encontraron commodities"
+                                searchHook={useCommodityAutocomplete}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                      />
 
                      {/* Weight */}
