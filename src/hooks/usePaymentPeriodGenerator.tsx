@@ -21,6 +21,15 @@ export const usePaymentPeriodGenerator = () => {
     try {
       console.log('🔍 ensurePaymentPeriodExists - Starting for:', { companyId, userId, targetDate });
 
+      // 🚫 LIMITE: No generar períodos más de 2 semanas en el futuro
+      const maxFutureDate = new Date();
+      maxFutureDate.setDate(maxFutureDate.getDate() + 14);
+      
+      if (new Date(targetDate) > maxFutureDate) {
+        console.log('❌ Target date is too far in the future, not generating period');
+        return null;
+      }
+
       // Buscar período existente
       const { data: existingPeriod, error: periodError } = await supabase
         .from('company_payment_periods')
