@@ -163,27 +163,8 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         throw error;
       }
 
-      // Si no existe período para la fecha actual, intentar generar uno
-      if (!period) {
-        const generatedPeriodId = await ensurePaymentPeriodExists({
-          companyId: targetCompanyId,
-          userId: user.id,
-          targetDate: currentDate
-        });
-
-        // Si se generó exitosamente, buscar el período nuevamente
-        if (generatedPeriodId) {
-          const { data: newPeriod, error: newError } = await supabase
-            .from('company_payment_periods')
-            .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
-            .eq('id', generatedPeriodId)
-            .single();
-
-          if (!newError) {
-            period = newPeriod;
-          }
-        }
-      }
+      // Solo devolver null si no existe - NO generar automáticamente
+      // Los períodos se generarán solo cuando sea necesario (al crear cargas, deducciones, etc.)
 
       return period || null;
     },
@@ -286,36 +267,8 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         throw error;
       }
 
-      // Si no existe período siguiente, intentar generar períodos futuros
-      if (!period) {
-        // Calcular fecha del próximo período (una semana después) manteniendo zona horaria
-        const [year, month, day] = currentDate.split('-').map(Number);
-        const nextPeriodDate = new Date(year, month - 1, day); // Crear fecha local
-        nextPeriodDate.setDate(nextPeriodDate.getDate() + 7);
-        const nextDateString = formatDateInUserTimeZone(nextPeriodDate);
-
-        const generatedPeriodId = await ensurePaymentPeriodExists({
-          companyId: targetCompanyId,
-          userId: user.id,
-          targetDate: nextDateString
-        });
-
-        // Si se generó exitosamente, buscar el siguiente período nuevamente
-        if (generatedPeriodId) {
-          const { data: newPeriod, error: newError } = await supabase
-            .from('company_payment_periods')
-            .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
-            .eq('company_id', targetCompanyId)
-            .gt('period_start_date', currentDate)
-            .order('period_start_date', { ascending: true })
-            .limit(1)
-            .maybeSingle();
-
-          if (!newError) {
-            period = newPeriod;
-          }
-        }
-      }
+      // Solo devolver null si no existe - NO generar automáticamente
+      // Los períodos futuros se generarán solo cuando sea necesario
 
       return period || null;
     },

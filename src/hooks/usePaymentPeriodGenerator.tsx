@@ -60,28 +60,13 @@ export const usePaymentPeriodGenerator = () => {
         throw companyError;
       }
 
-      // Determinar rango basado en frecuencia de pago - incluir período anterior, actual y siguiente
-      let rangeDays = 7; // default para weekly
+      // Solo generar el período específico que contiene la fecha objetivo
       const frequency = (companyData as any)?.default_payment_frequency || 'weekly';
-      switch (frequency) {
-        case 'weekly':
-          rangeDays = 21; // ±3 semanas (anterior, actual, siguiente)
-          break;
-        case 'biweekly':
-          rangeDays = 42; // ±6 semanas (anterior, actual, siguiente)
-          break;
-        case 'monthly':
-          rangeDays = 90; // ±3 meses (anterior, actual, siguiente)
-          break;
-        default:
-          rangeDays = 21;
-      }
+      console.log(`📅 Generando solo el período específico para ${targetDate} con frecuencia ${frequency}`);
 
-      console.log(`📅 Using range of ±${rangeDays} days for ${frequency} frequency to include previous, current, and next periods`);
-
-      // Generar períodos en el rango ampliado para incluir período anterior
-      const fromDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) - rangeDays * 24 * 60 * 60 * 1000));
-      const toDate = formatDateInUserTimeZone(new Date(Date.parse(targetDate) + rangeDays * 24 * 60 * 60 * 1000));
+      // Generar solo el período que contiene la fecha objetivo
+      const fromDate = targetDate;
+      const toDate = targetDate;
 
       const { data: generateResult, error: generateError } = await supabase.rpc(
         'generate_company_payment_periods_with_calculations',
