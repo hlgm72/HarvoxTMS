@@ -26,7 +26,7 @@ import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
 import { CreateClientDialog } from "@/components/clients/CreateClientDialog";
 import { CreateDispatcherDialog } from "@/components/clients/CreateDispatcherDialog";
-import { ComboboxField } from "@/components/ui/ComboboxField";
+import { AutocompleteInput } from "@/components/ui/AutocompleteInput";
 import { LoadStopsManager } from "./LoadStopsManager";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
@@ -860,26 +860,23 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                           <FormItem>
                             <FormLabel>{t("loads:create_wizard.form.commodity")} {t("loads:create_wizard.form.commodity_required")}</FormLabel>
                             <FormControl>
-                              <ComboboxField
-                                options={[]}
+                              <AutocompleteInput
                                 value={field.value || ''}
-                                onValueChange={(value) => {
+                                onChange={(value) => {
                                   field.onChange(value);
                                   if (form.formState.errors.commodity) {
                                     form.clearErrors("commodity");
                                   }
                                 }}
+                                onBlur={field.onBlur}
                                 placeholder={t("loads:create_wizard.form.commodity_placeholder")}
-                                allowCustom={true}
-                                customText="Usar commodity personalizada"
-                                emptyText="No se encontraron commodities"
                                 searchHook={useCommodityAutocomplete}
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
-                        )}
-                     />
+                         )}
+                       />
 
                      {/* Weight */}
                      <FormField
