@@ -28,15 +28,18 @@ export function usePaymentPeriodSummary(periodId?: string) {
 
       if (periodError) throw periodError;
 
-      // Verificar y recalcular automáticamente la integridad de todos los cálculos de la empresa
+      // FORZAR recálculo completo para asegurar datos correctos después del revert
+      console.log('🔄 Forzando recálculo completo de la empresa:', periodData.company_id);
       const { data: integrityResult, error: integrityError } = await supabase
         .rpc('verify_and_recalculate_company_payments', {
           target_company_id: periodData.company_id
         });
 
       if (integrityError) {
-        console.warn('Error verificando integridad de cálculos:', integrityError);
+        console.error('❌ Error en recálculo automático:', integrityError);
         // Continuar con los datos disponibles aunque haya error en la verificación
+      } else {
+        console.log('✅ Recálculo completado:', integrityResult);
       }
       
       // Obtener todos los cálculos de conductores para este período (ya actualizados)
