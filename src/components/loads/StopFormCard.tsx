@@ -13,7 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
-import { CompanyAddressAutocomplete } from '@/components/ui/CompanyAddressAutocomplete';
+import { CompanyAutocompleteInput } from '@/components/ui/CompanyAutocompleteInput';
 import { useZipCodeLookup } from '@/hooks/useZipCodeLookup';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
@@ -51,16 +51,10 @@ export function StopFormCard({
   const [isDateOpen, setIsDateOpen] = useState(false);
   const { lookupZipCode, isLoading: isZipLoading, error: zipError } = useZipCodeLookup();
 
-  const companyNameHandlers = createTextHandlers(
-    (value) => onUpdate({ company_name: value }),
-    'text'
-  );
-
   const addressHandlers = createTextHandlers(
     (value) => onUpdate({ address: value }),
     'text'
   );
-
 
   const contactNameHandlers = createTextHandlers(
     (value) => onUpdate({ contact_name: value }),
@@ -117,18 +111,21 @@ export function StopFormCard({
   };
 
   const handleCompanySelect = (company: {
-    name: string;
-    address: string;
+    value: string;
+    label: string;
+    address?: string;
     city?: string;
     state?: string;
     zipCode?: string;
+    phone?: string;
   }) => {
     onUpdate({
-      company_name: company.name,
-      address: company.address,
+      company_name: company.label,
+      address: company.address || '',
       city: company.city || '',
       state: company.state || '',
-      zip_code: company.zipCode || ''
+      zip_code: company.zipCode || '',
+      contact_phone: company.phone || stop.contact_phone || ''
     });
   };
 
@@ -183,17 +180,13 @@ export function StopFormCard({
         {/* Company Name with Autocomplete */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <CompanyAddressAutocomplete
-              onSelectCompany={handleCompanySelect}
-              placeholder="Buscar empresa registrada..."
-              label="Empresa *"
-            />
-            <Input
-              placeholder="O escribir nombre manualmente"
+            <CompanyAutocompleteInput
               value={stop.company_name}
-              onChange={companyNameHandlers.onChange}
-              onBlur={companyNameHandlers.onBlur}
-              className="text-sm"
+              onChange={(value) => onUpdate({ company_name: value })}
+              onCompanySelect={handleCompanySelect}
+              placeholder="Buscar empresa registrada..."
+              label="Empresa"
+              required
             />
           </div>
 

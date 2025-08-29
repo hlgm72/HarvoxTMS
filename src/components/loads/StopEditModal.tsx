@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
 import { AddressForm } from '@/components/ui/AddressForm';
-import { CompanyAddressAutocomplete } from '@/components/ui/CompanyAddressAutocomplete';
+import { CompanyAutocompleteInput } from '@/components/ui/CompanyAutocompleteInput';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
@@ -69,8 +69,9 @@ export function StopEditModal({
   };
 
   const handleCompanySelect = (company: {
-    name: string;
-    address: string;
+    value: string;
+    label: string;
+    address?: string;
     city?: string;
     state?: string;
     zipCode?: string;
@@ -78,8 +79,8 @@ export function StopEditModal({
   }) => {
     setFormData(prev => ({
       ...prev,
-      company_name: company.name,
-      address: company.address,
+      company_name: company.label,
+      address: company.address || '',
       city: company.city || '',
       state: company.state || '',
       zip_code: company.zipCode || '',
@@ -98,11 +99,6 @@ export function StopEditModal({
     if (isLast) return 'bg-red-100 text-red-800'; // Rojo para entrega final
     return 'bg-blue-100 text-blue-800'; // Azul para paradas intermedias
   };
-
-  const companyNameHandlers = createTextHandlers(
-    (value) => updateField('company_name', value),
-    'text'
-  );
 
   const contactNameHandlers = createTextHandlers(
     (value) => updateField('contact_name', value),
@@ -277,23 +273,13 @@ export function StopEditModal({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <CompanyAddressAutocomplete
-                  onSelectCompany={(company) => handleCompanySelect({
-                    name: company.name,
-                    address: company.address,
-                    city: company.city,
-                    state: company.state,
-                    zipCode: company.zipCode,
-                    phone: company.phone
-                  })}
+                <CompanyAutocompleteInput
+                  value={formData.company_name || ''}
+                  onChange={(value) => updateField('company_name', value)}
+                  onCompanySelect={handleCompanySelect}
                   placeholder={t("loads:create_wizard.phases.route_details.edit_modal.company_placeholder")}
                   label={t("loads:create_wizard.phases.route_details.edit_modal.company_required")}
-                />
-                <Input
-                  placeholder="O escribir nombre manualmente"
-                  value={formData.company_name || ''}
-                  onChange={companyNameHandlers.onChange}
-                  onBlur={companyNameHandlers.onBlur}
+                  required
                 />
               </div>
 
