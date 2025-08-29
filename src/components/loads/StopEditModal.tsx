@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { StateCombobox } from '@/components/ui/StateCombobox';
 import { CityCombobox } from '@/components/ui/CityCombobox';
 import { AddressForm } from '@/components/ui/AddressForm';
+import { CompanyAddressAutocomplete } from '@/components/ui/CompanyAddressAutocomplete';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
@@ -65,6 +66,25 @@ export function StopEditModal({
     // console.log('💾 StopEditModal - handleSave called with formData:', formData);
     onSave(formData);
     onClose();
+  };
+
+  const handleCompanySelect = (company: {
+    name: string;
+    address: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    phone?: string;
+  }) => {
+    setFormData(prev => ({
+      ...prev,
+      company_name: company.name,
+      address: company.address,
+      city: company.city || '',
+      state: company.state || '',
+      zip_code: company.zipCode || '',
+      contact_phone: company.phone || prev.contact_phone || ''
+    }));
   };
 
   const getStopTypeLabel = () => {
@@ -257,10 +277,20 @@ export function StopEditModal({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="company">{t("loads:create_wizard.phases.route_details.edit_modal.company_required")}</Label>
-                <Input
-                  id="company"
+                <CompanyAddressAutocomplete
+                  onSelectCompany={(company) => handleCompanySelect({
+                    name: company.name,
+                    address: company.address,
+                    city: company.city,
+                    state: company.state,
+                    zipCode: company.zipCode,
+                    phone: company.phone
+                  })}
                   placeholder={t("loads:create_wizard.phases.route_details.edit_modal.company_placeholder")}
+                  label={t("loads:create_wizard.phases.route_details.edit_modal.company_required")}
+                />
+                <Input
+                  placeholder="O escribir nombre manualmente"
                   value={formData.company_name || ''}
                   onChange={companyNameHandlers.onChange}
                   onBlur={companyNameHandlers.onBlur}

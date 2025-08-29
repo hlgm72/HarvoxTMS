@@ -118,14 +118,14 @@ export function StopFormCard({
 
   const handleCompanySelect = (company: {
     name: string;
-    streetAddress: string;
+    address: string;
     city?: string;
     state?: string;
     zipCode?: string;
   }) => {
     onUpdate({
       company_name: company.name,
-      address: company.streetAddress,
+      address: company.address,
       city: company.city || '',
       state: company.state || '',
       zip_code: company.zipCode || ''

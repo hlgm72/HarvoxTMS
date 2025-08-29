@@ -11,10 +11,11 @@ import { useCompanyAddressAutocomplete } from '@/hooks/useCompanyAddressAutocomp
 interface CompanyAddressAutocompleteProps {
   onSelectCompany: (address: {
     name: string;
-    streetAddress: string;
+    address: string;
     city?: string;
     state?: string;
     zipCode?: string;
+    phone?: string;
   }) => void;
   placeholder?: string;
   label?: string;
@@ -36,10 +37,11 @@ export function CompanyAddressAutocomplete({
     
     onSelectCompany({
       name: company.name,
-      streetAddress: company.address,
+      address: company.address,
       city: company.city,
       state: company.state,
-      zipCode: company.zipCode
+      zipCode: company.zipCode,
+      phone: company.phone
     });
   };
 
@@ -89,7 +91,12 @@ export function CompanyAddressAutocomplete({
                     <span className="font-medium">{company.name}</span>
                     {company.address && (
                       <span className="text-sm text-muted-foreground">
-                        {company.address}
+                        📍 {company.address}
+                      </span>
+                    )}
+                    {company.phone && (
+                      <span className="text-xs text-muted-foreground">
+                        📞 {company.phone}
                       </span>
                     )}
                   </div>

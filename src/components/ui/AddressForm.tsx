@@ -26,10 +26,11 @@ interface AddressFormProps {
   showCompanyAutocomplete?: boolean;
   onCompanySelect?: (company: {
     name: string;
-    streetAddress: string;
+    address: string;
     city?: string;
     state?: string;
     zipCode?: string;
+    phone?: string;
   }) => void;
 }
 
@@ -91,12 +92,13 @@ export function AddressForm({
 
   const handleCompanySelect = (company: {
     name: string;
-    streetAddress: string;
+    address: string;
     city?: string;
     state?: string;
     zipCode?: string;
+    phone?: string;
   }) => {
-    onStreetAddressChange(company.streetAddress);
+    onStreetAddressChange(company.address);
     if (company.zipCode) onZipCodeChange(company.zipCode);
     if (company.state) onStateChange(company.state);
     if (company.city) onCityChange(company.city);
