@@ -92,25 +92,28 @@ export const getPeriodNumber = (
         const dayOfYear = Math.floor((start.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)) + 1;
         const weekNumber = Math.ceil((dayOfYear + startOfYear.getDay()) / 7);
         
-        const weekText = language === 'es' ? 'Semana' : 'Week';
-        return `${weekText} ${weekNumber}, ${year}`;
+        return `Week ${weekNumber} / ${year}`;
       }
       
       case 'biweekly': {
-        // Calcular número de quincena del año (1-26)
-        const startOfYear = new Date(year, 0, 1);
-        const dayOfYear = Math.floor((start.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)) + 1;
-        const biweekNumber = Math.ceil(dayOfYear / 14);
+        // Calcular quincena del mes (Q1 o Q2)
+        const month = start.getMonth();
+        const day = start.getDate();
+        const quarterNumber = day <= 15 ? 'Q1' : 'Q2';
         
-        const biweekText = language === 'es' ? 'Quincena' : 'Biweek';
-        return `${biweekText} ${biweekNumber}, ${year}`;
+        // Obtener nombre corto del mes
+        const locale = language === 'es' ? es : enUS;
+        const monthName = format(start, 'MMM', { locale });
+        
+        return `${monthName} ${quarterNumber} / ${year}`;
       }
       
       case 'monthly': {
-        // Calcular mes del año (1-12)
-        const month = start.getMonth() + 1;
-        const monthText = language === 'es' ? 'Mes' : 'Month';
-        return `${monthText} ${month}, ${year}`;
+        // Obtener nombre completo del mes
+        const locale = language === 'es' ? es : enUS;
+        const monthName = format(start, 'MMMM', { locale });
+        
+        return `${monthName} / ${year}`;
       }
       
       default:
