@@ -896,6 +896,11 @@
     "select_file_error": "Por favor selecciona un archivo PDF",
     "upload_success": "POD subido exitosamente",
     "upload_error": "Error al subir el POD"
-  },
-  "latest_update": "Última Actualización"
-}
+   },
+   "latest_update": "Última Actualización",
+   "percentages": {
+     "leasing_short": "A",
+     "factoring_short": "F",
+     "dispatching_short": "D"
+   }
+ }
