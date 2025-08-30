@@ -26,6 +26,8 @@ interface LoadAssignmentSectionProps {
   onLeasingPercentageChange?: (value: number) => void;
   onFactoringPercentageChange?: (value: number) => void;
   onDispatchingPercentageChange?: (value: number) => void;
+  percentagesInitialized?: string | null;
+  onPercentagesInitialized?: (driverId: string | null) => void;
 }
 
 export function LoadAssignmentSection({ 
@@ -40,16 +42,15 @@ export function LoadAssignmentSection({
   dispatchingPercentage,
   onLeasingPercentageChange,
   onFactoringPercentageChange,
-  onDispatchingPercentageChange
+  onDispatchingPercentageChange,
+  percentagesInitialized,
+  onPercentagesInitialized
 }: LoadAssignmentSectionProps) {
   const { t } = useTranslation();
   const activeDrivers = drivers.filter(driver => driver.is_active);
   
   // Get owner operator data for selected driver
   const { ownerOperator, isOwnerOperator, isLoading: ownerOperatorLoading } = useOwnerOperator(selectedDriver?.user_id);
-
-  // State to track if percentages have been manually changed
-  const [percentagesInitialized, setPercentagesInitialized] = useState<string | null>(null);
 
   // Auto-populate percentages when owner operator is selected (only once per driver)
   useEffect(() => {
@@ -78,7 +79,8 @@ export function LoadAssignmentSection({
         percentagesInitialized !== selectedDriver.user_id &&
         onLeasingPercentageChange && 
         onFactoringPercentageChange && 
-        onDispatchingPercentageChange) {
+        onDispatchingPercentageChange &&
+        onPercentagesInitialized) {
       
       console.log('✅ LoadAssignmentSection - Applying Owner Operator percentages for new driver...');
       
@@ -99,10 +101,10 @@ export function LoadAssignmentSection({
       }
 
       // Mark that we've initialized percentages for this driver
-      setPercentagesInitialized(selectedDriver.user_id);
+      onPercentagesInitialized(selectedDriver.user_id);
     } else if (!selectedDriver) {
       // Reset when no driver is selected
-      setPercentagesInitialized(null);
+      onPercentagesInitialized?.(null);
     } else {
       console.log('❌ LoadAssignmentSection - Conditions not met for auto-population');
     }

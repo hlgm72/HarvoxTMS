@@ -81,6 +81,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const [loadDocuments, setLoadDocuments] = useState<any[]>([]);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [selectedDispatcher, setSelectedDispatcher] = useState<any>(null);
+  const [percentagesInitialized, setPercentagesInitialized] = useState<string | null>(null);
 
   // Hooks
   const { drivers } = useCompanyDrivers();
@@ -223,6 +224,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           setSelectedDispatcher(dispatcher);
         }
       }
+
+      // Reset percentages initialization when loading new data
+      setPercentagesInitialized(null);
 
       // Set stops (for both edit and duplicate modes)
       if (activeLoadData.stops && activeLoadData.stops.length > 0) {
@@ -985,6 +989,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 onLeasingPercentageChange={(value) => form.setValue("leasing_percentage", value)}
                 onFactoringPercentageChange={(value) => form.setValue("factoring_percentage", value)}
                 onDispatchingPercentageChange={(value) => form.setValue("dispatching_percentage", value)}
+                percentagesInitialized={percentagesInitialized}
+                onPercentagesInitialized={setPercentagesInitialized}
               />
             )}
 
