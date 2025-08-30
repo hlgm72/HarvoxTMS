@@ -42,14 +42,22 @@ export const useCompanyAutocomplete = (searchTerm: string) => {
 
         const companyIds = userCompanies.map(uc => uc.company_id);
 
-        // Search for companies in company_clients table
+        // Search for companies in load_stops from previous loads
         const { data, error } = await supabase
-          .from('company_clients')
-          .select('name, address, phone')
-          .in('company_id', companyIds)
-          .eq('is_active', true)
-          .ilike('name', `%${debouncedSearchTerm}%`)
-          .limit(10);
+          .from('load_stops')
+          .select(`
+            company_name,
+            address,
+            city,
+            state,
+            zip_code,
+            loads!inner(company_id)
+          `)
+          .in('loads.company_id', companyIds)
+          .ilike('company_name', `%${debouncedSearchTerm}%`)
+          .not('company_name', 'is', null)
+          .not('company_name', 'eq', '')
+          .limit(20);
 
         if (error) {
           console.error('Error fetching companies:', error);
@@ -57,14 +65,23 @@ export const useCompanyAutocomplete = (searchTerm: string) => {
           return;
         }
 
-        // Convert to options format
-        const companyOptions = data?.map(company => ({
-          value: company.name,
-          label: company.name,
-          address: company.address || '',
-          phone: company.phone || ''
-        })) || [];
+        // Remove duplicates and convert to options format
+        const uniqueCompanies = new Map();
+        
+        data?.forEach(stop => {
+          if (stop.company_name && !uniqueCompanies.has(stop.company_name)) {
+            uniqueCompanies.set(stop.company_name, {
+              value: stop.company_name,
+              label: stop.company_name,
+              address: stop.address || '',
+              city: stop.city || '',
+              state: stop.state || '',
+              zipCode: stop.zip_code || ''
+            });
+          }
+        });
 
+        const companyOptions = Array.from(uniqueCompanies.values()).slice(0, 10);
         setCompanies(companyOptions);
       } catch (error) {
         console.error('Error in fetchCompanies:', error);
