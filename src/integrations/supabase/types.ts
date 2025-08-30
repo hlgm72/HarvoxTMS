@@ -3900,6 +3900,7 @@ export type Database = {
       simple_load_operation: {
         Args:
           | { load_data: Json }
+          | { load_data: Json; load_id?: string; operation_type: string }
           | { load_data: Json; operation_mode?: string; stops_data: Json }
         Returns: Json
       }
