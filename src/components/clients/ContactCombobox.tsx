@@ -5,6 +5,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronsUpDown, Users, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClientContact, useClientContacts } from "@/hooks/useClients";
+import { useTranslation } from "react-i18next";
 
 interface ContactComboboxProps {
   contacts?: ClientContact[];
@@ -22,11 +23,12 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
   clientId,
   value,
   onValueChange,
-  placeholder = "Seleccionar contacto...",
+  placeholder,
   disabled = false,
   className,
   onCreateNew
 }) => {
+  const { t } = useTranslation('clients');
   const [open, setOpen] = React.useState(false);
   
   // Use the hook to fetch contacts if clientId is provided
@@ -52,7 +54,7 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Users className="h-4 w-4 flex-shrink-0" />
-          <span className="truncate">Sin contactos disponibles</span>
+          <span className="truncate">{t('messages.no_contacts_available')}</span>
         </div>
       </Button>
     );
@@ -71,7 +73,7 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <Users className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">
-              {selectedContact ? selectedContact.name : placeholder}
+              {selectedContact ? selectedContact.name : (placeholder || t('actions.select_contact'))}
             </span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -79,9 +81,9 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[280px] p-0">
         <Command>
-          <CommandInput placeholder="Buscar contacto..." />
+          <CommandInput placeholder={t('actions.search_placeholder')} />
           <CommandList>
-            <CommandEmpty>No se encontraron contactos.</CommandEmpty>
+            <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
             {onCreateNew && (
               <CommandGroup>
                 <CommandItem
@@ -92,7 +94,7 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
                   className="cursor-pointer border-b"
                 >
                   <Plus className="mr-2 h-4 w-4 text-primary" />
-                  <span className="text-primary font-medium">Crear nuevo contacto</span>
+                  <span className="text-primary font-medium">{t('contacts.add_contact')}</span>
                 </CommandItem>
               </CommandGroup>
             )}
