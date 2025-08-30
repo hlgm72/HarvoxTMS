@@ -169,18 +169,17 @@ export const useCreateLoad = () => {
         load_number: data.load_number,
         po_number: data.po_number || '',
         driver_user_id: data.driver_user_id || '',
-        internal_dispatcher_id: data.internal_dispatcher_id || '',
-        client_id: data.client_id || '',
+        internal_dispatcher_user_id: data.internal_dispatcher_id || '',
+        client_broker_id: data.client_id || '',
         client_contact_id: data.client_contact_id || '',
         total_amount: data.total_amount,
         commodity: data.commodity || '',
-        weight_lbs: toNumber(data.weight_lbs),
+        weight: toNumber(data.weight_lbs),
+        pieces: null, // Not used in current form
         notes: data.notes || '',
-        customer_name: data.customer_name || '',
         factoring_percentage: toNumber(data.factoring_percentage),
         dispatching_percentage: toNumber(data.dispatching_percentage),
-        leasing_percentage: toNumber(data.leasing_percentage),
-        company_id: userRole.company_id
+        leasing_percentage: toNumber(data.leasing_percentage)
       };
 
       // Prepare stops data
@@ -216,7 +215,9 @@ export const useCreateLoad = () => {
       const { data: result, error: acidError } = await supabase.rpc(
         'simple_load_operation',
         {
-          load_data: loadDataWithStops
+          operation_type: isEdit ? 'UPDATE' : 'CREATE',
+          load_data: loadDataWithStops,
+          load_id_param: isEdit ? data.id : null
         }
       );
 
@@ -237,7 +238,7 @@ export const useCreateLoad = () => {
       }
 
       console.log('✅ useCreateLoad - ACID operation completed:', result);
-      const loadId = (result as any).load_id;
+      const loadId = (result as any).load?.id;
 
       // Handle temporary documents upload (outside ACID transaction for performance)
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
