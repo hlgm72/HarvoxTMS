@@ -29,6 +29,7 @@ export function CompanyAutocompleteInput({
 }: CompanyAutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
+  const [isSelecting, setIsSelecting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +42,11 @@ export function CompanyAutocompleteInput({
   }, [value]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isSelecting) {
+      setIsSelecting(false);
+      return;
+    }
+    
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange(newValue);
@@ -48,15 +54,20 @@ export function CompanyAutocompleteInput({
   };
 
   const handleSelect = (company: CompanyOption) => {
+    setIsSelecting(true);
     setInputValue(company.label);
     onChange(company.label);
     setIsOpen(false);
-    inputRef.current?.blur();
     
     // Call the onCompanySelect callback to auto-fill address fields
     if (onCompanySelect) {
       onCompanySelect(company);
     }
+    
+    // Use setTimeout to ensure the selection is processed
+    setTimeout(() => {
+      setIsSelecting(false);
+    }, 100);
   };
 
   const handleBlur = (e: React.FocusEvent) => {

@@ -27,6 +27,7 @@ export function AutocompleteInput({
 }: AutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
+  const [isSelecting, setIsSelecting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +40,11 @@ export function AutocompleteInput({
   }, [value]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isSelecting) {
+      setIsSelecting(false);
+      return;
+    }
+    
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange(newValue);
@@ -46,10 +52,15 @@ export function AutocompleteInput({
   };
 
   const handleSelect = (selectedValue: string) => {
+    setIsSelecting(true);
     setInputValue(selectedValue);
     onChange(selectedValue);
     setIsOpen(false);
-    inputRef.current?.blur();
+    
+    // Use setTimeout to ensure the selection is processed
+    setTimeout(() => {
+      setIsSelecting(false);
+    }, 100);
   };
 
   const handleBlur = (e: React.FocusEvent) => {
