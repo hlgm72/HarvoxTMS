@@ -217,7 +217,7 @@ export const useCreateLoad = () => {
         {
           operation_type: isEdit ? 'UPDATE' : 'CREATE',
           load_data: loadDataWithStops,
-          load_id_param: isEdit ? data.id : null
+          load_id_param: isEdit && data.id ? data.id : null
         }
       );
 
