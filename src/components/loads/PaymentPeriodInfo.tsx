@@ -84,13 +84,12 @@ const PaymentPeriodInfo = ({
       <div className="flex items-center gap-1 text-sm text-muted-foreground">
         <Calendar className="h-4 w-4" />
         <span>
-          {t('payment_period')}
+          {formattedPeriod}
           {periodNumber && (
             <span className="text-xs text-muted-foreground ml-1">
               ({periodNumber})
             </span>
           )}
-          : {formattedPeriod}
         </span>
       </div>
       
