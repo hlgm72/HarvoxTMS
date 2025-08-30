@@ -261,9 +261,11 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         // Aplicar filtro de períodos si hay alguno
         if (relevantPeriodIds.length > 0) {
-          loadsQuery = loadsQuery.in('payment_period_id', relevantPeriodIds);
+          // Incluir cargas del período Y cargas sin período asignado (recién creadas)
+          loadsQuery = loadsQuery.or(`payment_period_id.in.(${relevantPeriodIds.join(',')}),payment_period_id.is.null`);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
-          loadsQuery = loadsQuery.eq('id', '00000000-0000-0000-0000-000000000000');
+          // Si no hay períodos relevantes pero hay filtro, mostrar solo cargas sin período
+          loadsQuery = loadsQuery.is('payment_period_id', null);
         }
 
         // Aplicar límites inteligentes
