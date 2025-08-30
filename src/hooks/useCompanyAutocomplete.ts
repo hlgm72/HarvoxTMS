@@ -43,6 +43,36 @@ export const useCompanyAutocomplete = (searchTerm: string) => {
         const companyIds = userCompanies.map(uc => uc.company_id);
 
         // Search for companies in load_stops from previous loads only
+        // Get all users from the company first
+        const { data: companyUsers } = await supabase
+          .from('user_company_roles')
+          .select('user_id')
+          .in('company_id', companyIds)
+          .eq('is_active', true);
+
+        if (!companyUsers || companyUsers.length === 0) {
+          setCompanies([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const userIds = companyUsers.map(cu => cu.user_id);
+
+        // Get loads for these users
+        const { data: userLoads } = await supabase
+          .from('loads')
+          .select('id')
+          .in('driver_user_id', userIds);
+
+        if (!userLoads || userLoads.length === 0) {
+          setCompanies([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const loadIds = userLoads.map(l => l.id);
+
+        // Now get load_stops for these loads
         const { data, error } = await supabase
           .from('load_stops')
           .select(`
@@ -50,10 +80,9 @@ export const useCompanyAutocomplete = (searchTerm: string) => {
             address,
             city,
             state,
-            zip_code,
-            loads!inner(company_id)
+            zip_code
           `)
-          .in('loads.company_id', companyIds)
+          .in('load_id', loadIds)
           .ilike('company_name', `%${debouncedSearchTerm}%`)
           .not('company_name', 'is', null)
           .not('company_name', 'eq', '')
