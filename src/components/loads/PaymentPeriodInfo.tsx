@@ -80,30 +80,36 @@ const PaymentPeriodInfo = ({
   const periodNumber = getPeriodNumber(periodStartDate, periodEndDate, periodFrequency);
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Calendar className="h-4 w-4" />
-        <span>
-          {formattedPeriod}
-          {periodNumber && (
-            <span className="text-xs text-muted-foreground ml-1">
-              ({periodNumber})
-            </span>
-          )}
-        </span>
+    <div className={`${className}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <h3 className="text-sm font-medium text-muted-foreground uppercase">
+          {t('period.payment_period')}
+        </h3>
+        {periodNumber && (
+          <span className="text-xs text-muted-foreground">
+            ({periodNumber})
+          </span>
+        )}
       </div>
       
-      {periodFrequency && (
-        <Badge variant="outline" className="text-xs">
-          {getFrequencyText(periodFrequency)}
-        </Badge>
-      )}
-      
-      {periodStatus && (
-        <Badge variant="outline" className={`text-xs border-transparent ${getStatusColor(periodStatus)}`}>
-          {getStatusText(periodStatus)}
-        </Badge>
-      )}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Calendar className="h-4 w-4" />
+          <span>{formattedPeriod}</span>
+        </div>
+        
+        {periodFrequency && (
+          <Badge variant="outline" className="text-xs">
+            {getFrequencyText(periodFrequency)}
+          </Badge>
+        )}
+        
+        {periodStatus && (
+          <Badge variant="outline" className={`text-xs border-transparent ${getStatusColor(periodStatus)}`}>
+            {getStatusText(periodStatus)}
+          </Badge>
+        )}
+      </div>
     </div>
   );
 };
