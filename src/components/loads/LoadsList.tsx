@@ -266,23 +266,32 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     return actions;
   };
   
-  // Aplicar filtros a los datos reales
-  const filteredLoads = loads.filter(load => {
-    if (filters.status !== "all" && load.status !== filters.status) return false;
-    
-    // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
-    if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
-    
-    if (filters.broker !== "all" && load.broker_name !== filters.broker) return false;
-    
-    // Filtro por rango de fechas
-    if (filters.dateRange.from && filters.dateRange.to) {
-      const loadDate = new Date(load.created_at);
-      if (loadDate < filters.dateRange.from || loadDate > filters.dateRange.to) return false;
-    }
-    
-    return true;
-  });
+  // Aplicar filtros a los datos reales y ordenar por período de pago
+  const filteredLoads = loads
+    .filter(load => {
+      if (filters.status !== "all" && load.status !== filters.status) return false;
+      
+      // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
+      if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
+      
+      if (filters.broker !== "all" && load.broker_name !== filters.broker) return false;
+      
+      // Filtro por rango de fechas
+      if (filters.dateRange.from && filters.dateRange.to) {
+        const loadDate = new Date(load.created_at);
+        if (loadDate < filters.dateRange.from || loadDate > filters.dateRange.to) return false;
+      }
+      
+      return true;
+    })
+    .sort((a, b) => {
+      // Ordenar por fecha de inicio del período de pago (más reciente primero)
+      if (a.period_start_date && b.period_start_date) {
+        return new Date(b.period_start_date).getTime() - new Date(a.period_start_date).getTime();
+      }
+      // Si no hay período, ordenar por fecha de creación
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   if (isLoading) {
     return <LoadingState t={t} />;
