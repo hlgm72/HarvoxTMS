@@ -70,7 +70,7 @@ export function LoadAssignmentSection({
     if (isOwnerOperator && ownerOperator && onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange) {
       console.log('✅ LoadAssignmentSection - Applying Owner Operator percentages...');
       
-      // Always apply owner operator percentages when an owner operator is selected
+      // Only apply owner operator percentages when a new owner operator is selected
       if (ownerOperator.leasing_percentage !== undefined && ownerOperator.leasing_percentage !== null) {
         console.log('🔄 LoadAssignmentSection - Setting leasing percentage from', leasingPercentage, 'to', ownerOperator.leasing_percentage);
         onLeasingPercentageChange(ownerOperator.leasing_percentage);
@@ -88,7 +88,7 @@ export function LoadAssignmentSection({
     } else {
       console.log('❌ LoadAssignmentSection - Conditions not met for auto-population');
     }
-  }, [isOwnerOperator, ownerOperator, selectedDriver?.user_id, onLeasingPercentageChange, onFactoringPercentageChange, onDispatchingPercentageChange]);
+  }, [isOwnerOperator, ownerOperator, selectedDriver?.user_id]); // Removed callbacks from dependencies to prevent infinite loop
 
   return (
     <Card>
