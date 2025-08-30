@@ -49,7 +49,7 @@ export function AutocompleteInput({
     setInputValue(selectedValue);
     onChange(selectedValue);
     setIsOpen(false);
-    inputRef.current?.focus();
+    inputRef.current?.blur();
   };
 
   const handleBlur = (e: React.FocusEvent) => {
@@ -80,7 +80,7 @@ export function AutocompleteInput({
       />
       
       {isOpen && (commodities.length > 0 || isLoading) && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-hidden">
           <Command className="border-0">
             <CommandList>
               {isLoading ? (

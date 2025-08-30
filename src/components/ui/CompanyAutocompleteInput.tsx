@@ -51,7 +51,7 @@ export function CompanyAutocompleteInput({
     setInputValue(company.label);
     onChange(company.label);
     setIsOpen(false);
-    inputRef.current?.focus();
+    inputRef.current?.blur();
     
     // Call the onCompanySelect callback to auto-fill address fields
     if (onCompanySelect) {
@@ -94,7 +94,7 @@ export function CompanyAutocompleteInput({
         />
         
         {isOpen && (companies.length > 0 || isLoading) && (
-          <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-hidden">
+          <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-hidden">
             <Command className="border-0">
               <CommandList>
                 {isLoading ? (

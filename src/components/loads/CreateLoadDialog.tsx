@@ -841,7 +841,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                    clientId={selectedClient?.id}
                                    value={field.value}
                                    onValueChange={field.onChange}
-                                   placeholder={t("loads:create_wizard.form.contact_placeholder")}
+                                   placeholder={t("create_wizard.form.contact_placeholder")}
                                    disabled={!selectedClient}
                                    className="w-full"
                                    onCreateNew={selectedClient ? () => setShowCreateDispatcher(true) : undefined}
