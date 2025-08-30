@@ -48,7 +48,10 @@ export function LoadAssignmentSection({
   // Get owner operator data for selected driver
   const { ownerOperator, isOwnerOperator, isLoading: ownerOperatorLoading } = useOwnerOperator(selectedDriver?.user_id);
 
-  // Auto-populate percentages when owner operator is selected
+  // State to track if percentages have been manually changed
+  const [percentagesInitialized, setPercentagesInitialized] = useState<string | null>(null);
+
+  // Auto-populate percentages when owner operator is selected (only once per driver)
   useEffect(() => {
     console.log('🔍 LoadAssignmentSection - useEffect triggered:', {
       selectedDriverInfo: selectedDriver ? {
@@ -59,6 +62,7 @@ export function LoadAssignmentSection({
       isOwnerOperator,
       ownerOperatorData: ownerOperator,
       ownerOperatorLoading,
+      percentagesInitialized,
       currentPercentages: {
         leasingPercentage,
         factoringPercentage,
@@ -67,8 +71,16 @@ export function LoadAssignmentSection({
       hasCallbacks: !!(onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange)
     });
     
-    if (isOwnerOperator && ownerOperator && onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange) {
-      console.log('✅ LoadAssignmentSection - Applying Owner Operator percentages...');
+    // Only auto-populate if we have a new driver and haven't initialized percentages for this driver yet
+    if (isOwnerOperator && 
+        ownerOperator && 
+        selectedDriver && 
+        percentagesInitialized !== selectedDriver.user_id &&
+        onLeasingPercentageChange && 
+        onFactoringPercentageChange && 
+        onDispatchingPercentageChange) {
+      
+      console.log('✅ LoadAssignmentSection - Applying Owner Operator percentages for new driver...');
       
       // Only apply owner operator percentages when a new owner operator is selected
       if (ownerOperator.leasing_percentage !== undefined && ownerOperator.leasing_percentage !== null) {
@@ -85,6 +97,12 @@ export function LoadAssignmentSection({
         console.log('🔄 LoadAssignmentSection - Setting dispatching percentage from', dispatchingPercentage, 'to', ownerOperator.dispatching_percentage);
         onDispatchingPercentageChange(ownerOperator.dispatching_percentage);
       }
+
+      // Mark that we've initialized percentages for this driver
+      setPercentagesInitialized(selectedDriver.user_id);
+    } else if (!selectedDriver) {
+      // Reset when no driver is selected
+      setPercentagesInitialized(null);
     } else {
       console.log('❌ LoadAssignmentSection - Conditions not met for auto-population');
     }
