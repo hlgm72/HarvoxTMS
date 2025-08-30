@@ -28,6 +28,7 @@ import { StateCombobox } from '@/components/ui/StateCombobox';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useATMInput } from '@/hooks/useATMInput';
+import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -75,6 +76,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   const { mutate: createFuelExpense, isPending } = useFuelExpenseACID();
   const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
   const queryClient = useQueryClient();
+  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -129,43 +131,33 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
   });
 
   const onSubmit = async (data: FormData) => {
-    // Si no hay período seleccionado, generar uno antes de guardar
+    // ✅ SISTEMA BAJO DEMANDA v2.0: Usar la nueva función optimizada
     if (!data.payment_period_id && userCompany?.company_id) {
       try {
         const transactionDateStr = formatDateInUserTimeZone(data.transaction_date);
         
-        // Generar el período específico para esta fecha
-        const { data: generatedData, error } = await supabase.rpc('generate_company_payment_periods', {
-          company_id_param: userCompany.company_id,
-          from_date: transactionDateStr,
-          to_date: transactionDateStr
+        console.log('🔍 CreateFuelExpenseDialog - Ensuring payment period exists for:', {
+          company: userCompany.company_id,
+          date: transactionDateStr,
+          driver: data.driver_user_id
         });
 
-        if (error) {
-          console.error('Error generating payment period:', error);
+        // Usar el nuevo sistema bajo demanda
+        const generatedPeriodId = await ensurePaymentPeriodExists({
+          companyId: userCompany.company_id,
+          userId: data.driver_user_id,
+          targetDate: transactionDateStr
+        });
+
+        if (generatedPeriodId) {
+          data.payment_period_id = generatedPeriodId;
+          console.log('✅ Period ensured:', generatedPeriodId);
+        } else {
+          console.error('❌ Could not ensure payment period exists');
           return;
         }
-
-        if (generatedData && typeof generatedData === 'object' && 'success' in generatedData && generatedData.success) {
-          // Refetch para obtener el nuevo período
-          const updatedPeriods = await refetchPaymentPeriods();
-          
-          // Buscar el período que coincida con la fecha
-          const newMatchingPeriod = updatedPeriods.data?.find(period => {
-            const startDate = period.period_start_date;
-            const endDate = period.period_end_date;
-            return transactionDateStr >= startDate && transactionDateStr <= endDate;
-          });
-          
-          if (newMatchingPeriod) {
-            data.payment_period_id = newMatchingPeriod.id;
-          } else {
-            console.error('No se pudo crear el período de pago para la fecha');
-            return;
-          }
-        }
       } catch (error) {
-        console.error('Error generating payment period:', error);
+        console.error('❌ Error ensuring payment period:', error);
         return;
       }
     }

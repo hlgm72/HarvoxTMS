@@ -3263,6 +3263,14 @@ export type Database = {
         Args: { income_data: Json }
         Returns: Json
       }
+      create_payment_period_if_needed: {
+        Args: {
+          created_by_user_id?: string
+          target_company_id: string
+          target_date: string
+        }
+        Returns: string
+      }
       create_user_with_company_role_validation: {
         Args: { company_role_data: Json; user_data: Json }
         Returns: Json
@@ -3322,6 +3330,10 @@ export type Database = {
       enable_service_operation: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      ensure_payment_period_exists: {
+        Args: { target_company_id: string; target_date: string }
+        Returns: string
       }
       exclude_recurring_expense_from_period: {
         Args: {
