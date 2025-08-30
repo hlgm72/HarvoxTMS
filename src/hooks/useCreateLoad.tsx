@@ -170,13 +170,13 @@ export const useCreateLoad = () => {
         po_number: data.po_number || '',
         driver_user_id: data.driver_user_id || '',
         internal_dispatcher_user_id: data.internal_dispatcher_id || '',
-        client_broker_id: data.client_id || '',
+        client_id: data.client_id || '',
         client_contact_id: data.client_contact_id || '',
         total_amount: data.total_amount,
         commodity: data.commodity || '',
         weight: toNumber(data.weight_lbs),
-        pieces: null, // Not used in current form
         notes: data.notes || '',
+        customer_name: data.customer_name || '',
         factoring_percentage: toNumber(data.factoring_percentage),
         dispatching_percentage: toNumber(data.dispatching_percentage),
         leasing_percentage: toNumber(data.leasing_percentage)
