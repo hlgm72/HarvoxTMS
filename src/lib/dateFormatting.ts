@@ -69,6 +69,60 @@ export const formatPaymentPeriod = (startDate: string | null, endDate: string | 
 };
 
 /**
+ * Calcula el número de período (semana, quincena, mes) y año para mostrar en paréntesis
+ */
+export const getPeriodNumber = (
+  startDate: string | null, 
+  endDate: string | null, 
+  frequency: string | null
+): string => {
+  if (!startDate || !endDate || !frequency) {
+    return '';
+  }
+
+  try {
+    const start = new Date(startDate);
+    const year = start.getFullYear();
+    const language = getGlobalLanguage();
+
+    switch (frequency) {
+      case 'weekly': {
+        // Calcular número de semana del año (1-53)
+        const startOfYear = new Date(year, 0, 1);
+        const dayOfYear = Math.floor((start.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+        const weekNumber = Math.ceil((dayOfYear + startOfYear.getDay()) / 7);
+        
+        const weekText = language === 'es' ? 'Semana' : 'Week';
+        return `${weekText} ${weekNumber}, ${year}`;
+      }
+      
+      case 'biweekly': {
+        // Calcular número de quincena del año (1-26)
+        const startOfYear = new Date(year, 0, 1);
+        const dayOfYear = Math.floor((start.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+        const biweekNumber = Math.ceil(dayOfYear / 14);
+        
+        const biweekText = language === 'es' ? 'Quincena' : 'Biweek';
+        return `${biweekText} ${biweekNumber}, ${year}`;
+      }
+      
+      case 'monthly': {
+        // Calcular mes del año (1-12)
+        const month = start.getMonth() + 1;
+        const monthText = language === 'es' ? 'Mes' : 'Month';
+        return `${monthText} ${month}, ${year}`;
+      }
+      
+      default:
+        return '';
+    }
+  } catch (error) {
+    console.error('Error calculating period number:', error);
+    return '';
+  }
+};
+
+/**
  * Formateo compacto para períodos de pago (para filtros y espacios reducidos)
  */
 export const formatPaymentPeriodCompact = (startDate: string | null, endDate: string | null): string => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
-import { formatPaymentPeriod } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, getPeriodNumber } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
 
 interface PaymentPeriodInfoProps {
@@ -77,6 +77,7 @@ const PaymentPeriodInfo = ({
   };
 
   const formattedPeriod = formatPaymentPeriod(periodStartDate, periodEndDate);
+  const periodNumber = getPeriodNumber(periodStartDate, periodEndDate, periodFrequency);
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
@@ -84,6 +85,11 @@ const PaymentPeriodInfo = ({
         <Calendar className="h-4 w-4" />
         <span>
           {formattedPeriod}
+          {periodNumber && (
+            <span className="text-xs text-muted-foreground ml-1">
+              ({periodNumber})
+            </span>
+          )}
         </span>
       </div>
       
