@@ -257,7 +257,8 @@ export const useLoads = (filters?: LoadsFilters) => {
           .from('loads')
           .select('*')
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
-          .order('created_at', { ascending: false });
+          .order('payment_period_id', { ascending: true, nullsFirst: false })
+          .order('load_number', { ascending: true });
 
         // Aplicar filtro de períodos si hay alguno
         if (relevantPeriodIds.length > 0) {
