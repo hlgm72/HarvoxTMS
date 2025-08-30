@@ -239,6 +239,7 @@
       "client_broker_required": "*",
       "client_placeholder": "Select client or broker...",
       "client_contact": "Client Contact",
+      "contact_placeholder": "Select a contact...",
       "no_contacts_available": "No contacts available",
       "commodity": "Commodity",
       "commodity_required": "*",

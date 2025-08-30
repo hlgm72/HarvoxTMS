@@ -238,6 +238,7 @@
       "client_broker_required": "*",
       "client_placeholder": "Seleccionar cliente o broker...",
       "client_contact": "Contacto del Cliente",
+      "contact_placeholder": "Seleccionar un contacto...",
       "no_contacts_available": "Sin contactos disponibles",
       "commodity": "Mercancía",
       "commodity_required": "*",
