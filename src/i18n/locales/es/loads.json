@@ -228,6 +228,10 @@
         }
       }
     },
+    "success": {
+      "load_updated": "Carga {{number}} actualizada exitosamente",
+      "updated_message": "Los cambios a la carga {{number}} han sido guardados correctamente."
+    },
     "form": {
       "load_number": "Número de Carga",
       "load_number_required": "*",

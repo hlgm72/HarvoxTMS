@@ -229,6 +229,10 @@
         }
       }
     },
+    "success": {
+      "load_updated": "Load {{number}} updated successfully",
+      "updated_message": "Changes to load {{number}} have been saved correctly."
+    },
     "form": {
       "load_number": "Load Number",
       "load_number_required": "*",
