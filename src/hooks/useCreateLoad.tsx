@@ -318,19 +318,29 @@ export const useCreateLoad = () => {
       try {
         console.log('🔄 useCreateLoad - Triggering payment calculations refresh...');
         
-        // Obtener el período de la carga para invalidar específicamente
-        if (variables.stops && variables.stops.length > 0) {
-          const stopsWithDates = variables.stops.filter(stop => stop.scheduled_date);
-          const deliveryDate = stopsWithDates.find(stop => stop.stop_type === 'delivery')?.scheduled_date;
-          
-          if (deliveryDate) {
-            // Invalidar específicamente los cálculos del período afectado
-            queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
-            queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
-            
-            console.log('✅ useCreateLoad - Payment calculations refresh triggered');
-          }
+        // Obtener datos para el recálculo
+        if (!userRole?.company_id) {
+          console.warn('⚠️ useCreateLoad - No company_id found for recalculation');
+          return;
         }
+
+        // Llamar función de recálculo de la empresa para asegurar integridad
+        const { data: recalcResult, error: recalcError } = await supabase
+          .rpc('verify_and_recalculate_company_payments', {
+            target_company_id: userRole.company_id
+          });
+
+        if (recalcError) {
+          console.warn('⚠️ useCreateLoad - Recalculation warning:', recalcError);
+          // No fallar por esto, solo loguear
+        } else {
+          console.log('✅ useCreateLoad - Payment calculations updated:', recalcResult);
+        }
+
+        // Invalidar específicamente los cálculos del período afectado
+        queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+        queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+        
       } catch (error) {
         console.warn('⚠️ useCreateLoad - Error triggering calculations refresh:', error);
         // No fallar por esto, solo loguear
