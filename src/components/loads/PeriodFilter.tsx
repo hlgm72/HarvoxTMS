@@ -269,7 +269,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] bg-background border shadow-lg z-[100]" 
+          className="w-72 sm:w-80 p-4 max-w-[calc(100vw-1rem)] bg-background border shadow-lg z-[100] max-h-[80vh] overflow-hidden flex flex-col" 
           align="center" 
           side="bottom"
           sideOffset={4}
@@ -277,14 +277,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           avoidCollisions={true}
           collisionPadding={8}
         >
-          <div 
-            className="p-4 space-y-4" 
-            style={{ 
-              maxHeight: '60vh', 
-              overflowY: 'auto',
-              scrollBehavior: 'smooth'
-            }}
-          >
+          <div className="space-y-4 overflow-y-auto flex-1 pr-2">
             {/* Opciones rápidas */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
@@ -434,17 +427,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length}
                   </Badge>
                 </h4>
-                <div 
-                  style={{ 
-                    maxHeight: '200px', 
-                    overflowY: 'auto',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '6px',
-                    padding: '8px',
-                    backgroundColor: '#f8fafc'
-                  }}
-                  className="space-y-1"
-                >
+                <div className="space-y-1 max-h-60 overflow-y-auto border rounded-md p-2 bg-muted/10">
                   {openPeriods.map((period) => (
                     <Button
                       key={period.id}
