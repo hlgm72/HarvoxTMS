@@ -547,14 +547,30 @@ export function EventualDeductionDialog({
                     const startDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date);
                     const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
                     const frequency = paymentPeriods[0].company_payment_periods.period_frequency;
+                    const periodStart = new Date(paymentPeriods[0].company_payment_periods.period_start_date);
                     
-                    // Usar las traducciones directas que ya existen
-                    const periodType = frequency === 'weekly' ? 'Weekly' :
-                                     frequency === 'biweekly' ? 'Biweekly' :
-                                     frequency === 'monthly' ? 'Monthly' :
-                                     frequency;
+                    let periodLabel = '';
                     
-                    return `✓ ${periodType} period found: ${startDate} - ${endDate}`;
+                    if (frequency === 'weekly') {
+                      // Calcular número de semana del año
+                      const startOfYear = new Date(periodStart.getFullYear(), 0, 1);
+                      const weekNumber = Math.ceil(((periodStart.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
+                      periodLabel = `Period Week ${weekNumber}/${periodStart.getFullYear()}`;
+                    } else if (frequency === 'biweekly') {
+                      // Determinar si es primera o segunda quincena
+                      const day = periodStart.getDate();
+                      const monthName = periodStart.toLocaleDateString('en-US', { month: 'short' });
+                      const quinzena = day <= 15 ? 'Q1' : 'Q2';
+                      periodLabel = `Period ${monthName} ${quinzena}/${periodStart.getFullYear()}`;
+                    } else if (frequency === 'monthly') {
+                      // Mostrar nombre del mes
+                      const monthName = periodStart.toLocaleDateString('en-US', { month: 'long' });
+                      periodLabel = `Period ${monthName}/${periodStart.getFullYear()}`;
+                    } else {
+                      periodLabel = `Period ${frequency}`;
+                    }
+                    
+                    return `✓ ${periodLabel}: ${startDate} - ${endDate}`;
                   })()}
                 </p>
               </div>
