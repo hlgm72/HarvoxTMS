@@ -113,7 +113,8 @@
       "basic_info": "Información Básica",
       "fuel_details": "Detalles del Combustible", 
       "additional_info": "Información Adicional",
-      "station_info": "Información de la Estación"
+      "station_info": "Información de la Estación",
+      "payment_info": "Información de Pago"
     },
     "fields": {
       "transaction_date": "Fecha de Transacción *",

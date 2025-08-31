@@ -752,7 +752,7 @@ export function FuelExpenseDialog({
             {!isEditMode && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">
-                  {t('fuel:create_dialog.sections.additional_info')}
+                  {t('fuel:create_dialog.sections.payment_info')}
                 </h3>
                 
                 <div className="grid grid-cols-2 gap-4">

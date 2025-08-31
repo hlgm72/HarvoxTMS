@@ -113,7 +113,8 @@
       "basic_info": "Basic Information",
       "fuel_details": "Fuel Details",
       "additional_info": "Additional Information",
-      "station_info": "Station Information"
+      "station_info": "Station Information",
+      "payment_info": "Payment Information"
     },
     "fields": {
       "transaction_date": "Transaction Date *",
