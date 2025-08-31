@@ -18,14 +18,14 @@ export function FuelViewToggle({ currentView, onViewChange }: FuelViewToggleProp
   ];
 
   return (
-    <div className="flex gap-1 p-1 bg-muted rounded-lg">
+    <div className="flex gap-1 p-1 bg-muted rounded-lg border">
       {views.map((view) => (
         <Button
           key={view.key}
           variant={currentView === view.key ? "default" : "ghost"}
           size="sm"
           onClick={() => onViewChange(view.key)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 min-w-[40px]"
         >
           <view.icon className="h-4 w-4" />
           <span className="hidden sm:inline">{view.label}</span>
