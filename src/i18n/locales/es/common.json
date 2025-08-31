@@ -23,38 +23,10 @@
     "filters": {
       "title": "Filtros",
       "description": "Filtrar datos por diferentes criterios",
-      "filters": "Filtros",
-      "filters_active": "Filtros (activos)",
-      "applied_filters": "Filtros Aplicados",
+      "label": "Filtros",
+      "label_active": "Filtros (activos)",
       "clear": "Limpiar",
-      "status": "Estado",
-      "driver": "Conductor",
-      "broker": "Broker",
-      "period": "Período",
-      "date_range": "Rango de Fechas",
-      "expense_type": "Tipo de Gasto",
-      "expense_date": "Fecha del Gasto", 
-      "all_types": "Todos los tipos",
-      "placeholders": {
-        "status": "Seleccionar estado",
-        "driver": "Seleccionar conductor",
-        "broker": "Seleccionar broker",
-        "period": "Seleccionar período", 
-        "date_range": "Seleccionar rango de fechas",
-        "loading": "Cargando...",
-        "expense_type": "Seleccionar tipo"
-      },
-      "options": {
-        "status": {
-          "all": "Todos los estados"
-        },
-        "driver": {
-          "all": "Todos los conductores"
-        },
-        "broker": {
-          "all": "Todos los brokers"
-        }
-      }
+      "active_filters": "Filtros Activos"
     },
     "status_options": {
       "all": "Todos los estados",
@@ -65,7 +37,7 @@
     "export": {
       "title": "Exportar Datos",
       "description": "Exportar datos en diferentes formatos",
-      "export": "Exportar",
+      "label": "Exportar",
       "pdf": "Exportar a PDF", 
       "excel": "Exportar a Excel",
       "options_title": "Opciones de Exportación",
@@ -76,7 +48,7 @@
     "view": {
       "title": "Configuración de Vista",
       "description": "Personalizar cómo se muestran los datos",
-      "view": "Vista",
+      "label": "Vista",
       "sort_by": "Ordenar por",
       "group_by": "Agrupar por",
       "density": "Densidad", 
@@ -112,13 +84,13 @@
     },
     "stats": {
       "title": "Estadísticas",
-      "description": "Ver estadísticas rápidas", 
-      "statistics": "Estadísticas"
+      "description": "Ver estadísticas rápidas",
+      "label": "Estadísticas"
     },
     "sync": {
       "title": "Sincronización FleetOne",
       "description": "Sincronizar transacciones directamente desde la API de FleetOne",
-      "sync": "FleetOne",
+      "label": "Sincronizar",
       "sync_transactions": "Sincronizar Transacciones",
       "syncing": "Sincronizando...",
       "date_from": "Fecha desde (opcional)",

@@ -74,7 +74,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
   // Build floating actions based on config
   const floatingActions = finalConfig.actions.map(action => ({
     icon: action.icon,
-    label: t(action.labelKey, { ns: finalConfig.namespace }),
+    label: t(action.labelKey, { ns: 'common' }), // ← Cambiado a 'common'
     onClick: () => openSheet(action.key),
     variant: action.variant || 'secondary' as const,
     className: cn(
@@ -248,7 +248,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
               ) : (
                 <FileText className="h-4 w-4 mr-2" />
               )}
-              {t('floating_actions.export_pdf', { ns: 'common' }) || 'Exportar como PDF'}
+              {t('floating_actions.export.pdf', { ns: 'common' }) || 'Exportar como PDF'}
             </Button>
           )}
           
@@ -264,7 +264,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
               ) : (
                 <FileText className="h-4 w-4 mr-2" />
               )}
-              {t('floating_actions.export_excel', { ns: 'common' }) || 'Exportar como Excel'}
+              {t('floating_actions.export.excel', { ns: 'common' }) || 'Exportar como Excel'}
             </Button>
           )}
           
@@ -280,7 +280,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
               ) : (
                 <FileText className="h-4 w-4 mr-2" />
               )}
-              {t('floating_actions.export_csv', { ns: 'common' }) || 'Exportar como CSV'}
+              {t('floating_actions.export.csv', { ns: 'common' }) || 'Exportar como CSV'}
             </Button>
           )}
         </div>
@@ -296,10 +296,10 @@ export function UniversalFloatingActions<T extends BaseFilters>({
       <div className="space-y-6">
         <div className="space-y-4">
           <h3 className="text-sm font-medium mb-3">
-            {t('floating_actions.sync.title', { ns: finalConfig.namespace })}
+            {t('floating_actions.sync.title', { ns: 'common' })}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {t('floating_actions.sync.description', { ns: finalConfig.namespace })}
+            {t('floating_actions.sync.description', { ns: 'common' })}
           </p>
           <Button
             onClick={() => onSyncHandler?.()}
@@ -309,10 +309,10 @@ export function UniversalFloatingActions<T extends BaseFilters>({
             {syncLoading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('floating_actions.sync.syncing', { ns: finalConfig.namespace })}
+                {t('floating_actions.sync.syncing', { ns: 'common' })}
               </>
             ) : (
-              t('floating_actions.sync.sync_transactions', { ns: finalConfig.namespace })
+              t('floating_actions.sync.sync_transactions', { ns: 'common' })
             )}
           </Button>
         </div>
@@ -335,12 +335,12 @@ export function UniversalFloatingActions<T extends BaseFilters>({
           <SheetHeader>
             <SheetTitle>
               {finalConfig.actions.find(a => a.key === activeTab)?.titleKey && 
-                t(finalConfig.actions.find(a => a.key === activeTab)!.titleKey, { ns: finalConfig.namespace })
+                t(finalConfig.actions.find(a => a.key === activeTab)!.titleKey, { ns: 'common' })
               }
             </SheetTitle>
             <SheetDescription>
               {finalConfig.actions.find(a => a.key === activeTab)?.descriptionKey && 
-                t(finalConfig.actions.find(a => a.key === activeTab)!.descriptionKey!, { ns: finalConfig.namespace })
+                t(finalConfig.actions.find(a => a.key === activeTab)!.descriptionKey!, { ns: 'common' })
               }
             </SheetDescription>
           </SheetHeader>
@@ -354,10 +354,10 @@ export function UniversalFloatingActions<T extends BaseFilters>({
                     {t('floating_actions.applied_filters', { ns: 'common' }) || 'Filtros Aplicados'}
                   </h3>
                   {hasActiveFilters && (
-                    <Button variant="outline" size="sm" onClick={clearFilters}>
-                      <FilterX className="h-3 w-3 mr-1" />
-                      {t('filters.clear', { ns: 'common' }) || 'Limpiar'}
-                    </Button>
+                     <Button variant="outline" size="sm" onClick={clearFilters}>
+                       <FilterX className="h-3 w-3 mr-1" />
+                       {t('floating_actions.filters.clear', { ns: 'common' }) || 'Limpiar'}
+                     </Button>
                   )}
                 </div>
 
@@ -368,9 +368,9 @@ export function UniversalFloatingActions<T extends BaseFilters>({
                   {hasActiveFilters && (
                     <div className="space-y-2">
                       <Separator />
-                      <h4 className="text-sm font-medium">
-                        {t('filters.active_filters', { ns: 'common' }) || 'Filtros Activos'}
-                      </h4>
+                       <h4 className="text-sm font-medium">
+                         {t('floating_actions.filters.active_filters', { ns: 'common' }) || 'Filtros Activos'}
+                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {activeFilterBadges.map((badge) => (
                           <Badge key={badge.key} variant="secondary">
@@ -397,10 +397,10 @@ export function UniversalFloatingActions<T extends BaseFilters>({
             {activeTab === 'view' && (
               <div className="space-y-6">
                 <h3 className="text-sm font-medium mb-3">
-                  {t('floating_actions.view.title', { ns: finalConfig.namespace })}
+                  {t('floating_actions.view.title', { ns: 'common' })}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {t('floating_actions.view.description', { ns: finalConfig.namespace }) || 
+                  {t('floating_actions.view.description', { ns: 'common' }) || 
                    'Opciones de vista disponibles próximamente.'}
                 </p>
               </div>

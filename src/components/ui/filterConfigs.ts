@@ -34,7 +34,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
     {
       key: 'filters',
       icon: Filter,
-      labelKey: 'floating_actions.filters.filters',
+      labelKey: 'floating_actions.filters.label',
       titleKey: 'floating_actions.filters.title',
       descriptionKey: 'floating_actions.filters.description',
       variant: 'secondary'
@@ -42,7 +42,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
     {
       key: 'sync',
       icon: RefreshCw,
-      labelKey: 'floating_actions.sync.sync',
+      labelKey: 'floating_actions.sync.label',
       titleKey: 'floating_actions.sync.title',
       descriptionKey: 'floating_actions.sync.description',
       variant: 'secondary'
@@ -50,7 +50,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
     {
       key: 'export',
       icon: Download,
-      labelKey: 'floating_actions.export.export',
+      labelKey: 'floating_actions.export.label',
       titleKey: 'floating_actions.export.title',
       descriptionKey: 'floating_actions.export.description',
       variant: 'secondary'
@@ -58,7 +58,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
     {
       key: 'view',
       icon: Settings,
-      labelKey: 'floating_actions.view.view',
+      labelKey: 'floating_actions.view.label',
       titleKey: 'floating_actions.view.title',
       descriptionKey: 'floating_actions.view.description',
       variant: 'secondary'
@@ -66,7 +66,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
     {
       key: 'stats',
       icon: BarChart3,
-      labelKey: 'floating_actions.stats.statistics',
+      labelKey: 'floating_actions.stats.label',
       titleKey: 'floating_actions.stats.title',
       descriptionKey: 'floating_actions.stats.description',
       variant: 'secondary'
@@ -214,28 +214,28 @@ export const loadsConfig: ContextConfig<LoadsFilters> = {
     {
       key: 'filters',
       icon: Filter,
-      labelKey: 'floating_actions.filters.filters',
+      labelKey: 'floating_actions.filters.label',
       titleKey: 'floating_actions.filters.title',
       variant: 'secondary'
     },
     {
       key: 'export',
       icon: Download,
-      labelKey: 'floating_actions.export.export',
+      labelKey: 'floating_actions.export.label',
       titleKey: 'floating_actions.export.title',
       variant: 'secondary'
     },
     {
       key: 'view',
       icon: Settings,
-      labelKey: 'floating_actions.view.view',
+      labelKey: 'floating_actions.view.label',
       titleKey: 'floating_actions.view.title',
       variant: 'secondary'
     },
     {
       key: 'stats',
       icon: BarChart3,
-      labelKey: 'floating_actions.stats.statistics',
+      labelKey: 'floating_actions.stats.label',
       titleKey: 'floating_actions.stats.title',
       variant: 'secondary'
     }
@@ -379,21 +379,21 @@ export const deductionsConfig: ContextConfig<DeductionsFilters> = {
     {
       key: 'filters',
       icon: Filter,
-      labelKey: 'floating_actions.filters.title',
+      labelKey: 'floating_actions.filters.label',
       titleKey: 'floating_actions.filters.title',
       variant: 'secondary'
     },
     {
       key: 'export',
       icon: Download,
-      labelKey: 'floating_actions.export.title',
+      labelKey: 'floating_actions.export.label',
       titleKey: 'floating_actions.export.title',
       variant: 'secondary'
     },
     {
       key: 'stats',
       icon: BarChart3,
-      labelKey: 'floating_actions.stats.title',
+      labelKey: 'floating_actions.stats.label',
       titleKey: 'floating_actions.stats.title',
       variant: 'secondary'
     }
@@ -535,7 +535,7 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
     {
       key: 'filters',
       icon: Filter,
-      labelKey: 'floating_actions.filters',
+      labelKey: 'floating_actions.filters.label',
       titleKey: 'floating_actions.filters_title',
       descriptionKey: 'floating_actions.filters_description',
       variant: 'secondary'
@@ -543,7 +543,7 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
     {
       key: 'export',
       icon: Download,
-      labelKey: 'floating_actions.export',
+      labelKey: 'floating_actions.export.label',
       titleKey: 'floating_actions.export_title',
       descriptionKey: 'floating_actions.export_description',
       variant: 'secondary'
@@ -551,7 +551,7 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
     {
       key: 'stats',
       icon: BarChart3,
-      labelKey: 'floating_actions.stats',
+      labelKey: 'floating_actions.stats.label',
       titleKey: 'floating_actions.stats_title',
       descriptionKey: 'floating_actions.stats_description',
       variant: 'secondary'

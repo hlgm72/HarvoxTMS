@@ -23,38 +23,10 @@
     "filters": {
       "title": "Filters",
       "description": "Filter data by different criteria",
-      "filters": "Filters",
-      "filters_active": "Filters (active)",
-      "applied_filters": "Applied Filters",
+      "label": "Filters",
+      "label_active": "Filters (active)",
       "clear": "Clear",
-      "status": "Status",
-      "driver": "Driver",
-      "broker": "Broker",
-      "period": "Period",
-      "date_range": "Date Range",
-      "expense_type": "Expense Type",
-      "expense_date": "Expense Date",
-      "all_types": "All types",
-      "placeholders": {
-        "status": "Select status",
-        "driver": "Select driver",
-        "broker": "Select broker", 
-        "period": "Select period",
-        "date_range": "Select date range",
-        "loading": "Loading...",
-        "expense_type": "Select type"
-      },
-      "options": {
-        "status": {
-          "all": "All statuses"
-        },
-        "driver": {
-          "all": "All drivers"
-        },
-        "broker": {
-          "all": "All brokers"
-        }
-      }
+      "active_filters": "Active Filters"
     },
     "status_options": {
       "all": "All statuses",
@@ -64,8 +36,8 @@
     },
     "export": {
       "title": "Export Data",
-      "description": "Export data in different formats",
-      "export": "Export", 
+      "description": "Export data in different formats", 
+      "label": "Export",
       "pdf": "Export to PDF",
       "excel": "Export to Excel",
       "options_title": "Export Options",
@@ -76,7 +48,7 @@
     "view": {
       "title": "View Settings",
       "description": "Customize how data is displayed",
-      "view": "View",
+      "label": "View",
       "sort_by": "Sort by",
       "group_by": "Group by", 
       "density": "Density",
@@ -113,12 +85,12 @@
     "stats": {
       "title": "Statistics",
       "description": "View quick statistics",
-      "statistics": "Statistics"
+      "label": "Statistics"
     },
     "sync": {
-      "title": "FleetOne Sync",
+      "title": "FleetOne Sync", 
       "description": "Sync transactions directly from FleetOne API",
-      "sync": "FleetOne",
+      "label": "Sync",
       "sync_transactions": "Sync Transactions",
       "syncing": "Syncing...",
       "date_from": "Date from (optional)",
