@@ -314,27 +314,50 @@ export const useCreateLoad = () => {
     onSuccess: async (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
       
-      // 🚨 RECÁLCULO AUTOMÁTICO CRÍTICO - Forzar actualización de cálculos del período
+      // 🚨 RECÁLCULO OPTIMIZADO - Solo recalcular el período afectado
       try {
-        console.log('🔄 useCreateLoad - Triggering payment calculations refresh...');
+        console.log('🔄 useCreateLoad - Triggering payment calculations refresh for affected period...');
         
-        // Obtener datos para el recálculo
-        if (!userRole?.company_id) {
-          console.warn('⚠️ useCreateLoad - No company_id found for recalculation');
-          return;
-        }
+        // Obtener el período afectado de la carga recién creada/editada
+        const { data: loadData, error: loadError } = await supabase
+          .from('loads')
+          .select('payment_period_id')
+          .eq('id', loadId)
+          .single();
 
-        // Llamar función de recálculo de la empresa para asegurar integridad
-        const { data: recalcResult, error: recalcError } = await supabase
-          .rpc('verify_and_recalculate_company_payments', {
-            target_company_id: userRole.company_id
-          });
+        if (loadError || !loadData?.payment_period_id) {
+          console.warn('⚠️ useCreateLoad - No payment period found for load, using full company recalculation');
+          
+          if (!userRole?.company_id) {
+            console.warn('⚠️ useCreateLoad - No company_id found for recalculation');
+            return;
+          }
 
-        if (recalcError) {
-          console.warn('⚠️ useCreateLoad - Recalculation warning:', recalcError);
-          // No fallar por esto, solo loguear
+          // Fallback: recalcular toda la empresa si no se puede obtener el período específico
+          const { data: recalcResult, error: recalcError } = await supabase
+            .rpc('verify_and_recalculate_company_payments', {
+              target_company_id: userRole.company_id
+            });
+
+          if (recalcError) {
+            console.warn('⚠️ useCreateLoad - Company recalculation warning:', recalcError);
+          } else {
+            console.log('✅ useCreateLoad - Full company calculations updated:', recalcResult);
+          }
         } else {
-          console.log('✅ useCreateLoad - Payment calculations updated:', recalcResult);
+          // Optimización: recalcular solo el período específico afectado
+          console.log('🎯 useCreateLoad - Recalculating specific period:', loadData.payment_period_id);
+          
+          const { data: periodRecalcResult, error: periodRecalcError } = await supabase
+            .rpc('recalculate_payment_period_totals', {
+              target_period_id: loadData.payment_period_id
+            });
+
+          if (periodRecalcError) {
+            console.warn('⚠️ useCreateLoad - Period recalculation warning:', periodRecalcError);
+          } else {
+            console.log('✅ useCreateLoad - Period calculations updated for period:', loadData.payment_period_id);
+          }
         }
 
         // Invalidar específicamente los cálculos del período afectado
