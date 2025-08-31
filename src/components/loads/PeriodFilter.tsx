@@ -257,7 +257,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <Clock className="h-4 w-4 mr-2" />
                 {t('periods.current')}
                 {currentPeriod && (
-                  <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
+                  <Badge variant="outline" className="ml-auto text-[8px] md:text-[10px] bg-white/90 text-slate-700 border-slate-300">
                     {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                   </Badge>
                 )}
