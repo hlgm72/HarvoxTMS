@@ -3915,6 +3915,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      normalize_text_case: {
+        Args: { input_text: string }
+        Returns: string
+      }
       permanently_delete_user_with_validation: {
         Args: { confirmation_email: string; user_id_param: string }
         Returns: Json
