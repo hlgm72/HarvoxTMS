@@ -650,8 +650,8 @@ export function PaymentReportDialog({
           onOpenChange(newOpen);
         }}>
           <DialogContent className="w-[95vw] max-w-none sm:max-w-6xl h-[95vh] sm:max-h-[95vh] overflow-hidden flex flex-col p-0">
-            <div className="p-4 border-b shrink-0 flex items-center justify-between">
-              <div>
+            <div className="p-4 border-b shrink-0 flex items-start justify-between pr-12">
+              <div className="flex-1 mr-4">
                 <DialogTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
                   Reporte PDF - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
@@ -662,19 +662,20 @@ export function PaymentReportDialog({
                     calculation.company_payment_periods.period_end_date
                   )}
                 </DialogDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    if (pdfUrl) {
+                      URL.revokeObjectURL(pdfUrl);
+                      setPdfUrl(null);
+                    }
+                  }}
+                  className="mt-2"
+                >
+                  Volver al Reporte
+                </Button>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  if (pdfUrl) {
-                    URL.revokeObjectURL(pdfUrl);
-                    setPdfUrl(null);
-                  }
-                }}
-              >
-                Volver al Reporte
-              </Button>
             </div>
             <div className="flex-1 overflow-hidden">
               <iframe
