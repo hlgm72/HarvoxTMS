@@ -3196,6 +3196,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      check_mass_period_creation: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          alert_level: string
+          company_id: string
+          periods_today: number
+        }[]
+      }
       check_user_role_access: {
         Args: { target_company_id: string; target_user_id: string }
         Returns: boolean
@@ -3432,13 +3440,11 @@ export type Database = {
         Returns: Json
       }
       generate_payment_periods: {
-        Args:
-          | { company_id_param: string; from_date: string; to_date: string }
-          | {
-              company_id_param: string
-              from_date_param: string
-              to_date_param: string
-            }
+        Args: {
+          company_id_param: string
+          from_date_param: string
+          to_date_param: string
+        }
         Returns: Json
       }
       generate_recurring_expenses_for_period: {
@@ -3848,6 +3854,10 @@ export type Database = {
       log_sensitive_company_access: {
         Args: { access_type_param: string; company_id_param: string }
         Returns: undefined
+      }
+      lovable_ai_safety_check: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       maintenance_cleanup: {
         Args: Record<PropertyKey, never>
