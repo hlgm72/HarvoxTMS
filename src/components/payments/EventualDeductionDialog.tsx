@@ -546,8 +546,15 @@ export function EventualDeductionDialog({
                   {(() => {
                     const startDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date);
                     const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
-                    // Usar interpolación directa en lugar de i18next
-                    return `✓ Period found: ${startDate} - ${endDate}`;
+                    const frequency = paymentPeriods[0].company_payment_periods.period_frequency;
+                    
+                    // Traducir el tipo de período usando las claves existentes
+                    const periodType = frequency === 'weekly' ? t('other_income.frequency.weekly') :
+                                     frequency === 'biweekly' ? t('other_income.frequency.biweekly') :
+                                     frequency === 'monthly' ? t('other_income.frequency.monthly') :
+                                     frequency;
+                    
+                    return `✓ ${periodType} period found: ${startDate} - ${endDate}`;
                   })()}
                 </p>
               </div>
