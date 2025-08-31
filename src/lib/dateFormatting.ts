@@ -58,34 +58,51 @@ export const formatDetailedPaymentPeriod = (
     return language === 'es' ? 'Período no definido' : 'Period not defined';
   }
 
-  const periodStart = new Date(startDate);
-  const periodEnd = new Date(endDate);
-  
-  // Format dates without year for the range - respect internationalization
+  // Use the safe date formatting functions that handle timezones correctly
   const language = getGlobalLanguage();
-  const locale = language === 'es' ? es : enUS;
   const datePattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-  const startFormatted = format(periodStart, datePattern, { locale });
-  const endFormatted = format(periodEnd, datePattern, { locale });
+  
+  // Format dates without year for the range using safe formatting
+  const startFormatted = formatDateSafe(startDate, datePattern);
+  const endFormatted = formatDateSafe(endDate, datePattern);
   const dateRange = `${startFormatted} - ${endFormatted}`;
   
   let periodLabel = '';
   
   if (frequency === 'weekly') {
-    // Calcular número de semana del año
-    const startOfYear = new Date(periodStart.getFullYear(), 0, 1);
-    const weekNumber = Math.ceil(((periodStart.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
-    periodLabel = `Week ${weekNumber}/${periodStart.getFullYear()}`;
+    // Use safe date parsing for period start
+    const periodStart = formatDateSafe(startDate, 'yyyy-MM-dd');
+    if (periodStart !== 'Fecha inválida' && periodStart !== 'Invalid date') {
+      const dateObj = parseISO(startDate);
+      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
+      const weekNumber = Math.ceil(((dateObj.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
+      const year = dateObj.getFullYear();
+      periodLabel = `Week ${weekNumber}/${year}`;
+    } else {
+      return dateRange;
+    }
   } else if (frequency === 'biweekly' || frequency === 'bi-weekly') {
-    // Determinar si es primera o segunda quincena
-    const day = periodStart.getDate();
-    const monthName = format(periodStart, 'MMM', { locale });
-    const quinzena = day <= 15 ? 'Q1' : 'Q2';
-    periodLabel = `${monthName} ${quinzena}/${periodStart.getFullYear()}`;
+    // Use safe date parsing
+    try {
+      const periodStart = parseISO(startDate);
+      const day = periodStart.getDate();
+      const locale = language === 'es' ? es : enUS;
+      const monthName = format(periodStart, 'MMM', { locale });
+      const quinzena = day <= 15 ? 'Q1' : 'Q2';
+      periodLabel = `${monthName} ${quinzena}/${periodStart.getFullYear()}`;
+    } catch {
+      return dateRange;
+    }
   } else if (frequency === 'monthly') {
-    // Mostrar nombre del mes
-    const monthName = format(periodStart, 'MMMM', { locale });
-    periodLabel = `${monthName}/${periodStart.getFullYear()}`;
+    // Use safe date parsing
+    try {
+      const periodStart = parseISO(startDate);
+      const locale = language === 'es' ? es : enUS;
+      const monthName = format(periodStart, 'MMMM', { locale });
+      periodLabel = `${monthName}/${periodStart.getFullYear()}`;
+    } catch {
+      return dateRange;
+    }
   } else {
     // Fallback para casos sin frecuencia definida
     return dateRange;
