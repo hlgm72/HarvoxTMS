@@ -443,22 +443,31 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length} períodos abiertos - Scroll para ver todos
                   </div>
                   <div 
-                    className="p-2 space-y-1"
                     style={{
-                      height: '200px',
-                      overflow: 'auto'
+                      height: '120px',
+                      overflowY: 'scroll',
+                      overflowX: 'hidden',
+                      padding: '8px',
+                      backgroundColor: 'white'
                     }}
                   >
                     {openPeriods.map((period, index) => (
-                      <button
+                      <div
                         key={period.id}
-                        className={`w-full p-2 text-left text-sm rounded border hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                          value.periodId === period.id 
-                            ? 'bg-blue-100 border-blue-300 dark:bg-blue-900 dark:border-blue-700' 
-                            : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'
-                        }`}
+                        style={{
+                          padding: '8px',
+                          marginBottom: '4px',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          backgroundColor: value.periodId === period.id ? '#dbeafe' : 'white',
+                          minHeight: '40px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
                         onClick={() => {
-                          console.log('✅ Period clicked:', index + 1, period.id);
+                          console.log('✅ CLICKED PERIOD:', index + 1, 'of', openPeriods.length);
                           handleOptionSelect({ 
                             type: 'specific', 
                             periodId: period.id,
@@ -467,15 +476,19 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           });
                         }}
                       >
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">
-                            {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
-                          </span>
-                          <span className={`text-xs px-2 py-1 rounded ${getStatusColor(period.status)}`}>
-                            {getStatusText(period.status)}
-                          </span>
-                        </div>
-                      </button>
+                        <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
+                        </span>
+                        <span style={{ 
+                          fontSize: '12px', 
+                          padding: '2px 8px', 
+                          backgroundColor: '#dcfce7', 
+                          color: '#166534',
+                          borderRadius: '12px' 
+                        }}>
+                          Open
+                        </span>
+                      </div>
                     ))}
                   </div>
                 </div>
