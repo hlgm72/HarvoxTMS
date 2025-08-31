@@ -440,6 +440,20 @@ export function PaymentReportDialog({
     try {
       console.log('🔄 handlePreviewPDF: Generando PDF documento...');
       
+      // Generate filename using the same format as download
+      const weekInfo = (() => {
+        const startDate = new Date(reportData.period.start_date + 'T12:00:00');
+        const year = startDate.getFullYear();
+        const onejan = new Date(year, 0, 1);
+        const week = Math.ceil((((startDate.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+        return { week: `Week ${week} / ${year}` };
+      })();
+      
+      const driverName = reportData.driver.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+      const year = new Date(reportData.period.start_date + 'T12:00:00').getFullYear();
+      const weekNumber = weekInfo.week.replace('Week ', 'W').replace(` / ${year}`, '');
+      const fileName = `PayReport_${year}_${weekNumber}_${driverName}.pdf`;
+      
       // Generar el PDF y obtener el documento jsPDF directamente
       const pdfDoc = await generatePaymentReportPDF(reportData, false);
       
@@ -451,12 +465,68 @@ export function PaymentReportDialog({
           URL.revokeObjectURL(pdfUrl);
         }
         
-        // Crear nuevo blob URL
+        // Crear nuevo blob con nombre específico para descarga
         const pdfBlob = pdfDoc.output('blob');
         const newPdfUrl = URL.createObjectURL(pdfBlob);
-        setPdfUrl(newPdfUrl);
         
-        console.log('✅ handlePreviewPDF: PDF listo para mostrar en iframe');
+        // Crear HTML wrapper con descarga personalizada
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html lang="es">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${fileName.replace('.pdf', '')}</title>
+            <style>
+              body, html { 
+                margin: 0; 
+                padding: 0; 
+                height: 100%; 
+                overflow: hidden; 
+                font-family: system-ui, -apple-system, sans-serif;
+              }
+              iframe { 
+                width: 100%; 
+                height: 100%; 
+                border: none; 
+              }
+              .download-btn {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: #3b82f6;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                z-index: 1000;
+              }
+            </style>
+          </head>
+          <body>
+            <button class="download-btn" onclick="downloadPDF()" title="Descargar PDF">📥 Descargar</button>
+            <iframe src="${newPdfUrl}" type="application/pdf" title="${fileName}"></iframe>
+            <script>
+              function downloadPDF() {
+                const link = document.createElement('a');
+                link.href = '${newPdfUrl}';
+                link.download = '${fileName}';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }
+            </script>
+          </body>
+          </html>
+        `;
+        
+        const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+        const htmlUrl = URL.createObjectURL(htmlBlob);
+        setPdfUrl(htmlUrl);
+        
+        console.log('✅ handlePreviewPDF: PDF listo para mostrar con nombre personalizado:', fileName);
         showSuccess("PDF Generado", "El reporte está listo para visualizar");
       } else {
         console.log('❌ handlePreviewPDF: No se pudo generar el documento PDF');
