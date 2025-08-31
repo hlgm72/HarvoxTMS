@@ -314,50 +314,50 @@ export const useCreateLoad = () => {
     onSuccess: async (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
       
-      // 🚨 RECÁLCULO OPTIMIZADO - Solo recalcular el período afectado
+      // 🚨 RECÁLCULO ULTRA-OPTIMIZADO - Solo recalcular el conductor específico
       try {
-        console.log('🔄 useCreateLoad - Triggering payment calculations refresh for affected period...');
+        console.log('🔄 useCreateLoad - Triggering driver-specific calculation refresh...');
         
-        // Obtener el período afectado de la carga recién creada/editada
-        const { data: loadData, error: loadError } = await supabase
+        // Obtener el driver_period_calculation específico para este conductor y carga
+        const { data: driverCalcData, error: driverCalcError } = await supabase
           .from('loads')
-          .select('payment_period_id')
+          .select(`
+            payment_period_id,
+            driver_user_id
+          `)
           .eq('id', loadId)
           .single();
 
-        if (loadError || !loadData?.payment_period_id) {
-          console.warn('⚠️ useCreateLoad - No payment period found for load, using full company recalculation');
-          
-          if (!userRole?.company_id) {
-            console.warn('⚠️ useCreateLoad - No company_id found for recalculation');
-            return;
-          }
+        if (driverCalcError || !driverCalcData?.payment_period_id || !driverCalcData?.driver_user_id) {
+          console.warn('⚠️ useCreateLoad - Could not get driver calculation data, skipping recalculation');
+          return;
+        }
 
-          // Fallback: recalcular toda la empresa si no se puede obtener el período específico
-          const { data: recalcResult, error: recalcError } = await supabase
-            .rpc('verify_and_recalculate_company_payments', {
-              target_company_id: userRole.company_id
-            });
+        // Buscar el driver_period_calculation específico
+        const { data: specificCalc, error: specificCalcError } = await supabase
+          .from('driver_period_calculations')
+          .select('id')
+          .eq('company_payment_period_id', driverCalcData.payment_period_id)
+          .eq('driver_user_id', driverCalcData.driver_user_id)
+          .single();
 
-          if (recalcError) {
-            console.warn('⚠️ useCreateLoad - Company recalculation warning:', recalcError);
-          } else {
-            console.log('✅ useCreateLoad - Full company calculations updated:', recalcResult);
-          }
+        if (specificCalcError || !specificCalc?.id) {
+          console.warn('⚠️ useCreateLoad - Driver calculation not found, skipping recalculation');
+          return;
+        }
+
+        // Optimización máxima: recalcular solo este conductor específico
+        console.log('🎯 useCreateLoad - Recalculating specific driver calculation:', specificCalc.id);
+        
+        const { data: driverRecalcResult, error: driverRecalcError } = await supabase
+          .rpc('recalculate_driver_period_calculation', {
+            calculation_id: specificCalc.id
+          });
+
+        if (driverRecalcError) {
+          console.warn('⚠️ useCreateLoad - Driver recalculation warning:', driverRecalcError);
         } else {
-          // Optimización: recalcular solo el período específico afectado
-          console.log('🎯 useCreateLoad - Recalculating specific period:', loadData.payment_period_id);
-          
-          const { data: periodRecalcResult, error: periodRecalcError } = await supabase
-            .rpc('recalculate_payment_period_totals', {
-              target_period_id: loadData.payment_period_id
-            });
-
-          if (periodRecalcError) {
-            console.warn('⚠️ useCreateLoad - Period recalculation warning:', periodRecalcError);
-          } else {
-            console.log('✅ useCreateLoad - Period calculations updated for period:', loadData.payment_period_id);
-          }
+          console.log('✅ useCreateLoad - Driver calculation updated for calculation:', specificCalc.id);
         }
 
         // Invalidar específicamente los cálculos del período afectado
