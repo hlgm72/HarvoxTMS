@@ -1101,6 +1101,48 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
               overflow: hidden; 
               font-family: system-ui, -apple-system, sans-serif;
             }
+            .header {
+              background: #f8f9fa;
+              border-bottom: 1px solid #e9ecef;
+              padding: 8px 16px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              z-index: 1000;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .document-name {
+              font-size: 14px;
+              font-weight: 600;
+              color: #495057;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .download-btn {
+              background: #3b82f6;
+              color: white;
+              border: none;
+              padding: 6px 12px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 13px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              transition: background-color 0.2s;
+            }
+            .download-btn:hover {
+              background: #2563eb;
+            }
+            .pdf-container {
+              height: 100vh;
+              padding-top: 50px;
+            }
             iframe { 
               width: 100%; 
               height: 100%; 
@@ -1114,10 +1156,38 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
           </style>
           <script>
             document.title = '${fileName.replace('.pdf', '')}';
+            
+            function downloadPDF() {
+              const link = document.createElement('a');
+              link.href = '${pdfUrl}';
+              link.download = '${fileName}';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+            
+            // Asegurar que el título se mantenga
+            setInterval(() => {
+              if (document.title !== '${fileName.replace('.pdf', '')}') {
+                document.title = '${fileName.replace('.pdf', '')}';
+              }
+            }, 1000);
           </script>
         </head>
         <body>
-          <iframe src="${pdfUrl}" type="application/pdf" title="${fileName}"></iframe>
+          <div class="header">
+            <div class="document-name">
+              <span>📄</span>
+              <span>${fileName.replace('.pdf', '')}</span>
+            </div>
+            <button class="download-btn" onclick="downloadPDF()" title="Descargar PDF">
+              <span>📥</span>
+              <span>Descargar</span>
+            </button>
+          </div>
+          <div class="pdf-container">
+            <iframe src="${pdfUrl}" type="application/pdf" title="${fileName}"></iframe>
+          </div>
           <div class="fallback">
             <p>Si no puedes ver el PDF, <a href="${pdfUrl}" target="_blank">haz clic aquí</a></p>
           </div>
