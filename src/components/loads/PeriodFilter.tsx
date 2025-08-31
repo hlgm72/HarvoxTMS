@@ -441,19 +441,23 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   </Badge>
                 </h4>
                 <div 
-                  className="space-y-1 border rounded-md p-2 bg-muted/10"
+                  className="space-y-1 border rounded-md p-2 bg-muted/10 relative"
                   style={{
-                    maxHeight: '240px',
+                    height: '150px',
                     overflowY: 'scroll',
-                    overflowX: 'hidden'
+                    overflowX: 'hidden',
+                    scrollbarWidth: 'thin'
                   }}
                   onScroll={(e) => console.log('🔍 Scroll event:', (e.target as HTMLElement).scrollTop)}
                 >
-                  {openPeriods.map((period, index) => (
+                  <div className="text-xs text-muted-foreground mb-2">Mostrando {openPeriods.length} períodos - Haz scroll para ver más</div>
+                  {openPeriods.map((period, index) => {
+                    console.log(`🔍 Rendering period ${index + 1}/${openPeriods.length}:`, period.id);
+                    return (
                     <Button
                       key={period.id}
                       variant={value.periodId === period.id ? 'default' : 'ghost'}
-                      className="w-full justify-start text-left h-auto py-2 flex-shrink-0"
+                      className="w-full justify-start text-left h-auto py-3 flex-shrink-0 mb-1"
                       onClick={() => {
                         console.log('🔍 Period selected:', period.id, index);
                         handleOptionSelect({ 
@@ -475,7 +479,8 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                         </div>
                       </div>
                     </Button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
