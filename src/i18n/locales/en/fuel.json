@@ -189,8 +189,13 @@
       "cancel": "Cancel",
       "save": "Save",
       "create": "Create", 
+      "save_changes": "Save Changes",
       "saving": "Saving..."
     }
+  },
+  "edit_dialog": {
+    "title": "Edit Fuel Expense",
+    "description": "Update fuel expense information"
   },
   "cards": {
     "page": {

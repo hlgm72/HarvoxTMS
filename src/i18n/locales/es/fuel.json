@@ -189,8 +189,13 @@
       "cancel": "Cancelar",
       "save": "Guardar",
       "create": "Crear",
+      "save_changes": "Guardar Cambios",
       "saving": "Guardando..."
     }
+  },
+  "edit_dialog": {
+    "title": "Editar Gasto de Combustible",
+    "description": "Actualizar información del gasto de combustible"
   },
   "cards": {
     "page": {
