@@ -3054,7 +3054,7 @@ export type Database = {
         Returns: Json
       }
       auto_assign_payment_period_to_load: {
-        Args: { company_id_param: string; load_delivery_date: string }
+        Args: { company_id_param: string; delivery_date_param: string }
         Returns: string
       }
       calculate_driver_payment_period: {
