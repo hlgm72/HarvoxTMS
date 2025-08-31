@@ -112,7 +112,8 @@
     "sections": {
       "basic_info": "Información Básica",
       "fuel_details": "Detalles del Combustible", 
-      "additional_info": "Información Adicional"
+      "additional_info": "Información Adicional",
+      "station_info": "Información de la Estación"
     },
     "fields": {
       "transaction_date": "Fecha de Transacción *",
@@ -121,28 +122,40 @@
       "vehicle": "Vehículo (Camión)",
       "fuel_type": "Tipo de Combustible *",
       "fuel_card": "Tarjeta de Combustible",
+      "driver_card": "Tarjeta del Conductor",
+      "card_last_five": "Últimos Cinco de la Tarjeta",
       "gallons": "Galones *",
       "price_per_gallon": "Precio/Galón *",
       "gross_amount": "Monto Bruto",
       "discounts": "Descuentos",
+      "discount_amount": "Monto de Descuento",
       "fees": "Comisiones",
       "total": "Total *",
+      "total_amount": "Monto Total",
       "invoice_number": "Número de Factura",
       "station_name": "Nombre de la Estación",
-      "state": "Estado", 
+      "city": "Ciudad",
+      "state": "Estado",
+      "receipt_url": "URL del Recibo", 
       "notes": "Notas"
     },
     "placeholders": {
       "select_date": "Seleccionar fecha",
       "select_driver": "Seleccionar conductor",
+      "select_period": "Seleccionar período",
       "select_truck": "Seleccionar camión",
+      "select_vehicle": "Seleccionar vehículo",
       "select_type": "Seleccionar tipo",
       "select_card": "Seleccionar tarjeta",
+      "card_example": "**** 1234",
       "gallons_amount": "0.000",
       "money_amount": "$0.00",
       "invoice_example": "INV-123456",
       "station_example": "Shell, Pilot, Loves...",
+      "city_example": "Ciudad de la estación",
       "select_state": "Selecciona estado...",
+      "receipt_url": "https://...",
+      "notes": "Notas adicionales...",
       "additional_notes": "Notas adicionales...",
       "month": "Mes",
       "year": "Año"
@@ -174,6 +187,7 @@
     "actions": {
       "cancel": "Cancelar",
       "save": "Guardar",
+      "create": "Crear",
       "saving": "Guardando..."
     }
   },

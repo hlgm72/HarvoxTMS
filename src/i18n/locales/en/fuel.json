@@ -112,7 +112,8 @@
     "sections": {
       "basic_info": "Basic Information",
       "fuel_details": "Fuel Details",
-      "additional_info": "Additional Information"
+      "additional_info": "Additional Information",
+      "station_info": "Station Information"
     },
     "fields": {
       "transaction_date": "Transaction Date *",
@@ -121,28 +122,40 @@
       "vehicle": "Vehicle (Truck)",
       "fuel_type": "Fuel Type *",
       "fuel_card": "Fuel Card",
+      "driver_card": "Driver Card",
+      "card_last_five": "Card Last Five",
       "gallons": "Gallons *",
       "price_per_gallon": "Price/Gallon *",
       "gross_amount": "Gross Amount",
       "discounts": "Discounts",
+      "discount_amount": "Discount Amount",
       "fees": "Fees",
       "total": "Total *",
+      "total_amount": "Total Amount",
       "invoice_number": "Invoice Number", 
       "station_name": "Station Name",
+      "city": "City",
       "state": "State",
+      "receipt_url": "Receipt URL",
       "notes": "Notes"
     },
     "placeholders": {
       "select_date": "Select date",
       "select_driver": "Select driver",
+      "select_period": "Select period",
       "select_truck": "Select truck",
+      "select_vehicle": "Select vehicle",
       "select_type": "Select type",
       "select_card": "Select card",
+      "card_example": "**** 1234",
       "gallons_amount": "0.000",
       "money_amount": "$0.00",
       "invoice_example": "INV-123456",
       "station_example": "Shell, Pilot, Loves...",
+      "city_example": "Station city",
       "select_state": "Select state...",
+      "receipt_url": "https://...",
+      "notes": "Additional notes...",
       "additional_notes": "Additional notes...",
       "month": "Month",
       "year": "Year"
@@ -173,7 +186,8 @@
     },
     "actions": {
       "cancel": "Cancel",
-      "save": "Save", 
+      "save": "Save",
+      "create": "Create", 
       "saving": "Saving..."
     }
   },
