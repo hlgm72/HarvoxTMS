@@ -95,6 +95,10 @@
       "gasoline": "Gasolina",
       "reefer": "Reefer"
     },
+    "views": {
+      "table": "Tabla",
+      "cards": "Tarjetas"
+    },
     "delete_dialog": {
       "title": "¿Eliminar gasto de combustible?",
       "description": "Esta acción eliminará permanentemente este gasto de combustible. Esta acción no se puede deshacer.",

@@ -10,6 +10,7 @@ import { useFuelExpenses, useDeleteFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateTime, formatDateOnly } from '@/lib/dateFormatting';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { FuelViewToggle, type FuelViewMode } from './FuelViewToggle';
 
 interface FuelExpensesListProps {
   filters: {
@@ -30,6 +31,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
   const deleteMutation = useDeleteFuelExpense();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<FuelViewMode>('table');
   const { t } = useTranslation(['fuel', 'common']);
 
   // Función para obtener el nombre del conductor
@@ -122,15 +124,22 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
-            <Fuel className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="hidden sm:inline">{t('fuel:expenses_list.title_full', { count: expenses.length })}</span>
-            <span className="sm:hidden">{t('fuel:expenses_list.title_short', { count: expenses.length })}</span>
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+              <Fuel className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">{t('fuel:expenses_list.title_full', { count: expenses.length })}</span>
+              <span className="sm:hidden">{t('fuel:expenses_list.title_short', { count: expenses.length })}</span>
+            </CardTitle>
+            <FuelViewToggle 
+              currentView={viewMode}
+              onViewChange={setViewMode}
+            />
+          </div>
         </CardHeader>
         <CardContent className="relative p-0 sm:p-6">
-          {/* Vista móvil - Cards */}
-          <div className="block sm:hidden space-y-3 p-4">
+          {/* Vista Cards */}
+          {viewMode === 'cards' && (
+            <div className="space-y-3 p-4">
             {expenses.map((expense) => (
               <div key={expense.id} className="border rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
@@ -225,10 +234,12 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          )}
 
-          {/* Vista desktop - Tabla */}
-          <div className="hidden sm:block overflow-x-auto overflow-y-visible">
+          {/* Vista Tabla */}
+          {viewMode === 'table' && (
+            <div className="overflow-x-auto overflow-y-visible">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -378,7 +389,8 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 ))}
               </TableBody>
             </Table>
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

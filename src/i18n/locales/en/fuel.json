@@ -95,6 +95,10 @@
       "gasoline": "Gasoline",
       "reefer": "Reefer"
     },
+    "views": {
+      "table": "Table",
+      "cards": "Cards"
+    },
     "delete_dialog": {
       "title": "Delete fuel expense?",
       "description": "This action will permanently delete this fuel expense. This action cannot be undone.",
