@@ -339,7 +339,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                               : 'bg-white hover:bg-gray-100'
                           }`}
                           onClick={() => {
-                            console.log('🔥 CLICKED PERIOD:', index + 1, 'of', openPeriods.length, period.id);
                             handleOptionSelect({ 
                               type: 'specific', 
                               periodId: period.id,

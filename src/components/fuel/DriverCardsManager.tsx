@@ -87,7 +87,7 @@ export function DriverCardsManager() {
         return [];
       }
 
-      console.log('🔍 DEBUG: Fetching cards for company:', userCompany.company_id);
+      // Debug logs removed to prevent Sentry spam
 
       const { data, error } = await supabase
         .from('driver_fuel_cards')
@@ -101,7 +101,7 @@ export function DriverCardsManager() {
         throw error;
       }
 
-      console.log('🔍 DEBUG: Found driver cards:', data);
+      // Debug logs removed to prevent Sentry spam
 
       // Get driver names for each card
       const cardsWithDrivers = await Promise.all(
@@ -123,7 +123,7 @@ export function DriverCardsManager() {
         })
       );
 
-      console.log('🔍 DEBUG: Cards with driver names:', cardsWithDrivers);
+      // Debug logs removed to prevent Sentry spam
       return cardsWithDrivers as DriverCard[];
     }
   });
@@ -306,13 +306,13 @@ export function DriverCardsManager() {
     }
   };
 
+  // Debug logs removed to prevent Sentry spam
+
   if (isLoading) {
-    console.log('🔍 DEBUG: Component is loading...');
     return <div>{t('cards.list.loading')}</div>;
   }
 
-  console.log('🔍 DEBUG: Component render - Cards found:', driverCards?.length || 0);
-  console.log('🔍 DEBUG: Cards data:', driverCards);
+  // Debug logs removed to prevent Sentry spam
 
   return (
     <div className="space-y-6">

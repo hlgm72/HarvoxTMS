@@ -201,7 +201,7 @@ export function PDFAnalyzer() {
         .eq('is_active', true);
 
       // Obtener tarjetas de conductores
-      console.log('🔍 DEBUG: Consultando tarjetas de combustible para compañía:', companyId);
+      // Debug logs removed to prevent Sentry spam
       
       const { data: driverCards, error: cardsError } = await supabase
         .from('driver_fuel_cards')
@@ -213,11 +213,7 @@ export function PDFAnalyzer() {
         .eq('company_id', companyId)
         .eq('is_active', true);
 
-      console.log('🔍 DEBUG: Resultado consulta tarjetas:', {
-        driverCards,
-        cardsError,
-        companyId
-      });
+      // Debug logs removed to prevent Sentry spam
 
       // Intentar obtener nombres de perfiles, si no, usar emails como fallback
       const driverIds = driverCards?.map(card => card.driver_user_id) || [];
@@ -295,18 +291,7 @@ export function PDFAnalyzer() {
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
         const cardNumber = transaction.card;
         
-        // DEBUG: Log de información de tarjetas y transacción
-        console.log('🔍 DEBUG: Buscando conductor para transacción:', {
-          cardNumber,
-          invoice: transaction.invoice,
-          location: transaction.location_name,
-          totalDriverCards: driverCards?.length || 0,
-          driverCards: driverCards?.map(c => ({
-            last5: c.card_number_last_five,
-            identifier: c.card_identifier,
-            driver_id: c.driver_user_id
-          }))
-        });
+        // Debug logs removed to prevent Sentry spam
         
         const matchingCards = driverCards?.filter(card => {
           // Comparar los últimos 5 dígitos almacenados con los últimos 4 o 5 de la transacción
@@ -322,26 +307,12 @@ export function PDFAnalyzer() {
           
           const isMatch = match1 || match2 || match3 || match4 || match5;
           
-          // DEBUG: Log detallado de cada comparación
-          if (isMatch) {
-            console.log('✅ Coincidencia encontrada:', {
-              cardLast5,
-              cardIdentifier: card.card_identifier,
-              transactionCard: cardNumber,
-              transactionLast4,
-              transactionLast5,
-              matches: { match1, match2, match3, match4, match5 }
-            });
-          }
+          // Debug logs removed to prevent Sentry spam
           
           return isMatch;
         }) || [];
 
-        console.log('🎯 Resultado búsqueda conductor:', {
-          cardNumber,
-          matchingCards: matchingCards.length,
-          cards: matchingCards.map(c => c.card_number_last_five)
-        });
+        // Debug logs removed to prevent Sentry spam
 
         if (matchingCards.length === 1) {
           const card = matchingCards[0];
@@ -357,16 +328,13 @@ export function PDFAnalyzer() {
             enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_five}`;
           }
           
-          enrichedTransaction.card_mapping_status = 'found';
-          console.log('✅ Conductor mapeado:', enrichedTransaction.driver_name);
+          // Debug logs removed to prevent Sentry spam
         } else if (matchingCards.length > 1) {
           enrichedTransaction.card_mapping_status = 'multiple';
-          console.log('⚠️ Múltiples tarjetas coinciden para:', cardNumber);
+          // Debug logs removed to prevent Sentry spam
         } else {
-          console.log('❌ No se encontró conductor para tarjeta:', cardNumber);
+          // Debug logs removed to prevent Sentry spam
         }
-
-        // Mapear período de pago por fecha - solo mostrar información, no crear
         const periodTransactionDate = new Date(transaction.date);
         
         let matchingPeriod = companyPeriods?.find(period => {
@@ -462,7 +430,7 @@ export function PDFAnalyzer() {
   };
 
   const importTransactions = async () => {
-    console.log('🚀 Starting import process...');
+    // Debug logs removed to prevent Sentry spam
     setIsImporting(true);
     try {
       const validTransactions = enrichedTransactions.filter(
@@ -471,7 +439,7 @@ export function PDFAnalyzer() {
              t.import_status === 'not_imported'
       );
       
-      console.log(`✅ Found ${validTransactions.length} valid transactions to import`);
+      // Debug logs removed to prevent Sentry spam
 
       if (validTransactions.length === 0) {
         showError(
@@ -513,7 +481,7 @@ export function PDFAnalyzer() {
               
               if (driverPeriod) {
                 transaction.payment_period_id = driverPeriod.company_payment_period_id;
-                console.log('✅ Using company period for transaction:', driverPeriod.company_payment_period_id);
+                // Debug logs removed to prevent Sentry spam
               }
             }
           }
@@ -540,7 +508,7 @@ export function PDFAnalyzer() {
           status: 'pending'
         };
 
-        console.log('📋 Creating fuel expense with RPC:', fuelExpenseData);
+        // Debug logs removed to prevent Sentry spam
         
         const { data, error } = await supabase.rpc('create_or_update_fuel_expense_with_validation', {
           expense_data: fuelExpenseData,
@@ -552,7 +520,7 @@ export function PDFAnalyzer() {
           throw error;
         }
 
-        console.log('✅ Fuel expense created:', data);
+        // Debug logs removed to prevent Sentry spam
       }
 
       showSuccess(
