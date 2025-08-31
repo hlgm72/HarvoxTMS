@@ -14,13 +14,14 @@ import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
-import { useCurrentPaymentPeriod } from '@/hooks/usePaymentPeriods';
+import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 
 export default function FuelManagement() {
   const { t } = useTranslation(['fuel', 'common']);
   
-  // Obtener el período actual para configurar filtros por defecto
+  // Obtener el período actual y todos los períodos para fallback
   const { data: currentPeriod } = useCurrentPaymentPeriod();
+  const { data: periods = [] } = usePaymentPeriods();
 
   // Estado de filtros con período actual por defecto
   const [filters, setFilters] = useState({
@@ -31,18 +32,32 @@ export default function FuelManagement() {
     periodFilter: { type: 'current' as const, periodId: undefined as string | undefined }
   });
 
-  // Actualizar periodId cuando se carga el período actual
+  // Actualizar periodId cuando se carga el período actual o usar el más reciente como fallback
   useEffect(() => {
-    if (currentPeriod && filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
-      setFilters(prev => ({
-        ...prev,
-        periodFilter: {
-          ...prev.periodFilter,
-          periodId: currentPeriod.id
-        }
-      }));
+    if (filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
+      if (currentPeriod) {
+        // Si hay período actual, usarlo
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            ...prev.periodFilter,
+            periodId: currentPeriod.id
+          }
+        }));
+      } else if (periods && periods.length > 0) {
+        // Si no hay período actual, usar el más reciente como fallback
+        const mostRecentPeriod = periods[0]; // Los períodos vienen ordenados por fecha desc
+        console.log('⚠️ No hay período actual, usando período más reciente como fallback:', mostRecentPeriod);
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            ...prev.periodFilter,
+            periodId: mostRecentPeriod.id
+          }
+        }));
+      }
     }
-  }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
+  }, [currentPeriod, periods, filters.periodFilter.type, filters.periodFilter.periodId]);
 
   console.log('🔍 Filtros activos en Fuel Management:', filters);
   console.log('📅 Período actual cargado:', currentPeriod);
