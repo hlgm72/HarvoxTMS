@@ -170,7 +170,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
         return (
           <div key={field.key} className="space-y-2">
             <Label className="text-sm font-medium">
-              {t(field.labelKey, { ns: 'common' })}
+              {t(field.labelKey, { ns: finalConfig.namespace })}
             </Label>
             <PeriodFilter
               value={fieldValue as any}
