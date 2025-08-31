@@ -1,4 +1,7 @@
 
+// 🛡️ CRITICAL: Import Sentry blocker FIRST to prevent 429 errors
+import './utils/sentryBlocker';
+
 // Import console filter to suppress development environment noise
 import './utils/consoleFilter';
 
