@@ -798,7 +798,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Package className="h-5 w-5 text-blue-600" />
-                  Cargas del Período ({loads.length})
+                  Cargas del Período ({loads.length} - Total: {formatCurrency(loads.reduce((sum, load) => sum + load.total_amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -885,7 +885,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Fuel className="h-5 w-5 text-orange-600" />
-                  Gastos de Combustible ({fuelExpenses.length})
+                  Gastos de Combustible ({fuelExpenses.length} - Total: {formatCurrency(fuelExpenses.reduce((sum, expense) => sum + expense.total_amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -914,7 +914,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Receipt className="h-5 w-5 text-red-600" />
-                  Deducciones ({deductions.length})
+                  Deducciones ({deductions.length} - Total: {formatCurrency(deductions.reduce((sum, deduction) => sum + deduction.amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -932,6 +932,33 @@ export function PaymentReportDialog({
                       </div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Otros Ingresos */}
+          {calculation.other_income > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  Otros Ingresos (1 - Total: {formatCurrency(calculation.other_income)})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="py-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="font-medium text-sm sm:text-base">Ingresos Adicionales del Período</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">
+                        Ingresos complementarios registrados
+                      </div>
+                    </div>
+                    <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
+                      {formatCurrency(calculation.other_income)}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
