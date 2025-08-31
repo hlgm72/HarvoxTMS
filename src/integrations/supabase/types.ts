@@ -3220,6 +3220,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      cleanup_unnecessary_periods_created_today: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       cleanup_user_data_with_validation: {
         Args: { user_id_param: string }
         Returns: Json
