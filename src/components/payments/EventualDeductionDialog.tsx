@@ -44,7 +44,7 @@ export function EventualDeductionDialog({
   editingDeduction = null
 }: EventualDeductionDialogProps) {
   const { user } = useAuth();
-  const { t } = useTranslation('payments');
+  const { t, i18n } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   
@@ -546,8 +546,10 @@ export function EventualDeductionDialog({
                   {(() => {
                     const startDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date);
                     const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
-                    console.log('🐛 DEBUG period_found:', { startDate, endDate, rawStart: paymentPeriods[0].company_payment_periods.period_start_date, rawEnd: paymentPeriods[0].company_payment_periods.period_end_date });
-                    return t("deductions.eventual.period_found", { 
+                    console.log('🐛 DEBUG translation:', t("deductions.eventual.period_found", { start: startDate, end: endDate }));
+                    console.log('🐛 DEBUG i18n language:', i18n.language);
+                    console.log('🐛 DEBUG raw translation key:', "deductions.eventual.period_found");
+                    return t("payments:deductions.eventual.period_found", { 
                       start: startDate,
                       end: endDate
                     });
