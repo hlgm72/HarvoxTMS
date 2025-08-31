@@ -243,20 +243,43 @@
       "invalid_file": "Archivo no válido",
       "select_pdf_error": "Por favor selecciona un archivo PDF",
       "analysis_error": "Error en el análisis",
-      "analysis_retry": "No se pudo analizar el PDF. Intenta de nuevo."
+      "analysis_retry": "No se pudo analizar el PDF. Intenta de nuevo.",
+      "enrichment_error": "Error enriqueciendo datos",
+      "enrichment_failed": "No se pudieron mapear todos los datos automáticamente"
     },
     "results": {
+      "title": "Resultado del Análisis",
+      "transactions_found": "Se encontraron {{count}} transacciones de combustible",
       "analysis_complete": "Análisis completado",
       "analysis_success": "El PDF ha sido analizado exitosamente",
       "columns_found": "Columnas encontradas",
       "sample_data": "Datos de muestra",
-      "enrichment": "Enriquecimiento de datos",
+              "file_selected": "Archivo seleccionado:",
+              "enrichment": "Enriquecimiento de datos",
       "enriching_transactions": "Enriqueciendo transacciones...",
       "transactions_enriched": "{{count}} transacciones enriquecidas",
       "import_transactions": "Importar Transacciones",
       "importing": "Importando...",
       "import_success": "Transacciones importadas exitosamente",
       "import_error": "Error al importar transacciones"
+    },
+    "stats": {
+      "transactions": "Transacciones",
+      "already_imported": "Ya importadas", 
+      "ready_to_import": "Listas para importar",
+      "no_driver_identified": "Sin conductor identificado"
+    },
+    "transaction": {
+      "number": "Transacción #{{number}}",
+      "card": "Tarjeta:",
+      "transaction_date": "Fecha transacción:",
+      "gross_amount": "Monto Bruto",
+      "discount": "Descuento",
+      "fees": "Comisiones",
+      "truck": "Camión #{{number}}",
+      "vehicle_verified": "Vehículo verificado para combustible",
+      "invoice": "Factura:",
+      "pdf_unit": "Unidad del PDF:"
     },
     "mapping": {
       "driver_found": "Conductor encontrado",

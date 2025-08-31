@@ -243,20 +243,43 @@
       "invalid_file": "Invalid file",
       "select_pdf_error": "Please select a PDF file",
       "analysis_error": "Analysis error",
-      "analysis_retry": "Could not analyze PDF. Please try again."
+      "analysis_retry": "Could not analyze PDF. Please try again.",
+      "enrichment_error": "Error enriching data",
+      "enrichment_failed": "Could not automatically map all data"
     },
     "results": {
+      "title": "Analysis Results",
+      "transactions_found": "{{count}} fuel transactions found",
       "analysis_complete": "Analysis completed",
       "analysis_success": "PDF has been analyzed successfully",
       "columns_found": "Columns found",
       "sample_data": "Sample data",
-      "enrichment": "Data enrichment",
+              "file_selected": "File selected:",
+              "enrichment": "Data enrichment",
       "enriching_transactions": "Enriching transactions...",
       "transactions_enriched": "{{count}} transactions enriched",
       "import_transactions": "Import Transactions",
       "importing": "Importing...",
       "import_success": "Transactions imported successfully",
       "import_error": "Error importing transactions"
+    },
+    "stats": {
+      "transactions": "Transactions",
+      "already_imported": "Already imported",
+      "ready_to_import": "Ready to import",
+      "no_driver_identified": "Driver not identified"
+    },
+    "transaction": {
+      "number": "Transaction #{{number}}",
+      "card": "Card:",
+      "transaction_date": "Transaction date:",
+      "gross_amount": "Gross Amount",
+      "discount": "Discount",
+      "fees": "Fees",
+      "truck": "Truck #{{number}}",
+      "vehicle_verified": "Vehicle verified for fuel",
+      "invoice": "Invoice:",
+      "pdf_unit": "PDF Unit:"
     },
     "mapping": {
       "driver_found": "Driver found",

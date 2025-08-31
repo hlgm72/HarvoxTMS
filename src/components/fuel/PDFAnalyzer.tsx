@@ -421,8 +421,8 @@ export function PDFAnalyzer() {
     } catch (error) {
       console.error('Error enriching transactions:', error);
       showError(
-        "Error enriqueciendo datos",
-        "No se pudieron mapear todos los datos automáticamente"
+        t('analyzer.upload.enrichment_error'),
+        t('analyzer.upload.enrichment_failed')
       );
     } finally {
       setIsEnriching(false);
@@ -584,7 +584,7 @@ export function PDFAnalyzer() {
             <Alert>
               <FileText className="h-4 w-4" />
               <AlertDescription>
-                Archivo seleccionado: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                {t('analyzer.results.file_selected')} {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
               </AlertDescription>
             </Alert>
           )}
@@ -602,10 +602,10 @@ export function PDFAnalyzer() {
                 ) : (
                   <Info className="h-5 w-5 text-blue-500" />
                 )}
-                Resultado del Análisis
+                {t('analyzer.results.title')}
               </CardTitle>
               <CardDescription>
-                Se encontraron {enrichedTransactions.length} transacciones de combustible
+                {t('analyzer.results.transactions_found', { count: enrichedTransactions.length })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -614,13 +614,13 @@ export function PDFAnalyzer() {
                   <div className="text-2xl font-bold text-blue-600">
                     {enrichedTransactions.length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Transacciones</div>
+                  <div className="text-sm text-muted-foreground">{t('analyzer.stats.transactions')}</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">
                     {enrichedTransactions.filter(t => t.import_status === 'already_imported').length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Ya importadas</div>
+                  <div className="text-sm text-muted-foreground">{t('analyzer.stats.already_imported')}</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
@@ -630,7 +630,7 @@ export function PDFAnalyzer() {
                       t.import_status === 'not_imported'
                     ).length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Listas para importar</div>
+                  <div className="text-sm text-muted-foreground">{t('analyzer.stats.ready_to_import')}</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-yellow-600">
@@ -639,7 +639,7 @@ export function PDFAnalyzer() {
                       t.import_status === 'not_imported'
                     ).length}
                   </div>
-                  <div className="text-sm text-muted-foreground">Sin conductor identificado</div>
+                  <div className="text-sm text-muted-foreground">{t('analyzer.stats.no_driver_identified')}</div>
                 </div>
               </div>
 
@@ -692,7 +692,7 @@ export function PDFAnalyzer() {
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-base flex items-center gap-2">
                           <Fuel className="h-4 w-4" />
-                          Transacción #{index + 1}
+                          {t('analyzer.transaction.number', { number: index + 1 })}
                         </CardTitle>
                         <div className="flex gap-1">
                           {transaction.import_status === 'already_imported' ? (
@@ -722,7 +722,7 @@ export function PDFAnalyzer() {
                             {transaction.driver_name || t('analyzer.mapping.driver_not_found')}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Tarjeta: {transaction.card}
+                            {t('analyzer.transaction.card')} {transaction.card}
                           </div>
                         </div>
                       </div>
@@ -735,7 +735,7 @@ export function PDFAnalyzer() {
                             {transaction.payment_period_dates || 'Período no generado'}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Fecha transacción: {transaction.date}
+                            {t('analyzer.transaction.transaction_date')} {transaction.date}
                           </div>
                         </div>
                       </div>
@@ -762,15 +762,15 @@ export function PDFAnalyzer() {
                           <div className="font-medium">${transaction.gross_ppg.toFixed(3)}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Monto Bruto</div>
+                          <div className="text-sm text-muted-foreground">{t('analyzer.transaction.gross_amount')}</div>
                           <div className="font-medium">${transaction.gross_amt.toFixed(2)}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Descuento</div>
+                          <div className="text-sm text-muted-foreground">{t('analyzer.transaction.discount')}</div>
                           <div className="font-medium text-green-600">-${transaction.disc_amt.toFixed(2)}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-muted-foreground">Comisiones</div>
+                          <div className="text-sm text-muted-foreground">{t('analyzer.transaction.fees')}</div>
                           <div className="font-medium text-red-600">${transaction.fees.toFixed(2)}</div>
                         </div>
                         <div>
@@ -785,13 +785,13 @@ export function PDFAnalyzer() {
                           <Fuel className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <div className="font-medium flex items-center gap-2">
-                              🚛 Camión #{transaction.vehicle_number}
+                              🚛 {t('analyzer.transaction.truck', { number: transaction.vehicle_number })}
                               <Badge variant="outline" className="text-xs">
                                 {transaction.equipment_mapping_method === 'assigned_to_driver' ? t('analyzer.mapping.vehicle_assigned') : t('analyzer.mapping.vehicle_validated')}
                               </Badge>
                             </div>
                             <div className="text-sm text-muted-foreground">
-                            Vehículo verificado para combustible
+                            {t('analyzer.transaction.vehicle_verified')}
                             </div>
                           </div>
                         </div>
@@ -809,8 +809,8 @@ export function PDFAnalyzer() {
 
                       {/* Información adicional */}
                       <div className="text-xs text-muted-foreground pt-2 border-t">
-                        <div>Factura: {transaction.invoice}</div>
-                        <div>Unidad del PDF: {transaction.unit}</div>
+                        <div>{t('analyzer.transaction.invoice')} {transaction.invoice}</div>
+                        <div>{t('analyzer.transaction.pdf_unit')} {transaction.unit}</div>
                       </div>
                     </CardContent>
                   </Card>
