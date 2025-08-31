@@ -591,7 +591,7 @@ export function PDFAnalyzer() {
         </CardContent>
       </Card>
 
-      {analysisResult && (
+      {analysisResult && !isEnriching && (
         <div className="space-y-6">
           {/* Resumen del análisis */}
           <Card>
