@@ -532,6 +532,7 @@ export function FuelExpenseDialog({
                 />
               </div>
 
+              {/* Línea 1: Gallons *, Price/Gallon *, Gross Amount */}
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
@@ -575,17 +576,80 @@ export function FuelExpenseDialog({
 
                 <FormField
                   control={form.control}
+                  name="gross_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('fuel:create_dialog.fields.gross_amount')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="$0.00"
+                          value={grossAmountATM.displayValue}
+                          onInput={grossAmountATM.handleInput}
+                          onKeyDown={grossAmountATM.handleKeyDown}
+                          onFocus={grossAmountATM.handleFocus}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Línea 2: Discount Amount, Fees, Total Amount */}
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="discount_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('fuel:create_dialog.fields.discount_amount')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="$0.00"
+                          value={discountAmountATM.displayValue}
+                          onInput={discountAmountATM.handleInput}
+                          onKeyDown={discountAmountATM.handleKeyDown}
+                          onFocus={discountAmountATM.handleFocus}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="fees"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('fuel:create_dialog.fields.fees')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="$0.00"
+                          value={feesATM.displayValue}
+                          onInput={feesATM.handleInput}
+                          onKeyDown={feesATM.handleKeyDown}
+                          onFocus={feesATM.handleFocus}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="total_amount"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('fuel:create_dialog.fields.total_amount')}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          step="0.01" 
-                          placeholder={t('fuel:create_dialog.placeholders.amount')} 
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        <Input
+                          placeholder="$0.00"
+                          value={totalAmountATM.displayValue}
+                          onInput={totalAmountATM.handleInput}
+                          onKeyDown={totalAmountATM.handleKeyDown}
+                          onFocus={totalAmountATM.handleFocus}
                         />
                       </FormControl>
                       <FormMessage />
@@ -742,67 +806,6 @@ export function FuelExpenseDialog({
                   )}
                 />
 
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="gross_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('fuel:create_dialog.fields.gross_amount')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="$0.00"
-                            value={grossAmountATM.displayValue}
-                            onInput={grossAmountATM.handleInput}
-                            onKeyDown={grossAmountATM.handleKeyDown}
-                            onFocus={grossAmountATM.handleFocus}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="discount_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('fuel:create_dialog.fields.discount_amount')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="$0.00"
-                            value={discountAmountATM.displayValue}
-                            onInput={discountAmountATM.handleInput}
-                            onKeyDown={discountAmountATM.handleKeyDown}
-                            onFocus={discountAmountATM.handleFocus}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="fees"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('fuel:create_dialog.fields.fees')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="$0.00"
-                            value={feesATM.displayValue}
-                            onInput={feesATM.handleInput}
-                            onKeyDown={feesATM.handleKeyDown}
-                            onFocus={feesATM.handleFocus}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </div>
             )}
 
