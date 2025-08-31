@@ -31,7 +31,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
   const deleteMutation = useDeleteFuelExpense();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<FuelViewMode>('table');
+  const [viewMode, setViewMode] = useState<FuelViewMode>('cards');
   const { t } = useTranslation(['fuel', 'common']);
 
   // Función para obtener el nombre del conductor
