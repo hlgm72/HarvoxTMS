@@ -3740,11 +3740,13 @@ export type Database = {
         Returns: boolean
       }
       lock_payment_period: {
-        Args: {
-          payment_method_used?: string
-          payment_ref?: string
-          period_id: string
-        }
+        Args:
+          | {
+              payment_method_used?: string
+              payment_ref?: string
+              period_id: string
+            }
+          | { period_id_param: string }
         Returns: Json
       }
       log_business_data_access: {
