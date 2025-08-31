@@ -234,7 +234,7 @@ export function PaymentReportsFloatingActions({
                             {t('filters.active_badges.status')} {statusOptions.find(s => s.value === filters.status)?.label}
                           </Badge>
                         )}
-                        {filters.periodFilter.type !== 'current' && (
+                        {(filters.periodFilter.type !== 'current' || filters.periodFilter.label) && (
                           <Badge variant="secondary">
                             {t('filters.active_badges.period')} {filters.periodFilter.label || filters.periodFilter.type}
                           </Badge>
