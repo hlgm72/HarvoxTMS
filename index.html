@@ -31,6 +31,71 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <!-- 🛡️ EMERGENCY SENTRY BLOCKER - Prevents 429 errors completely -->
+    <script>
+      (function() {
+        'use strict';
+        
+        // Block all Sentry communication at the earliest possible point
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+          const url = args[0];
+          const urlString = typeof url === 'string' ? url : url?.href || url?.url || '';
+          
+          if (urlString.includes('sentry.io') || urlString.includes('ingest.sentry')) {
+            console.log('🛡️ EMERGENCY: Blocked Sentry request at HTML level');
+            return Promise.resolve(new Response('{"blocked":true}', { 
+              status: 200, 
+              statusText: 'Blocked',
+              headers: { 'Content-Type': 'application/json' }
+            }));
+          }
+          return originalFetch.apply(this, args);
+        };
+        
+        // Block XMLHttpRequest
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url, ...args) {
+          if (typeof url === 'string' && (url.includes('sentry.io') || url.includes('ingest.sentry'))) {
+            console.log('🛡️ EMERGENCY: Blocked Sentry XHR at HTML level');
+            return;
+          }
+          return originalXHROpen.call(this, method, url, ...args);
+        };
+        
+        // Block sendBeacon
+        if (navigator.sendBeacon) {
+          const originalSendBeacon = navigator.sendBeacon;
+          navigator.sendBeacon = function(url, data) {
+            const urlString = typeof url === 'string' ? url : url?.href;
+            if (urlString && (urlString.includes('sentry.io') || urlString.includes('ingest.sentry'))) {
+              console.log('🛡️ EMERGENCY: Blocked Sentry beacon at HTML level');
+              return true;
+            }
+            return originalSendBeacon.call(this, url, data);
+          };
+        }
+        
+        // Create empty Sentry global to prevent loading
+        window.Sentry = {
+          init: function() { console.log('🛡️ Sentry.init() blocked'); },
+          captureException: function() { console.log('🛡️ Sentry.captureException() blocked'); },
+          captureMessage: function() { console.log('🛡️ Sentry.captureMessage() blocked'); },
+          configureScope: function() { console.log('🛡️ Sentry.configureScope() blocked'); },
+          addBreadcrumb: function() { console.log('🛡️ Sentry.addBreadcrumb() blocked'); },
+          setUser: function() { console.log('🛡️ Sentry.setUser() blocked'); },
+          setTag: function() { console.log('🛡️ Sentry.setTag() blocked'); },
+          setContext: function() { console.log('🛡️ Sentry.setContext() blocked'); },
+          withScope: function(callback) { 
+            console.log('🛡️ Sentry.withScope() blocked'); 
+            if (typeof callback === 'function') callback({});
+          }
+        };
+        
+        console.log('🛡️ EMERGENCY Sentry blocker active - HTML level protection');
+      })();
+    </script>
+
     <meta property="og:title" content="FleetNest - Sistema TMS" />
     <meta property="og:description" content="Sistema TMS profesional para compañías de transporte" />
     <meta property="og:type" content="website" />
