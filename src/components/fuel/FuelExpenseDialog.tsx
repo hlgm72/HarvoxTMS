@@ -194,6 +194,18 @@ export function FuelExpenseDialog({
   // Get equipment assigned to selected driver
   const { data: driverEquipment = [] } = useDriverEquipment(selectedDriverId || '');
 
+  // Auto-complete Card Last Five when Driver Card is selected
+  const selectedDriverCardId = form.watch('driver_card_id');
+  
+  React.useEffect(() => {
+    if (!isEditMode && selectedDriverCardId && driverCards.length > 0) {
+      const selectedCard = driverCards.find(card => card.id === selectedDriverCardId);
+      if (selectedCard && selectedCard.card_number_last_five) {
+        form.setValue('card_last_five', selectedCard.card_number_last_five);
+      }
+    }
+  }, [selectedDriverCardId, driverCards, isEditMode, form]);
+
   // Función para calcular las fechas del período basado en la fecha de transacción
   const calculatePeriodDates = (transactionDate: Date, company: any) => {
     if (!company || !transactionDate) return null;
@@ -755,7 +767,21 @@ export function FuelExpenseDialog({
                   {t('fuel:create_dialog.sections.payment_info')}
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="invoice_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('fuel:create_dialog.fields.invoice_number')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('fuel:create_dialog.placeholders.invoice_example')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="driver_card_id"
@@ -788,27 +814,19 @@ export function FuelExpenseDialog({
                       <FormItem>
                         <FormLabel>{t('fuel:create_dialog.fields.card_last_five')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('fuel:create_dialog.placeholders.card_example')} maxLength={5} {...field} />
+                          <Input 
+                            placeholder={t('fuel:create_dialog.placeholders.card_example')} 
+                            maxLength={5} 
+                            readOnly
+                            className="bg-muted"
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="invoice_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('fuel:create_dialog.fields.invoice_number')}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t('fuel:create_dialog.placeholders.invoice_example')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
               </div>
             )}
