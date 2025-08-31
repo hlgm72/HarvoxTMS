@@ -331,7 +331,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
 
       {/* Sheet Modal */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-[400px] sm:w-[440px]">
+        <SheetContent className="w-[400px] sm:w-[440px] bg-white dark:bg-gray-900">
           <SheetHeader>
             <SheetTitle>
               {finalConfig.actions.find(a => a.key === activeTab)?.titleKey && 
