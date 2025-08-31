@@ -745,9 +745,14 @@ export function PDFAnalyzer() {
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">{transaction.location_name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {transaction.state || 'State N/A'} • {transaction.category}
+                          <div className="text-xs text-muted-foreground">
+                            {transaction.category}
                           </div>
+                          {transaction.state && (
+                            <div className="text-xs text-muted-foreground">
+                              Estado: {transaction.state}
+                            </div>
+                          )}
                         </div>
                       </div>
 
