@@ -549,7 +549,7 @@ export function EventualDeductionDialog({
                     console.log('🐛 DEBUG translation:', t("deductions.eventual.period_found", { start: startDate, end: endDate }));
                     console.log('🐛 DEBUG i18n language:', i18n.language);
                     console.log('🐛 DEBUG raw translation key:', "deductions.eventual.period_found");
-                    return t("payments:deductions.eventual.period_found", { 
+                    return t("deductions.eventual.period_found", { 
                       start: startDate,
                       end: endDate
                     });
