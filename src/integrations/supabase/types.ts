@@ -3271,6 +3271,20 @@ export type Database = {
         }
         Returns: string
       }
+      create_percentage_deductions_for_load: {
+        Args: {
+          created_by_param: string
+          dispatching_pct_param: number
+          driver_user_id_param: string
+          factoring_pct_param: number
+          leasing_pct_param: number
+          load_amount_param: number
+          load_id_param: string
+          load_number_param: string
+          payment_period_id_param: string
+        }
+        Returns: undefined
+      }
       create_user_with_company_role_validation: {
         Args: { company_role_data: Json; user_data: Json }
         Returns: Json
