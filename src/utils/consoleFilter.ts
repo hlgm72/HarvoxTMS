@@ -11,7 +11,8 @@ const originalWarn = console.warn;
 const suppressPatterns = [
   /Failed to execute 'postMessage' on 'DOMWindow'/,
   /The target origin provided .* does not match the recipient window's origin/,
-  /Unrecognized feature:/
+  /Unrecognized feature:/,
+  /\[PostHog\.js\] This capture call is ignored due to client rate limiting\./
 ];
 
 // Enhanced console.error that filters unwanted messages
