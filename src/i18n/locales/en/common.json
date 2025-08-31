@@ -126,7 +126,9 @@
     "active_drivers": "Active Drivers",
     "total_deductions": "Total Deductions",
     "total_amount": "Total Amount",
-    "pending_count": "Pending Count"
+    "pending_count": "Pending Count",
+    "total_transactions": "Total Transactions",
+    "drivers_count": "Drivers Count"
   },
   "actions": {
     "get_started": "Get Started",

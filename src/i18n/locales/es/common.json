@@ -126,7 +126,9 @@
     "active_drivers": "Conductores Activos",
     "total_deductions": "Total de Deducciones",
     "total_amount": "Monto Total", 
-    "pending_count": "Pendientes"
+    "pending_count": "Pendientes",
+    "total_transactions": "Total de Transacciones",
+    "drivers_count": "Conductores"
   },
   "actions": {
     "get_started": "Comenzar Gratis",
