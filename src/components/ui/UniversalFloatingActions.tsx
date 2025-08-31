@@ -215,7 +215,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
                 <div className="flex items-center gap-2">
                   <field.icon className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium">
-                    {t(field.labelKey, { ns: finalConfig.namespace })}
+                    {t(field.labelKey, { ns: 'common' })}
                   </span>
                 </div>
                 <div className="text-2xl font-bold">{formattedValue}</div>
