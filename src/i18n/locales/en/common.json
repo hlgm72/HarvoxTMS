@@ -40,6 +40,7 @@
       "label": "Export",
       "pdf": "Export to PDF",
       "excel": "Export to Excel",
+      "csv": "Export to CSV",
       "options_title": "Export Options",
       "include_filters": "Include current filters",
       "visible_only": "Only visible data",
