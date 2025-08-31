@@ -87,7 +87,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { drivers } = useCompanyDrivers();
   const { data: dispatchers = [] } = useCompanyDispatchers();
   const { data: clients = [], isLoading: clientsLoading, refetch: refetchClients } = useClients();
-  const { refetch: refetchContacts } = useClientContacts(selectedClient?.id || "");
+  const { data: clientContacts = [], refetch: refetchContacts } = useClientContacts(selectedClient?.id || "");
   const { selectedCompany } = useUserCompanies();
   const createLoadMutation = useCreateLoad();
   const { showSuccess, showError } = useFleetNotifications();
@@ -175,6 +175,24 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       fetchCompanyData();
     }
   }, [selectedCompany?.id]);
+
+  // Auto-select contact if client has only one contact
+  useEffect(() => {
+    if (selectedClient && clientContacts && clientContacts.length === 1) {
+      const singleContact = clientContacts[0];
+      const currentContactId = form.getValues("contact_id");
+      
+      // Only auto-select if no contact is currently selected
+      if (!currentContactId) {
+        console.log('🔄 Auto-selecting single contact:', singleContact.name);
+        form.setValue("contact_id", singleContact.id);
+        showSuccess(
+          "Contacto seleccionado automáticamente", 
+          `${singleContact.name} ha sido seleccionado automáticamente como el único contacto disponible`
+        );
+      }
+    }
+  }, [selectedClient, clientContacts, form, showSuccess]);
 
   // Initialize form and states when load data is available
   useEffect(() => {
@@ -818,16 +836,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  <ClientCombobox
                                    clients={clients}
                                    value={field.value}
-                                    onValueChange={(value) => {
-                                      field.onChange(value);
-                                      const client = clients.find(c => c.id === value);
-                                      setSelectedClient(client || null);
-                                      form.setValue("contact_id", "");
-                                      // Limpiar error cuando el usuario seleccione un cliente
-                                      if (form.formState.errors.client_id) {
-                                        form.clearErrors("client_id");
-                                      }
-                                    }}
+                                     onValueChange={(value) => {
+                                       field.onChange(value);
+                                       const client = clients.find(c => c.id === value);
+                                       setSelectedClient(client || null);
+                                       form.setValue("contact_id", "");
+                                       // Limpiar error cuando el usuario seleccione un cliente
+                                       if (form.formState.errors.client_id) {
+                                         form.clearErrors("client_id");
+                                       }
+                                     }}
                                    onClientSelect={(client) => setSelectedClient(client as Client)}
                                    placeholder={t("loads:create_wizard.form.client_placeholder")}
                                    className="w-full"
