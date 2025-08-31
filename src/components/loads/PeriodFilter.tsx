@@ -277,8 +277,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           avoidCollisions={true}
           collisionPadding={8}
         >
-          <div className="max-h-[70vh] overflow-hidden flex flex-col">
-            <div className="p-4 space-y-4 overflow-y-auto flex-1">
+          <div 
+            className="p-4 space-y-4" 
+            style={{ 
+              maxHeight: '60vh', 
+              overflowY: 'auto',
+              scrollBehavior: 'smooth'
+            }}
+          >
             {/* Opciones rápidas */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
@@ -428,7 +434,17 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length}
                   </Badge>
                 </h4>
-                <div className="max-h-48 overflow-y-auto space-y-1 border border-border/50 rounded-md p-2 bg-muted/20">
+                <div 
+                  style={{ 
+                    maxHeight: '200px', 
+                    overflowY: 'auto',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '6px',
+                    padding: '8px',
+                    backgroundColor: '#f8fafc'
+                  }}
+                  className="space-y-1"
+                >
                   {openPeriods.map((period) => (
                     <Button
                       key={period.id}
@@ -525,7 +541,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 )}
               </div>
             )}
-            </div>
           </div>
         </PopoverContent>
       </Popover>
