@@ -15,9 +15,21 @@ import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
+import { useConsolidatedDrivers } from '@/hooks/useConsolidatedDrivers';
+import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
 
 export default function FuelManagement() {
   const { t } = useTranslation(['fuel', 'common']);
+  
+  // Obtener datos necesarios para filtros
+  const { drivers = [], loading: driversLoading } = useConsolidatedDrivers();
+  const { geotabVehicles: rawVehicles = [] } = useGeotabVehicles();
+  
+  // Mapear vehículos al formato esperado por los filtros
+  const vehicles = rawVehicles.map(vehicle => ({
+    id: vehicle.id,
+    plate_number: vehicle.license_plate || vehicle.name || `Vehículo ${vehicle.id.slice(0, 8)}`
+  }));
   
   // Obtener el período actual y todos los períodos para fallback
   const { data: currentPeriod } = useCurrentPaymentPeriod();
@@ -208,11 +220,13 @@ export default function FuelManagement() {
             setFilters(newFilters);
           }}
           additionalData={{
-            // drivers y vehicles se obtendrán de los hooks correspondientes
+            // Pasar datos de conductores y vehículos para los filtros
+            drivers: drivers,
+            vehicles: vehicles,
             stats: {
               totalTransactions: 0, // TODO: obtener de hook de stats
               totalAmount: 0,       // TODO: obtener de hook de stats
-              driversCount: 0       // TODO: obtener de hook de stats
+              driversCount: drivers.length
             }
           }}
           onSyncHandler={handleFleetOneSync}
