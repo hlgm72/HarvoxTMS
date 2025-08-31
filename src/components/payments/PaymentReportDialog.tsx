@@ -892,12 +892,22 @@ export function PaymentReportDialog({
                 <div className="space-y-2">
                   {fuelExpenses.map((expense) => (
                     <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="font-medium truncate text-sm sm:text-base">{expense.station_name}</div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">
-                          {expense.gallons_purchased} gal • {formatDateAuto(expense.transaction_date)}
-                        </div>
-                      </div>
+                       <div className="space-y-1 min-w-0 flex-1">
+                         <div className="font-medium truncate text-sm sm:text-base">
+                           {expense.station_name || 'Estación'}
+                         </div>
+                         <div className="text-xs sm:text-sm text-muted-foreground">
+                           {expense.gallons_purchased} gal • {formatDateAuto(expense.transaction_date)}
+                           {(expense.station_city || expense.station_state) && (
+                             <span className="ml-2">
+                               • {expense.station_city && expense.station_state 
+                                 ? `${expense.station_city}, ${expense.station_state}`
+                                 : expense.station_city || expense.station_state
+                               }
+                             </span>
+                           )}
+                         </div>
+                       </div>
                       <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
                         {formatCurrency(expense.total_amount)}
                       </div>

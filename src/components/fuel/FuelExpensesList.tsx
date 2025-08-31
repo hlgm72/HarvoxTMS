@@ -60,6 +60,25 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
     return driver?.license_number;
   };
 
+  // Función para formatear la ubicación (Ciudad, Estado)
+  const formatStationLocation = (stationName?: string, stationCity?: string, stationState?: string) => {
+    const parts = [];
+    
+    if (stationName) {
+      parts.push(stationName);
+    }
+    
+    if (stationCity && stationState) {
+      parts.push(`${stationCity}, ${stationState}`);
+    } else if (stationCity) {
+      parts.push(stationCity);
+    } else if (stationState) {
+      parts.push(stationState);
+    }
+    
+    return parts.length > 0 ? parts : ['N/A'];
+  };
+
   const getStatusBadge = (status: string) => {
     const variants = {
       pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
@@ -244,12 +263,11 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-muted-foreground" />
                     <div className="truncate">
-                      <div>{expense.station_name || 'N/A'}</div>
-                      {expense.station_state && (
-                        <div className="text-xs text-muted-foreground">
-                          {t('fuel:expenses_list.state')}: {expense.station_state}
+                      {formatStationLocation(expense.station_name, expense.station_city, expense.station_state).map((part, index) => (
+                        <div key={index} className={index === 0 ? "font-medium" : "text-xs text-muted-foreground"}>
+                          {part}
                         </div>
-                      )}
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -329,12 +347,11 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <div className="font-medium">{expense.station_name || 'N/A'}</div>
-                          {expense.station_state && (
-                            <div className="text-xs text-muted-foreground truncate max-w-[150px]">
-                              {t('fuel:expenses_list.state')}: {expense.station_state}
+                          {formatStationLocation(expense.station_name, expense.station_city, expense.station_state).map((part, index) => (
+                            <div key={index} className={index === 0 ? "font-medium" : "text-xs text-muted-foreground truncate max-w-[150px]"}>
+                              {part}
                             </div>
-                          )}
+                          ))}
                         </div>
                       </div>
                     </TableCell>

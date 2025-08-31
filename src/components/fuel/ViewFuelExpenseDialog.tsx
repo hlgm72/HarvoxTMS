@@ -155,7 +155,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
             </Card>
 
             {/* Información de la Estación */}
-            {(expense.station_name || expense.station_state) && (
+            {(expense.station_name || expense.station_city || expense.station_state) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
@@ -171,10 +171,15 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                     </div>
                   )}
                   
-                  {expense.station_state && (
+                  {(expense.station_city || expense.station_state) && (
                     <div>
-                      <div className="text-sm text-muted-foreground">Estado</div>
-                      <div className="font-medium">{expense.station_state}</div>
+                      <div className="text-sm text-muted-foreground">Ubicación</div>
+                      <div className="font-medium">
+                        {expense.station_city && expense.station_state 
+                          ? `${expense.station_city}, ${expense.station_state}`
+                          : expense.station_city || expense.station_state
+                        }
+                      </div>
                     </div>
                   )}
                 </CardContent>
