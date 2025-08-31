@@ -36,9 +36,17 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   
   // Pasar el companyId a todos los hooks de períodos
   const { data: allPeriods = [] } = usePaymentPeriods();
-  const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
+  const { data: currentPeriod, isLoading: currentPeriodLoading, error: currentPeriodError } = useCurrentPaymentPeriod(userCompany?.company_id);
   const { data: previousPeriod } = usePreviousPaymentPeriod(userCompany?.company_id);
   const { data: nextPeriod } = useNextPaymentPeriod(userCompany?.company_id);
+  
+  // Debug logging
+  console.log('PeriodFilter Debug:', {
+    userCompanyId: userCompany?.company_id,
+    currentPeriod,
+    currentPeriodLoading,
+    currentPeriodError
+  });
 
   const getDateRangeForType = (type: string) => {
     const now = new Date();
