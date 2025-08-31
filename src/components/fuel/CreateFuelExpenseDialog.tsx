@@ -44,6 +44,7 @@ const formSchema = z.object({
   
   // Información de la estación
   station_name: z.string().optional(),
+  station_city: z.string().optional(),
   station_state: z.string().optional(),
   
   // Información de pago/tarjeta
@@ -90,6 +91,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
       total_amount: 0,
       vehicle_id: '',
       station_name: '',
+      station_city: '',
       station_state: '',
       driver_card_id: '',
       card_last_five: '',
@@ -174,6 +176,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
         price_per_gallon: data.price_per_gallon,
         total_amount: data.total_amount,
         station_name: data.station_name,
+        station_city: data.station_city,
         station_state: data.station_state,
         card_last_five: data.card_last_five,
         invoice_number: data.invoice_number,
@@ -715,6 +718,20 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
                       <FormLabel>{t('fuel:create_dialog.fields.station_name')}</FormLabel>
                       <FormControl>
                         <Input placeholder={t('fuel:create_dialog.placeholders.station_example')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="station_city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('fuel:create_dialog.fields.city')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('fuel:create_dialog.placeholders.city_example')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

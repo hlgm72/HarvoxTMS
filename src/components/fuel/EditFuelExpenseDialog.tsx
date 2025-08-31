@@ -19,6 +19,7 @@ import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useEquipment } from '@/hooks/useEquipment';
 import { useFuelExpenseACID } from '@/hooks/useFuelExpenseACID';
 import { useFuelExpense } from '@/hooks/useFuelExpenses';
+import { useStates } from '@/hooks/useStates';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -31,6 +32,7 @@ const formSchema = z.object({
   price_per_gallon: z.coerce.number().positive('El precio por galón debe ser positivo'),
   total_amount: z.coerce.number().positive('El monto total debe ser positivo'),
   station_name: z.string().optional(),
+  station_city: z.string().optional(),
   station_state: z.string().optional(),
   vehicle_id: z.string().optional(),
   
@@ -52,6 +54,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
   const { data: paymentPeriods = [] } = useCompanyPaymentPeriods();
   const { equipment } = useEquipment();
   const { mutate: updateFuelExpense, isPending } = useFuelExpenseACID();
+  const { states } = useStates();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -68,6 +71,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
         price_per_gallon: expense.price_per_gallon,
         total_amount: expense.total_amount,
         station_name: expense.station_name || '',
+        station_city: expense.station_city || '',
         station_state: expense.station_state || '',
         vehicle_id: expense.vehicle_id || '',
         
@@ -90,6 +94,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
         price_per_gallon: data.price_per_gallon,
         total_amount: data.total_amount,
         station_name: data.station_name,
+        station_city: data.station_city,
         station_state: data.station_state,
         receipt_url: data.receipt_url,
         notes: data.notes,
@@ -114,7 +119,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>Editar Gasto de Combustible</DialogTitle>
           <DialogDescription>
@@ -301,7 +306,7 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="station_name"
@@ -318,20 +323,34 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
 
               <FormField
                 control={form.control}
-                name="vehicle_id"
+                name="station_city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vehículo</FormLabel>
+                    <FormLabel>Ciudad</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ciudad de la estación" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="station_state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar vehículo" />
+                          <SelectValue placeholder="Seleccionar estado" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {equipment.map((eq) => (
-                          <SelectItem key={eq.id} value={eq.id}>
-                            {eq.equipment_number} - {eq.make} {eq.model}
+                        {states.map((state) => (
+                          <SelectItem key={state.id} value={state.id}>
+                            {state.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -344,13 +363,24 @@ export function EditFuelExpenseDialog({ expenseId, open, onOpenChange }: EditFue
 
             <FormField
               control={form.control}
-              name="station_state"
+              name="vehicle_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
-                  <FormControl>
-                    <Input placeholder="TX, CA, NY..." maxLength={2} {...field} />
-                  </FormControl>
+                  <FormLabel>Vehículo</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar vehículo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {equipment.map((eq) => (
+                        <SelectItem key={eq.id} value={eq.id}>
+                          {eq.equipment_number} - {eq.make} {eq.model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
