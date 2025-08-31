@@ -151,7 +151,7 @@ export const formatPaymentPeriodCompact = (startDate: string | null, endDate: st
 };
 
 /**
- * Formateo ultra compacto para badges (omite año si es el mismo)
+ * Formateo ultra compacto para badges (siempre omite el año)
  */
 export const formatPaymentPeriodBadge = (startDate: string | null, endDate: string | null): string => {
   if (!startDate || !endDate) {
@@ -159,23 +159,10 @@ export const formatPaymentPeriodBadge = (startDate: string | null, endDate: stri
     return language === 'es' ? 'No definido' : 'Not defined';
   }
   
-  const startYear = getYearSafe(startDate);
-  const endYear = getYearSafe(endDate);
   const language = getGlobalLanguage();
-  
-  // Si es el mismo año, omitir el año en ambas fechas
-  if (startYear === endYear) {
-    const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-    const start = formatDateSafe(startDate, pattern);
-    const end = formatDateSafe(endDate, pattern);
-    return `${start} - ${end}`;
-  }
-  
-  // Si son años diferentes, mostrar año solo en la fecha final
-  const startPattern = language === 'es' ? 'dd/MM' : 'MM/dd';
-  const endPattern = language === 'es' ? 'dd/MM/yy' : 'MM/dd/yy';
-  const start = formatDateSafe(startDate, startPattern);
-  const end = formatDateSafe(endDate, endPattern);
+  const pattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+  const start = formatDateSafe(startDate, pattern);
+  const end = formatDateSafe(endDate, pattern);
   return `${start} - ${end}`;
 };
 
