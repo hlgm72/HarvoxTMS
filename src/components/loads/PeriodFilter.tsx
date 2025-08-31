@@ -269,7 +269,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] bg-white dark:bg-gray-800 border border-border shadow-lg z-[100]" 
+          className="w-72 sm:w-80 p-0 max-w-[calc(100vw-1rem)] bg-background border shadow-lg z-[100]" 
           align="center" 
           side="bottom"
           sideOffset={4}
@@ -277,7 +277,8 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           avoidCollisions={true}
           collisionPadding={8}
         >
-          <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto overscroll-contain">
+          <div className="max-h-[70vh] overflow-hidden flex flex-col">
+            <div className="p-4 space-y-4 overflow-y-auto flex-1">
             {/* Opciones rápidas */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
@@ -427,7 +428,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length}
                   </Badge>
                 </h4>
-                <div className="max-h-40 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+                <div className="max-h-48 overflow-y-auto space-y-1 border border-border/50 rounded-md p-2 bg-muted/20">
                   {openPeriods.map((period) => (
                     <Button
                       key={period.id}
@@ -524,6 +525,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 )}
               </div>
             )}
+            </div>
           </div>
         </PopoverContent>
       </Popover>
