@@ -3943,10 +3943,6 @@ export type Database = {
         Args: { period_calc_id: string }
         Returns: Json
       }
-      recalculate_payment_period_totals: {
-        Args: { target_period_id: string }
-        Returns: undefined
-      }
       refresh_driver_period_deductions: {
         Args: { driver_id_param: string; period_id_param: string }
         Returns: Json
