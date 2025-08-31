@@ -727,7 +727,7 @@
     "search_placeholder": "Search loads...",
     "driver_label": "Driver",
     "all_drivers": "All drivers",
-    "broker_label": "Broker",
+    "broker_label": "Client/Broker",
     "all_brokers": "All brokers",
     "status_label": "Status",
     "status_options": {

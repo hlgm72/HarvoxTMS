@@ -727,7 +727,7 @@
     "search_placeholder": "Buscar cargas...",
     "driver_label": "Conductor",
     "all_drivers": "Todos los conductores",
-    "broker_label": "Broker",
+    "broker_label": "Cliente/Broker",
     "all_brokers": "Todos los brokers",
     "status_label": "Estado",
     "status_options": {
