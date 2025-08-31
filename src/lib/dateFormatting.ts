@@ -58,9 +58,15 @@ export const formatDetailedPaymentPeriod = (
     return language === 'es' ? 'Período no definido' : 'Period not defined';
   }
 
-  const start = formatDateAuto(startDate);
-  const end = formatDateAuto(endDate);
   const periodStart = new Date(startDate);
+  const periodEnd = new Date(endDate);
+  
+  // Format dates without year for the range
+  const language = getGlobalLanguage();
+  const locale = language === 'es' ? es : enUS;
+  const startFormatted = format(periodStart, 'dd/MM', { locale });
+  const endFormatted = format(periodEnd, 'dd/MM', { locale });
+  const dateRange = `${startFormatted} - ${endFormatted}`;
   
   let periodLabel = '';
   
@@ -68,23 +74,23 @@ export const formatDetailedPaymentPeriod = (
     // Calcular número de semana del año
     const startOfYear = new Date(periodStart.getFullYear(), 0, 1);
     const weekNumber = Math.ceil(((periodStart.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
-    periodLabel = `Period Week ${weekNumber}/${periodStart.getFullYear()}`;
-  } else if (frequency === 'biweekly') {
+    periodLabel = `Week ${weekNumber}/${periodStart.getFullYear()}`;
+  } else if (frequency === 'biweekly' || frequency === 'bi-weekly') {
     // Determinar si es primera o segunda quincena
     const day = periodStart.getDate();
-    const monthName = periodStart.toLocaleDateString('en-US', { month: 'short' });
+    const monthName = format(periodStart, 'MMM', { locale });
     const quinzena = day <= 15 ? 'Q1' : 'Q2';
-    periodLabel = `Period ${monthName} ${quinzena}/${periodStart.getFullYear()}`;
+    periodLabel = `${monthName} ${quinzena}/${periodStart.getFullYear()}`;
   } else if (frequency === 'monthly') {
     // Mostrar nombre del mes
-    const monthName = periodStart.toLocaleDateString('en-US', { month: 'long' });
-    periodLabel = `Period ${monthName}/${periodStart.getFullYear()}`;
+    const monthName = format(periodStart, 'MMMM', { locale });
+    periodLabel = `${monthName}/${periodStart.getFullYear()}`;
   } else {
     // Fallback para casos sin frecuencia definida
-    periodLabel = 'Period';
+    return dateRange;
   }
   
-  return `${periodLabel}: ${start} - ${end}`;
+  return `${periodLabel}: ${dateRange}`;
 };
 
 /**
