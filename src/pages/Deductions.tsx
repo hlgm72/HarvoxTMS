@@ -7,7 +7,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
 import { EventualDeductionDialog } from "@/components/payments/EventualDeductionDialog";
-import { DeductionsFloatingActions } from "@/components/payments/DeductionsFloatingActions";
+import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
@@ -24,12 +24,13 @@ export default function Deductions() {
   const { data: expenseTypes = [] } = useExpenseTypes();
   const { drivers = [] } = useCompanyDrivers();
 
-  // Estado de filtros
+  // Estado de filtros - adaptado para sistema universal
   const [filters, setFilters] = useState({
-    status: "planned",
-    driver: "all",
-    expenseType: "all",
-    dateRange: { from: undefined as Date | undefined, to: undefined as Date | undefined }
+    search: '',
+    status: "all",
+    driverId: "all",
+    expenseTypeId: "all",
+    periodFilter: { type: 'current' as const }
   });
 
   // Estado de configuración de vista
@@ -94,8 +95,12 @@ export default function Deductions() {
 
       <div className="p-2 md:p-4 space-y-6">
         <DeductionsManager 
-          filters={filters}
-          viewConfig={viewConfig}
+          filters={{
+            status: filters.status,
+            driver: filters.driverId,
+            expenseType: filters.expenseTypeId,
+            dateRange: { from: new Date(), to: new Date() }
+          }}
         />
       </div>
 
@@ -112,12 +117,32 @@ export default function Deductions() {
         onSuccess={handleEventualSuccess}
       />
 
-      <DeductionsFloatingActions
+      <UniversalFloatingActions
+        contextKey="deductions"
         filters={filters}
-        onFiltersChange={setFilters}
-        onViewConfigChange={setViewConfig}
-        drivers={drivers}
-        expenseTypes={expenseTypes}
+        onFiltersChange={(newFilters: any) => {
+          setFilters(newFilters);
+        }}
+        additionalData={{
+          drivers: drivers.map(d => ({
+            user_id: d.id,
+            first_name: d.first_name,
+            last_name: d.last_name
+          })),
+          expenseTypes: expenseTypes.map(et => ({
+            id: et.id,
+            name: et.name
+          })),
+          stats: stats ? {
+            totalDeductions: stats.activeTemplates || 0,
+            totalAmount: stats.totalMonthlyAmount || 0,
+            pendingCount: stats.affectedDrivers || 0
+          } : undefined
+        }}
+        onExportHandler={async (format) => {
+          console.log(`Exportando deductions como ${format}`);
+          // TODO: Implementar export
+        }}
       />
     </>
   );

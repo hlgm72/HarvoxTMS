@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Fuel, CreditCard, FileText } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
-import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
+import { UniversalFloatingActions } from '@/components/ui/UniversalFloatingActions';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
@@ -22,12 +22,13 @@ export default function FuelManagement() {
   // Obtener el período actual para configurar filtros por defecto
   const { data: currentPeriod } = useCurrentPaymentPeriod();
 
-  // Estado de filtros - Se configurará con período actual por defecto
-  const [filters, setFilters] = useState<FuelFiltersType>({
+  // Estado de filtros - formato universal manteniendo compatibilidad
+  const [filters, setFilters] = useState({
+    search: '',
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
-    dateRange: { from: undefined, to: undefined }
+    dateRange: { from: undefined as Date | undefined, to: undefined as Date | undefined }
   });
 
   // Configurar filtros iniciales con el período actual cuando se cargue
@@ -56,6 +57,38 @@ export default function FuelManagement() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editExpenseId, setEditExpenseId] = useState<string | null>(null);
   const [viewExpenseId, setViewExpenseId] = useState<string | null>(null);
+
+  // Estados de carga para sync y export
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+
+  // Handler para sincronización con FleetOne
+  const handleFleetOneSync = async () => {
+    setSyncLoading(true);
+    try {
+      console.log('🔄 Sincronizando con FleetOne...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('✅ Sincronización completada');
+    } catch (error) {
+      console.error('❌ Error en sincronización:', error);
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
+  // Handler para exportar datos
+  const handleExport = async (format: string) => {
+    setExportLoading(true);
+    try {
+      console.log(`📄 Exportando datos como ${format}...`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('✅ Export completado');
+    } catch (error) {
+      console.error('❌ Error en export:', error);
+    } finally {
+      setExportLoading(false);
+    }
+  };
 
   // Convertir filtros para las consultas
   const queryFilters = {
@@ -157,9 +190,24 @@ export default function FuelManagement() {
 
       {/* Floating Actions - Solo para tab de gastos */}
       {activeTab === 'expenses' && (
-        <FuelFloatingActions 
+        <UniversalFloatingActions
+          contextKey="fuel"
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={(newFilters: any) => {
+            setFilters(newFilters);
+          }}
+          additionalData={{
+            // drivers y vehicles se obtendrán de los hooks correspondientes
+            stats: {
+              totalTransactions: 0, // TODO: obtener de hook de stats
+              totalAmount: 0,       // TODO: obtener de hook de stats
+              driversCount: 0       // TODO: obtener de hook de stats
+            }
+          }}
+          onSyncHandler={handleFleetOneSync}
+          onExportHandler={handleExport}
+          syncLoading={syncLoading}
+          exportLoading={exportLoading}
         />
       )}
     </>
