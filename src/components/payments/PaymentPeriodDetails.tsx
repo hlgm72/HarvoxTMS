@@ -17,6 +17,17 @@ import { PaymentPeriodAlerts } from "./PaymentPeriodAlerts";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { useTranslation } from 'react-i18next';
 
+// ===============================================
+// 🚨 COMPONENTE DE DETALLES DE PERÍODOS - CRÍTICO v1.0
+// ⚠️ NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA
+// ===============================================
+// 
+// Este componente procesa y muestra cálculos críticos de períodos de pago.
+// Maneja agregaciones financieras, marcado de pagos y cierre de períodos.
+// Cualquier error puede afectar pagos a conductores.
+// 
+// Ver: docs/CRITICAL-BUSINESS-LOGIC-PROTECTION.md
+
 interface PaymentPeriodDetailsProps {
   periodId: string;
   onClose: () => void;
@@ -176,11 +187,13 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const totalDrivers = driverCalculations.length;
   const driversWithNegativeBalance = driverCalculations.filter(d => d.has_negative_balance).length;
   const unpaidDrivers = driverCalculations.filter(d => d.payment_status !== 'paid');
+  
+  // 🚨 CRÍTICO - Agregaciones financieras fundamentales - NO MODIFICAR SIN AUTORIZACIÓN
   const totalGrossEarnings = driverCalculations.reduce((sum, d) => sum + (d.gross_earnings || 0), 0);
   const totalOtherIncome = driverCalculations.reduce((sum, d) => sum + (d.other_income || 0), 0);
   const totalFuelExpenses = driverCalculations.reduce((sum, d) => sum + (d.fuel_expenses || 0), 0);
   const totalDeductions = driverCalculations.reduce((sum, d) => sum + (d.total_deductions || 0), 0);
-  const totalNetPayment = driverCalculations.reduce((sum, d) => sum + calculateNetPayment(d), 0);
+  const totalNetPayment = driverCalculations.reduce((sum, d) => sum + calculateNetPayment(d), 0); // 🚨 FUNCIÓN CRÍTICA
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {

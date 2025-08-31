@@ -23,6 +23,17 @@ import { calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculat
 import { formatCurrency, getCurrentUTC, formatDateAuto, formatDateInUserTimeZone, formatNumber } from "@/lib/dateFormatting";
 import { FinancialCharts } from "./FinancialCharts";
 
+// ===============================================
+// 🚨 COMPONENTE RESUMEN FINANCIERO - CRÍTICO v1.0
+// ⚠️ NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA
+// ===============================================
+// 
+// Este componente muestra resúmenes financieros críticos del conductor.
+// Usa calculateNetPayment y otros cálculos fundamentales.
+// Cualquier error puede mostrar información incorrecta al conductor.
+// 
+// Ver: docs/CRITICAL-BUSINESS-LOGIC-PROTECTION.md
+
 interface FinancialData {
   currentPeriod: {
     gross_earnings: number;
@@ -95,17 +106,17 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
       const totalEarnings = currentCalculation?.gross_earnings || 0;
       const weeklyFuelSpend = currentCalculation?.fuel_expenses || 0;
 
-      return {
-        currentPeriod: {
-          gross_earnings: currentCalculation?.gross_earnings || 0,
-          other_income: currentCalculation?.other_income || 0,
-          fuel_expenses: currentCalculation?.fuel_expenses || 0,
-          total_deductions: currentCalculation?.total_deductions || 0,
-          net_payment: currentCalculation ? calculateNetPayment(currentCalculation) : 0,
-          period_start: currentCalculation?.company_payment_periods?.period_start_date || '',
-          period_end: currentCalculation?.company_payment_periods?.period_end_date || '',
-          status: currentCalculation?.payment_status || 'calculated'
-        },
+        return {
+          currentPeriod: {
+            gross_earnings: currentCalculation?.gross_earnings || 0,
+            other_income: currentCalculation?.other_income || 0,
+            fuel_expenses: currentCalculation?.fuel_expenses || 0,
+            total_deductions: currentCalculation?.total_deductions || 0,
+            net_payment: currentCalculation ? calculateNetPayment(currentCalculation) : 0, // 🚨 FUNCIÓN CRÍTICA
+            period_start: currentCalculation?.company_payment_periods?.period_start_date || '',
+            period_end: currentCalculation?.company_payment_periods?.period_end_date || '',
+            status: currentCalculation?.payment_status || 'calculated'
+          },
         weeklyStats: {
           loads_completed: loadsStats?.length || 0,
           miles_driven: totalMiles,

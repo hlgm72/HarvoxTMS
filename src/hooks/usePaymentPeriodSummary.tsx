@@ -2,6 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 
+// ===============================================
+// 🚨 HOOK DE RESÚMENES DE PERÍODOS - CRÍTICO v1.0
+// ⚠️ NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA
+// ===============================================
+// 
+// Este hook maneja recálculos automáticos críticos usando
+// verify_and_recalculate_company_payments. Cualquier error
+// puede causar inconsistencias en reportes financieros.
+// 
+// Ver: docs/CRITICAL-BUSINESS-LOGIC-PROTECTION.md
+
 export interface PaymentPeriodSummary {
   period_id: string;
   gross_earnings: number;
@@ -28,6 +39,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
 
       if (periodError) throw periodError;
 
+      // 🚨 RECÁLCULO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
       // FORZAR recálculo completo para asegurar datos correctos después del revert
       console.log('🔄 Forzando recálculo completo de la empresa:', periodData.company_id);
       const { data: integrityResult, error: integrityError } = await supabase
@@ -63,13 +75,14 @@ export function usePaymentPeriodSummary(periodId?: string) {
         };
       }
 
+      // 🚨 CRÍTICO - Cálculo de totales financieros - NO MODIFICAR
       // Calcular totales
       const summary = driverCalculations.reduce((acc, calc) => {
         acc.gross_earnings += calc.gross_earnings || 0;
         acc.other_income += calc.other_income || 0;
         acc.fuel_expenses += calc.fuel_expenses || 0;
         acc.deductions += calc.total_deductions || 0;
-        acc.net_payment += calculateNetPayment(calc);
+        acc.net_payment += calculateNetPayment(calc); // 🚨 FUNCIÓN CRÍTICA
         
         if (calc.has_negative_balance) {
           acc.drivers_with_negative_balance++;
@@ -101,6 +114,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
     queryFn: async (): Promise<PaymentPeriodSummary[]> => {
       if (!companyId) throw new Error('Company ID is required');
       
+      // 🚨 RECÁLCULO AUTOMÁTICO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
       // Verificar y recalcular automáticamente la integridad de todos los cálculos de la empresa
       const { data: integrityResult, error: integrityError } = await supabase
         .rpc('verify_and_recalculate_company_payments', {

@@ -29,7 +29,45 @@ Este sistema es fundamental para el correcto funcionamiento de los pagos y cálc
 - Consistencia de datos
 - Performance del sistema
 
-### 2. Hook useCreateLoad
+### 2. Sistema de Cálculos de Pagos a Conductores v1.0
+**ESTADO: CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN**
+
+#### Archivos Protegidos:
+- `src/lib/paymentCalculations.ts` - Biblioteca de cálculos matemáticos fundamentales
+- `src/hooks/usePaymentPeriodSummary.tsx` - Hook de resúmenes con recálculos automáticos
+- `src/components/payments/PaymentPeriodDetails.tsx` - Procesamiento de cálculos de períodos
+- `src/components/driver/FinancialSummary.tsx` - Visualización de resúmenes financieros
+- `src/components/payments/PaymentReportDialog.tsx` - Generación de reportes de pagos
+- `src/pages/PaymentReports.tsx` - Página principal de reportes con recálculos
+
+#### Funciones SQL Protegidas:
+- `verify_and_recalculate_company_payments` - Verificación y recálculo integral
+- `recalculate_payment_period_totals` - Recálculo de totales por período
+- `auto_recalculate_on_loads` - Trigger de recálculo en cargas
+- `auto_recalculate_on_fuel_expenses` - Trigger de recálculo en combustible
+- `auto_recalculate_on_other_income` - Trigger de recálculo en otros ingresos
+
+#### Funcionalidad Protegida:
+- ✅ `calculateNetPayment()` - Cálculo de pago neto final
+- ✅ `calculateTotalIncome()` - Cálculo de ingresos totales
+- ✅ `calculateHasNegativeBalance()` - Detección de balances negativos
+- ✅ Agregación de `gross_earnings` (ingresos brutos de cargas)
+- ✅ Agregación de `fuel_expenses` (gastos de combustible)
+- ✅ Agregación de `total_deductions` (deducciones aplicadas)
+- ✅ Agregación de `other_income` (otros ingresos)
+- ✅ Recálculos automáticos de integridad
+- ✅ Verificación de consistencia de datos
+
+#### Razón de Protección:
+Este sistema maneja los cálculos financieros más críticos del negocio. Cualquier modificación puede afectar:
+- Pagos incorrectos a conductores
+- Reportes financieros erróneos
+- Pérdidas económicas por errores de cálculo
+- Problemas legales y laborales
+- Inconsistencias contables
+- Auditorías fallidas
+
+### 3. Hook useCreateLoad
 **ESTADO: CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN**
 
 #### Lógica Protegida:
@@ -68,6 +106,10 @@ Este sistema es fundamental para el correcto funcionamiento de los pagos y cálc
 - ❌ Lógica de períodos de pago
 - ❌ Cálculos de asignación de cargas
 - ❌ Funciones SQL del sistema de períodos
+- ❌ Funciones matemáticas de cálculos de pagos (`calculateNetPayment`, `calculateTotalIncome`)
+- ❌ Hooks de recálculo automático (`usePaymentPeriodSummary`)
+- ❌ Componentes de procesamiento de pagos
+- ❌ Triggers de recálculo en base de datos
 
 ## 🔧 TESTING DE FUNCIONES CRÍTICAS
 
@@ -76,6 +118,9 @@ Este sistema es fundamental para el correcto funcionamiento de los pagos y cálc
 - ✅ NO se generan períodos futuros innecesarios
 - ✅ La asignación de cargas usa el criterio correcto
 - ✅ Los `driver_period_calculations` se crean correctamente
+- ✅ Las funciones de cálculo matemático producen resultados correctos
+- ✅ Los recálculos automáticos mantienen la integridad de datos
+- ✅ Los reportes de pagos muestran información precisa
 
 ## 📞 CONTACTO PARA AUTORIZACIONES
 
