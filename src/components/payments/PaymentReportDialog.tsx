@@ -23,7 +23,8 @@ import {
   AlertTriangle,
   Package,
   FileText,
-  Eye
+  Eye,
+  Edit
 } from "lucide-react";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
 import { format } from "date-fns";
@@ -31,6 +32,8 @@ import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
+import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PaymentReportDialogProps {
   open: boolean;
@@ -44,10 +47,13 @@ export function PaymentReportDialog({
   calculationId 
 }: PaymentReportDialogProps) {
   const { showSuccess, showError } = useFleetNotifications();
+  const queryClient = useQueryClient();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [showEditLoadDialog, setShowEditLoadDialog] = useState(false);
+  const [selectedLoadForEdit, setSelectedLoadForEdit] = useState<any>(null);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -811,35 +817,49 @@ export function PaymentReportDialog({
                         </div>
                       </div>
                       
-                      {/* Segunda línea: Porcentajes + Monto */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="flex flex-wrap gap-2">
-                          {(load.dispatching_percentage > 0 || load.factoring_percentage > 0 || load.leasing_percentage > 0) ? (
-                            <>
-                              {load.dispatching_percentage > 0 && (
-                                <Badge variant="outline" className="text-xs">
-                                  Despacho: {load.dispatching_percentage}% ({formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
-                                </Badge>
-                              )}
-                              {load.factoring_percentage > 0 && (
-                                <Badge variant="outline" className="text-xs">
-                                  Factoring: {load.factoring_percentage}% ({formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
-                                </Badge>
-                              )}
-                              {load.leasing_percentage > 0 && (
-                                <Badge variant="outline" className="text-xs">
-                                  Leasing: {load.leasing_percentage}% ({formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
-                                </Badge>
-                              )}
-                            </>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">Sin porcentajes aplicados</span>
-                          )}
-                        </div>
-                        <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
-                          {formatCurrency(load.total_amount)}
-                        </div>
-                      </div>
+                       {/* Segunda línea: Porcentajes + Monto + Botón Editar */}
+                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                         <div className="flex flex-wrap gap-2">
+                           {(load.dispatching_percentage > 0 || load.factoring_percentage > 0 || load.leasing_percentage > 0) ? (
+                             <>
+                               {load.dispatching_percentage > 0 && (
+                                 <Badge variant="outline" className="text-xs">
+                                   Despacho: {load.dispatching_percentage}% ({formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
+                                 </Badge>
+                               )}
+                               {load.factoring_percentage > 0 && (
+                                 <Badge variant="outline" className="text-xs">
+                                   Factoring: {load.factoring_percentage}% ({formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
+                                 </Badge>
+                               )}
+                               {load.leasing_percentage > 0 && (
+                                 <Badge variant="outline" className="text-xs">
+                                   Leasing: {load.leasing_percentage}% ({formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
+                                 </Badge>
+                               )}
+                             </>
+                           ) : (
+                             <span className="text-xs text-muted-foreground">Sin porcentajes aplicados</span>
+                           )}
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div className="font-semibold sm:text-right shrink-0 text-sm sm:text-base">
+                             {formatCurrency(load.total_amount)}
+                           </div>
+                           <Button
+                             size="sm"
+                             variant="outline"
+                             onClick={() => {
+                               setSelectedLoadForEdit(load);
+                               setShowEditLoadDialog(true);
+                             }}
+                             className="h-7 w-7 p-0"
+                             title="Editar carga"
+                           >
+                             <Edit className="h-3 w-3" />
+                           </Button>
+                         </div>
+                       </div>
                     </div>
                   ))}
                 </div>
@@ -966,6 +986,19 @@ export function PaymentReportDialog({
         recipientEmail={driver?.display_email || ''}
         driverName={driver?.display_name || `${driver?.first_name} ${driver?.last_name}`}
         isSending={isSendingEmail}
+      />
+
+      <CreateLoadDialog
+        isOpen={showEditLoadDialog}
+        onClose={() => {
+          setShowEditLoadDialog(false);
+          setSelectedLoadForEdit(null);
+          // Refrescar los datos después de editar
+          queryClient.invalidateQueries({ queryKey: ['period-loads'] });
+          queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+        }}
+        mode="edit"
+        loadData={selectedLoadForEdit}
       />
     </>
   );
