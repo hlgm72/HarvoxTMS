@@ -3053,6 +3053,10 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: Json
       }
+      assign_payment_period_to_load: {
+        Args: { load_id_param: string; period_id_param: string }
+        Returns: Json
+      }
       auto_assign_payment_period_to_load: {
         Args: { company_id_param: string; delivery_date_param: string }
         Returns: string
