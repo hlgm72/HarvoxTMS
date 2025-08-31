@@ -724,6 +724,20 @@
     "broker": "Broker",
     "date_range": "Rango de Fechas",
     "all": "Todos",
+    "search_placeholder": "Buscar cargas...",
+    "driver_label": "Conductor",
+    "all_drivers": "Todos los conductores",
+    "broker_label": "Broker",
+    "all_brokers": "Todos los brokers",
+    "status_label": "Estado",
+    "status_options": {
+      "all": "Todos los estados",
+      "available": "Disponible",
+      "assigned": "Asignado",
+      "in_transit": "En Tránsito",
+      "delivered": "Entregado"
+    },
+    "period_label": "Período",
     "clear": "Limpiar Filtros",
     "apply": "Aplicar Filtros"
   },

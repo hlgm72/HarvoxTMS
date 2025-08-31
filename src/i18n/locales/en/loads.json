@@ -724,6 +724,20 @@
     "broker": "Broker",
     "date_range": "Date Range",
     "all": "All",
+    "search_placeholder": "Search loads...",
+    "driver_label": "Driver",
+    "all_drivers": "All drivers",
+    "broker_label": "Broker",
+    "all_brokers": "All brokers",
+    "status_label": "Status",
+    "status_options": {
+      "all": "All statuses",
+      "available": "Available",
+      "assigned": "Assigned",
+      "in_transit": "In Transit",
+      "delivered": "Delivered"
+    },
+    "period_label": "Period",
     "clear": "Clear Filters",
     "apply": "Apply Filters"
   },

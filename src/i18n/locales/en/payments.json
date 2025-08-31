@@ -387,14 +387,21 @@
       "last_year": "Last Year",
       "specific": "Specific Period..."
     },
+    "expense_type_label": "Expense Type",
+    "all_expense_types": "All expense types",
+    "broker_label": "Broker",
+    "all_brokers": "All brokers",
+    "vehicle_label": "Vehicle", 
+    "all_vehicles": "All vehicles",
     "status_options": {
       "all": "All statuses",
       "pending": "Pending",
       "calculated": "Calculated",
-      "approved": "Approved", 
+      "approved": "Approved",
       "paid": "Paid",
       "failed": "Failed",
-      "negative": "Negative Balance"
+      "negative": "Negative Balance",
+      "rejected": "Rejected"
     },
     "active_badges": {
       "search": "Search:",

@@ -387,6 +387,10 @@
       "last_year": "Año Pasado",
       "specific": "Período Específico..."
     },
+    "broker_label": "Broker",
+    "all_brokers": "Todos los brokers",
+    "vehicle_label": "Vehículo", 
+    "all_vehicles": "Todos los vehículos",
     "status_options": {
       "all": "Todos los estados",
       "pending": "Pendientes", 

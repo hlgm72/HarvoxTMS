@@ -78,35 +78,35 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
       {
         key: 'search',
         type: 'search',
-        labelKey: 'filters.search_label',
+        labelKey: 'filters.search_placeholder', // ← Corregido
         placeholder: 'Buscar por transacción...'
       },
       {
         key: 'driverId',
         type: 'select',
-        labelKey: 'filters.driver_label',
-        options: [{ value: 'all', labelKey: 'filters.all_drivers' }]
+        labelKey: 'filters.driver_label', // ← Correcto
+        options: [{ value: 'all', labelKey: 'filters.all_drivers' }] // ← Correcto
       },
       {
         key: 'vehicleId', 
         type: 'select',
-        labelKey: 'filters.vehicle_label',
-        options: [{ value: 'all', labelKey: 'filters.all_vehicles' }]
+        labelKey: 'filters.vehicle_label', // ← Agregar esta clave
+        options: [{ value: 'all', labelKey: 'filters.all_vehicles' }] // ← Agregar esta clave
       },
       {
         key: 'status',
         type: 'select',
-        labelKey: 'filters.status_label',
+        labelKey: 'filters.status_label', // ← Correcto
         options: [
-          { value: 'all', labelKey: 'filters.status_options.all' },
-          { value: 'assigned', labelKey: 'filters.status_options.assigned' },
-          { value: 'unassigned', labelKey: 'filters.status_options.unassigned' }
+          { value: 'all', labelKey: 'filters.status_options.all' }, // ← Correcto
+          { value: 'assigned', labelKey: 'filters.status_options.assigned' }, // ← Agregar
+          { value: 'unassigned', labelKey: 'filters.status_options.unassigned' } // ← Agregar
         ]
       },
       {
         key: 'dateRange',
         type: 'dateRange',
-        labelKey: 'filters.date_range_label'
+        labelKey: 'filters.date_range' // ← De common.json
       }
     ],
 
@@ -246,36 +246,36 @@ export const loadsConfig: ContextConfig<LoadsFilters> = {
       {
         key: 'search',
         type: 'search',
-        labelKey: 'filters.search_label'
+        labelKey: 'filters.search_placeholder' // ← De payments.json
       },
       {
         key: 'status',
         type: 'select',
-        labelKey: 'filters.status_label',
+        labelKey: 'filters.status_label', // ← De payments.json
         options: [
           { value: 'all', labelKey: 'filters.status_options.all' },
-          { value: 'available', labelKey: 'filters.status_options.available' },
-          { value: 'assigned', labelKey: 'filters.status_options.assigned' },
-          { value: 'in_transit', labelKey: 'filters.status_options.in_transit' },
-          { value: 'delivered', labelKey: 'filters.status_options.delivered' }
+          { value: 'available', labelKey: 'filters.status_options.available' }, // ← Agregar
+          { value: 'assigned', labelKey: 'filters.status_options.assigned' }, // ← Agregar
+          { value: 'in_transit', labelKey: 'filters.status_options.in_transit' }, // ← Agregar
+          { value: 'delivered', labelKey: 'filters.status_options.delivered' } // ← Agregar
         ]
       },
       {
         key: 'driverId',
         type: 'select',
-        labelKey: 'filters.driver_label',
-        options: [{ value: 'all', labelKey: 'filters.all_drivers' }]
+        labelKey: 'filters.driver_label', // ← De payments.json
+        options: [{ value: 'all', labelKey: 'filters.all_drivers' }] // ← De payments.json
       },
       {
         key: 'brokerId',
         type: 'select',
-        labelKey: 'filters.broker_label',
-        options: [{ value: 'all', labelKey: 'filters.all_brokers' }]
+        labelKey: 'filters.broker_label', // ← Agregar esta clave
+        options: [{ value: 'all', labelKey: 'filters.all_brokers' }] // ← Agregar esta clave
       },
       {
         key: 'periodFilter',
         type: 'period',
-        labelKey: 'filters.period_label'
+        labelKey: 'filters.period_label' // ← De payments.json
       }
     ],
 
@@ -404,35 +404,35 @@ export const deductionsConfig: ContextConfig<DeductionsFilters> = {
       {
         key: 'search',
         type: 'search',
-        labelKey: 'filters.search_label'
+        labelKey: 'filters.search_placeholder' // ← De payments.json
       },
       {
         key: 'status',
         type: 'select',
-        labelKey: 'filters.status_label',
+        labelKey: 'filters.status_label', // ← De payments.json
         options: [
           { value: 'all', labelKey: 'filters.status_options.all' },
           { value: 'pending', labelKey: 'filters.status_options.pending' },
           { value: 'approved', labelKey: 'filters.status_options.approved' },
-          { value: 'rejected', labelKey: 'filters.status_options.rejected' }
+          { value: 'rejected', labelKey: 'filters.status_options.rejected' } // ← Agregar
         ]
       },
       {
         key: 'driverId',
         type: 'select',
-        labelKey: 'filters.driver_label',
-        options: [{ value: 'all', labelKey: 'filters.all_drivers' }]
+        labelKey: 'filters.driver_label', // ← De payments.json
+        options: [{ value: 'all', labelKey: 'filters.all_drivers' }] // ← De payments.json
       },
       {
         key: 'expenseTypeId',
         type: 'select',
-        labelKey: 'filters.expense_type_label',
-        options: [{ value: 'all', labelKey: 'filters.all_expense_types' }]
+        labelKey: 'filters.expense_type_label', // ← Agregar esta clave
+        options: [{ value: 'all', labelKey: 'filters.all_expense_types' }] // ← Agregar esta clave
       },
       {
         key: 'periodFilter',
         type: 'period',
-        labelKey: 'filters.period_label'
+        labelKey: 'filters.period_label' // ← De payments.json
       }
     ],
 
