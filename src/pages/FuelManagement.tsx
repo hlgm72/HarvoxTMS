@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,17 +14,34 @@ import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
+import { useCurrentPaymentPeriod } from '@/hooks/usePaymentPeriods';
 
 export default function FuelManagement() {
   const { t } = useTranslation(['fuel', 'common']);
+  
+  // Obtener el período actual para configurar filtros por defecto
+  const { data: currentPeriod } = useCurrentPaymentPeriod();
 
-  // Estado de filtros
+  // Estado de filtros - Se configurará con período actual por defecto
   const [filters, setFilters] = useState<FuelFiltersType>({
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
     dateRange: { from: undefined, to: undefined }
   });
+
+  // Configurar filtros iniciales con el período actual cuando se cargue
+  useEffect(() => {
+    if (currentPeriod && !filters.dateRange.from && !filters.dateRange.to) {
+      setFilters(prev => ({
+        ...prev,
+        dateRange: {
+          from: new Date(currentPeriod.period_start_date),
+          to: new Date(currentPeriod.period_end_date)
+        }
+      }));
+    }
+  }, [currentPeriod, filters.dateRange.from, filters.dateRange.to]);
 
   // Estado de tabs
   const [activeTab, setActiveTab] = useState('expenses');
