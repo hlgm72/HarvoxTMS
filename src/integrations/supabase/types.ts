@@ -3208,6 +3208,10 @@ export type Database = {
         Args: { target_company_id: string; target_user_id: string }
         Returns: boolean
       }
+      cleanup_empty_legacy_periods: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       cleanup_expired_backups: {
         Args: Record<PropertyKey, never>
         Returns: number
