@@ -543,10 +543,15 @@ export function EventualDeductionDialog({
             {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && (
               <div className="p-3 border border-green-200 bg-green-50 rounded-md">
                 <p className="text-sm text-green-800">
-                  {t("deductions.eventual.period_found", { 
-                    start: formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date),
-                    end: formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date)
-                  })}
+                  {(() => {
+                    const startDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date);
+                    const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
+                    console.log('🐛 DEBUG period_found:', { startDate, endDate, rawStart: paymentPeriods[0].company_payment_periods.period_start_date, rawEnd: paymentPeriods[0].company_payment_periods.period_end_date });
+                    return t("deductions.eventual.period_found", { 
+                      start: startDate,
+                      end: endDate
+                    });
+                  })()}
                 </p>
               </div>
             )}
