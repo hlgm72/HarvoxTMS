@@ -11,6 +11,7 @@ interface FuelExpenseData {
   price_per_gallon?: number;
   total_amount?: number;
   station_name?: string;
+  station_city?: string; // ✅ Agregar campo para ciudad de la estación
   station_state?: string;
   card_last_five?: string;
   fuel_type?: string;

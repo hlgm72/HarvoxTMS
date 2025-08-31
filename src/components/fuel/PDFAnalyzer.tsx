@@ -27,6 +27,7 @@ interface EnrichedTransaction {
   unit: string;
   invoice: string;
   location_name: string;
+  city?: string; // ✅ Agregar campo para ciudad
   state: string;
   category?: string;
   qty: number;
@@ -262,6 +263,7 @@ export function PDFAnalyzer() {
           unit: transaction.unit,
           invoice: transaction.invoice,
           location_name: transaction.location_name,
+          city: transaction.city, // ✅ Capturar ciudad desde el análisis del PDF
           state: transaction.state,
           category: transaction.category || 'Diesel',
           qty: parseFloat(transaction.qty) || 0,
@@ -517,6 +519,7 @@ export function PDFAnalyzer() {
           fees: Number(transaction.fees) || 0,
           total_amount: Number(transaction.total_amt),
           station_name: transaction.location_name,
+          station_city: transaction.city, // ✅ Incluir ciudad de la estación
           station_state: transaction.state,
           card_last_five: transaction.card.slice(-5),
           invoice_number: transaction.invoice,

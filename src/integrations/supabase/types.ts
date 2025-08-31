@@ -1302,6 +1302,7 @@ export type Database = {
           price_per_gallon: number
           raw_webhook_data: Json | null
           receipt_url: string | null
+          station_city: string | null
           station_name: string | null
           station_state: string | null
           status: string
@@ -1330,6 +1331,7 @@ export type Database = {
           price_per_gallon: number
           raw_webhook_data?: Json | null
           receipt_url?: string | null
+          station_city?: string | null
           station_name?: string | null
           station_state?: string | null
           status?: string
@@ -1358,6 +1360,7 @@ export type Database = {
           price_per_gallon?: number
           raw_webhook_data?: Json | null
           receipt_url?: string | null
+          station_city?: string | null
           station_name?: string | null
           station_state?: string | null
           status?: string
