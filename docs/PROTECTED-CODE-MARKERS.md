@@ -39,6 +39,14 @@ Este marcador identifica sistemas completos que no deben modificarse.
 ### ✅ src/components/fuel/CreateFuelExpenseDialog.tsx
 - Función `ensurePaymentPeriodExists` marcada como: `🚨 CRÍTICO - SISTEMA BAJO DEMANDA v2.0`
 
+### ✅ src/lib/paymentReportPDF.ts
+- Marcado como: `🚨 SISTEMA GENERACIÓN PDF DE REPORTES - CRÍTICO v1.0`
+- Función `generatePaymentReportPDF` marcada como crítica
+
+### ✅ src/components/payments/PaymentReportDialog.tsx
+- Marcado como: `🚨 COMPONENTE GENERACIÓN PDF REPORTES - CRÍTICO v1.0`
+- Función `getReportData` marcada como crítica
+
 ## Cómo Identificar Código Protegido
 
 1. Busca los emojis 🚨 en los comentarios

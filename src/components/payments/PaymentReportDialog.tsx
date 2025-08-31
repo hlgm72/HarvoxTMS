@@ -1,3 +1,11 @@
+// ===============================================
+// 🚨 COMPONENTE GENERACIÓN PDF REPORTES - CRÍTICO v1.0
+// ===============================================
+// Este componente maneja la visualización y generación de reportes
+// de pago en PDF. Es crítico para la funcionalidad de reportes
+// financieros del sistema. NO MODIFICAR SIN AUTORIZACIÓN.
+// ===============================================
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -300,6 +308,9 @@ export function PaymentReportDialog({
     enabled: !!calculationId
   });
 
+  // 🚨 FUNCIÓN CRÍTICA - NO MODIFICAR SIN AUTORIZACIÓN
+  // Esta función prepara los datos para el reporte PDF
+  // Cualquier cambio puede afectar la exactitud de los reportes financieros
   const getReportData = () => {
     if (!calculation || !driver || !company) return null;
     

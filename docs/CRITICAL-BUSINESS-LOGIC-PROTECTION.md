@@ -76,6 +76,32 @@ Este sistema maneja los cálculos financieros más críticos del negocio. Cualqu
 - Llamada a `ensurePaymentPeriodExists`
 - Asignación de `payment_period_id`
 
+### 4. Sistema de Generación PDF de Reportes v1.0
+**ESTADO: CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN**
+
+#### Archivos Protegidos:
+- `src/lib/paymentReportPDF.ts` - Lógica principal de generación de PDFs
+- `src/components/payments/PaymentReportDialog.tsx` - Componente de visualización de reportes
+- `supabase/functions/generate-email-content/index.ts` - Generación de contenido para emails
+- `supabase/functions/send-payment-report/index.ts` - Envío de reportes por email
+
+#### Funcionalidad Protegida:
+- ✅ Generación exacta de PDFs con datos financieros críticos
+- ✅ Formateo correcto de montos, fechas y períodos de pago
+- ✅ Estructura y diseño del reporte PDF
+- ✅ Cálculos de deducciones, ingresos y pagos netos
+- ✅ Integración con datos de cargas, combustible y deducciones
+- ✅ Envío automático de reportes por email
+- ✅ Visualización en iframe para preview
+
+#### Razón de Protección:
+Este sistema genera los reportes oficiales de pago para conductores. Cualquier modificación puede afectar:
+- Exactitud de información financiera en reportes oficiales
+- Cumplimiento legal y contable de documentos de pago
+- Confianza de conductores en la transparencia financiera
+- Auditorías y procesos de contabilidad empresarial
+- Consistencia en la presentación de datos críticos
+
 ## 🛡️ CÓMO IDENTIFICAR CÓDIGO CRÍTICO
 
 ### Marcadores en el Código:

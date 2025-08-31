@@ -1,3 +1,12 @@
+// ===============================================
+// 🚨 SISTEMA GENERACIÓN PDF DE REPORTES - CRÍTICO v1.0
+// ===============================================
+// Este archivo contiene la lógica fundamental para la generación
+// de PDFs de reportes de pago de conductores. Cualquier modificación
+// puede afectar la exactitud de los reportes financieros críticos.
+// NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA.
+// ===============================================
+
 import jsPDF from "jspdf";
 import { formatDateSafe, formatDateOnly, formatDateAuto, formatDateTimeShort, formatCurrency as formatCurrencyLib } from './dateFormatting';
 
@@ -77,6 +86,9 @@ interface PaymentReportData {
   }>;
 }
 
+// 🚨 FUNCIÓN CRÍTICA - NO MODIFICAR SIN AUTORIZACIÓN
+// Esta función es responsable de generar los PDFs de reportes de pago
+// Cualquier cambio puede afectar reportes financieros críticos del negocio
 export async function generatePaymentReportPDF(data: PaymentReportData, isPreview?: boolean, targetWindow?: Window | null): Promise<jsPDF | void> {
   console.log('🔍 PDF Generation - Starting function');
   console.log('🔍 PDF Generation - Data received:', data);
