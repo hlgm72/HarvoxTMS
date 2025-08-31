@@ -123,7 +123,10 @@
   "stats": {
     "total_loads": "Total Loads",
     "total_revenue": "Total Revenue",
-    "active_drivers": "Active Drivers"
+    "active_drivers": "Active Drivers",
+    "total_deductions": "Total Deductions",
+    "total_amount": "Total Amount",
+    "pending_count": "Pending Count"
   },
   "actions": {
     "get_started": "Get Started",

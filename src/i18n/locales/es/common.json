@@ -123,7 +123,10 @@
   "stats": {
     "total_loads": "Total de Cargas", 
     "total_revenue": "Ingresos Totales",
-    "active_drivers": "Conductores Activos"
+    "active_drivers": "Conductores Activos",
+    "total_deductions": "Total de Deducciones",
+    "total_amount": "Monto Total", 
+    "pending_count": "Pendientes"
   },
   "actions": {
     "get_started": "Comenzar Gratis",
