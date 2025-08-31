@@ -45,8 +45,8 @@ export default function FuelManagement() {
   }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
 
   console.log('🔍 Filtros activos en Fuel Management:', filters);
+  console.log('📅 Período actual cargado:', currentPeriod);
   
-  // Estado de tabs
   const [activeTab, setActiveTab] = useState('expenses');
 
   // Estado de modales
