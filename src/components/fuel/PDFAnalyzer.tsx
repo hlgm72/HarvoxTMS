@@ -445,7 +445,6 @@ export function PDFAnalyzer() {
     try {
       const validTransactions = enrichedTransactions.filter(
         t => t.card_mapping_status === 'found' && 
-             (t.period_mapping_status === 'found' || t.period_mapping_status === 'will_create') && 
              t.import_status === 'not_imported'
       );
       
@@ -636,7 +635,6 @@ export function PDFAnalyzer() {
                   <div className="text-2xl font-bold text-green-600">
                     {enrichedTransactions.filter(t => 
                       t.card_mapping_status === 'found' && 
-                      (t.period_mapping_status === 'found' || t.period_mapping_status === 'will_create') && 
                       t.import_status === 'not_imported'
                     ).length}
                   </div>
@@ -655,7 +653,6 @@ export function PDFAnalyzer() {
 
               {enrichedTransactions.filter(t => 
                 t.card_mapping_status === 'found' && 
-                (t.period_mapping_status === 'found' || t.period_mapping_status === 'will_create') && 
                 t.import_status === 'not_imported'
               ).length > 0 && (
                 <div className="flex gap-2">
@@ -694,7 +691,7 @@ export function PDFAnalyzer() {
                   <Card key={index} className={`bg-white
                     ${transaction.import_status === 'already_imported' 
                       ? 'border-gray-200 opacity-75' 
-                    : transaction.card_mapping_status === 'found' && (transaction.period_mapping_status === 'found' || transaction.period_mapping_status === 'will_create')
+                    : transaction.card_mapping_status === 'found'
                       ? 'border-green-200' 
                       : 'border-orange-200'}
                   `}>
@@ -708,17 +705,10 @@ export function PDFAnalyzer() {
                           {transaction.import_status === 'already_imported' ? (
                             <Badge variant="secondary">{t('analyzer.mapping.already_imported')}</Badge>
                           ) : (
-                            <>
-                              <Badge variant={transaction.card_mapping_status === 'found' ? 'default' : 'destructive'}>
-                                {transaction.card_mapping_status === 'found' ? t('analyzer.mapping.driver_found') : 
-                                 transaction.card_mapping_status === 'multiple' ? t('analyzer.mapping.multiple_drivers') : t('analyzer.mapping.driver_not_found')}
-                              </Badge>
-                              {transaction.period_mapping_status === 'found' && (
-                                <Badge variant="default">
-                                  {t('analyzer.mapping.period_found')}
-                                </Badge>
-                              )}
-                            </>
+                            <Badge variant={transaction.card_mapping_status === 'found' ? 'default' : 'destructive'}>
+                              {transaction.card_mapping_status === 'found' ? t('analyzer.mapping.driver_found') : 
+                               transaction.card_mapping_status === 'multiple' ? t('analyzer.mapping.multiple_drivers') : t('analyzer.mapping.driver_not_found')}
+                            </Badge>
                           )}
                         </div>
                       </div>
