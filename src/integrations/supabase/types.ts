@@ -3772,7 +3772,7 @@ export type Database = {
         Returns: boolean
       }
       is_user_superadmin_safe: {
-        Args: { user_id_param: string }
+        Args: { user_id_param?: string }
         Returns: boolean
       }
       lock_payment_period: {
