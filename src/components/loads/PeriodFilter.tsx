@@ -422,37 +422,38 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             {/* Períodos abiertos */}
             {openPeriods.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.open_periods')}</h4>
-                {openPeriods.slice(0, 3).map((period) => (
-                  <Button
-                    key={period.id}
-                    variant={value.periodId === period.id ? 'default' : 'ghost'}
-                    className="w-full justify-start text-left"
-                    onClick={() => handleOptionSelect({ 
-                      type: 'specific', 
-                      periodId: period.id,
-                      startDate: period.period_start_date,
-                      endDate: period.period_end_date
-                    })}
-                  >
-                    <div className="flex flex-col items-start w-full min-w-0">
-                      <div className="flex items-center justify-between w-full gap-2">
-                        <span className="text-sm truncate flex-1 min-w-0">
-                          {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
-                        </span>
-                        <Badge className={`text-xs flex-shrink-0 ${getStatusColor(period.status)}`}>
-                          {getStatusText(period.status)}
-                        </Badge>
+                <h4 className="font-medium text-sm text-muted-foreground flex items-center justify-between">
+                  {t('period_filter.open_periods')}
+                  <Badge variant="secondary" className="text-xs">
+                    {openPeriods.length}
+                  </Badge>
+                </h4>
+                <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                  {openPeriods.map((period) => (
+                    <Button
+                      key={period.id}
+                      variant={value.periodId === period.id ? 'default' : 'ghost'}
+                      className="w-full justify-start text-left h-auto py-2"
+                      onClick={() => handleOptionSelect({ 
+                        type: 'specific', 
+                        periodId: period.id,
+                        startDate: period.period_start_date,
+                        endDate: period.period_end_date
+                      })}
+                    >
+                      <div className="flex flex-col items-start w-full min-w-0">
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <span className="text-sm truncate flex-1 min-w-0">
+                            {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
+                          </span>
+                          <Badge className={`text-xs flex-shrink-0 ${getStatusColor(period.status)}`}>
+                            {getStatusText(period.status)}
+                          </Badge>
+                        </div>
                       </div>
-                      {/* Driver name not needed for company periods */}
-                    </div>
-                  </Button>
-                ))}
-                {openPeriods.length > 3 && (
-                  <div className="text-xs text-muted-foreground text-center">
-                    +{openPeriods.length - 3} {t('period_filter.more_periods', 'más períodos')}
-                  </div>
-                )}
+                    </Button>
+                  ))}
+                </div>
               </div>
             )}
 
