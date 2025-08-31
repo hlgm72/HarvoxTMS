@@ -116,20 +116,10 @@ export default function PaymentReports() {
       console.log('🔍 PaymentReports Query - getFilterPeriodIds:', getFilterPeriodIds);
       console.log('🔍 PaymentReports Query - periodFilter:', filters.periodFilter);
       
-      // ✅ VERIFICACIÓN AUTOMÁTICA DE INTEGRIDAD DE CÁLCULOS
-      if (userCompany?.company_id) {
-        console.log('🔄 Verificando integridad de cálculos automáticamente...');
-        const { data: integrityResult, error: integrityError } = await supabase
-          .rpc('verify_and_recalculate_company_payments', {
-            target_company_id: userCompany.company_id
-          });
-
-        if (integrityError) {
-          console.warn('⚠️ Error verificando integridad de cálculos:', integrityError);
-        } else {
-          console.log('✅ Integridad verificada:', integrityResult);
-        }
-      }
+      // ⚠️ VERIFICACIÓN DE INTEGRIDAD DESACTIVADA TEMPORALMENTE
+      // La función verify_and_recalculate_company_payments estaba causando problemas de permisos
+      // y resetaba los datos a 0. Por ahora usaremos los datos directos de la DB.
+      console.log('🔍 Obteniendo datos de cálculos sin verificación automática de integridad...');
       
       let query = supabase
         .from('driver_period_calculations')
