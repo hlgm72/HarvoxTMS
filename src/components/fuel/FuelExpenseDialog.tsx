@@ -731,11 +731,14 @@ export function FuelExpenseDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {equipment.map((eq) => (
-                          <SelectItem key={eq.id} value={eq.id}>
-                            {eq.equipment_number} - {eq.make} {eq.model}
-                          </SelectItem>
-                        ))}
+                        {equipment
+                          .filter((eq) => eq.equipment_type === 'truck')
+                          .map((eq) => (
+                            <SelectItem key={eq.id} value={eq.id}>
+                              {eq.equipment_number} - {eq.make} {eq.model}
+                            </SelectItem>
+                          ))
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage />
