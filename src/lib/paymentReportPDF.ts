@@ -934,7 +934,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   const summaryData = [
     { label: 'Gross Earnings', amount: data.period.gross_earnings },
     { label: 'Other Earnings', amount: data.period.other_income },
-    { label: 'Total Deductions', amount: -data.period.total_deductions },
+    { label: 'Period Deductions', amount: -data.period.total_deductions },
     { label: 'Fuel Expenses', amount: -data.period.fuel_expenses }
   ];
 
@@ -946,7 +946,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     
     // Color específico para deducción y combustible (#ff7a00), normal para otros
     let amountColor = '#003366'; // Color por defecto
-    if (item.label === 'Total Deductions' || item.label === 'Fuel Expenses') {
+    if (item.label === 'Period Deductions' || item.label === 'Fuel Expenses') {
       amountColor = '#ff7a00'; // Color naranja para deducción y combustible
     }
     
