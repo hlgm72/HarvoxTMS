@@ -61,11 +61,12 @@ export const formatDetailedPaymentPeriod = (
   const periodStart = new Date(startDate);
   const periodEnd = new Date(endDate);
   
-  // Format dates without year for the range
+  // Format dates without year for the range - respect internationalization
   const language = getGlobalLanguage();
   const locale = language === 'es' ? es : enUS;
-  const startFormatted = format(periodStart, 'dd/MM', { locale });
-  const endFormatted = format(periodEnd, 'dd/MM', { locale });
+  const datePattern = language === 'es' ? 'dd/MM' : 'MM/dd';
+  const startFormatted = format(periodStart, datePattern, { locale });
+  const endFormatted = format(periodEnd, datePattern, { locale });
   const dateRange = `${startFormatted} - ${endFormatted}`;
   
   let periodLabel = '';
