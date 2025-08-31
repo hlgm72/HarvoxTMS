@@ -105,6 +105,21 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
   if (expenses.length === 0) {
     return (
       <Card>
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+              <Fuel className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">{t('fuel:expenses_list.title_full', { count: 0 })}</span>
+              <span className="sm:hidden">{t('fuel:expenses_list.title_short', { count: 0 })}</span>
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <FuelViewToggle 
+                currentView={viewMode}
+                onViewChange={setViewMode}
+              />
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="p-6">
           <div className="text-center py-8">
             <Fuel className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
