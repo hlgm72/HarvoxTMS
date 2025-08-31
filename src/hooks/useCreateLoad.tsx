@@ -209,7 +209,8 @@ export const useCreateLoad = () => {
       }));
 
       // ===============================================
-      // ✅ SISTEMA DE PERÍODOS BAJO DEMANDA v2.0
+      // 🚨 SISTEMA DE PERÍODOS BAJO DEMANDA v2.0 - CRÍTICO
+      // ⚠️ NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA
       // ===============================================
       console.log('🔍 useCreateLoad - Starting payment period assignment');
       

@@ -142,6 +142,7 @@ export function CreateFuelExpenseDialog({ open, onOpenChange }: CreateFuelExpens
           driver: data.driver_user_id
         });
 
+        // 🚨 CRÍTICO - SISTEMA BAJO DEMANDA v2.0 - NO MODIFICAR
         // Usar el nuevo sistema bajo demanda
         const generatedPeriodId = await ensurePaymentPeriodExists({
           companyId: userCompany.company_id,

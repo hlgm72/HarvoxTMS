@@ -8,8 +8,12 @@ export interface PaymentPeriodGeneratorParams {
 
 /**
  * ========================================
- * SISTEMA DE PERÍODOS BAJO DEMANDA v2.0
+ * 🚨 SISTEMA DE PERÍODOS BAJO DEMANDA v2.0 - CRÍTICO
  * ========================================
+ * 
+ * ⚠️ ADVERTENCIA: ESTA FUNCIÓN ES CRÍTICA PARA EL NEGOCIO
+ * NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA DEL PROPIETARIO
+ * Ver: docs/CRITICAL-BUSINESS-LOGIC-PROTECTION.md
  * 
  * FILOSOFÍA: Los períodos de pago solo se crean cuando son realmente necesarios:
  * - Al crear una nueva carga
@@ -22,6 +26,8 @@ export interface PaymentPeriodGeneratorParams {
  */
 export const usePaymentPeriodGenerator = () => {
   
+  // 🚨 FUNCIÓN CRÍTICA - NO MODIFICAR SIN AUTORIZACIÓN
+  // Esta función es el núcleo del sistema de períodos bajo demanda
   const ensurePaymentPeriodExists = async ({
     companyId,
     userId,
