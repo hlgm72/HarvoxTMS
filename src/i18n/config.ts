@@ -104,8 +104,8 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en', // Default language (English)
-    fallbackLng: 'en',
+    lng: 'es', // Default language (Spanish)
+    fallbackLng: 'es',
     
     // Namespaces
     ns: ['common', 'landing', 'auth', 'fleet', 'equipment', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients', 'documents', 'fuel', 'users', 'settings', 'invitation', 'errors'],
