@@ -746,7 +746,7 @@ export function PDFAnalyzer() {
                         <div>
                           <div className="font-medium">{transaction.location_name}</div>
                           <div className="text-sm text-muted-foreground">
-                            {transaction.state} • {transaction.category}
+                            {transaction.state || 'State N/A'} • {transaction.category}
                           </div>
                         </div>
                       </div>
