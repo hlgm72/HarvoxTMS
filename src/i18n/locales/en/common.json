@@ -19,6 +19,7 @@
   },
   "floating_actions": {
     "title": "Actions",
+    "applied_filters": "Applied Filters",
     "filters": {
       "title": "Filters",
       "description": "Filter data by different criteria",
