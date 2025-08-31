@@ -276,9 +276,8 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           alignOffset={0}
           avoidCollisions={true}
           collisionPadding={8}
-          style={{ maxHeight: '50vh', overflow: 'auto' }}
         >
-          <div className="p-4 space-y-4" style={{ maxHeight: '48vh', overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto overscroll-contain">
             {/* Opciones rápidas */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
@@ -428,7 +427,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length}
                   </Badge>
                 </h4>
-                <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                <div className="max-h-40 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
                   {openPeriods.map((period) => (
                     <Button
                       key={period.id}
