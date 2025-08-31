@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { formatDateOnly } from '@/lib/dateFormatting';
+import { getFuelCardProviderVariant } from '@/lib/fuelCardProviderUtils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -107,7 +108,7 @@ export function DriverCardsSimple() {
                   <CreditCard className="h-5 w-5 mr-2" />
                   **** {card.card_number_last_five}
                 </CardTitle>
-                <Badge variant="secondary">{card.card_provider.toUpperCase()}</Badge>
+                <Badge variant={getFuelCardProviderVariant(card.card_provider)}>{card.card_provider.toUpperCase()}</Badge>
               </div>
             </CardHeader>
             <CardContent>
