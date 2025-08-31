@@ -311,8 +311,30 @@ export const useCreateLoad = () => {
       console.log('✅ useCreateLoad - ACID operation completed successfully');
       return loadId;
     },
-    onSuccess: (loadId, variables) => {
+    onSuccess: async (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
+      
+      // 🚨 RECÁLCULO AUTOMÁTICO CRÍTICO - Forzar actualización de cálculos del período
+      try {
+        console.log('🔄 useCreateLoad - Triggering payment calculations refresh...');
+        
+        // Obtener el período de la carga para invalidar específicamente
+        if (variables.stops && variables.stops.length > 0) {
+          const stopsWithDates = variables.stops.filter(stop => stop.scheduled_date);
+          const deliveryDate = stopsWithDates.find(stop => stop.stop_type === 'delivery')?.scheduled_date;
+          
+          if (deliveryDate) {
+            // Invalidar específicamente los cálculos del período afectado
+            queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+            queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+            
+            console.log('✅ useCreateLoad - Payment calculations refresh triggered');
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ useCreateLoad - Error triggering calculations refresh:', error);
+        // No fallar por esto, solo loguear
+      }
       
       // Invalidar todas las queries relacionadas con loads
       queryClient.invalidateQueries({ queryKey: ['loads'] });
