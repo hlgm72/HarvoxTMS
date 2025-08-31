@@ -8,8 +8,7 @@ import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { UniversalFloatingActions } from '@/components/ui/UniversalFloatingActions';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
-import { CreateFuelExpenseDialog } from '@/components/fuel/CreateFuelExpenseDialog';
-import { EditFuelExpenseDialog } from '@/components/fuel/EditFuelExpenseDialog';
+import { FuelExpenseDialog } from '@/components/fuel/FuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
@@ -194,12 +193,12 @@ export default function FuelManagement() {
       </div>
 
       {/* Modales */}
-      <CreateFuelExpenseDialog
+      <FuelExpenseDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
       />
       
-      <EditFuelExpenseDialog
+      <FuelExpenseDialog
         expenseId={editExpenseId}
         open={!!editExpenseId}
         onOpenChange={(open) => !open && setEditExpenseId(null)}
