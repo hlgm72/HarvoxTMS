@@ -3931,6 +3931,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      recalculate_driver_period_calculation: {
+        Args: { calculation_id: string }
+        Returns: Json
+      }
       recalculate_driver_period_deductions: {
         Args: { driver_id_param: string; period_id_param: string }
         Returns: undefined

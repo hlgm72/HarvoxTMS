@@ -350,7 +350,7 @@ export const useCreateLoad = () => {
         console.log('🎯 useCreateLoad - Recalculating specific driver calculation:', specificCalc.id);
         
         const { data: driverRecalcResult, error: driverRecalcError } = await supabase
-          .rpc('recalculate_driver_period_calculation', {
+          .rpc('recalculate_driver_period_calculation' as any, {
             calculation_id: specificCalc.id
           });
 
