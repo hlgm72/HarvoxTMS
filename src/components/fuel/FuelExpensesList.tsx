@@ -123,17 +123,19 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
   return (
     <>
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
               <Fuel className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="hidden sm:inline">{t('fuel:expenses_list.title_full', { count: expenses.length })}</span>
               <span className="sm:hidden">{t('fuel:expenses_list.title_short', { count: expenses.length })}</span>
             </CardTitle>
-            <FuelViewToggle 
-              currentView={viewMode}
-              onViewChange={setViewMode}
-            />
+            <div className="flex items-center gap-2">
+              <FuelViewToggle 
+                currentView={viewMode}
+                onViewChange={setViewMode}
+              />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="relative p-0 sm:p-6">
