@@ -4,6 +4,7 @@ import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagement
 import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
+import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 
 export interface CreateLoadData {
   id?: string;
@@ -139,6 +140,7 @@ export const useCreateLoad = () => {
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
@@ -206,9 +208,61 @@ export const useCreateLoad = () => {
             stop.actual_date) : ''
       }));
 
+      // ===============================================
+      // ✅ SISTEMA DE PERÍODOS BAJO DEMANDA v2.0
+      // ===============================================
+      console.log('🔍 useCreateLoad - Starting payment period assignment');
+      
+      // Calcular fechas de pickup y delivery desde los stops
+      const stopsWithDates = stopsData.filter(stop => stop.scheduled_date);
+      const pickupDate = stopsWithDates.find(stop => stop.stop_type === 'pickup')?.scheduled_date || 
+                         stopsWithDates[0]?.scheduled_date;
+      const deliveryDate = stopsWithDates.find(stop => stop.stop_type === 'delivery')?.scheduled_date || 
+                          stopsWithDates[stopsWithDates.length - 1]?.scheduled_date;
+
+      console.log('🔍 useCreateLoad - Calculated dates:', { pickupDate, deliveryDate });
+
+      let paymentPeriodId: string | null = null;
+
+      if (pickupDate || deliveryDate) {
+        // Obtener configuración de la empresa para determinar qué fecha usar
+        const { data: companyData, error: companyError } = await supabase
+          .from('companies')
+          .select('load_assignment_criteria')
+          .eq('id', userRole.company_id)
+          .single();
+
+        if (companyError) {
+          console.error('❌ Error getting company config:', companyError);
+          throw new Error('No se pudo obtener la configuración de la empresa');
+        }
+
+        // Determinar fecha objetivo según configuración
+        const assignmentCriteria = companyData?.load_assignment_criteria || 'delivery_date';
+        const targetDate = assignmentCriteria === 'pickup_date' ? pickupDate : deliveryDate;
+
+        console.log('🔍 useCreateLoad - Using assignment criteria:', assignmentCriteria, 'Target date:', targetDate);
+
+        if (targetDate) {
+          // Usar el sistema bajo demanda para obtener/crear período
+          paymentPeriodId = await ensurePaymentPeriodExists({
+            companyId: userRole.company_id,
+            userId: data.driver_user_id || user.id,
+            targetDate: targetDate
+          });
+
+          console.log('✅ useCreateLoad - Payment period assigned:', paymentPeriodId);
+        } else {
+          console.warn('⚠️ useCreateLoad - No target date available, creating load without payment period');
+        }
+      } else {
+        console.warn('⚠️ useCreateLoad - No scheduled dates in stops, creating load without payment period');
+      }
+
       // ✅ USE ACID FUNCTION FOR ATOMIC OPERATION
       const loadDataWithStops = {
         ...loadData,
+        payment_period_id: paymentPeriodId, // ✅ Incluir payment_period_id
         stops: stopsData
       };
       
