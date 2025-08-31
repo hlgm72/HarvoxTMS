@@ -86,7 +86,10 @@
     "stats": {
       "title": "Estadísticas",
       "description": "Ver estadísticas rápidas",
-      "label": "Estadísticas"
+      "label": "Estadísticas",
+      "total_loads": "Total de Cargas",
+      "total_revenue": "Ingresos Totales",
+      "active_drivers": "Conductores Activos"
     },
     "sync": {
       "title": "Sincronización FleetOne",

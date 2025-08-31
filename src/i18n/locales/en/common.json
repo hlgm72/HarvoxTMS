@@ -86,7 +86,10 @@
     "stats": {
       "title": "Statistics",
       "description": "View quick statistics",
-      "label": "Statistics"
+      "label": "Statistics",
+      "total_loads": "Total Loads",
+      "total_revenue": "Total Revenue", 
+      "active_drivers": "Active Drivers"
     },
     "sync": {
       "title": "FleetOne Sync", 
