@@ -225,8 +225,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         }
       }
 
-      // Reset percentages initialization when loading new data
-      setPercentagesInitialized(null);
+      // Reset percentages initialization when loading new data, except in edit mode
+      // In edit mode, we want to preserve the existing percentages from the load
+      if (mode !== 'edit') {
+        setPercentagesInitialized(null);
+      } else {
+        // In edit mode, mark percentages as initialized to prevent override
+        setPercentagesInitialized(activeLoadData.driver_user_id || 'edit-mode');
+      }
 
       // Set stops (for both edit and duplicate modes)
       if (activeLoadData.stops && activeLoadData.stops.length > 0) {

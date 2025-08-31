@@ -72,11 +72,21 @@ export function LoadAssignmentSection({
       hasCallbacks: !!(onLeasingPercentageChange && onFactoringPercentageChange && onDispatchingPercentageChange)
     });
     
-    // Only auto-populate if we have a new driver and haven't initialized percentages for this driver yet
+    // Check if percentages already have values (indicating edit mode with existing data)
+    const hasExistingPercentages = (
+      (leasingPercentage !== undefined && leasingPercentage !== null && leasingPercentage > 0) ||
+      (factoringPercentage !== undefined && factoringPercentage !== null && factoringPercentage > 0) ||
+      (dispatchingPercentage !== undefined && dispatchingPercentage !== null && dispatchingPercentage > 0)
+    );
+    
+    // Only auto-populate if:
+    // 1. We have a new driver and haven't initialized percentages for this driver yet
+    // 2. There are no existing percentages (not in edit mode with existing data)
     if (isOwnerOperator && 
         ownerOperator && 
         selectedDriver && 
         percentagesInitialized !== selectedDriver.user_id &&
+        !hasExistingPercentages && // Don't override existing percentages
         onLeasingPercentageChange && 
         onFactoringPercentageChange && 
         onDispatchingPercentageChange &&
@@ -105,6 +115,10 @@ export function LoadAssignmentSection({
     } else if (!selectedDriver) {
       // Reset when no driver is selected
       onPercentagesInitialized?.(null);
+    } else if (hasExistingPercentages) {
+      // If we have existing percentages, mark as initialized to prevent future overrides
+      console.log('📋 LoadAssignmentSection - Preserving existing percentages in edit mode');
+      onPercentagesInitialized?.(selectedDriver?.user_id || 'existing-data');
     } else {
       console.log('❌ LoadAssignmentSection - Conditions not met for auto-population');
     }
