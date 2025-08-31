@@ -176,6 +176,19 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const processingPeriods = allPeriods.filter(p => p.status === 'processing');
   const otherPeriods = allPeriods.filter(p => !['open', 'processing'].includes(p.status));
 
+  // Debug logs
+  console.log('🔍 PeriodFilter Debug:', {
+    totalPeriods: allPeriods.length,
+    openPeriods: openPeriods.length,
+    processingPeriods: processingPeriods.length,
+    otherPeriods: otherPeriods.length,
+    allPeriodsData: allPeriods.map(p => ({
+      id: p.id,
+      status: p.status,
+      dates: `${p.period_start_date} - ${p.period_end_date}`
+    }))
+  });
+
   // Calcular fechas del período actual basándose en la frecuencia de pago predeterminada
   const getCurrentPeriodDates = () => {
     // Verificar si companyData existe y acceder correctamente al default_payment_frequency
@@ -427,18 +440,29 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length}
                   </Badge>
                 </h4>
-                <div className="space-y-1 max-h-60 overflow-y-auto border rounded-md p-2 bg-muted/10">
-                  {openPeriods.map((period) => (
+                <div 
+                  className="space-y-1 border rounded-md p-2 bg-muted/10"
+                  style={{
+                    maxHeight: '240px',
+                    overflowY: 'scroll',
+                    overflowX: 'hidden'
+                  }}
+                  onScroll={(e) => console.log('🔍 Scroll event:', (e.target as HTMLElement).scrollTop)}
+                >
+                  {openPeriods.map((period, index) => (
                     <Button
                       key={period.id}
                       variant={value.periodId === period.id ? 'default' : 'ghost'}
-                      className="w-full justify-start text-left h-auto py-2"
-                      onClick={() => handleOptionSelect({ 
-                        type: 'specific', 
-                        periodId: period.id,
-                        startDate: period.period_start_date,
-                        endDate: period.period_end_date
-                      })}
+                      className="w-full justify-start text-left h-auto py-2 flex-shrink-0"
+                      onClick={() => {
+                        console.log('🔍 Period selected:', period.id, index);
+                        handleOptionSelect({ 
+                          type: 'specific', 
+                          periodId: period.id,
+                          startDate: period.period_start_date,
+                          endDate: period.period_end_date
+                        });
+                      }}
                     >
                       <div className="flex flex-col items-start w-full min-w-0">
                         <div className="flex items-center justify-between w-full gap-2">
