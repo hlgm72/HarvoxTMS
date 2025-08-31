@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, User, Fuel, Car, Receipt, DollarSign, Gauge, CreditCard } from 'lucide-react';
 import { useFuelExpense } from '@/hooks/useFuelExpenses';
+import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateOnly, formatDateTime } from '@/lib/dateFormatting';
 
 interface ViewFuelExpenseDialogProps {
@@ -16,6 +17,16 @@ interface ViewFuelExpenseDialogProps {
 
 export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFuelExpenseDialogProps) {
   const { data: expense, isLoading } = useFuelExpense(expenseId || '');
+  const { drivers = [] } = useCompanyDrivers();
+
+  // Función para obtener el nombre del conductor
+  const getDriverName = (driverUserId: string) => {
+    const driver = drivers.find(d => d.user_id === driverUserId);
+    if (driver && driver.first_name && driver.last_name) {
+      return `${driver.first_name} ${driver.last_name}`;
+    }
+    return 'Conductor no encontrado';
+  };
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -69,7 +80,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <div className="text-sm text-muted-foreground">Conductor</div>
-                      <div className="font-medium">ID: {expense.driver_user_id}</div>
+                      <div className="font-medium">{getDriverName(expense.driver_user_id)}</div>
                     </div>
                   </div>
                   
