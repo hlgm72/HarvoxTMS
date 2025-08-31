@@ -201,7 +201,7 @@ export function PDFAnalyzer() {
         .eq('is_active', true);
 
       // Obtener tarjetas de conductores
-      // Debug logs removed to prevent Sentry spam
+      console.log('🔍 [PDF Analyzer] Obteniendo tarjetas para companyId:', companyId);
       
       const { data: driverCards, error: cardsError } = await supabase
         .from('driver_fuel_cards')
@@ -213,7 +213,8 @@ export function PDFAnalyzer() {
         .eq('company_id', companyId)
         .eq('is_active', true);
 
-      // Debug logs removed to prevent Sentry spam
+      console.log('🔍 [PDF Analyzer] Tarjetas encontradas:', driverCards);
+      console.log('🔍 [PDF Analyzer] Error en consulta de tarjetas:', cardsError);
 
       // Intentar obtener nombres de perfiles, si no, usar emails como fallback
       const driverIds = driverCards?.map(card => card.driver_user_id) || [];
@@ -291,7 +292,7 @@ export function PDFAnalyzer() {
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
         const cardNumber = transaction.card;
         
-        // Debug logs removed to prevent Sentry spam
+        console.log('🔍 [PDF Analyzer] Procesando tarjeta de transacción:', cardNumber);
         
         const matchingCards = driverCards?.filter(card => {
           // Comparar los últimos 5 dígitos almacenados con los últimos 4 o 5 de la transacción
@@ -307,17 +308,26 @@ export function PDFAnalyzer() {
           
           const isMatch = match1 || match2 || match3 || match4 || match5;
           
-          // Debug logs removed to prevent Sentry spam
+          console.log('🔍 [PDF Analyzer] Comparando con tarjeta DB:', {
+            cardLast5,
+            cardIdentifier: card.card_identifier,
+            transactionLast4,
+            transactionLast5,
+            cardNumber,
+            matches: { match1, match2, match3, match4, match5 },
+            isMatch
+          });
           
           return isMatch;
         }) || [];
 
-        // Debug logs removed to prevent Sentry spam
+        console.log('🔍 [PDF Analyzer] Tarjetas coincidentes:', matchingCards.length, matchingCards);
 
         if (matchingCards.length === 1) {
           const card = matchingCards[0];
           const driverProfile = driverProfiles?.find(profile => profile.user_id === card.driver_user_id);
           enrichedTransaction.driver_user_id = card.driver_user_id;
+          enrichedTransaction.card_mapping_status = 'found'; // ✅ Marcar como encontrada
           
           if (driverProfile && driverProfile.first_name) {
             const firstName = driverProfile.first_name || '';
@@ -328,12 +338,12 @@ export function PDFAnalyzer() {
             enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_five}`;
           }
           
-          // Debug logs removed to prevent Sentry spam
+          console.log('🔍 [PDF Analyzer] ✅ Conductor encontrado:', enrichedTransaction.driver_name);
         } else if (matchingCards.length > 1) {
           enrichedTransaction.card_mapping_status = 'multiple';
-          // Debug logs removed to prevent Sentry spam
+          console.log('🔍 [PDF Analyzer] ⚠️ Múltiples tarjetas encontradas');
         } else {
-          // Debug logs removed to prevent Sentry spam
+          console.log('🔍 [PDF Analyzer] ❌ Ninguna tarjeta encontrada para:', cardNumber);
         }
         const periodTransactionDate = new Date(transaction.date);
         
