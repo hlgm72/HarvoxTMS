@@ -5,7 +5,7 @@ import { Plus, Package, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
 import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
-import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
+import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
@@ -24,14 +24,18 @@ export default function Loads() {
   
   const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentPeriodWithDates());
   
-  // Hook para obtener estadísticas en tiempo real
-  const { data: loadsStats, isLoading: statsLoading } = useLoadsStats({ periodFilter });
+  // Adaptar filtros para el sistema universal
   const [filters, setFilters] = useState({
+    search: '',
     status: "all",
-    driver: "all", 
-    broker: "all",
-    dateRange: { from: undefined, to: undefined }
+    driverId: "all", 
+    brokerId: "all",
+    sortBy: 'date_desc',
+    periodFilter: getCurrentPeriodWithDates()
   });
+  
+  // Hook para obtener estadísticas en tiempo real
+  const { data: loadsStats, isLoading: statsLoading } = useLoadsStats({ periodFilter: filters.periodFilter });
 
   // console.log('🎯 Loads component - periodFilter state:', periodFilter);
 
@@ -139,7 +143,12 @@ export default function Loads() {
 
         <LoadDocumentsProvider>
           <LoadsList 
-            filters={filters}
+            filters={{
+              status: filters.status,
+              driver: filters.driverId,
+              broker: filters.brokerId,
+              dateRange: { from: undefined, to: undefined }
+            }}
             periodFilter={periodFilter}
             onCreateLoad={() => setIsCreateDialogOpen(true)}
           />
@@ -153,11 +162,27 @@ export default function Loads() {
       </div>
 
       {/* Floating Actions */}
-      <LoadsFloatingActions 
+      <UniversalFloatingActions
+        contextKey="loads"
         filters={filters}
-        periodFilter={periodFilter}
-        onFiltersChange={setFilters}
-        onPeriodFilterChange={setPeriodFilter}
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters);
+          // Sincronizar periodFilter separado para compatibilidad
+          if (newFilters.periodFilter) {
+            setPeriodFilter(newFilters.periodFilter);
+          }
+        }}
+        additionalData={{
+          stats: loadsStats ? {
+            totalLoads: loadsStats.totalActive || 0,
+            totalRevenue: loadsStats.totalAmount || 0,
+            activeDrivers: loadsStats.pendingAssignment || 0
+          } : undefined
+        }}
+        onExportHandler={async (format) => {
+          console.log(`Exportando loads como ${format}`);
+          // TODO: Implementar export
+        }}
       />
     </>
   );
