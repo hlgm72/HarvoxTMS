@@ -243,7 +243,14 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                   </div>
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-muted-foreground" />
-                    <span className="truncate">{expense.station_name || 'N/A'}</span>
+                    <div className="truncate">
+                      <div>{expense.station_name || 'N/A'}</div>
+                      {expense.station_state && (
+                        <div className="text-xs text-muted-foreground">
+                          {t('fuel:expenses_list.state')}: {expense.station_state}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 
