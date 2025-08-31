@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Fuel, MoreHorizontal, Edit, Trash2, Eye, MapPin, Receipt, User, Calendar, DollarSign } from 'lucide-react';
 import { useFuelExpenses, useDeleteFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
@@ -41,6 +42,16 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
       return `${driver.first_name} ${driver.last_name}`;
     }
     return t('fuel:expenses_list.driver_not_found');
+  };
+
+  // Función para obtener el avatar del conductor
+  const getDriverAvatar = (driverUserId: string) => {
+    const driver = drivers.find(d => d.user_id === driverUserId);
+    return {
+      url: driver?.avatar_url,
+      name: getDriverName(driverUserId),
+      initials: driver ? `${driver.first_name?.charAt(0) || ''}${driver.last_name?.charAt(0) || ''}` : '??'
+    };
   };
 
   // Función para obtener la licencia del conductor
@@ -160,8 +171,13 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
             {expenses.map((expense) => (
               <div key={expense.id} className="border rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={getDriverAvatar(expense.driver_user_id).url} alt={getDriverAvatar(expense.driver_user_id).name} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                        {getDriverAvatar(expense.driver_user_id).initials}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="font-medium text-sm">
                       {getDriverName(expense.driver_user_id)}
                     </div>
@@ -275,8 +291,13 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 {expenses.map((expense) => (
                   <TableRow key={expense.id}>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={getDriverAvatar(expense.driver_user_id).url} alt={getDriverAvatar(expense.driver_user_id).name} />
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                            {getDriverAvatar(expense.driver_user_id).initials}
+                          </AvatarFallback>
+                        </Avatar>
                         <div>
                           <div className="font-medium">
                             {getDriverName(expense.driver_user_id)}
