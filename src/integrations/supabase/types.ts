@@ -3875,12 +3875,14 @@ export type Database = {
         Returns: Json
       }
       reassign_to_payment_period: {
-        Args: {
-          element_id: string
-          element_type: string
-          new_period_id: string
-          reassigned_by?: string
-        }
+        Args:
+          | {
+              element_id: string
+              element_type: string
+              new_period_id: string
+              reassigned_by?: string
+            }
+          | { load_id_param: string; new_period_id_param: string }
         Returns: Json
       }
       recalculate_all_historical_periods: {
