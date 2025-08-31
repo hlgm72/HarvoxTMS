@@ -261,18 +261,18 @@ export const useCreateLoad = () => {
       }
 
       // ✅ USE ACID FUNCTION FOR ATOMIC OPERATION
-      const loadDataWithStops = {
+      const loadDataForRPC = {
         ...loadData,
         payment_period_id: paymentPeriodId, // ✅ Incluir payment_period_id
-        stops: stopsData
+        ...(isEdit && data.id && { id: data.id }) // Include ID for edit mode
       };
       
       const { data: result, error: acidError } = await supabase.rpc(
         'simple_load_operation',
         {
-          operation_type: isEdit ? 'UPDATE' : 'CREATE',
-          load_data: loadDataWithStops,
-          load_id_param: isEdit && data.id ? data.id : null
+          load_data: loadDataForRPC,
+          stops_data: stopsData, // ✅ Pass stops as separate parameter
+          operation_mode: isEdit ? 'edit' : 'create' // ✅ Use correct parameter name
         }
       );
 
