@@ -120,6 +120,11 @@
       "coming_soon": "History functionality coming soon..."
     }
   },
+  "stats": {
+    "total_loads": "Total Loads",
+    "total_revenue": "Total Revenue",
+    "active_drivers": "Active Drivers"
+  },
   "actions": {
     "get_started": "Get Started",
     "view_demo": "View Demo",

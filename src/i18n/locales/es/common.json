@@ -120,6 +120,11 @@
       "coming_soon": "Funcionalidad del historial próximamente..."
     }
   },
+  "stats": {
+    "total_loads": "Total de Cargas", 
+    "total_revenue": "Ingresos Totales",
+    "active_drivers": "Conductores Activos"
+  },
   "actions": {
     "get_started": "Comenzar Gratis",
     "view_demo": "Ver Demo",
