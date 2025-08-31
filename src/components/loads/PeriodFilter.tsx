@@ -8,7 +8,7 @@ import { Calendar, CalendarDays, ChevronDown, Clock, Loader2 } from 'lucide-reac
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone, getTodayInUserTimeZone, formatDetailedPaymentPeriod } from '@/lib/dateFormatting';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 
@@ -362,13 +362,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                             });
                           }}
                         >
-                          <div className="flex items-center justify-between">
+                          <div>
                             <span className="text-sm font-medium">
-                              {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
+                              {formatDetailedPaymentPeriod(
+                                period.period_start_date, 
+                                period.period_end_date, 
+                                Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                              )}
                             </span>
-                            <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
-                              Open
-                            </Badge>
                           </div>
                         </div>
                       ))}
