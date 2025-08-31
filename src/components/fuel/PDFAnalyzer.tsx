@@ -250,6 +250,12 @@ export function PDFAnalyzer() {
       const enriched: EnrichedTransaction[] = [];
       
       for (const transaction of transactions) {
+        // Calcular el total correcto: gross_amt + fees - disc_amt
+        const grossAmt = parseFloat(transaction.gross_amt) || 0;
+        const fees = parseFloat(transaction.fees) || 0;
+        const discAmt = parseFloat(transaction.disc_amt) || 0;
+        const calculatedTotal = grossAmt + fees - discAmt;
+
         const enrichedTransaction: EnrichedTransaction = {
           date: transaction.date,
           card: transaction.card,
@@ -260,10 +266,10 @@ export function PDFAnalyzer() {
           category: transaction.category || 'Diesel',
           qty: parseFloat(transaction.qty) || 0,
           gross_ppg: parseFloat(transaction.gross_ppg) || 0,
-          gross_amt: parseFloat(transaction.gross_amt) || 0,
-          disc_amt: parseFloat(transaction.disc_amt) || 0,
-          fees: parseFloat(transaction.fees) || 0,
-          total_amt: parseFloat(transaction.total_amt) || 0,
+          gross_amt: grossAmt,
+          disc_amt: discAmt,
+          fees: fees,
+          total_amt: calculatedTotal, // ✅ Usar el total calculado correctamente
           card_mapping_status: 'not_found',
           period_mapping_status: 'not_found',
           import_status: 'not_imported'
