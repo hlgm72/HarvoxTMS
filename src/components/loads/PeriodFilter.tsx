@@ -93,23 +93,27 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const getFilterLabel = () => {
     switch (value.type) {
       case 'current':
-        return currentPeriod 
-          ? `${t('periods.current')} (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
-          : t('periods.current');
+        if (currentPeriod) {
+          return `${t('periods.current')} (${formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)})`;
+        } else if (currentPeriodDates) {
+          return `${t('periods.current')} (${formatPaymentPeriodBadge(currentPeriodDates.startDate, currentPeriodDates.endDate)})`;
+        } else {
+          return t('periods.current');
+        }
       case 'previous':
         return previousPeriod 
-          ? `${t('periods.previous')} (${formatPaymentPeriod(previousPeriod.period_start_date, previousPeriod.period_end_date)})`
+          ? `${t('periods.previous')} (${formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)})`
           : t('periods.previous');
       case 'next':
         return nextPeriod 
-          ? `${t('periods.next')} (${formatPaymentPeriod(nextPeriod.period_start_date, nextPeriod.period_end_date)})`
+          ? `${t('periods.next')} (${formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)})`
           : t('periods.next');
       case 'all':
         return t('periods.all');
       case 'specific':
         const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
         return selectedPeriod 
-          ? formatPaymentPeriod(selectedPeriod.period_start_date, selectedPeriod.period_end_date)
+          ? `${formatPaymentPeriodBadge(selectedPeriod.period_start_date, selectedPeriod.period_end_date)}`
           : t('periods.specific');
       case 'this_month':
       case 'last_month':
