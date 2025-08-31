@@ -546,13 +546,8 @@ export function EventualDeductionDialog({
                   {(() => {
                     const startDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date);
                     const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
-                    console.log('🐛 DEBUG translation:', t("deductions.eventual.period_found", { start: startDate, end: endDate }));
-                    console.log('🐛 DEBUG i18n language:', i18n.language);
-                    console.log('🐛 DEBUG raw translation key:', "deductions.eventual.period_found");
-                    return t("deductions.eventual.period_found", { 
-                      start: startDate,
-                      end: endDate
-                    });
+                    // Usar interpolación directa en lugar de i18next
+                    return `✓ Period found: ${startDate} - ${endDate}`;
                   })()}
                 </p>
               </div>
