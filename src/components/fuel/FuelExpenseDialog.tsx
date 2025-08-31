@@ -394,11 +394,11 @@ export function FuelExpenseDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>
-            {isEditMode ? 'Editar Gasto de Combustible' : t('fuel:create_dialog.title')}
+            {isEditMode ? t('fuel:edit_dialog.title') : t('fuel:create_dialog.title')}
           </DialogTitle>
           <DialogDescription>
             {isEditMode 
-              ? 'Modifica los detalles del gasto de combustible'
+              ? t('fuel:edit_dialog.description')
               : t('fuel:create_dialog.description')
             }
           </DialogDescription>
@@ -446,11 +446,11 @@ export function FuelExpenseDialog({
                   name="payment_period_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Período de Pago</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.payment_period')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar período" />
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_period')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -473,7 +473,7 @@ export function FuelExpenseDialog({
                   name="transaction_date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Fecha de Transacción</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.transaction_date')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -487,7 +487,7 @@ export function FuelExpenseDialog({
                                {field.value ? (
                                  formatPrettyDate(field.value)
                                ) : (
-                                <span>Seleccionar fecha</span>
+                                <span>{t('fuel:create_dialog.placeholders.select_date')}</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -513,17 +513,17 @@ export function FuelExpenseDialog({
                   name="fuel_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Combustible</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.fuel_type')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar tipo" />
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_fuel_type')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="diesel">Diesel</SelectItem>
-                          <SelectItem value="gasoline">Gasolina</SelectItem>
-                          <SelectItem value="def">DEF</SelectItem>
+                          <SelectItem value="diesel">{t('fuel:create_dialog.fuel_types.diesel')}</SelectItem>
+                          <SelectItem value="gasoline">{t('fuel:create_dialog.fuel_types.gasoline')}</SelectItem>
+                          <SelectItem value="def">{t('fuel:create_dialog.fuel_types.def')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -538,12 +538,12 @@ export function FuelExpenseDialog({
                   name="gallons_purchased"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Galones</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.gallons')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="number" 
                           step="0.001" 
-                          placeholder="0.000" 
+                          placeholder={t('fuel:create_dialog.placeholders.gallons')} 
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -558,12 +558,12 @@ export function FuelExpenseDialog({
                   name="price_per_gallon"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Precio por Galón ($)</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.price_per_gallon')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="number" 
                           step="0.001" 
-                          placeholder="0.000" 
+                          placeholder={t('fuel:create_dialog.placeholders.price')} 
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -578,12 +578,12 @@ export function FuelExpenseDialog({
                   name="total_amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Total ($)</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.total_amount')}</FormLabel>
                       <FormControl>
                         <Input 
                           type="number" 
                           step="0.01" 
-                          placeholder="0.00" 
+                          placeholder={t('fuel:create_dialog.placeholders.amount')} 
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -597,7 +597,7 @@ export function FuelExpenseDialog({
 
             {/* Información de la Estación */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Información de la Estación</h3>
+              <h3 className="text-lg font-medium">{t('fuel:create_dialog.sections.station_info')}</h3>
               
               <div className="grid grid-cols-3 gap-4">
                 <FormField
@@ -605,9 +605,9 @@ export function FuelExpenseDialog({
                   name="station_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estación</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.station_name')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nombre de la estación" {...field} />
+                        <Input placeholder={t('fuel:create_dialog.placeholders.station_example')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -619,9 +619,9 @@ export function FuelExpenseDialog({
                   name="station_city"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ciudad</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.city')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ciudad de la estación" {...field} />
+                        <Input placeholder={t('fuel:create_dialog.placeholders.city_example')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -633,11 +633,11 @@ export function FuelExpenseDialog({
                   name="station_state"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estado</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.state')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar estado" />
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_state')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -659,11 +659,11 @@ export function FuelExpenseDialog({
                 name="vehicle_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vehículo</FormLabel>
+                    <FormLabel>{t('fuel:create_dialog.fields.vehicle')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar vehículo" />
+                          <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_vehicle')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -808,16 +808,16 @@ export function FuelExpenseDialog({
 
             {/* Información Adicional */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Información Adicional</h3>
+              <h3 className="text-lg font-medium">{t('fuel:create_dialog.sections.additional_info')}</h3>
               
               <FormField
                 control={form.control}
                 name="receipt_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>URL del Recibo</FormLabel>
+                    <FormLabel>{t('fuel:create_dialog.fields.receipt_url')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://..." {...field} />
+                      <Input placeholder={t('fuel:create_dialog.placeholders.receipt_url')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -829,10 +829,10 @@ export function FuelExpenseDialog({
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Notas</FormLabel>
+                    <FormLabel>{t('fuel:create_dialog.fields.notes')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Notas adicionales..."
+                        placeholder={t('fuel:create_dialog.placeholders.notes')}
                         className="resize-none"
                         {...field}
                       />
@@ -845,12 +845,12 @@ export function FuelExpenseDialog({
 
             <DialogFooter>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
+                {t('common:actions.cancel')}
               </Button>
               <Button type="submit" disabled={isPending}>
                 {isPending 
-                  ? (isEditMode ? 'Guardando...' : 'Creando...') 
-                  : (isEditMode ? 'Guardar Cambios' : t('fuel:create_dialog.actions.create'))
+                  ? (isEditMode ? t('fuel:create_dialog.actions.saving') : t('fuel:create_dialog.actions.creating')) 
+                  : (isEditMode ? t('fuel:create_dialog.actions.save_changes') : t('fuel:create_dialog.actions.create'))
                 }
               </Button>
             </DialogFooter>
