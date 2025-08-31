@@ -379,21 +379,21 @@ export const deductionsConfig: ContextConfig<DeductionsFilters> = {
     {
       key: 'filters',
       icon: Filter,
-      labelKey: 'floating_actions.filters.filters',
+      labelKey: 'floating_actions.filters.title',
       titleKey: 'floating_actions.filters.title',
       variant: 'secondary'
     },
     {
       key: 'export',
       icon: Download,
-      labelKey: 'floating_actions.export.export',
+      labelKey: 'floating_actions.export.title',
       titleKey: 'floating_actions.export.title',
       variant: 'secondary'
     },
     {
       key: 'stats',
       icon: BarChart3,
-      labelKey: 'floating_actions.stats.statistics',
+      labelKey: 'floating_actions.stats.title',
       titleKey: 'floating_actions.stats.title',
       variant: 'secondary'
     }
