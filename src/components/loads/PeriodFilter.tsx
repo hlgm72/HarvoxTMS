@@ -282,15 +282,13 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-72 sm:w-80 p-4 max-w-[calc(100vw-1rem)] bg-background border shadow-lg z-[100] max-h-[80vh] overflow-hidden flex flex-col" 
+          className="w-80 p-0 max-w-[calc(100vw-1rem)] bg-background border shadow-lg z-[100]" 
           align="center" 
           side="bottom"
           sideOffset={4}
-          alignOffset={0}
-          avoidCollisions={true}
-          collisionPadding={8}
         >
-          <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+          <div className="p-4">
+            <div className="space-y-4">
             {/* Opciones rápidas */}
             <div className="space-y-2">
               <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
@@ -440,47 +438,46 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {openPeriods.length}
                   </Badge>
                 </h4>
-                <div 
-                  className="space-y-1 border rounded-md p-2 bg-muted/10 relative"
-                  style={{
-                    height: '150px',
-                    overflowY: 'scroll',
-                    overflowX: 'hidden',
-                    scrollbarWidth: 'thin'
-                  }}
-                  onScroll={(e) => console.log('🔍 Scroll event:', (e.target as HTMLElement).scrollTop)}
-                >
-                  <div className="text-xs text-muted-foreground mb-2">Mostrando {openPeriods.length} períodos - Haz scroll para ver más</div>
-                  {openPeriods.map((period, index) => {
-                    console.log(`🔍 Rendering period ${index + 1}/${openPeriods.length}:`, period.id);
-                    return (
-                    <Button
-                      key={period.id}
-                      variant={value.periodId === period.id ? 'default' : 'ghost'}
-                      className="w-full justify-start text-left h-auto py-3 flex-shrink-0 mb-1"
-                      onClick={() => {
-                        console.log('🔍 Period selected:', period.id, index);
-                        handleOptionSelect({ 
-                          type: 'specific', 
-                          periodId: period.id,
-                          startDate: period.period_start_date,
-                          endDate: period.period_end_date
-                        });
-                      }}
-                    >
-                      <div className="flex flex-col items-start w-full min-w-0">
-                        <div className="flex items-center justify-between w-full gap-2">
-                          <span className="text-sm truncate flex-1 min-w-0">
+                <div className="border rounded-md bg-gray-50 dark:bg-gray-900">
+                  <div className="p-2 border-b text-xs text-muted-foreground bg-gray-100 dark:bg-gray-800">
+                    {openPeriods.length} períodos abiertos - Scroll para ver todos
+                  </div>
+                  <div 
+                    className="p-2 space-y-1"
+                    style={{
+                      height: '200px',
+                      overflow: 'auto'
+                    }}
+                  >
+                    {openPeriods.map((period, index) => (
+                      <button
+                        key={period.id}
+                        className={`w-full p-2 text-left text-sm rounded border hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                          value.periodId === period.id 
+                            ? 'bg-blue-100 border-blue-300 dark:bg-blue-900 dark:border-blue-700' 
+                            : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'
+                        }`}
+                        onClick={() => {
+                          console.log('✅ Period clicked:', index + 1, period.id);
+                          handleOptionSelect({ 
+                            type: 'specific', 
+                            periodId: period.id,
+                            startDate: period.period_start_date,
+                            endDate: period.period_end_date
+                          });
+                        }}
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">
                             {formatPaymentPeriodCompact(period.period_start_date, period.period_end_date)}
                           </span>
-                          <Badge className={`text-xs flex-shrink-0 ${getStatusColor(period.status)}`}>
+                          <span className={`text-xs px-2 py-1 rounded ${getStatusColor(period.status)}`}>
                             {getStatusText(period.status)}
-                          </Badge>
+                          </span>
                         </div>
-                      </div>
-                    </Button>
-                    );
-                  })}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -553,6 +550,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 )}
               </div>
             )}
+            </div>
           </div>
         </PopoverContent>
       </Popover>
