@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
+import { capitalizeWords } from '@/lib/textUtils';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
@@ -735,7 +736,7 @@ export function FuelExpenseDialog({
                           .filter((eq) => eq.equipment_type === 'truck')
                           .map((eq) => (
                             <SelectItem key={eq.id} value={eq.id}>
-                              {eq.equipment_number} - {eq.make} {eq.model}
+                              {eq.equipment_number} - {capitalizeWords(eq.make)} {capitalizeWords(eq.model)}
                             </SelectItem>
                           ))
                         }

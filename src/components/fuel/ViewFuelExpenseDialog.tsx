@@ -8,6 +8,7 @@ import { Calendar, MapPin, User, Fuel, Car, Receipt, DollarSign, Gauge, CreditCa
 import { useFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateOnly, formatDateTime } from '@/lib/dateFormatting';
+import { capitalizeWords } from '@/lib/textUtils';
 
 interface ViewFuelExpenseDialogProps {
   expenseId: string | null;
@@ -100,8 +101,8 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                       <div className="text-sm text-muted-foreground">Vehículo</div>
                       <div className="font-medium">
                         {expense.company_equipment.equipment_number}
-                        {expense.company_equipment.make && ` - ${expense.company_equipment.make}`}
-                        {expense.company_equipment.model && ` ${expense.company_equipment.model}`}
+                        {expense.company_equipment.make && ` - ${capitalizeWords(expense.company_equipment.make)}`}
+                        {expense.company_equipment.model && ` ${capitalizeWords(expense.company_equipment.model)}`}
                         {expense.company_equipment.year && ` (${expense.company_equipment.year})`}
                         {expense.company_equipment.license_plate && 
                           ` - Placa: ${expense.company_equipment.license_plate}`
