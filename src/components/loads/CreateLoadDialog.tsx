@@ -584,15 +584,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         
         showSuccess(
           isEdit 
-            ? t("loads:create_wizard.success.load_updated", { number: loadNumber })
+            ? t("loads:messages.success.updated_title", { number: loadNumber })
             : isDuplicate 
-            ? t("loads:create_wizard.success.load_duplicated", { number: loadNumber })
-            : t("loads:create_wizard.success.load_created", { number: loadNumber }),
+            ? t("loads:messages.success.created_title", { number: loadNumber })
+            : t("loads:messages.success.created_title", { number: loadNumber }),
           isEdit 
-            ? t("loads:create_wizard.success.updated_message", { number: loadNumber })
+            ? t("loads:messages.success.updated_message", { number: loadNumber })
             : isDuplicate 
-            ? t("loads:create_wizard.success.duplicated_message", { number: loadNumber })
-            : t("loads:create_wizard.success.created_message", { number: loadNumber, client: clientName })
+            ? t("loads:messages.success.duplicated_message", { number: loadNumber })
+            : t("loads:messages.success.created_message", { number: loadNumber, client: clientName })
         );
         
         // Close dialog after showing toast
@@ -609,12 +609,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
         const loadNumber = form.getValues("load_number");
         const errorTitle = mode === 'edit' 
-          ? t("loads:create_wizard.error.update_title", { number: loadNumber })
+          ? t("loads:messages.error.update_title", { number: loadNumber })
           : mode === 'duplicate'
-          ? t("loads:create_wizard.error.duplicate_title", { number: loadNumber })
-          : t("loads:create_wizard.error.create_title", { number: loadNumber });
+          ? t("loads:messages.error.duplicate_title", { number: loadNumber })
+          : t("loads:messages.error.create_title", { number: loadNumber });
         
-        showError(errorTitle, error.message || t("loads:create_wizard.error.general_message"));
+        showError(errorTitle, error.message || t("loads:messages.error.general_message"));
       }
     });
   };
