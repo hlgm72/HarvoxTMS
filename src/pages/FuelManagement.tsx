@@ -33,6 +33,12 @@ export default function FuelManagement() {
   // Configurar filtros iniciales con el período actual cuando se cargue
   useEffect(() => {
     if (currentPeriod && !filters.dateRange.from && !filters.dateRange.to) {
+      console.log('🔧 Configurando filtros por período actual:', {
+        periodId: currentPeriod.id,
+        startDate: currentPeriod.period_start_date,
+        endDate: currentPeriod.period_end_date
+      });
+      
       setFilters(prev => ({
         ...prev,
         dateRange: {
@@ -59,6 +65,8 @@ export default function FuelManagement() {
     startDate: filters.dateRange.from ? formatDateInUserTimeZone(filters.dateRange.from) : undefined,
     endDate: filters.dateRange.to ? formatDateInUserTimeZone(filters.dateRange.to) : undefined,
   };
+
+  console.log('🔍 Query filters aplicados:', queryFilters);
 
   const handleEdit = (expenseId: string) => {
     setEditExpenseId(expenseId);

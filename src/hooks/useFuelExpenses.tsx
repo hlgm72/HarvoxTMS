@@ -84,13 +84,24 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
         query = query.eq('vehicle_id', filters.vehicleId);
       }
 
-      if (filters.startDate && filters.endDate) {
-        // ✅ CORREGIDO: Usar funciones centralizadas para conversión UTC
-        const startUTC = convertUserDateToUTC(new Date(filters.startDate));
-        const endUTC = convertUserDateToUTC(new Date(filters.endDate));
-        query = query
-          .gte('transaction_date', startUTC.split('T')[0])
-          .lte('transaction_date', endUTC.split('T')[0]);
+      // ✅ Filtrado de fechas mejorado - aplicar si al menos una fecha está presente
+      if (filters.startDate || filters.endDate) {
+        if (filters.startDate && filters.endDate) {
+          // Rango completo
+          const startUTC = convertUserDateToUTC(new Date(filters.startDate));
+          const endUTC = convertUserDateToUTC(new Date(filters.endDate));
+          query = query
+            .gte('transaction_date', startUTC.split('T')[0])
+            .lte('transaction_date', endUTC.split('T')[0]);
+        } else if (filters.startDate) {
+          // Solo fecha de inicio
+          const startUTC = convertUserDateToUTC(new Date(filters.startDate));
+          query = query.gte('transaction_date', startUTC.split('T')[0]);
+        } else if (filters.endDate) {
+          // Solo fecha final
+          const endUTC = convertUserDateToUTC(new Date(filters.endDate));
+          query = query.lte('transaction_date', endUTC.split('T')[0]);
+        }
       }
 
       const { data, error } = await query;
