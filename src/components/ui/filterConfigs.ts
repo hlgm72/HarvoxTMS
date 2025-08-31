@@ -104,9 +104,9 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
         ]
       },
       {
-        key: 'dateRange',
-        type: 'dateRange',
-        labelKey: 'filters.date_range' // ← De common.json
+        key: 'periodFilter',
+        type: 'period',
+        labelKey: 'filters.period_label'
       }
     ],
 
@@ -115,7 +115,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
       driverId: 'all',
       status: 'all',
       vehicleId: 'all',
-      dateRange: { from: undefined, to: undefined }
+      periodFilter: { type: 'current' }
     }),
 
     hasActiveFilters: (filters: FuelFilters) => {
@@ -123,7 +123,7 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
              filters.driverId !== 'all' || 
              filters.status !== 'all' ||
              filters.vehicleId !== 'all' ||
-             (filters.dateRange.from !== undefined || filters.dateRange.to !== undefined);
+             filters.periodFilter?.type !== 'current';
     },
 
     getActiveFilterBadges: (filters: FuelFilters, additionalData?: any) => {
@@ -153,8 +153,11 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
         badges.push({ key: 'status', label: `Estado: ${filters.status}` });
       }
       
-      if (filters.dateRange.from || filters.dateRange.to) {
-        badges.push({ key: 'dateRange', label: 'Rango de fechas aplicado' });
+      if (filters.periodFilter?.type !== 'current') {
+        badges.push({ 
+          key: 'period', 
+          label: `Período: ${filters.periodFilter?.label || filters.periodFilter?.type}` 
+        });
       }
       
       return badges;

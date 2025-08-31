@@ -22,34 +22,30 @@ export default function FuelManagement() {
   // Obtener el período actual para configurar filtros por defecto
   const { data: currentPeriod } = useCurrentPaymentPeriod();
 
-  // Estado de filtros - formato universal manteniendo compatibilidad
+  // Estado de filtros con período actual por defecto
   const [filters, setFilters] = useState({
     search: '',
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
-    dateRange: { from: undefined as Date | undefined, to: undefined as Date | undefined }
+    periodFilter: { type: 'current' as const, periodId: undefined as string | undefined }
   });
 
-  // Configurar filtros iniciales con el período actual cuando se cargue
+  // Actualizar periodId cuando se carga el período actual
   useEffect(() => {
-    if (currentPeriod && !filters.dateRange.from && !filters.dateRange.to) {
-      console.log('🔧 Configurando filtros por período actual:', {
-        periodId: currentPeriod.id,
-        startDate: currentPeriod.period_start_date,
-        endDate: currentPeriod.period_end_date
-      });
-      
+    if (currentPeriod && filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
       setFilters(prev => ({
         ...prev,
-        dateRange: {
-          from: new Date(currentPeriod.period_start_date),
-          to: new Date(currentPeriod.period_end_date)
+        periodFilter: {
+          ...prev.periodFilter,
+          periodId: currentPeriod.id
         }
       }));
     }
-  }, [currentPeriod, filters.dateRange.from, filters.dateRange.to]);
+  }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
 
+  console.log('🔍 Filtros activos en Fuel Management:', filters);
+  
   // Estado de tabs
   const [activeTab, setActiveTab] = useState('expenses');
 
@@ -90,13 +86,13 @@ export default function FuelManagement() {
     }
   };
 
-  // Convertir filtros para las consultas
+  // Convertir filtros para las consultas - maneja período actual y seleccionado
   const queryFilters = {
     driverId: filters.driverId !== 'all' ? filters.driverId : undefined,
     status: filters.status !== 'all' ? filters.status : undefined,
     vehicleId: filters.vehicleId !== 'all' ? filters.vehicleId : undefined,
-    startDate: filters.dateRange.from ? formatDateInUserTimeZone(filters.dateRange.from) : undefined,
-    endDate: filters.dateRange.to ? formatDateInUserTimeZone(filters.dateRange.to) : undefined,
+    // Usar período seleccionado o actual por defecto
+    periodId: filters.periodFilter?.periodId || currentPeriod?.id
   };
 
   console.log('🔍 Query filters aplicados:', queryFilters);

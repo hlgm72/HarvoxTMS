@@ -19,10 +19,7 @@ export interface BaseFilters {
 // Extensiones específicas por contexto
 export interface FuelFilters extends BaseFilters {
   vehicleId: string;
-  dateRange: {
-    from: Date | undefined;
-    to: Date | undefined;
-  };
+  periodFilter: PeriodFilterValue;
 }
 
 export interface LoadsFilters extends BaseFilters {
