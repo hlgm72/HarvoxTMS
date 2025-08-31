@@ -763,20 +763,20 @@ export function PaymentReportDialog({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                    <Fuel className="h-4 w-4 shrink-0" />
-                    <span className="truncate">Combustible</span>
-                  </span>
-                  <span className="font-semibold text-warning text-xs sm:text-sm">
-                    -{formatCurrency(calculation.fuel_expenses)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Receipt className="h-4 w-4 shrink-0" />
                     <span className="truncate">Deducciones</span>
                   </span>
                   <span className="font-semibold text-destructive text-xs sm:text-sm">
                     -{formatCurrency(calculation.total_deductions)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                    <Fuel className="h-4 w-4 shrink-0" />
+                    <span className="truncate">Combustible</span>
+                  </span>
+                  <span className="font-semibold text-warning text-xs sm:text-sm">
+                    -{formatCurrency(calculation.fuel_expenses)}
                   </span>
                 </div>
               </div>
@@ -879,6 +879,35 @@ export function PaymentReportDialog({
             </Card>
           )}
 
+          {/* Deducciones */}
+          {deductions.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Receipt className="h-5 w-5 text-red-600" />
+                  Deducciones ({deductions.length} - Total: {formatCurrency(deductions.reduce((sum, deduction) => sum + deduction.amount, 0))})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {deductions.map((deduction) => (
+                    <div key={deduction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="font-medium truncate text-sm sm:text-base">{deduction.description}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">
+                          {formatDateAuto(deduction.expense_date)} • {deduction.status === 'planned' ? 'Planificado' : 'Aplicado'}
+                        </div>
+                      </div>
+                      <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
+                        -{formatCurrency(deduction.amount)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Gastos de Combustible */}
           {fuelExpenses.length > 0 && (
             <Card>
@@ -910,35 +939,6 @@ export function PaymentReportDialog({
                        </div>
                       <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
                         {formatCurrency(expense.total_amount)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Deducciones */}
-          {deductions.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Receipt className="h-5 w-5 text-red-600" />
-                  Deducciones ({deductions.length} - Total: {formatCurrency(deductions.reduce((sum, deduction) => sum + deduction.amount, 0))})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {deductions.map((deduction) => (
-                    <div key={deduction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="font-medium truncate text-sm sm:text-base">{deduction.description}</div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">
-                          {formatDateAuto(deduction.expense_date)} • {deduction.status === 'planned' ? 'Planificado' : 'Aplicado'}
-                        </div>
-                      </div>
-                      <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
-                        -{formatCurrency(deduction.amount)}
                       </div>
                     </div>
                   ))}
