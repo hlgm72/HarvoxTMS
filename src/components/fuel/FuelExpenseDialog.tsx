@@ -443,22 +443,20 @@ export function FuelExpenseDialog({
 
                 <FormField
                   control={form.control}
-                  name="payment_period_id"
+                  name="fuel_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('fuel:create_dialog.fields.payment_period')}</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.fuel_type')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_period')} />
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_fuel_type')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                           {paymentPeriods.map((period) => (
-                             <SelectItem key={period.id} value={period.id}>
-                               {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
-                             </SelectItem>
-                           ))}
+                          <SelectItem value="diesel">{t('fuel:create_dialog.fuel_types.diesel')}</SelectItem>
+                          <SelectItem value="gasoline">{t('fuel:create_dialog.fuel_types.gasoline')}</SelectItem>
+                          <SelectItem value="def">{t('fuel:create_dialog.fuel_types.def')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -510,20 +508,22 @@ export function FuelExpenseDialog({
 
                 <FormField
                   control={form.control}
-                  name="fuel_type"
+                  name="payment_period_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('fuel:create_dialog.fields.fuel_type')}</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.payment_period')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_fuel_type')} />
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_period')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="diesel">{t('fuel:create_dialog.fuel_types.diesel')}</SelectItem>
-                          <SelectItem value="gasoline">{t('fuel:create_dialog.fuel_types.gasoline')}</SelectItem>
-                          <SelectItem value="def">{t('fuel:create_dialog.fuel_types.def')}</SelectItem>
+                           {paymentPeriods.map((period) => (
+                             <SelectItem key={period.id} value={period.id}>
+                               {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
+                             </SelectItem>
+                           ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
