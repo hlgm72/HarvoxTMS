@@ -31,88 +31,73 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- 🎯 SMART SENTRY INTERCEPTOR - Compatible but deadly effective -->
+    <!-- 🎯 SURGICAL SENTRY BLOCKER - No fetch conflicts -->
     <script>
       (function() {
         'use strict';
         
-        // 🎯 Target the exact problematic domain
-        const SENTRY_DOMAINS = [
-          'o4506071217143808.ingest.sentry.io',
-          'sentry.io',
-          'ingest.sentry'
-        ];
+        // 🎯 Block only the exact Sentry domain from error
+        const SENTRY_TARGET = 'o4506071217143808.ingest.sentry.io';
         
-        const isSentryUrl = (url) => {
-          if (!url) return false;
-          const urlStr = String(url);
-          return SENTRY_DOMAINS.some(domain => urlStr.includes(domain));
-        };
-        
-        // 🛡️ INTERCEPT FETCH with persistent override
-        let fetchOverrideActive = false;
-        
-        const createFetchInterceptor = () => {
-          const originalFetch = globalThis.fetch;
-          
-          return function interceptedFetch(...args) {
-            const [input] = args;
-            const url = typeof input === 'string' ? input : 
-                       input instanceof URL ? input.href :
-                       input?.url || '';
-            
-            if (isSentryUrl(url)) {
-              console.log('🚨 BLOCKED Sentry:', url);
-              return Promise.resolve(new Response('{"success":true,"blocked":true}', {
-                status: 200,
-                statusText: 'OK',
-                headers: { 'Content-Type': 'application/json' }
-              }));
+        // 🛡️ URL HIJACKING - Intercept at URL level
+        const originalURL = globalThis.URL;
+        globalThis.URL = class extends originalURL {
+          constructor(url, base) {
+            if (typeof url === 'string' && url.includes(SENTRY_TARGET)) {
+              console.log('🚨 BLOCKED Sentry URL construction:', url);
+              // Return a dummy URL that will fail safely
+              super('about:blank');
+              return;
             }
-            
-            return originalFetch.apply(this, args);
-          };
-        };
-        
-        // Override fetch initially
-        const interceptedFetch = createFetchInterceptor();
-        
-        // Use a more compatible approach
-        try {
-          globalThis.fetch = interceptedFetch;
-          window.fetch = interceptedFetch;
-          fetchOverrideActive = true;
-        } catch (e) {
-          console.log('🔧 Fetch override failed, using fallback');
-        }
-        
-        // 🔄 PERSISTENT MONITORING - Re-apply if overridden
-        const maintainInterception = () => {
-          if (globalThis.fetch !== interceptedFetch || window.fetch !== interceptedFetch) {
-            try {
-              globalThis.fetch = interceptedFetch;
-              window.fetch = interceptedFetch;
-              console.log('🔄 Fetch interceptor restored');
-            } catch (e) {
-              // Silent fail if can't override
-            }
+            super(url, base);
           }
         };
         
-        // Check every 100ms to maintain control
-        setInterval(maintainInterception, 100);
+        // 🛡️ REQUEST INTERCEPTION - Hook into Request constructor
+        const OriginalRequest = globalThis.Request;
+        if (OriginalRequest) {
+          globalThis.Request = class extends OriginalRequest {
+            constructor(input, options) {
+              const url = typeof input === 'string' ? input : input?.url;
+              if (url && url.includes(SENTRY_TARGET)) {
+                console.log('🚨 BLOCKED Sentry Request:', url);
+                // Create request to dummy endpoint
+                super('about:blank', options);
+                return;
+              }
+              super(input, options);
+            }
+          };
+        }
         
-        // 🛡️ INTERCEPT XMLHttpRequest
-        const OriginalXHR = XMLHttpRequest;
-        const interceptedOpen = OriginalXHR.prototype.open;
+        // 🛡️ NETWORK LEVEL - Override addEventListener for fetch events
+        const originalAddEventListener = globalThis.addEventListener;
+        globalThis.addEventListener = function(type, listener, options) {
+          if (type === 'fetch' && typeof listener === 'function') {
+            const wrappedListener = function(event) {
+              const url = event.request?.url;
+              if (url && url.includes(SENTRY_TARGET)) {
+                console.log('🚨 BLOCKED Sentry fetch event:', url);
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;
+              }
+              return listener.call(this, event);
+            };
+            return originalAddEventListener.call(this, type, wrappedListener, options);
+          }
+          return originalAddEventListener.call(this, type, listener, options);
+        };
         
-        OriginalXHR.prototype.open = function(method, url, ...args) {
-          if (isSentryUrl(url)) {
+        // 🛡️ XMLHttpRequest - Only modify prototype methods
+        const originalXHROpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url, ...args) {
+          if (typeof url === 'string' && url.includes(SENTRY_TARGET)) {
             console.log('🚨 BLOCKED Sentry XHR:', url);
-            // Create fake but convincing success
-            this.readyState = 4;
-            this.status = 200;
-            this.responseText = '{"success":true}';
+            // Fake successful completion
+            Object.defineProperty(this, 'readyState', { value: 4, configurable: true });
+            Object.defineProperty(this, 'status', { value: 200, configurable: true });
+            Object.defineProperty(this, 'responseText', { value: '{"success":true}', configurable: true });
             
             setTimeout(() => {
               if (this.onreadystatechange) this.onreadystatechange();
@@ -120,62 +105,66 @@
             }, 1);
             return;
           }
-          return interceptedOpen.apply(this, arguments);
+          return originalXHROpen.apply(this, arguments);
         };
         
-        // 🛡️ INTERCEPT sendBeacon
+        // 🛡️ Navigator sendBeacon
         if (navigator.sendBeacon) {
-          const originalBeacon = navigator.sendBeacon;
+          const originalSendBeacon = navigator.sendBeacon;
           navigator.sendBeacon = function(url, data) {
-            if (isSentryUrl(url)) {
+            if (url && url.includes(SENTRY_TARGET)) {
               console.log('🚨 BLOCKED Sentry beacon:', url);
               return true;
             }
-            return originalBeacon.call(this, url, data);
+            return originalSendBeacon.call(this, url, data);
           };
         }
         
-        // 🛡️ NEUTRALIZE Sentry Global
-        const sentryNoop = () => {
-          console.log('🚨 Sentry call blocked');
-          return { addBreadcrumb: sentryNoop, captureException: sentryNoop };
+        // 🛡️ Sentry Global - Non-conflicting approach
+        if (!globalThis.Sentry) {
+          globalThis.Sentry = {};
+        }
+        
+        const sentryProxy = new Proxy(globalThis.Sentry, {
+          get(target, prop) {
+            console.log('🚨 Sentry.' + prop + '() blocked');
+            return () => ({});
+          },
+          set(target, prop, value) {
+            console.log('🚨 Sentry.' + prop + ' assignment blocked');
+            return true;
+          }
+        });
+        
+        globalThis.Sentry = sentryProxy;
+        if (globalThis !== window) window.Sentry = sentryProxy;
+        
+        // 🛡️ DNS Level Blocking - Override host resolution 
+        const originalCreateElement = document.createElement;
+        document.createElement = function(tagName, options) {
+          const element = originalCreateElement.call(this, tagName, options);
+          
+          if (tagName === 'script') {
+            const observer = new MutationObserver((mutations) => {
+              mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+                  const src = element.getAttribute('src');
+                  if (src && src.includes(SENTRY_TARGET)) {
+                    console.log('🚨 BLOCKED Sentry script:', src);
+                    element.removeAttribute('src');
+                    element.remove();
+                  }
+                }
+              });
+            });
+            observer.observe(element, { attributes: true });
+          }
+          
+          return element;
         };
         
-        Object.defineProperty(window, 'Sentry', {
-          get: () => ({
-            init: sentryNoop,
-            captureException: sentryNoop,
-            captureMessage: sentryNoop,
-            addBreadcrumb: sentryNoop,
-            setUser: sentryNoop,
-            setTag: sentryNoop,
-            configureScope: sentryNoop,
-            withScope: (callback) => { 
-              if (callback) callback({ setTag: sentryNoop, addBreadcrumb: sentryNoop }); 
-            }
-          }),
-          set: () => {
-            console.log('🚨 Sentry assignment blocked');
-            return true;
-          },
-          configurable: true
-        });
-        
-        console.log('🎯 SMART Sentry interceptor active - targeting:', SENTRY_DOMAINS);
-        
-        // 🔍 DEBUG: Monitor any Sentry attempts
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-              if (node.tagName === 'SCRIPT' && node.src && isSentryUrl(node.src)) {
-                console.log('🚨 BLOCKED Sentry script injection:', node.src);
-                node.remove();
-              }
-            });
-          });
-        });
-        
-        observer.observe(document, { childList: true, subtree: true });
+        console.log('🎯 SURGICAL Sentry blocker active - targeting:', SENTRY_TARGET);
+        console.log('✅ No fetch conflicts - Using URL/Request/XHR interception');
         
       })();
     </script>
