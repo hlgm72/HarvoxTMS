@@ -548,10 +548,10 @@ export function EventualDeductionDialog({
                     const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
                     const frequency = paymentPeriods[0].company_payment_periods.period_frequency;
                     
-                    // Traducir el tipo de período usando las claves existentes
-                    const periodType = frequency === 'weekly' ? t('other_income.frequency.weekly') :
-                                     frequency === 'biweekly' ? t('other_income.frequency.biweekly') :
-                                     frequency === 'monthly' ? t('other_income.frequency.monthly') :
+                    // Usar las traducciones directas que ya existen
+                    const periodType = frequency === 'weekly' ? 'Weekly' :
+                                     frequency === 'biweekly' ? 'Biweekly' :
+                                     frequency === 'monthly' ? 'Monthly' :
                                      frequency;
                     
                     return `✓ ${periodType} period found: ${startDate} - ${endDate}`;
