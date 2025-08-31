@@ -728,7 +728,7 @@
     "driver_label": "Driver",
     "all_drivers": "All drivers",
     "broker_label": "Client/Broker",
-    "all_brokers": "All brokers",
+    "all_brokers": "All clients/brokers",
     "status_label": "Status",
     "status_options": {
       "all": "All statuses",

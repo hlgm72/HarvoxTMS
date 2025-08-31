@@ -728,7 +728,7 @@
     "driver_label": "Conductor",
     "all_drivers": "Todos los conductores",
     "broker_label": "Cliente/Broker",
-    "all_brokers": "Todos los brokers",
+    "all_brokers": "Todos los clientes/brokers",
     "status_label": "Estado",
     "status_options": {
       "all": "Todos los estados",
