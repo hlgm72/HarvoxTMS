@@ -536,24 +536,24 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
       key: 'filters',
       icon: Filter,
       labelKey: 'floating_actions.filters.label',
-      titleKey: 'floating_actions.filters_title',
-      descriptionKey: 'floating_actions.filters_description',
+      titleKey: 'floating_actions.filters.title',
+      descriptionKey: 'floating_actions.filters.description',
       variant: 'secondary'
     },
     {
       key: 'export',
       icon: Download,
       labelKey: 'floating_actions.export.label',
-      titleKey: 'floating_actions.export_title',
-      descriptionKey: 'floating_actions.export_description',
+      titleKey: 'floating_actions.export.title',
+      descriptionKey: 'floating_actions.export.description',
       variant: 'secondary'
     },
     {
       key: 'stats',
       icon: BarChart3,
       labelKey: 'floating_actions.stats.label',
-      titleKey: 'floating_actions.stats_title',
-      descriptionKey: 'floating_actions.stats_description',
+      titleKey: 'floating_actions.stats.title',
+      descriptionKey: 'floating_actions.stats.description',
       variant: 'secondary'
     }
   ],
@@ -652,23 +652,23 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
       {
         key: 'totalReports',
         icon: FileText,
-        labelKey: 'reports.stats.total_reports'
+        labelKey: 'stats.total_deductions'
       },
       {
         key: 'totalDrivers',
         icon: Users,
-        labelKey: 'reports.stats.drivers'
+        labelKey: 'stats.active_drivers'
       },
       {
         key: 'totalEarnings',
         icon: DollarSign,
-        labelKey: 'reports.stats.total_net_payment',
+        labelKey: 'stats.total_amount',
         formatter: formatCurrency
       },
       {
         key: 'pendingReports',
         icon: Clock,
-        labelKey: 'reports.stats.pending'
+        labelKey: 'stats.pending_count'
       }
     ]
   }
