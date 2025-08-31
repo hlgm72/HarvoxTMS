@@ -472,7 +472,7 @@ export function FuelExpenseDialog({
                   control={form.control}
                   name="transaction_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem>
                       <FormLabel>{t('fuel:create_dialog.fields.transaction_date')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -480,7 +480,7 @@ export function FuelExpenseDialog({
                             <Button
                               variant="outline"
                               className={cn(
-                                "pl-3 text-left font-normal",
+                                "w-full justify-start text-left font-normal",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
