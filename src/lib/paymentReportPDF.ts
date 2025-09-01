@@ -832,12 +832,12 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         color: '#003366' // Color de fuente #003366
       });
       
-      addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 120, currentY, {
+      addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 130, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
       
-      addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 145, currentY, {
+      addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 155, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
