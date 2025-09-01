@@ -148,6 +148,7 @@ const getStatusLabel = (status: string, t: any) => {
 
 interface LoadsListProps {
   filters: {
+    search?: string; // Añadir el filtro de búsqueda
     status: string;
     driver: string;
     broker: string;
@@ -269,6 +270,24 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
   // Aplicar filtros a los datos reales y ordenar por período de pago
   const filteredLoads = loads
     .filter(load => {
+      // Filtro de búsqueda por número de carga, PO, broker, etc.
+      if (filters.search && filters.search.trim()) {
+        const searchTerm = filters.search.toLowerCase().trim();
+        const searchableFields = [
+          load.load_number,
+          load.po_number,
+          load.broker_name,
+          load.customer_name,
+          load.commodity
+        ].filter(Boolean).map(field => field?.toLowerCase());
+        
+        const matchesSearch = searchableFields.some(field => 
+          field?.includes(searchTerm)
+        );
+        
+        if (!matchesSearch) return false;
+      }
+      
       if (filters.status !== "all" && load.status !== filters.status) return false;
       
       // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name

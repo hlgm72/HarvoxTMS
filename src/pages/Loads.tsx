@@ -153,6 +153,7 @@ export default function Loads() {
         <LoadDocumentsProvider>
           <LoadsList 
             filters={{
+              search: filters.search, // Pasar el filtro de búsqueda
               status: filters.status,
               driver: filters.driverId,
               broker: filters.brokerId,
