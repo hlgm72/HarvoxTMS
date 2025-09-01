@@ -42,7 +42,7 @@ export function UniversalFloatingActions<T extends BaseFilters>({
   exportLoading = false
 }: UniversalFloatingActionsGenericProps<T>) {
   const config = CONTEXT_CONFIGS[contextKey as ContextKey];
-  const { t } = useTranslation([config.namespace, 'common']);
+  const { t, i18n } = useTranslation([config.namespace, 'common']);
   
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ActionTabType>('filters');
@@ -52,7 +52,10 @@ export function UniversalFloatingActions<T extends BaseFilters>({
   
   // Calculate active filters
   const hasActiveFilters = finalConfig.filterConfig.hasActiveFilters(filters);
-  const activeFilterBadges = finalConfig.filterConfig.getActiveFilterBadges(filters, additionalData);
+  const activeFilterBadges = finalConfig.filterConfig.getActiveFilterBadges(filters, {
+    ...additionalData,
+    language: i18n.language || 'es' // Pass current language
+  });
 
   const openSheet = (tab: ActionTabType) => {
     setActiveTab(tab);

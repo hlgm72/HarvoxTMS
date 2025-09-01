@@ -26,21 +26,38 @@ import { FuelFiltersType } from "@/components/fuel/FuelFilters";
 // FUNCIÓN HELPER PARA TRADUCIR TIPOS DE PERÍODO
 // ========================================
 
-const getPeriodTypeLabel = (type: string) => {
-  switch (type) {
-    case 'current': return 'Período Actual';
-    case 'previous': return 'Período Anterior';
-    case 'next': return 'Próximo Período';
-    case 'this_month': return 'Este Mes';
-    case 'last_month': return 'Mes Anterior';
-    case 'this_quarter': return 'Este Trimestre';
-    case 'last_quarter': return 'Trimestre Anterior';
-    case 'this_year': return 'Este Año';
-    case 'last_year': return 'Año Anterior';
-    case 'specific': return 'Período Específico';
-    case 'custom': return 'Personalizado';
-    default: return type;
-  }
+const getPeriodTypeLabel = (type: string, language: string = 'es') => {
+  const translations = {
+    es: {
+      'current': 'Actual',
+      'previous': 'Anterior', 
+      'next': 'Próximo',
+      'this_month': 'Este Mes',
+      'last_month': 'Mes Anterior',
+      'this_quarter': 'Este Trimestre',
+      'last_quarter': 'Trimestre Anterior',
+      'this_year': 'Este Año',
+      'last_year': 'Año Anterior',
+      'specific': 'Específico',
+      'custom': 'Personalizado'
+    },
+    en: {
+      'current': 'Current',
+      'previous': 'Previous',
+      'next': 'Next',
+      'this_month': 'This Month',
+      'last_month': 'Last Month',
+      'this_quarter': 'This Quarter',
+      'last_quarter': 'Last Quarter',
+      'this_year': 'This Year',
+      'last_year': 'Last Year',
+      'specific': 'Specific',
+      'custom': 'Custom'
+    }
+  };
+  
+  const lang = language.startsWith('en') ? 'en' : 'es';
+  return translations[lang][type] || type;
 };
 
 // ========================================
@@ -149,16 +166,17 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
 
     getActiveFilterBadges: (filters: FuelFilters, additionalData?: any) => {
       const badges = [];
+      const lang = additionalData?.language || 'es';
       
       if (filters.search) {
-        badges.push({ key: 'search', label: `Búsqueda: ${filters.search}` });
+        badges.push({ key: 'search', label: `${lang === 'en' ? 'Search' : 'Búsqueda'}: ${filters.search}` });
       }
       
       if (filters.driverId !== 'all') {
         const driver = additionalData?.drivers?.find((d: any) => d.user_id === filters.driverId);
         badges.push({ 
           key: 'driver', 
-          label: `Conductor: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
+          label: `${lang === 'en' ? 'Driver' : 'Conductor'}: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
         });
       }
       
@@ -166,18 +184,18 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
         const vehicle = additionalData?.vehicles?.find((v: any) => v.id === filters.vehicleId);
         badges.push({ 
           key: 'vehicle', 
-          label: `Vehículo: ${vehicle ? vehicle.plate_number : filters.vehicleId}` 
+          label: `${lang === 'en' ? 'Vehicle' : 'Vehículo'}: ${vehicle ? vehicle.plate_number : filters.vehicleId}` 
         });
       }
       
       if (filters.status !== 'all') {
-        badges.push({ key: 'status', label: `Estado: ${filters.status}` });
+        badges.push({ key: 'status', label: `${lang === 'en' ? 'Status' : 'Estado'}: ${filters.status}` });
       }
       
       if (filters.periodFilter?.type !== 'current') {        
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
+          label: `${lang === 'en' ? 'Period' : 'Período'}: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type, lang)}` 
         });
       }
       
@@ -322,20 +340,21 @@ export const loadsConfig: ContextConfig<LoadsFilters> = {
 
     getActiveFilterBadges: (filters: LoadsFilters, additionalData?: any) => {
       const badges = [];
+      const lang = additionalData?.language || 'es';
       
       if (filters.search) {
-        badges.push({ key: 'search', label: `Búsqueda: ${filters.search}` });
+        badges.push({ key: 'search', label: `${lang === 'en' ? 'Search' : 'Búsqueda'}: ${filters.search}` });
       }
       
       if (filters.status !== 'all') {
-        badges.push({ key: 'status', label: `Estado: ${filters.status}` });
+        badges.push({ key: 'status', label: `${lang === 'en' ? 'Status' : 'Estado'}: ${filters.status}` });
       }
       
       if (filters.driverId !== 'all') {
         const driver = additionalData?.drivers?.find((d: any) => d.user_id === filters.driverId);
         badges.push({ 
           key: 'driver', 
-          label: `Conductor: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
+          label: `${lang === 'en' ? 'Driver' : 'Conductor'}: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
         });
       }
       
@@ -350,7 +369,7 @@ export const loadsConfig: ContextConfig<LoadsFilters> = {
       if (filters.periodFilter?.type !== 'current') {
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
+          label: `${lang === 'en' ? 'Period' : 'Período'}: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type, lang)}` 
         });
       }
       
@@ -478,20 +497,21 @@ export const deductionsConfig: ContextConfig<DeductionsFilters> = {
 
     getActiveFilterBadges: (filters: DeductionsFilters, additionalData?: any) => {
       const badges = [];
+      const lang = additionalData?.language || 'es';
       
       if (filters.search) {
-        badges.push({ key: 'search', label: `Búsqueda: ${filters.search}` });
+        badges.push({ key: 'search', label: `${lang === 'en' ? 'Search' : 'Búsqueda'}: ${filters.search}` });
       }
       
       if (filters.status !== 'all') {
-        badges.push({ key: 'status', label: `Estado: ${filters.status}` });
+        badges.push({ key: 'status', label: `${lang === 'en' ? 'Status' : 'Estado'}: ${filters.status}` });
       }
       
       if (filters.driverId !== 'all') {
         const driver = additionalData?.drivers?.find((d: any) => d.user_id === filters.driverId);
         badges.push({ 
           key: 'driver', 
-          label: `Conductor: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
+          label: `${lang === 'en' ? 'Driver' : 'Conductor'}: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
         });
       }
       
@@ -499,14 +519,14 @@ export const deductionsConfig: ContextConfig<DeductionsFilters> = {
         const expenseType = additionalData?.expenseTypes?.find((et: any) => et.id === filters.expenseTypeId);
         badges.push({ 
           key: 'expenseType', 
-          label: `Tipo: ${expenseType ? expenseType.name : filters.expenseTypeId}` 
+          label: `${lang === 'en' ? 'Type' : 'Tipo'}: ${expenseType ? expenseType.name : filters.expenseTypeId}` 
         });
       }
       
       if (filters.periodFilter?.type !== 'current') {
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
+          label: `${lang === 'en' ? 'Period' : 'Período'}: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type, lang)}` 
         });
       }
       
@@ -632,27 +652,28 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
 
     getActiveFilterBadges: (filters: PaymentFilters, additionalData?: any) => {
       const badges = [];
+      const lang = additionalData?.language || 'es';
       
       if (filters.search) {
-        badges.push({ key: 'search', label: `Búsqueda: ${filters.search}` });
+        badges.push({ key: 'search', label: `${lang === 'en' ? 'Search' : 'Búsqueda'}: ${filters.search}` });
       }
       
       if (filters.driverId !== 'all') {
         const driver = additionalData?.drivers?.find((d: any) => d.user_id === filters.driverId);
         badges.push({ 
           key: 'driver', 
-          label: `Conductor: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
+          label: `${lang === 'en' ? 'Driver' : 'Conductor'}: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}` 
         });
       }
       
       if (filters.status !== 'all') {
-        badges.push({ key: 'status', label: `Estado: ${filters.status}` });
+        badges.push({ key: 'status', label: `${lang === 'en' ? 'Status' : 'Estado'}: ${filters.status}` });
       }
       
       if (filters.periodFilter?.type !== 'current') {
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
+          label: `${lang === 'en' ? 'Period' : 'Período'}: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type, lang)}` 
         });
       }
       
