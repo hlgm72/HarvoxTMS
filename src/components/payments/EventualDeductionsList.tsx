@@ -180,6 +180,19 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             
             console.log('📋 Todos los períodos de la empresa:', allPeriodsQuery.data);
             
+            // Mostrar detalles de cada período para debugging
+            if (allPeriodsQuery.data) {
+              allPeriodsQuery.data.forEach((period, index) => {
+                console.log(`📅 Período ${index + 1}:`, {
+                  id: period.id,
+                  start: period.period_start_date,
+                  end: period.period_end_date,
+                  status: period.status,
+                  incluye_fecha_actual: period.period_start_date <= currentDate && period.period_end_date >= currentDate
+                });
+              });
+            }
+            
             // Buscar período que incluya la fecha actual
             let currentPeriodQuery = await supabase
               .from('company_payment_periods')
