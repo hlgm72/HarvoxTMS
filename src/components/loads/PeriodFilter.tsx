@@ -108,9 +108,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           // Extraer solo la parte del número de semana/mes del formatDetailedPaymentPeriod
           const periodNumber = periodLabel.split(':')[0]; // "Week 35/2025" o "AGO/2025"
           const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
-          return `${t('periods.current')} ${periodNumber} (${dateRange})`;
+          return `Current ${periodNumber} (${dateRange})`;
         } else {
-          return t('periods.current');
+          return 'Current';
         }
       case 'previous':
         // Mostrar período calculado si no hay actual en BD
@@ -300,7 +300,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                    >
                      <Clock className="h-4 w-4 mr-2" />
                      {/* ✅ NUEVO FORMATO: Solo "Current" sin "Period" */}
-                     {t('periods.current')}
+                     Current
                      {(currentPeriod || calculatedPeriods?.current) && (
                        <>
                          {(() => {
