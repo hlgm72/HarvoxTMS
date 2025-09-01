@@ -35,11 +35,14 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
           driver_user_id
         `);
 
-      // ✅ Aplicar filtros - usar periodId si existe, sino usar fechas
-      if (filters.periodId && filters.periodId !== 'all') {
+      // ✅ Aplicar filtros - detectar períodos calculados y usar fechas en su lugar
+      const isCalculatedPeriod = filters.periodId?.startsWith('calculated-');
+      
+      if (filters.periodId && filters.periodId !== 'all' && !isCalculatedPeriod) {
+        // Usar periodId real de la base de datos
         query = query.eq('payment_period_id', filters.periodId);
-      } else if (!filters.periodId && (filters.startDate || filters.endDate)) {
-        // Si no hay periodId pero hay fechas de rango (períodos calculados), filtrar por fechas
+      } else if (isCalculatedPeriod || !filters.periodId || filters.startDate || filters.endDate) {
+        // Si es período calculado o no hay periodId, usar fechas si están disponibles
         if (filters.startDate && filters.endDate) {
           const startUTC = convertUserDateToUTC(new Date(filters.startDate));
           const endUTC = convertUserDateToUTC(new Date(filters.endDate));

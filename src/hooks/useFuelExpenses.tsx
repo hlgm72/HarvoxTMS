@@ -73,11 +73,14 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
         query = query.eq('driver_user_id', filters.driverId);
       }
 
-      // ✅ Filtrar por período: si hay periodId usar ese, sino usar fechas si están disponibles
-      if (filters.periodId && filters.periodId !== 'all') {
+      // ✅ Filtrar por período: detectar períodos calculados y usar fechas en su lugar
+      const isCalculatedPeriod = filters.periodId?.startsWith('calculated-');
+      
+      if (filters.periodId && filters.periodId !== 'all' && !isCalculatedPeriod) {
+        // Usar periodId real de la base de datos
         query = query.eq('payment_period_id', filters.periodId);
-      } else if (!filters.periodId && (filters.startDate || filters.endDate)) {
-        // Si no hay periodId pero hay fechas de rango (períodos calculados), filtrar por fechas
+      } else if (isCalculatedPeriod || !filters.periodId || filters.startDate || filters.endDate) {
+        // Si es período calculado o no hay periodId, usar fechas si están disponibles
         if (filters.startDate) {
           query = query.gte('transaction_date', filters.startDate);
         }
