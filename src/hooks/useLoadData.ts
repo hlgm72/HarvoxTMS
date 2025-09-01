@@ -18,6 +18,7 @@ export interface LoadData {
   factoring_percentage?: number;
   dispatching_percentage?: number;
   leasing_percentage?: number;
+  payment_period_id?: string; // ⭐ NUEVO: ID del período de pago
   status: string;
   pickup_date?: string;
   delivery_date?: string;

@@ -12,8 +12,10 @@ import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
 import { useCommodityAutocomplete } from "@/hooks/useCommodityAutocomplete";
+import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation"; // ⭐ NUEVO
 import { LoadStop } from "@/hooks/useLoadStops";
 import { createTextHandlers } from "@/lib/textUtils";
+import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from "@/lib/financialIntegrityUtils"; // ⭐ NUEVO
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -149,6 +151,31 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         form.clearErrors("total_amount");
       }
     }
+  });
+
+  // ⭐ VALIDACIÓN DE PROTECCIÓN FINANCIERA POR CONDUCTOR
+  const currentDriverId = activeLoadData?.driver_user_id || selectedDriver?.user_id;
+  const currentPeriodId = activeLoadData?.payment_period_id;
+  
+  const { 
+    data: financialValidation, 
+    isLoading: isValidationLoading 
+  } = useFinancialDataValidation(
+    currentPeriodId, 
+    currentDriverId
+  );
+
+  // Verificar si el conductor está pagado y la operación debe estar bloqueada
+  const isDriverPaid = financialValidation?.driver_is_paid === true;
+  const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
+  const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'editar esta carga');
+
+  console.log('🔒 CreateLoadDialog - Financial validation:', {
+    driverId: currentDriverId,
+    periodId: currentPeriodId,
+    isDriverPaid,
+    canModify,
+    validation: financialValidation
   });
 
   // Fetch company data when selectedCompany changes
@@ -644,6 +671,27 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
               : t("loads:create_wizard.description.duplicate")
             }
           </DialogDescription>
+          
+          {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
+          {isDriverPaid && mode === 'edit' && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 text-red-800">
+                <AlertTriangle className="h-5 w-5" />
+                <div>
+                  <h4 className="font-semibold">Conductor Ya Pagado</h4>
+                  <p className="text-sm mt-1">
+                    Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
+                    No se pueden realizar modificaciones a esta carga para preservar la integridad financiera.
+                  </p>
+                  {financialValidation?.warning_message && (
+                    <p className="text-sm mt-2 font-medium">
+                      {financialValidation.warning_message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </DialogHeader>
 
         {/* Progress Steps */}
@@ -1094,7 +1142,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        // Ejecutar nuestras validaciones personalizadas directamente
                        onSubmit(values);
                      }}
-                     disabled={createLoadMutation.isPending}
+                     disabled={
+                       createLoadMutation.isPending ||
+                       !canModify // ⭐ NUEVO: Deshabilitar si conductor pagado
+                     }
+                     title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
                    >
                      {createLoadMutation.isPending ? (
                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -1108,7 +1160,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                       const values = form.getValues();
                       onSubmit(values);
                     }}
-                    disabled={createLoadMutation.isPending}
+                    disabled={
+                      createLoadMutation.isPending ||
+                      !canModify // ⭐ NUEVO: Deshabilitar si conductor pagado  
+                    }
+                    title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
                   >
                     {createLoadMutation.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
