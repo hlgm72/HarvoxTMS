@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { useFleetNotifications } from '@/components/notifications';
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 import { useTranslation } from 'react-i18next';
+import { useFinancialDataValidation } from '@/hooks/useFinancialDataValidation'; // ⭐ NUEVO
+import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from '@/lib/financialIntegrityUtils'; // ⭐ NUEVO
 
 interface EventualDeductionDialogProps {
   isOpen: boolean;
@@ -60,6 +62,20 @@ export function EventualDeductionDialog({
   const [expenseDate, setExpenseDate] = useState<Date | undefined>(undefined);
   const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+  // ⭐ VALIDACIÓN DE PROTECCIÓN FINANCIERA POR CONDUCTOR
+  const { 
+    data: financialValidation, 
+    isLoading: isValidationLoading 
+  } = useFinancialDataValidation(
+    null, // No tenemos período específico aquí, pero podemos validar por conductor
+    formData.user_id || editingDeduction?.user_id
+  );
+
+  // Verificar si el conductor está pagado y la operación debe estar bloqueada
+  const isDriverPaid = financialValidation?.driver_is_paid === true;
+  const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
+  const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'crear/editar esta deducción');
 
   // ATM Input - Implementación estable como en ExpenseTemplateDialog
   const atmInput = useATMInput({
@@ -362,15 +378,32 @@ export function EventualDeductionDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
-          <DialogTitle>
-            {editingDeduction ? t("deductions.eventual.edit_title") : t("deductions.eventual.create_title")}
-          </DialogTitle>
-          <DialogDescription>
-            {editingDeduction 
-              ? t("deductions.template.edit_description")
-              : t("deductions.eventual.create_description")
-            }
-          </DialogDescription>
+        <DialogTitle>
+          {editingDeduction ? t('eventual_dialog.edit_title') : t('eventual_dialog.create_title')}
+        </DialogTitle>
+        <DialogDescription>
+          {editingDeduction ? t('eventual_dialog.edit_description') : t('eventual_dialog.create_description')}
+        </DialogDescription>
+
+        {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
+        {isDriverPaid && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center gap-2 text-red-800">
+              <div>
+                <h4 className="font-semibold">Conductor Ya Pagado</h4>
+                <p className="text-sm mt-1">
+                  Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
+                  No se pueden realizar modificaciones en deducciones para preservar la integridad financiera.
+                </p>
+                {financialValidation?.warning_message && (
+                  <p className="text-sm mt-2 font-medium">
+                    {financialValidation.warning_message}
+                  </p>
+                )}
+              </div>  
+            </div>
+          </div>
+        )}
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -636,7 +669,12 @@ export function EventualDeductionDialog({
             </Button>
             <Button 
               type="submit" 
-              disabled={isLoading || !isFormValid} 
+              disabled={
+                isLoading || 
+                !isFormValid ||
+                !canModify // ⭐ NUEVO: Deshabilitar si conductor pagado
+              }
+              title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
               className="flex-1"
             >
               {isLoading 

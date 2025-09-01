@@ -32,6 +32,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useATMInput } from '@/hooks/useATMInput';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { useFinancialDataValidation } from '@/hooks/useFinancialDataValidation'; // ⭐ NUEVO
+import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from '@/lib/financialIntegrityUtils'; // ⭐ NUEVO
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -115,6 +117,23 @@ export function FuelExpenseDialog({
       notes: '',
     },
   });
+
+  // ⭐ VALIDACIÓN DE PROTECCIÓN FINANCIERA POR CONDUCTOR
+  const currentDriverId = form.watch('driver_user_id') || expense?.driver_user_id;
+  const currentPeriodId = form.watch('payment_period_id') || expense?.payment_period_id;
+  
+  const { 
+    data: financialValidation, 
+    isLoading: isValidationLoading 
+  } = useFinancialDataValidation(
+    currentPeriodId, 
+    currentDriverId
+  );
+
+  // Verificar si el conductor está pagado y la operación debe estar bloqueada
+  const isDriverPaid = financialValidation?.driver_is_paid === true;
+  const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
+  const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'crear/editar este gasto de combustible');
 
   // Populate form with expense data for edit mode
   React.useEffect(() => {
@@ -411,10 +430,30 @@ export function FuelExpenseDialog({
           </DialogTitle>
           <DialogDescription>
             {isEditMode 
-              ? t('fuel:edit_dialog.description')
+              ? t('fuel:edit_dialog.description') 
               : t('fuel:create_dialog.description')
             }
           </DialogDescription>
+
+          {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
+          {isDriverPaid && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 text-red-800">
+                <div>
+                  <h4 className="font-semibold">Conductor Ya Pagado</h4>
+                  <p className="text-sm mt-1">
+                    Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
+                    No se pueden realizar modificaciones en gastos de combustible para preservar la integridad financiera.
+                  </p>
+                  {financialValidation?.warning_message && (
+                    <p className="text-sm mt-2 font-medium">
+                      {financialValidation.warning_message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </DialogHeader>
 
         <Form {...form}>
@@ -872,12 +911,16 @@ export function FuelExpenseDialog({
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 {t('common:actions.cancel')}
               </Button>
-              <Button type="submit" disabled={isPending}>
-                {isPending 
-                  ? (isEditMode ? t('fuel:create_dialog.actions.saving') : t('fuel:create_dialog.actions.creating')) 
-                  : (isEditMode ? t('fuel:create_dialog.actions.save_changes') : t('fuel:create_dialog.actions.create'))
-                }
-              </Button>
+          <Button 
+            type="submit" 
+            disabled={isPending || !canModify} // ⭐ NUEVO: Deshabilitar si conductor pagado
+            title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
+          >
+            {isPending 
+              ? (isEditMode ? t('fuel:create_dialog.actions.saving') : t('fuel:create_dialog.actions.creating')) 
+              : (isEditMode ? t('fuel:create_dialog.actions.save_changes') : t('fuel:create_dialog.actions.create'))
+            }
+          </Button>
             </DialogFooter>
           </form>
         </Form>
