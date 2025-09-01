@@ -586,6 +586,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     //   return;
     // }
 
+    console.log('🔍 Form values before submission:', values);
+    console.log('🔍 Weight value specifically:', values.weight_lbs);
+    
     const loadDataToSubmit = {
       mode,
       id: activeLoadData?.id,
@@ -1000,15 +1003,22 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                   placeholder={t("loads:create_wizard.form.weight_placeholder")}
                                   value={formatWeight(field.value)}
                                   onChange={(e) => {
+                                    console.log('🔍 Weight input onChange:', e.target.value);
                                     const parsed = parseWeight(e.target.value);
+                                    console.log('🔍 Weight parsed value:', parsed);
                                     field.onChange(parsed);
+                                    console.log('🔍 Weight field value after onChange:', field.value);
                                   }}
                                   onBlur={(e) => {
+                                    console.log('🔍 Weight input onBlur:', e.target.value);
                                     // Re-format on blur to ensure consistent formatting
                                     const parsed = parseWeight(e.target.value);
+                                    console.log('🔍 Weight parsed on blur:', parsed);
                                     if (parsed) {
                                       e.target.value = formatWeight(parsed);
+                                      console.log('🔍 Weight formatted on blur:', e.target.value);
                                     }
+                                    field.onBlur();
                                   }}
                                 />
                               </FormControl>
