@@ -20,7 +20,12 @@ interface EventualDeductionsListProps {
     driver: string;
     expenseType: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
-    periodFilter?: { type: string };
+    periodFilter?: { 
+      type: string;
+      startDate?: string;
+      endDate?: string;
+      periodId?: string;
+    };
   };
   viewConfig?: {
     density: string;
@@ -55,6 +60,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
       try {
         console.log('🚀 Iniciando query de deducciones eventuales para company:', userCompany.company_id);
+        console.log('🔍 Filtros completos recibidos:', JSON.stringify(filters, null, 2));
         // Construir la consulta base
         let query = supabase
           .from('expense_instances')
@@ -103,6 +109,16 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 .gte('expense_date', periodQuery.data.period_start_date)
                 .lte('expense_date', periodQuery.data.period_end_date);
             }
+          }
+          // Si el filtro tiene fechas específicas, usarlas en lugar del período
+          if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+            console.log('📅 Usando fechas específicas del filtro de período:', {
+              startDate: filters.periodFilter.startDate,
+              endDate: filters.periodFilter.endDate
+            });
+            query = query
+              .gte('expense_date', filters.periodFilter.startDate)
+              .lte('expense_date', filters.periodFilter.endDate);
           }
           // Si es período anterior
           else if (filters.periodFilter.type === 'previous') {
@@ -187,11 +203,43 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         }
 
         // Aplicar filtros de fecha si existen (solo si no se aplicó filtro de período)
-        if (!filters?.periodFilter && filters?.dateRange?.from) {
-          query = query.gte('expense_date', convertUserDateToUTC(filters.dateRange.from));
-        }
-        if (!filters?.periodFilter && filters?.dateRange?.to) {
-          query = query.lte('expense_date', convertUserDateToUTC(filters.dateRange.to));
+        if (!filters?.periodFilter && filters?.dateRange?.from && filters?.dateRange?.to) {
+          console.log('🗓️ Aplicando filtros de fecha:', {
+            from: filters.dateRange.from,
+            to: filters.dateRange.to,
+            fromType: typeof filters.dateRange.from,
+            toType: typeof filters.dateRange.to
+          });
+
+          // Validar que las fechas sean objetos Date válidos
+          const fromDate = filters.dateRange.from instanceof Date 
+            ? filters.dateRange.from 
+            : new Date(filters.dateRange.from);
+          const toDate = filters.dateRange.to instanceof Date 
+            ? filters.dateRange.to 
+            : new Date(filters.dateRange.to);
+
+          // Solo aplicar si las fechas son válidas
+          if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
+            const startUTC = convertUserDateToUTC(fromDate);
+            const endUTC = convertUserDateToUTC(toDate);
+            
+            console.log('📅 Aplicando rango de fechas UTC:', {
+              startUTC: startUTC.split('T')[0],
+              endUTC: endUTC.split('T')[0]
+            });
+
+            query = query
+              .gte('expense_date', startUTC.split('T')[0])
+              .lte('expense_date', endUTC.split('T')[0]);
+          } else {
+            console.warn('⚠️ Fechas inválidas en filtros:', {
+              from: filters.dateRange.from,
+              to: filters.dateRange.to,
+              fromValid: !isNaN(fromDate.getTime()),
+              toValid: !isNaN(toDate.getTime())
+            });
+          }
         }
 
         // Aplicar ordenación según viewConfig
