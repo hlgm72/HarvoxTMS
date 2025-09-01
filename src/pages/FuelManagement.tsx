@@ -7,7 +7,7 @@ import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { UniversalFloatingActions } from '@/components/ui/UniversalFloatingActions';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
-import { ActiveFiltersDisplay } from '@/components/ui/ActiveFiltersDisplay';
+import { CurrentFiltersDisplay } from '@/components/fuel/CurrentFiltersDisplay';
 import { CONTEXT_CONFIGS } from '@/components/ui/filterConfigs';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { FuelExpenseDialog } from '@/components/fuel/FuelExpenseDialog';
@@ -182,16 +182,13 @@ export default function FuelManagement() {
             {/* Estadísticas */}
             <FuelStatsCards filters={queryFilters} />
 
-            {/* Filtros Activos - Siempre visible para mostrar criterios aplicados */}
-            <ActiveFiltersDisplay
+            {/* Criterios de Filtrado Aplicados */}
+            <CurrentFiltersDisplay
               filters={filters}
-              getFilterBadges={fuelFilterConfig.getActiveFilterBadges}
-              hasActiveFilters={() => true} // Siempre mostrar para transparencia
+              drivers={drivers}
+              vehicles={vehicles}
+              currentPeriod={currentPeriod}
               onClearFilters={handleClearFilters}
-              additionalData={{
-                drivers: drivers,
-                vehicles: vehicles
-              }}
             />
 
             {/* Lista de Gastos */}
