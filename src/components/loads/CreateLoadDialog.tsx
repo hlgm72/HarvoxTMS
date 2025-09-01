@@ -154,8 +154,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   });
 
   // ⭐ VALIDACIÓN DE PROTECCIÓN FINANCIERA POR CONDUCTOR
-  const currentDriverId = activeLoadData?.driver_user_id || selectedDriver?.user_id;
-  const currentPeriodId = activeLoadData?.payment_period_id;
+  const currentDriverId = useMemo(() => 
+    activeLoadData?.driver_user_id || selectedDriver?.user_id, 
+    [activeLoadData?.driver_user_id, selectedDriver?.user_id]
+  );
+  const currentPeriodId = useMemo(() => 
+    activeLoadData?.payment_period_id, 
+    [activeLoadData?.payment_period_id]
+  );
   
   const { 
     data: financialValidation, 
@@ -166,17 +172,31 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   );
 
   // Verificar si el conductor está pagado y la operación debe estar bloqueada
-  const isDriverPaid = financialValidation?.driver_is_paid === true;
-  const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
-  const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'editar esta carga');
+  const isDriverPaid = useMemo(() => 
+    financialValidation?.driver_is_paid === true, 
+    [financialValidation?.driver_is_paid]
+  );
+  const canModify = useMemo(() => 
+    !shouldDisableFinancialOperation(financialValidation, isValidationLoading), 
+    [financialValidation, isValidationLoading]
+  );
+  const protectionTooltip = useMemo(() => 
+    getFinancialOperationTooltip(financialValidation, 'editar esta carga'), 
+    [financialValidation]
+  );
 
-  console.log('🔒 CreateLoadDialog - Financial validation:', {
-    driverId: currentDriverId,
-    periodId: currentPeriodId,
-    isDriverPaid,
-    canModify,
-    validation: financialValidation
-  });
+  // Log solo cuando cambien los valores importantes para evitar spam
+  useEffect(() => {
+    if (currentDriverId || currentPeriodId) {
+      console.log('🔒 CreateLoadDialog - Financial validation updated:', {
+        driverId: currentDriverId,
+        periodId: currentPeriodId,
+        isDriverPaid,
+        canModify,
+        validation: financialValidation
+      });
+    }
+  }, [currentDriverId, currentPeriodId, isDriverPaid, canModify, financialValidation]);
 
   // Fetch company data when selectedCompany changes
   useEffect(() => {
