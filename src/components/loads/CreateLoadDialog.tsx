@@ -283,8 +283,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       }
 
       // Find and set dispatcher (only in edit mode, duplicate should start fresh)
-      if (mode === 'edit' && activeLoadData.internal_dispatcher_id && dispatchers.length > 0) {
-        const dispatcher = dispatchers.find(d => d.user_id === activeLoadData.internal_dispatcher_id);
+      if (mode === 'edit' && activeLoadData.internal_dispatcher_user_id && dispatchers.length > 0) {
+        const dispatcher = dispatchers.find(d => d.user_id === activeLoadData.internal_dispatcher_user_id);
         if (dispatcher) {
           setSelectedDispatcher(dispatcher);
         }
@@ -597,7 +597,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       client_id: values.client_id,
       client_contact_id: values.contact_id || null,
       driver_user_id: selectedDriver?.user_id || (mode === 'edit' ? activeLoadData?.driver_user_id : null),
-      internal_dispatcher_id: selectedDispatcher?.user_id || null,
+      internal_dispatcher_user_id: selectedDispatcher?.user_id || null,
       total_amount: parseFloat(values.total_amount) || 0,
       commodity: values.commodity || null,
       weight_lbs: values.weight_lbs,
@@ -612,7 +612,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
 
     console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
-    console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_id);
+    console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_user_id);
     console.log('🔍 CreateLoadDialog - Selected dispatcher object:', selectedDispatcher);
     console.log('📋 CreateLoadDialog - Current mutation state:', {
       isIdle: createLoadMutation.isIdle,
