@@ -63,10 +63,24 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
         if (periodFilter?.type === 'specific' && periodFilter.periodId) {
           targetPeriodId = periodFilter.periodId;
           // console.log('📅 Using specific period:', targetPeriodId);
-        } else if (periodFilter?.periodId) {
-          // Para períodos como 'previous', 'next' que tienen periodId específico
+        } else if (periodFilter?.periodId && !periodFilter.periodId.startsWith('calculated-')) {
+          // Para períodos reales de BD (no calculados)
           targetPeriodId = periodFilter.periodId;
           // console.log('📅 Using period with periodId:', targetPeriodId, 'type:', periodFilter.type);
+        } else if (periodFilter?.periodId?.startsWith('calculated-')) {
+          // Para períodos calculados, usar filtro de fechas en lugar de payment_period_id
+          if (periodFilter.startDate && periodFilter.endDate) {
+            targetPeriodId = 'date-filter';
+            // console.log('📅 Using date filter for calculated period:', periodFilter.startDate, 'to', periodFilter.endDate);
+          } else {
+            // Sin fechas, no se puede filtrar
+            return {
+              totalActive: 0,
+              totalInTransit: 0,
+              pendingAssignment: 0,
+              totalAmount: 0
+            };
+          }
         } else if (periodFilter?.type === 'current' || !periodFilter?.type) {
           // Obtener el período actual de la compañía
           const today = getTodayInUserTimeZone();
@@ -123,8 +137,14 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           .select('status, driver_user_id, total_amount, payment_period_id, load_number')
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`);
 
-        // Aplicar filtro de período solo si no es 'all'
-        if (targetPeriodId !== 'all') {
+        // Aplicar filtro según el tipo de período
+        if (targetPeriodId === 'date-filter' && periodFilter?.startDate && periodFilter?.endDate) {
+          // Para períodos calculados, usar filtro de fechas
+          loadsQuery = loadsQuery
+            .or(`and(pickup_date.gte.${periodFilter.startDate},pickup_date.lte.${periodFilter.endDate}),and(delivery_date.gte.${periodFilter.startDate},delivery_date.lte.${periodFilter.endDate})`);
+          // console.log('📅 Applied date filter for calculated period:', periodFilter.startDate, 'to', periodFilter.endDate);
+        } else if (targetPeriodId !== 'all' && targetPeriodId !== 'date-filter') {
+          // Para períodos de BD, usar payment_period_id
           loadsQuery = loadsQuery.eq('payment_period_id', targetPeriodId);
           // console.log('🎯 Added period filter for:', targetPeriodId);
         }

@@ -84,35 +84,77 @@ const getRelevantPeriodIds = (
   previousPeriod: any, 
   nextPeriod: any,
   allPeriods: any[]
-): string[] => {
+): { periodIds: string[], useDateFilter: boolean, startDate?: string, endDate?: string } => {
   if (!periodFilter) {
-    return [];
+    return { periodIds: [], useDateFilter: false };
   }
 
-  // USAR LA MISMA LÓGICA QUE PAYMENT REPORTS
+  // MANEJAR PERÍODOS CALCULADOS QUE NO EXISTEN EN LA BD
+  const isCalculatedPeriod = periodFilter.periodId?.startsWith('calculated-');
+  
+  if (isCalculatedPeriod && periodFilter.startDate && periodFilter.endDate) {
+    console.log('🎯 Período calculado detectado - usando filtro de fechas:', {
+      type: periodFilter.type,
+      startDate: periodFilter.startDate,
+      endDate: periodFilter.endDate
+    });
+    return {
+      periodIds: [],
+      useDateFilter: true,
+      startDate: periodFilter.startDate,
+      endDate: periodFilter.endDate
+    };
+  }
+
+  // USAR LA MISMA LÓGICA QUE PAYMENT REPORTS PARA PERÍODOS DE BD
   switch (periodFilter.type) {
     case 'current':
-      return currentPeriod ? [currentPeriod.id] : [];
+      return { 
+        periodIds: currentPeriod ? [currentPeriod.id] : [], 
+        useDateFilter: false 
+      };
     
     case 'previous':
-      return previousPeriod ? [previousPeriod.id] : [];
+      return { 
+        periodIds: previousPeriod ? [previousPeriod.id] : [], 
+        useDateFilter: false 
+      };
     
     case 'next':
-      return nextPeriod ? [nextPeriod.id] : [];
+      return { 
+        periodIds: nextPeriod ? [nextPeriod.id] : [], 
+        useDateFilter: false 
+      };
     
     case 'specific':
-      return periodFilter.periodId ? [periodFilter.periodId] : [];
+      return { 
+        periodIds: periodFilter.periodId ? [periodFilter.periodId] : [], 
+        useDateFilter: false 
+      };
     
     case 'all':
-      return allPeriods ? allPeriods.map(p => p.id) : [];
+      return { 
+        periodIds: allPeriods ? allPeriods.map(p => p.id) : [], 
+        useDateFilter: false 
+      };
     
     case 'custom':
-      // Para filtros personalizados, se pueden usar las fechas startDate/endDate directamente
-      // desde filters.periodFilter.startDate y filters.periodFilter.endDate
-      return [];
+      // Para filtros personalizados, usar las fechas directamente
+      if (periodFilter.startDate && periodFilter.endDate) {
+        return {
+          periodIds: [],
+          useDateFilter: true,
+          startDate: periodFilter.startDate,
+          endDate: periodFilter.endDate
+        };
+      }
+      return { periodIds: [], useDateFilter: false };
     
     default:
-      return currentPeriod ? [currentPeriod.id] : [];
+      return { 
+        periodIds: currentPeriod ? [currentPeriod.id] : [], 
+        useDateFilter: false 
+      };
   }
 };
 
@@ -179,7 +221,7 @@ export const useLoads = (filters?: LoadsFilters) => {
 
       try {
         // PASO 2: Obtener period_ids relevantes usando la misma lógica que PaymentReports
-        const relevantPeriodIds = getRelevantPeriodIds(
+        const periodResult = getRelevantPeriodIds(
           filters?.periodFilter,
           currentPeriod,
           previousPeriod,
@@ -189,7 +231,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         
         console.log('🎯 USE LOADS - Filtro de período completo:', {
           periodFilter: filters?.periodFilter,
-          relevantPeriodIds,
+          periodResult,
           currentPeriodId: currentPeriod?.id,
           previousPeriodId: previousPeriod?.id,
           nextPeriodId: nextPeriod?.id,
@@ -204,11 +246,19 @@ export const useLoads = (filters?: LoadsFilters) => {
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true });
 
-        // Aplicar filtro de períodos si hay alguno
-        if (relevantPeriodIds.length > 0) {
-          console.log('✅ Aplicando filtro de períodos:', relevantPeriodIds);
+        // Aplicar filtro según el tipo de resultado
+        if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
+          console.log('📅 Aplicando filtro de fechas para período calculado:', {
+            startDate: periodResult.startDate,
+            endDate: periodResult.endDate
+          });
+          // Filtrar por fechas de pickup/delivery cuando es un período calculado
+          loadsQuery = loadsQuery
+            .or(`and(pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),and(delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})`);
+        } else if (periodResult.periodIds.length > 0) {
+          console.log('✅ Aplicando filtro de períodos de BD:', periodResult.periodIds);
           // Solo incluir cargas del período específico (sin cargas sin período)
-          loadsQuery = loadsQuery.in('payment_period_id', relevantPeriodIds);
+          loadsQuery = loadsQuery.in('payment_period_id', periodResult.periodIds);
         } else if (filters?.periodFilter?.type !== 'all') {
           console.log('❌ No hay período específico - devolviendo lista vacía para:', filters?.periodFilter?.type);
           // Si no hay period IDs para tipos específicos (current, previous, next) → lista vacía
