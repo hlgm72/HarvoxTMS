@@ -630,7 +630,7 @@
       "view_details_title": "Income Details",
       "edit_title": "Edit Additional Income",
       "delete_title": "Delete additional income?",
-      "delete_description": "This action will permanently delete the income \"{description}\" for ${amount}. The driver period will be recalculated automatically."
+      "delete_description": "This action will permanently delete the income \"{{description}}\" for {{amount}}. The driver period will be recalculated automatically."
     },
     "stats": {
       "approved": "Approved",

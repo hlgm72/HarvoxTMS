@@ -625,7 +625,7 @@
       "view_details_title": "Detalles del Ingreso",
       "edit_title": "Editar Ingreso Adicional",
       "delete_title": "¿Eliminar ingreso adicional?",
-      "delete_description": "Esta acción eliminará permanentemente el ingreso \"{description}\" por ${amount}. El período del conductor será recalculado automáticamente."
+      "delete_description": "Esta acción eliminará permanentemente el ingreso \"{{description}}\" por {{amount}}. El período del conductor será recalculado automáticamente."
     },
     "stats": {
       "approved": "Aprobados",
