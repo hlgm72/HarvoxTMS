@@ -218,20 +218,30 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                    <Button
                     variant={value.type === 'previous' ? 'default' : 'ghost'}
                     className="w-full justify-start"
-                    onClick={() => {
-                      // USAR SIEMPRE PERÍODO CALCULADO si no hay período actual en BD
-                      const shouldUseCalculated = !currentPeriod;
-                      const displayPeriod = shouldUseCalculated ? calculatedPeriods?.previous : previousPeriod;
-                      
-                      if (displayPeriod) {
-                        handleOptionSelect({ 
-                          type: 'previous',
-                          periodId: shouldUseCalculated ? undefined : previousPeriod?.id, // Sin ID si es calculado
-                          startDate: displayPeriod.period_start_date,
-                          endDate: displayPeriod.period_end_date
-                        });
-                      }
-                    }}
+                     onClick={() => {
+                       // LÓGICA CONSISTENTE PARA PREVIOUS PERIOD
+                       const shouldUseCalculated = !currentPeriod;
+                       const displayPeriod = shouldUseCalculated ? calculatedPeriods?.previous : previousPeriod;
+                       
+                       if (displayPeriod) {
+                         if (!shouldUseCalculated && previousPeriod) {
+                           // Si hay período anterior en BD, usar su ID
+                           handleOptionSelect({ 
+                             type: 'previous',
+                             periodId: previousPeriod.id,
+                             startDate: previousPeriod.period_start_date,
+                             endDate: previousPeriod.period_end_date
+                           });
+                         } else {
+                           // Si solo hay período calculado, usar fechas sin ID
+                           handleOptionSelect({ 
+                             type: 'previous',
+                             startDate: displayPeriod.period_start_date,
+                             endDate: displayPeriod.period_end_date
+                           });
+                         }
+                       }
+                     }}
                     disabled={!previousPeriod && !calculatedPeriods?.previous}
                   >
                     <Clock className="h-4 w-4 mr-2" />
@@ -247,21 +257,32 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     )}
                   </Button>
 
-                  <Button
-                    variant={value.type === 'current' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    disabled={!currentPeriod && !calculatedPeriods?.current}
-                    onClick={() => {
-                      const displayPeriod = currentPeriod || calculatedPeriods?.current;
-                      if (displayPeriod) {
-                        handleOptionSelect({ 
-                          type: 'current',
-                          periodId: currentPeriod?.id, // Solo usar ID real si existe
-                          startDate: displayPeriod.period_start_date,
-                          endDate: displayPeriod.period_end_date
-                        });
-                      }
-                    }}
+                   <Button
+                     variant={value.type === 'current' ? 'default' : 'ghost'}
+                     className="w-full justify-start"
+                     disabled={!currentPeriod && !calculatedPeriods?.current}
+                     onClick={() => {
+                       const displayPeriod = currentPeriod || calculatedPeriods?.current;
+                       if (displayPeriod) {
+                         // LÓGICA CONSISTENTE CON PAYMENT REPORTS
+                         if (currentPeriod) {
+                           // Si hay período actual en BD, usar su ID
+                           handleOptionSelect({ 
+                             type: 'current',
+                             periodId: currentPeriod.id,
+                             startDate: currentPeriod.period_start_date,
+                             endDate: currentPeriod.period_end_date
+                           });
+                         } else {
+                           // Si solo hay período calculado, usar fechas sin ID
+                           handleOptionSelect({ 
+                             type: 'current',
+                             startDate: displayPeriod.period_start_date,
+                             endDate: displayPeriod.period_end_date
+                           });
+                         }
+                       }
+                     }}
                   >
                     <Clock className="h-4 w-4 mr-2" />
                     {t('periods.current')}
