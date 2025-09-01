@@ -3062,6 +3062,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_fuel_expenses_for_paid_drivers: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       archive_company_document: {
         Args: { document_id: string }
         Returns: Json
