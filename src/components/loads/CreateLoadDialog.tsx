@@ -614,6 +614,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
     console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_user_id);
     console.log('🔍 CreateLoadDialog - Selected dispatcher object:', selectedDispatcher);
+    console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
+    console.log('🔍 CreateLoadDialog - Raw form values:', values);
     console.log('📋 CreateLoadDialog - Current mutation state:', {
       isIdle: createLoadMutation.isIdle,
       isPending: createLoadMutation.isPending,

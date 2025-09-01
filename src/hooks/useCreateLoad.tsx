@@ -149,6 +149,7 @@ export const useCreateLoad = () => {
       console.log('🔍 useCreateLoad - Received data for mutation:', data);
       console.log('🔍 useCreateLoad - Dispatcher ID being sent:', data.internal_dispatcher_user_id);
       console.log('🔍 useCreateLoad - Mapped to internal_dispatcher_user_id:', data.internal_dispatcher_user_id || '');
+      console.log('🔍 useCreateLoad - Raw data object:', JSON.stringify(data, null, 2));
       
       if (!user) {
         throw new Error('Usuario no autenticado');
@@ -276,9 +277,9 @@ export const useCreateLoad = () => {
       const { data: result, error: acidError } = await supabase.rpc(
         'simple_load_operation',
         {
+          operation_type: isEdit ? 'UPDATE' : 'CREATE', // ✅ Correct parameter name and values
           load_data: loadDataForRPC,
-          stops_data: stopsData, // ✅ Pass stops as separate parameter
-          operation_mode: isEdit ? 'edit' : 'create' // ✅ Use correct parameter name
+          load_id_param: isEdit ? data.id : null // ✅ Add load_id for UPDATE operations
         }
       );
 
