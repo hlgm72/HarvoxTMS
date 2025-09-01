@@ -104,7 +104,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           return t('periods.current');
         }
       case 'previous':
-        const displayPreviousPeriod = previousPeriod || calculatedPeriods?.previous;
+        // Mostrar período calculado si no hay actual en BD
+        const shouldUseCalculatedPrev = !currentPeriod;
+        const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
         return displayPreviousPeriod 
           ? `${t('periods.previous')} (${formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date)})`
           : t('periods.previous');
@@ -213,15 +215,18 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
                   
-                  <Button
+                   <Button
                     variant={value.type === 'previous' ? 'default' : 'ghost'}
                     className="w-full justify-start"
                     onClick={() => {
-                      const displayPeriod = previousPeriod || calculatedPeriods?.previous;
+                      // USAR SIEMPRE PERÍODO CALCULADO si no hay período actual en BD
+                      const shouldUseCalculated = !currentPeriod;
+                      const displayPeriod = shouldUseCalculated ? calculatedPeriods?.previous : previousPeriod;
+                      
                       if (displayPeriod) {
                         handleOptionSelect({ 
                           type: 'previous',
-                          periodId: previousPeriod?.id, // Solo usar ID real si existe
+                          periodId: shouldUseCalculated ? undefined : previousPeriod?.id, // Sin ID si es calculado
                           startDate: displayPeriod.period_start_date,
                           endDate: displayPeriod.period_end_date
                         });
@@ -234,8 +239,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     {(previousPeriod || calculatedPeriods?.previous) && (
                       <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
                         {formatPaymentPeriodBadge(
-                          (previousPeriod || calculatedPeriods?.previous)!.period_start_date, 
-                          (previousPeriod || calculatedPeriods?.previous)!.period_end_date
+                          // Mostrar siempre el calculado si no hay actual en BD
+                          (!currentPeriod ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous)!.period_start_date, 
+                          (!currentPeriod ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous)!.period_end_date
                         )}
                       </Badge>
                     )}
