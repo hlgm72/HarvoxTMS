@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FilterX, Filter } from 'lucide-react';
 import { format } from 'date-fns';
+import { usePaymentPeriodById } from '@/hooks/usePaymentPeriodById';
 
 interface CurrentFiltersDisplayProps {
   filters: {
@@ -19,7 +20,6 @@ interface CurrentFiltersDisplayProps {
   };
   drivers: any[];
   vehicles: any[];
-  currentPeriod?: any;
   onClearFilters: () => void;
 }
 
@@ -27,28 +27,29 @@ export function CurrentFiltersDisplay({
   filters,
   drivers,
   vehicles,
-  currentPeriod,
   onClearFilters
 }: CurrentFiltersDisplayProps) {
   const { t } = useTranslation(['fuel', 'common']);
+  
+  // Obtener información del período por ID
+  const { data: periodData } = usePaymentPeriodById(filters.periodFilter?.periodId);
   
   const getFilterBadges = () => {
     const badges = [];
     
     // Período actual - siempre mostrar si hay periodId
     if (filters.periodFilter?.periodId) {
-      if (currentPeriod) {
-        const startDate = format(new Date(currentPeriod.period_start_date), 'dd MMM');
-        const endDate = format(new Date(currentPeriod.period_end_date), 'dd MMM');
+      if (periodData) {
+        const startDate = format(new Date(periodData.period_start_date), 'dd MMM');
+        const endDate = format(new Date(periodData.period_end_date), 'dd MMM yyyy');
         badges.push({ 
           key: 'period', 
           label: `Período: ${startDate} - ${endDate}` 
         });
       } else {
-        // Mostrar el ID del período si no tenemos los detalles
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter.periodId.slice(0, 8)}...` 
+          label: 'Período: Cargando...' 
         });
       }
     } else {

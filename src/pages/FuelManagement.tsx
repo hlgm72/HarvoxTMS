@@ -187,7 +187,6 @@ export default function FuelManagement() {
               filters={filters}
               drivers={drivers}
               vehicles={vehicles}
-              currentPeriod={currentPeriod}
               onClearFilters={handleClearFilters}
             />
 
