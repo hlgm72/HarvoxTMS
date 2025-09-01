@@ -12,7 +12,7 @@ export interface CreateLoadData {
   load_number: string;
   po_number?: string;
   driver_user_id: string;
-  internal_dispatcher_user_id?: string | null;
+  internal_dispatcher_id?: string | null;
   client_id?: string;
   client_contact_id?: string | null;
   total_amount: number;
@@ -147,8 +147,8 @@ export const useCreateLoad = () => {
       // Starting ACID mutation with data
       
       console.log('🔍 useCreateLoad - Received data for mutation:', data);
-      console.log('🔍 useCreateLoad - Dispatcher ID being sent:', data.internal_dispatcher_user_id);
-      console.log('🔍 useCreateLoad - Mapped to internal_dispatcher_user_id:', data.internal_dispatcher_user_id || '');
+      console.log('🔍 useCreateLoad - Dispatcher ID being sent:', data.internal_dispatcher_id);
+      console.log('🔍 useCreateLoad - Mapped to internal_dispatcher_id:', data.internal_dispatcher_id || '');
       console.log('🔍 useCreateLoad - Raw data object:', JSON.stringify(data, null, 2));
       
       if (!user) {
@@ -176,7 +176,7 @@ export const useCreateLoad = () => {
         load_number: data.load_number,
         po_number: data.po_number || '',
         driver_user_id: data.driver_user_id || '',
-        internal_dispatcher_user_id: data.internal_dispatcher_user_id || '',
+        internal_dispatcher_id: data.internal_dispatcher_id || '',
         client_id: data.client_id || '',
         client_contact_id: data.client_contact_id || '',
         total_amount: data.total_amount,
