@@ -3448,6 +3448,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      ensure_driver_period_calculation_exists: {
+        Args: { target_driver_user_id: string; target_period_id: string }
+        Returns: string
+      }
       ensure_payment_period_exists: {
         Args: { target_company_id: string; target_date: string }
         Returns: string
