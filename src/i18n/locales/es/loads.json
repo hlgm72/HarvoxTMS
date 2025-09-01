@@ -17,6 +17,7 @@
       "new_load": "Nueva Carga",
       "create_with_number": "Crear Carga #{{number}}",
       "edit_with_number": "Editar Carga #{{number}}",
+      "duplicate_with_number": "Duplicar Carga #{{number}}",
       "step": "Paso {{current}} de {{total}}"
     },
     "description": {
