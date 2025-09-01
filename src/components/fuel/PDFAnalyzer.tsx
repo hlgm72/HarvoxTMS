@@ -755,11 +755,14 @@ export function PDFAnalyzer() {
                         <div>
                           <div className="font-medium">{transaction.location_name}</div>
                           <div className="text-xs text-muted-foreground">
-                            {transaction.category}
+                          {transaction.category}
                           </div>
-                          {transaction.state && (
+                          {(transaction.city || transaction.state) && (
                             <div className="text-xs text-muted-foreground">
-                              Estado: {transaction.state}
+                              {transaction.city && transaction.state 
+                                ? `${transaction.city}, ${transaction.state}`
+                                : transaction.city || transaction.state
+                              }
                             </div>
                           )}
                         </div>
