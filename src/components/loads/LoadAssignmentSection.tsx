@@ -28,6 +28,7 @@ interface LoadAssignmentSectionProps {
   onDispatchingPercentageChange?: (value: number) => void;
   percentagesInitialized?: string | null;
   onPercentagesInitialized?: (driverId: string | null) => void;
+  mode?: 'create' | 'edit' | 'duplicate';
 }
 
 export function LoadAssignmentSection({ 
@@ -44,7 +45,8 @@ export function LoadAssignmentSection({
   onFactoringPercentageChange,
   onDispatchingPercentageChange,
   percentagesInitialized,
-  onPercentagesInitialized
+  onPercentagesInitialized,
+  mode
 }: LoadAssignmentSectionProps) {
   const { t } = useTranslation();
   const activeDrivers = drivers.filter(driver => driver.is_active);
@@ -81,18 +83,18 @@ export function LoadAssignmentSection({
     
     // Only auto-populate if:
     // 1. We have a new driver and haven't initialized percentages for this driver yet
-    // 2. There are no existing percentages (not in edit mode with existing data)
+    // 2. In edit mode: don't override existing percentages; In duplicate mode: allow override
     if (isOwnerOperator && 
         ownerOperator && 
         selectedDriver && 
         percentagesInitialized !== selectedDriver.user_id &&
-        !hasExistingPercentages && // Don't override existing percentages
+        (mode === 'duplicate' || !hasExistingPercentages) && // Allow override in duplicate mode
         onLeasingPercentageChange && 
         onFactoringPercentageChange && 
         onDispatchingPercentageChange &&
         onPercentagesInitialized) {
       
-      console.log('✅ LoadAssignmentSection - Applying Owner Operator percentages for new driver...');
+      console.log('✅ LoadAssignmentSection - Applying Owner Operator percentages for new driver...', { mode, hasExistingPercentages });
       
       // Only apply owner operator percentages when a new owner operator is selected
       if (ownerOperator.leasing_percentage !== undefined && ownerOperator.leasing_percentage !== null) {
@@ -115,12 +117,13 @@ export function LoadAssignmentSection({
     } else if (!selectedDriver) {
       // Reset when no driver is selected
       onPercentagesInitialized?.(null);
-    } else if (hasExistingPercentages) {
+    } else if (hasExistingPercentages && mode !== 'duplicate') {
       // If we have existing percentages, mark as initialized to prevent future overrides
+      // Exception: in duplicate mode, allow overrides 
       console.log('📋 LoadAssignmentSection - Preserving existing percentages in edit mode');
       onPercentagesInitialized?.(selectedDriver?.user_id || 'existing-data');
     } else {
-      console.log('❌ LoadAssignmentSection - Conditions not met for auto-population');
+      console.log('❌ LoadAssignmentSection - Conditions not met for auto-population', { mode, hasExistingPercentages, isOwnerOperator: !!ownerOperator });
     }
   }, [isOwnerOperator, ownerOperator, selectedDriver?.user_id]); // Removed callbacks from dependencies to prevent infinite loop
 

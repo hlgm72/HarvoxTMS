@@ -1093,6 +1093,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 onDispatchingPercentageChange={(value) => form.setValue("dispatching_percentage", value)}
                 percentagesInitialized={percentagesInitialized}
                 onPercentagesInitialized={setPercentagesInitialized}
+                mode={mode}
               />
             )}
 
