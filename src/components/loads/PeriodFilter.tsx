@@ -113,9 +113,8 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           return 'Current';
         }
       case 'previous':
-        // Mostrar período calculado si no hay actual en BD
-        const shouldUseCalculatedPrev = !currentPeriod;
-        const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
+        // PRIORIZAR SIEMPRE PERÍODOS DE BD SOBRE CALCULADOS
+        const displayPreviousPeriod = previousPeriod || calculatedPeriods?.previous;  
         if (displayPreviousPeriod) {
           // ✅ NUEVO FORMATO: "Previous: W34/2025 (08/18 - 08/24)"
           const periodLabel = formatDetailedPaymentPeriod(
@@ -241,50 +240,45 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
                   
                    <Button
-                    variant={value.type === 'previous' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                     onClick={() => {
-                       // LÓGICA CONSISTENTE PARA PREVIOUS PERIOD
-                       const shouldUseCalculated = !currentPeriod;
-                       const displayPeriod = shouldUseCalculated ? calculatedPeriods?.previous : previousPeriod;
-                       
-                       if (displayPeriod) {
-                         if (!shouldUseCalculated && previousPeriod) {
-                           // Si hay período anterior en BD, usar su ID
-                           handleOptionSelect({ 
-                             type: 'previous',
-                             periodId: previousPeriod.id,
-                             startDate: previousPeriod.period_start_date,
-                             endDate: previousPeriod.period_end_date
-                           });
-                         } else {
-                           // Si solo hay período calculado, usar fechas sin ID
-                           handleOptionSelect({ 
-                             type: 'previous',
-                             startDate: displayPeriod.period_start_date,
-                             endDate: displayPeriod.period_end_date
-                           });
-                         }
-                       }
-                     }}
-                    disabled={!previousPeriod && !calculatedPeriods?.previous}
-                   >
-                      <Clock className="h-4 w-4 mr-2" />
-                      {(() => {
-                        const shouldUseCalculatedPrev = !currentPeriod;
-                        const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
-                        if (displayPreviousPeriod) {
-                          const periodLabel = formatDetailedPaymentPeriod(
-                            displayPreviousPeriod.period_start_date, 
-                            displayPreviousPeriod.period_end_date, 
-                            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                          );
-                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W34/2025"
-                          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
-                          return `Previous: ${periodNumber} (${dateRange})`;
+                     variant={value.type === 'previous' ? 'default' : 'ghost'}
+                     className="w-full justify-start"
+                      onClick={() => {
+                        // USAR SIEMPRE PERÍODOS DE BD CUANDO EXISTAN
+                        if (previousPeriod) {
+                          // Si hay período anterior en BD, usar su ID y fechas
+                          handleOptionSelect({ 
+                            type: 'previous',
+                            periodId: previousPeriod.id,
+                            startDate: previousPeriod.period_start_date,
+                            endDate: previousPeriod.period_end_date
+                          });
+                        } else if (calculatedPeriods?.previous) {
+                          // Solo usar período calculado si no hay en BD
+                          handleOptionSelect({ 
+                            type: 'previous',
+                            startDate: calculatedPeriods.previous.period_start_date,
+                            endDate: calculatedPeriods.previous.period_end_date
+                          });
                         }
-                        return 'Previous';
-                      })()}
+                      }}
+                     disabled={!previousPeriod && !calculatedPeriods?.previous}
+                   >
+                       <Clock className="h-4 w-4 mr-2" />
+                       {(() => {
+                         // PRIORIZAR SIEMPRE PERÍODOS DE BD SOBRE CALCULADOS
+                         const displayPreviousPeriod = previousPeriod || calculatedPeriods?.previous;
+                         if (displayPreviousPeriod) {
+                           const periodLabel = formatDetailedPaymentPeriod(
+                             displayPreviousPeriod.period_start_date, 
+                             displayPreviousPeriod.period_end_date, 
+                             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                           );
+                           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W34/2025"
+                           const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+                           return `Previous: ${periodNumber} (${dateRange})`;
+                         }
+                         return 'Previous';
+                       })()}
                    </Button>
 
                    <Button
