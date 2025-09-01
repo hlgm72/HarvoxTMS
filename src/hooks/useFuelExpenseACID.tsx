@@ -69,6 +69,9 @@ export const useFuelExpenseACID = () => {
       queryClient.invalidateQueries({ queryKey: ['fuel-stats'] });
       queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+      // 🚨 CRÍTICO - Invalidar resúmenes de períodos para reflejar recálculos automáticos
+      queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
       
       showSuccess(
         isUpdate 

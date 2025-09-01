@@ -369,6 +369,7 @@ export const useCreateLoad = () => {
 
         // Invalidar específicamente los cálculos del período afectado
         queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+        queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
         queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
         
       } catch (error) {
