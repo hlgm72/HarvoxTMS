@@ -120,7 +120,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       case 'specific':
         const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
         return selectedPeriod 
-          ? `${formatPaymentPeriodBadge(selectedPeriod.period_start_date, selectedPeriod.period_end_date)}`
+          ? formatDetailedPaymentPeriod(
+              selectedPeriod.period_start_date, 
+              selectedPeriod.period_end_date, 
+              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+            )
           : t('periods.specific');
       case 'this_month':
       case 'last_month':
@@ -208,8 +212,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               onClick={() => setOpen(false)}
             />
             
-            {/* Dropdown content */}
-            <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-md shadow-xl z-50">
+        {/* Dropdown content con fondo sólido y z-index alto */}
+        <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-md shadow-xl z-50"
+             style={{ backgroundColor: 'white' }}>
               <div className="p-4 space-y-4">
                 {/* Opciones rápidas */}
                 <div className="space-y-2">
@@ -331,11 +336,17 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                               : 'bg-white hover:bg-gray-100'
                           }`}
                           onClick={() => {
+                            const detailedLabel = formatDetailedPaymentPeriod(
+                              period.period_start_date, 
+                              period.period_end_date, 
+                              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                            );
                             handleOptionSelect({ 
                               type: 'specific', 
                               periodId: period.id,
                               startDate: period.period_start_date,
-                              endDate: period.period_end_date
+                              endDate: period.period_end_date,
+                              label: detailedLabel
                             });
                           }}
                         >
