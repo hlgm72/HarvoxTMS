@@ -3754,6 +3754,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_driver_paid_in_period: {
+        Args: { target_driver_user_id: string; target_period_id: string }
+        Returns: boolean
+      }
+      is_financial_data_protected: {
+        Args: { target_driver_user_id: string; target_period_id: string }
+        Returns: boolean
+      }
       is_payment_period_locked: {
         Args: { period_id: string }
         Returns: boolean
