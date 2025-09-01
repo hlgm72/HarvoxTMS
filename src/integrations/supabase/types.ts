@@ -3231,6 +3231,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      cleanup_load_percentage_deductions: {
+        Args: { load_id_param: string; load_number_param: string }
+        Returns: number
+      }
       cleanup_old_recurring_expense_descriptions: {
         Args: Record<PropertyKey, never>
         Returns: Json
