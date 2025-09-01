@@ -3438,6 +3438,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      fix_missing_percentage_deductions_retroactive: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       force_assign_payment_period: {
         Args: { load_id_param: string; period_id_param: string }
         Returns: boolean
