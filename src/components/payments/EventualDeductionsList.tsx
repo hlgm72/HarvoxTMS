@@ -93,25 +93,46 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         if (filters?.periodFilter) {
           console.log('🔍 Aplicando filtro de período:', filters.periodFilter);
           
-          // Si es período específico, obtener las fechas del período
+          // ✅ CORREGIDO: Manejar períodos calculados vs reales de BD
           if (filters.periodFilter.type === 'specific' && (filters.periodFilter as any).periodId) {
-            // Obtener fechas del período específico desde la base de datos
             const periodId = (filters.periodFilter as any).periodId;
-            const periodQuery = await supabase
-              .from('company_payment_periods')
-              .select('period_start_date, period_end_date')
-              .eq('id', periodId)
-              .single();
             
-            if (periodQuery.data) {
-              console.log('📅 Filtrando por período específico:', periodQuery.data);
-              query = query
-                .gte('expense_date', periodQuery.data.period_start_date)
-                .lte('expense_date', periodQuery.data.period_end_date);
+            // Verificar si es un período calculado
+            if (periodId.startsWith('calculated-')) {
+              // Para períodos calculados, usar las fechas del filtro
+              if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+                console.log('📅 Usando fechas de período calculado:', {
+                  startDate: filters.periodFilter.startDate,
+                  endDate: filters.periodFilter.endDate
+                });
+                query = query
+                  .gte('expense_date', filters.periodFilter.startDate)
+                  .lte('expense_date', filters.periodFilter.endDate);
+              } else {
+                console.log('❌ No hay fechas disponibles para período calculado');
+                query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+              }
+            } else {
+              // Para períodos reales de BD, obtener fechas del período específico
+              const periodQuery = await supabase
+                .from('company_payment_periods')
+                .select('period_start_date, period_end_date')
+                .eq('id', periodId)
+                .single();
+              
+              if (periodQuery.data) {
+                console.log('📅 Filtrando por período específico real:', periodQuery.data);
+                query = query
+                  .gte('expense_date', periodQuery.data.period_start_date)
+                  .lte('expense_date', periodQuery.data.period_end_date);
+              } else {
+                console.log('❌ No se encontró el período específico en BD');
+                query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+              }
             }
           }
-          // Si el filtro tiene fechas específicas, usarlas en lugar del período
-          if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+          // Si el filtro tiene fechas específicas, usarlas en lugar del período (solo si no es específico)
+          else if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
             console.log('📅 Usando fechas específicas del filtro de período:', {
               startDate: filters.periodFilter.startDate,
               endDate: filters.periodFilter.endDate
