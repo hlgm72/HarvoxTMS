@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Repeat, Clock } from "lucide-react";
+import { DollarSign, Repeat, Clock, Trash2 } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
 import { EventualDeductionDialog } from "@/components/payments/EventualDeductionDialog";
+import { CleanupPeriodDialog } from "@/components/payments/CleanupPeriodDialog";
 import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
@@ -89,6 +90,15 @@ export default function Deductions() {
               <span className="hidden sm:inline">{t("deductions.eventualDeduction")}</span>
               <span className="sm:hidden">{t("deductions.eventualShort")}</span>
             </Button>
+            <CleanupPeriodDialog 
+              trigger={
+                <Button variant="destructive" size="sm" className="gap-2 text-xs md:text-sm px-2 md:px-4">
+                  <Trash2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Limpiar Período</span>
+                  <span className="sm:hidden">Limpiar</span>
+                </Button>
+              }
+            />
           </div>
         }
       />

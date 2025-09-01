@@ -3239,6 +3239,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      cleanup_period_and_orphaned_data: {
+        Args: {
+          target_company_id: string
+          week_number?: number
+          year_number?: number
+        }
+        Returns: Json
+      }
       cleanup_unnecessary_periods_created_today: {
         Args: Record<PropertyKey, never>
         Returns: Json
