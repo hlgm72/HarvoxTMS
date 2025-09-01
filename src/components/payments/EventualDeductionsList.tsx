@@ -11,6 +11,7 @@ import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2 } fr
 import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { useTranslation } from 'react-i18next';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -34,17 +35,26 @@ interface EventualDeductionsListProps {
 
 export function EventualDeductionsList({ onRefresh, filters, viewConfig }: EventualDeductionsListProps) {
   const { user } = useAuth();
+  const { userCompany } = useCompanyCache();
   const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
+  console.log('🔍 EventualDeductionsList - Filtros recibidos:', filters);
+
   // Obtener deducciones eventuales
   const { data: eventualDeductions = [], refetch } = useQuery({
-    queryKey: ['eventual-deductions', filters],
+    queryKey: ['eventual-deductions', user?.id, userCompany?.company_id, filters],
     queryFn: async () => {
+      if (!user?.id || !userCompany?.company_id) {
+        console.log('❌ No hay usuario o company_id, saltando query');
+        return [];
+      }
+
       try {
+        console.log('🚀 Iniciando query de deducciones eventuales para company:', userCompany.company_id);
         // Construir la consulta base
         let query = supabase
           .from('expense_instances')
@@ -94,15 +104,37 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 .lte('expense_date', periodQuery.data.period_end_date);
             }
           }
+          // Si es período anterior
+          else if (filters.periodFilter.type === 'previous') {
+            console.log('🔄 Buscando período anterior para empresa:', userCompany.company_id);
+            
+            const previousPeriodQuery = await supabase
+              .from('company_payment_periods')
+              .select('period_start_date, period_end_date, status, id')
+              .eq('company_id', userCompany.company_id)
+              .order('period_start_date', { ascending: false })
+              .limit(2); // Obtener los 2 más recientes
+            
+            if (previousPeriodQuery.data && previousPeriodQuery.data.length > 1) {
+              const periodData = previousPeriodQuery.data[1]; // El segundo (anterior)
+              console.log('📅 Filtrando por período anterior:', periodData);
+              query = query
+                .gte('expense_date', periodData.period_start_date)
+                .lte('expense_date', periodData.period_end_date);
+            } else {
+              console.log('❌ No se encontró período anterior');
+              query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+            }
+          }
           // Si es período actual, usar el período más reciente de la empresa
           else if (filters.periodFilter.type === 'current') {
-            console.log('🔄 Buscando período actual para empresa:', user?.user_metadata?.company_id);
+            console.log('🔄 Buscando período actual para empresa:', userCompany.company_id);
             
             // Primero buscar períodos activos, luego el más reciente
             let currentPeriodQuery = await supabase
               .from('company_payment_periods')
               .select('period_start_date, period_end_date, status, id')
-              .eq('company_id', user?.user_metadata?.company_id)
+              .eq('company_id', userCompany.company_id)
               .eq('status', 'open')
               .order('period_start_date', { ascending: false })
               .limit(1);
@@ -113,7 +145,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               currentPeriodQuery = await supabase
                 .from('company_payment_periods')
                 .select('period_start_date, period_end_date, status, id')
-                .eq('company_id', user?.user_metadata?.company_id)
+                .eq('company_id', userCompany.company_id)
                 .order('period_start_date', { ascending: false })
                 .limit(1);
             }
@@ -130,8 +162,28 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
+          // Para 'all', no aplicar filtro de período
+          else if (filters.periodFilter.type === 'all') {
+            console.log('📋 Mostrando todas las deducciones (sin filtro de período)');
+          }
         } else {
-          console.log('🔍 No se aplicó filtro de período');
+          console.log('🔍 No se aplicó filtro de período - usando período actual por defecto');
+          // Si no hay filtro de período, usar el período actual por defecto
+          const currentPeriodQuery = await supabase
+            .from('company_payment_periods')
+            .select('period_start_date, period_end_date, status, id')
+            .eq('company_id', userCompany.company_id)
+            .eq('status', 'open')
+            .order('period_start_date', { ascending: false })
+            .limit(1);
+          
+          if (currentPeriodQuery.data && currentPeriodQuery.data.length > 0) {
+            const periodData = currentPeriodQuery.data[0];
+            console.log('📅 Aplicando filtro de período actual por defecto:', periodData);
+            query = query
+              .gte('expense_date', periodData.period_start_date)
+              .lte('expense_date', periodData.period_end_date);
+          }
         }
 
         // Aplicar filtros de fecha si existen (solo si no se aplicó filtro de período)
@@ -208,7 +260,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         return [];
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !!userCompany?.company_id
   });
 
   useEffect(() => {

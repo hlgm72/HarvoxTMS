@@ -99,9 +99,10 @@ export default function Deductions() {
             status: filters.status,
             driver: filters.driverId,
             expenseType: filters.expenseTypeId,
-            dateRange: { from: new Date(), to: new Date() },
+            dateRange: { from: undefined, to: undefined }, // Remove hardcoded dates
             periodFilter: filters.periodFilter
           }}
+          viewConfig={viewConfig}
         />
       </div>
 
