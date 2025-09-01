@@ -44,7 +44,12 @@ export default function FuelManagement() {
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
-    periodFilter: { type: 'current' as const, periodId: undefined as string | undefined }
+    periodFilter: { 
+      type: 'current' as 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom', 
+      periodId: undefined as string | undefined,
+      startDate: undefined as string | undefined,
+      endDate: undefined as string | undefined
+    }
   });
 
   // Actualizar periodId cuando se carga el período actual
@@ -115,13 +120,58 @@ export default function FuelManagement() {
     driverId: filters.driverId !== 'all' ? filters.driverId : undefined,
     status: filters.status !== 'all' ? filters.status : undefined,
     vehicleId: filters.vehicleId !== 'all' ? filters.vehicleId : undefined,
-    // Usar período seleccionado o actual por defecto
-    periodId: filters.periodFilter?.periodId || currentPeriod?.id,
-    // Para períodos calculados, agregar fechas de rango
-    ...(filters.periodFilter?.type === 'current' && !filters.periodFilter?.periodId && calculatedPeriods?.current ? {
-      startDate: calculatedPeriods.current.period_start_date,
-      endDate: calculatedPeriods.current.period_end_date
-    } : {})
+    // ✅ CORREGIDO: Detectar períodos calculados y usar fechas apropiadas
+    ...((() => {
+      const periodId = filters.periodFilter?.periodId || currentPeriod?.id;
+      
+      // Si es un período calculado, usar fechas del filtro o calculadas
+      if (periodId?.startsWith('calculated-')) {
+        console.log('🔍 Período calculado detectado en queryFilters:', periodId);
+        
+        // Determinar qué período calculado usar basado en el type
+        let targetPeriod;
+        if (filters.periodFilter.type === 'current') {
+          targetPeriod = calculatedPeriods?.current;
+        } else if (filters.periodFilter.type === 'previous') {
+          targetPeriod = calculatedPeriods?.previous;
+        }
+        
+        return {
+          periodId: undefined, // No pasar periodId calculado
+          startDate: filters.periodFilter.startDate || targetPeriod?.period_start_date,
+          endDate: filters.periodFilter.endDate || targetPeriod?.period_end_date
+        };
+      }
+      
+      // Si es período real de BD, usarlo
+      if (periodId && !periodId.startsWith('calculated-')) {
+        return { periodId };
+      }
+      
+      // Si no hay período específico pero hay tipo, usar fechas calculadas
+      if (filters.periodFilter.type === 'current' && calculatedPeriods?.current) {
+        return {
+          periodId: undefined,
+          startDate: calculatedPeriods.current.period_start_date,
+          endDate: calculatedPeriods.current.period_end_date
+        };
+      }
+      
+      if (filters.periodFilter.type === 'previous' && calculatedPeriods?.previous) {
+        return {
+          periodId: undefined,
+          startDate: calculatedPeriods.previous.period_start_date,
+          endDate: calculatedPeriods.previous.period_end_date
+        };
+      }
+      
+      // Por defecto, usar período actual calculado
+      return calculatedPeriods?.current ? {
+        periodId: undefined,
+        startDate: calculatedPeriods.current.period_start_date,
+        endDate: calculatedPeriods.current.period_end_date
+      } : {};
+    })())
   };
 
   console.log('🔍 Query filters aplicados:', queryFilters);
