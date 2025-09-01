@@ -176,7 +176,7 @@ export const useCreateLoad = () => {
         load_number: data.load_number,
         po_number: data.po_number || '',
         driver_user_id: data.driver_user_id || '',
-        internal_dispatcher_id: data.internal_dispatcher_id || '',
+        internal_dispatcher_id: data.internal_dispatcher_id || null,
         client_id: data.client_id || '',
         client_contact_id: data.client_contact_id || '',
         total_amount: data.total_amount,
@@ -190,6 +190,7 @@ export const useCreateLoad = () => {
       };
 
       console.log('🔍 useCreateLoad - Final loadData being sent to RPC:', loadData);
+      console.log('🔍 useCreateLoad - Dispatcher in loadData:', loadData.internal_dispatcher_id);
       
       // Prepare stops data
       const stopsData = (data.stops || []).map(stop => ({

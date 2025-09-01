@@ -613,6 +613,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
     console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
     console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_id);
+    console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
+    console.log('🔍 CreateLoadDialog - Full selected dispatcher:', selectedDispatcher);
+    console.log('🔍 CreateLoadDialog - Full load data to submit:', JSON.stringify(loadDataToSubmit, null, 2));
     console.log('🔍 CreateLoadDialog - Selected dispatcher object:', selectedDispatcher);
     console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
     console.log('🔍 CreateLoadDialog - Raw form values:', values);
