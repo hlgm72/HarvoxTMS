@@ -106,8 +106,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             displayCurrentPeriod.period_end_date, 
             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
           );
+          console.log('🔍 PeriodFilter Current - formatDetailedPaymentPeriod result:', { periodLabel });
           // Extraer solo la parte del número de semana/mes y reemplazar "Week" con "W"
           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W35/2025" o "AGO/2025"
+          console.log('🔍 PeriodFilter Current - periodNumber after replace:', { periodNumber });
           const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
           return `Current: ${periodNumber} (${dateRange})`;
         } else {
@@ -141,7 +143,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             displayPreviousPeriod.period_end_date, 
             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
           );
+          console.log('🔍 PeriodFilter Previous - formatDetailedPaymentPeriod result:', { periodLabel });
           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          console.log('🔍 PeriodFilter Previous - periodNumber after replace:', { periodNumber });
           const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
           return `Previous: ${periodNumber} (${dateRange})`;
         } else {
