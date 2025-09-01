@@ -99,7 +99,8 @@ export default function Deductions() {
             status: filters.status,
             driver: filters.driverId,
             expenseType: filters.expenseTypeId,
-            dateRange: { from: new Date(), to: new Date() }
+            dateRange: { from: new Date(), to: new Date() },
+            periodFilter: filters.periodFilter
           }}
         />
       </div>

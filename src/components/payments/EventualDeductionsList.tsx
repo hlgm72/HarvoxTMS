@@ -19,6 +19,7 @@ interface EventualDeductionsListProps {
     driver: string;
     expenseType: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
+    periodFilter?: { type: string };
   };
   viewConfig?: {
     density: string;
@@ -67,11 +68,51 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           query = query.eq('expense_type_id', filters.expenseType);
         }
 
-        // Aplicar filtros de fecha si existen
-        if (filters?.dateRange?.from) {
+        // Aplicar filtros de conductor
+        if (filters?.driver && filters.driver !== 'all') {
+          query = query.eq('user_id', filters.driver);
+        }
+
+        // Aplicar filtro de período si está especificado
+        if (filters?.periodFilter) {
+          // Si es período específico, obtener las fechas del período
+          if (filters.periodFilter.type === 'specific' && (filters.periodFilter as any).periodId) {
+            // Obtener fechas del período específico desde la base de datos
+            const periodId = (filters.periodFilter as any).periodId;
+            const periodQuery = await supabase
+              .from('company_payment_periods')
+              .select('period_start_date, period_end_date')
+              .eq('id', periodId)
+              .single();
+            
+            if (periodQuery.data) {
+              query = query
+                .gte('expense_date', periodQuery.data.period_start_date)
+                .lte('expense_date', periodQuery.data.period_end_date);
+            }
+          }
+          // Si es período actual, usar el período activo de la empresa
+          else if (filters.periodFilter.type === 'current') {
+            const currentPeriodQuery = await supabase
+              .from('company_payment_periods')
+              .select('period_start_date, period_end_date')
+              .eq('company_id', user?.user_metadata?.company_id)
+              .eq('status', 'active')
+              .single();
+            
+            if (currentPeriodQuery.data) {
+              query = query
+                .gte('expense_date', currentPeriodQuery.data.period_start_date)
+                .lte('expense_date', currentPeriodQuery.data.period_end_date);
+            }
+          }
+        }
+
+        // Aplicar filtros de fecha si existen (solo si no se aplicó filtro de período)
+        if (!filters?.periodFilter && filters?.dateRange?.from) {
           query = query.gte('expense_date', convertUserDateToUTC(filters.dateRange.from));
         }
-        if (filters?.dateRange?.to) {
+        if (!filters?.periodFilter && filters?.dateRange?.to) {
           query = query.lte('expense_date', convertUserDateToUTC(filters.dateRange.to));
         }
 
@@ -129,13 +170,6 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             };
           })
         );
-
-        // Aplicar filtro de conductor si está especificado
-        if (filters?.driver && filters.driver !== 'all') {
-          return enrichedData.filter(expense => 
-            expense.user_id === filters.driver
-          );
-        }
 
         return enrichedData;
       } catch (error) {

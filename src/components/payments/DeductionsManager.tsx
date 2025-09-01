@@ -25,6 +25,7 @@ interface DeductionsManagerProps {
     expenseType: string;
     userRole?: string; // Nuevo campo para filtrar por tipo de usuario
     dateRange: { from: Date | undefined; to: Date | undefined };
+    periodFilter?: { type: string };
   };
   viewConfig?: {
     density: string;
