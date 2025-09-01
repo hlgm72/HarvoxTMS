@@ -743,8 +743,11 @@ export function PDFAnalyzer() {
                           <div className="font-medium">
                             {transaction.payment_period_dates || 'Período no generado'}
                           </div>
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-sm text-muted-foreground flex items-center gap-2">
                             {t('analyzer.transaction.transaction_date')} {transaction.date}
+                            <Badge variant="secondary" className="text-xs">
+                              {transaction.category}
+                            </Badge>
                           </div>
                         </div>
                       </div>
@@ -754,9 +757,6 @@ export function PDFAnalyzer() {
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">{transaction.location_name}</div>
-                          <div className="text-xs text-muted-foreground">
-                          {transaction.category}
-                          </div>
                           {(transaction.city || transaction.state) && (
                             <div className="text-xs text-muted-foreground">
                               {transaction.city && transaction.state 
