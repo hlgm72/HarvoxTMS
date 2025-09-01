@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCompanyPaymentPeriods } from "@/hooks/useCompanyPaymentPeriods";
 import { useAllPaymentPeriodsSummary } from "@/hooks/usePaymentPeriodSummary";
-import { useEmergencyPeriodCleanup } from "@/hooks/useEmergencyPeriodCleanup";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Calendar, DollarSign, Users, Plus, TrendingUp, Fuel, Receipt, Trash2 } from "lucide-react";
+import { AlertTriangle, Calendar, DollarSign, Users, Plus, TrendingUp, Fuel, Receipt } from "lucide-react";
 import { formatPaymentPeriod, formatCurrency } from '@/lib/dateFormatting';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateSpecialPeriodDialog } from "./CreateSpecialPeriodDialog";
@@ -26,8 +25,6 @@ export function PaymentPeriodsManager() {
   } = useCompanyPaymentPeriods(user?.user_metadata?.company_id);
 
   const { data: periodsSummary = [] } = useAllPaymentPeriodsSummary(user?.user_metadata?.company_id);
-  
-  const emergencyCleanup = useEmergencyPeriodCleanup();
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -82,40 +79,29 @@ export function PaymentPeriodsManager() {
           <h2 className="text-2xl font-bold tracking-tight">{t('period.title')}</h2>
           <p className="text-muted-foreground">{t('period.subtitle')}</p>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            variant="destructive" 
-            size="sm"
-            onClick={() => emergencyCleanup.mutate()}
-            disabled={emergencyCleanup.isPending}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            {emergencyCleanup.isPending ? 'Limpiando...' : 'Limpiar Períodos Problemáticos'}
-          </Button>
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('period.special_period')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('period.create_special_title')}</DialogTitle>
-                <DialogDescription>
-                  {t('period.create_special_description')}
-                </DialogDescription>
-              </DialogHeader>
-              <CreateSpecialPeriodDialog 
-                onClose={() => setShowCreateDialog(false)}
-                onSuccess={() => {
-                  setShowCreateDialog(false);
-                  refetch();
-                }}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('period.special_period')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t('period.create_special_title')}</DialogTitle>
+              <DialogDescription>
+                {t('period.create_special_description')}
+              </DialogDescription>
+            </DialogHeader>
+            <CreateSpecialPeriodDialog 
+              onClose={() => setShowCreateDialog(false)}
+              onSuccess={() => {
+                setShowCreateDialog(false);
+                refetch();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats Cards */}
