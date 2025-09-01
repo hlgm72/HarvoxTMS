@@ -176,7 +176,7 @@ export const useCreateLoad = () => {
         client_contact_id: data.client_contact_id || '',
         total_amount: data.total_amount,
         commodity: data.commodity || '',
-        weight: toNumber(data.weight_lbs),
+        weight_lbs: toNumber(data.weight_lbs),
         notes: data.notes || '',
         customer_name: data.customer_name || '',
         factoring_percentage: toNumber(data.factoring_percentage),
