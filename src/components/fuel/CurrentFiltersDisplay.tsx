@@ -42,29 +42,27 @@ export function CurrentFiltersDisplay({
     const badges = [];
     
     // Período actual - mostrar período real o calculado
-    if (filters.periodFilter?.periodId) {
-      if (periodData) {
-        // Período real de BD
-        const startDate = format(new Date(periodData.period_start_date + 'T00:00:00'), 'dd MMM');
-        const endDate = format(new Date(periodData.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
-        badges.push({ 
-          key: 'period', 
-          label: `Período: ${startDate} - ${endDate}` 
-        });
-      } else if (filters.periodFilter.type === 'current' && calculatedPeriods?.current) {
-        // Período calculado para período actual
-        const startDate = format(new Date(calculatedPeriods.current.period_start_date + 'T00:00:00'), 'dd MMM');
-        const endDate = format(new Date(calculatedPeriods.current.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
-        badges.push({ 
-          key: 'period', 
-          label: `Período: ${startDate} - ${endDate} (calculado)` 
-        });
-      } else {
-        badges.push({ 
-          key: 'period', 
-          label: 'Período: Cargando...' 
-        });
-      }
+    if (filters.periodFilter?.periodId && periodData) {
+      // Período real de BD
+      const startDate = format(new Date(periodData.period_start_date + 'T00:00:00'), 'dd MMM');
+      const endDate = format(new Date(periodData.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
+      badges.push({ 
+        key: 'period', 
+        label: `Período: ${startDate} - ${endDate}` 
+      });
+    } else if (filters.periodFilter?.type === 'current' && calculatedPeriods?.current) {
+      // Período calculado para período actual (cuando no hay período real en BD)
+      const startDate = format(new Date(calculatedPeriods.current.period_start_date + 'T00:00:00'), 'dd MMM');
+      const endDate = format(new Date(calculatedPeriods.current.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
+      badges.push({ 
+        key: 'period', 
+        label: `Período: ${startDate} - ${endDate}` 
+      });
+    } else if (filters.periodFilter?.periodId) {
+      badges.push({ 
+        key: 'period', 
+        label: 'Período: Cargando...' 
+      });
     } else {
       badges.push({ key: 'period', label: 'Período: No seleccionado' });
     }
