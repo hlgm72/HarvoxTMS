@@ -135,26 +135,54 @@ export function FuelExpenseDialog({
   const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
   const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'crear/editar este gasto de combustible');
 
-  // ATM formatters for monetary fields
-  const grossAmountATM = useATMInput({
-    initialValue: form.watch('gross_amount') || 0,
-    onValueChange: (value) => form.setValue('gross_amount', value)
-  });
+  // ATM formatters for monetary fields - memoized to prevent infinite loops
+  const grossAmountATM = React.useMemo(() => {
+    return useATMInput({
+      initialValue: form.getValues('gross_amount') || 0,
+      onValueChange: (value) => {
+        const currentValue = form.getValues('gross_amount');
+        if (currentValue !== value) {
+          form.setValue('gross_amount', value);
+        }
+      }
+    });
+  }, [form]);
 
-  const discountAmountATM = useATMInput({
-    initialValue: form.watch('discount_amount') || 0,
-    onValueChange: (value) => form.setValue('discount_amount', value)
-  });
+  const discountAmountATM = React.useMemo(() => {
+    return useATMInput({
+      initialValue: form.getValues('discount_amount') || 0,
+      onValueChange: (value) => {
+        const currentValue = form.getValues('discount_amount');
+        if (currentValue !== value) {
+          form.setValue('discount_amount', value);
+        }
+      }
+    });
+  }, [form]);
 
-  const feesATM = useATMInput({
-    initialValue: form.watch('fees') || 0,
-    onValueChange: (value) => form.setValue('fees', value)
-  });
+  const feesATM = React.useMemo(() => {
+    return useATMInput({
+      initialValue: form.getValues('fees') || 0,
+      onValueChange: (value) => {
+        const currentValue = form.getValues('fees');
+        if (currentValue !== value) {
+          form.setValue('fees', value);
+        }
+      }
+    });
+  }, [form]);
 
-  const totalAmountATM = useATMInput({
-    initialValue: form.watch('total_amount') || 0,
-    onValueChange: (value) => form.setValue('total_amount', value)
-  });
+  const totalAmountATM = React.useMemo(() => {
+    return useATMInput({
+      initialValue: form.getValues('total_amount') || 0,
+      onValueChange: (value) => {
+        const currentValue = form.getValues('total_amount');
+        if (currentValue !== value) {
+          form.setValue('total_amount', value);
+        }
+      }
+    });
+  }, [form]);
 
   // Populate form with expense data for edit mode
   React.useEffect(() => {
@@ -216,7 +244,7 @@ export function FuelExpenseDialog({
       feesATM.setValue(0);
       totalAmountATM.setValue(0);
     }
-  }, [expense, form, isEditMode, grossAmountATM, discountAmountATM, feesATM, totalAmountATM]);
+  }, [expense, form, isEditMode]);
 
   // Get available cards for selected driver
   const selectedDriverId = form.watch('driver_user_id');
@@ -373,10 +401,14 @@ export function FuelExpenseDialog({
     if (!isEditMode && gallons && pricePerGallon) {
       const gross = gallons * pricePerGallon;
       const roundedGross = Number(gross.toFixed(2));
-      form.setValue('gross_amount', roundedGross);
-      grossAmountATM.setValue(roundedGross);
+      const currentGross = form.getValues('gross_amount');
+      
+      if (currentGross !== roundedGross) {
+        form.setValue('gross_amount', roundedGross);
+        grossAmountATM.setValue(roundedGross);
+      }
     }
-  }, [gallons, pricePerGallon, isEditMode]);
+  }, [gallons, pricePerGallon, isEditMode, form]);
 
   // Auto-calculate total amount (gross - discounts + fees) - only for create mode
   React.useEffect(() => {
@@ -384,22 +416,31 @@ export function FuelExpenseDialog({
       const discount = Number(discountAmount) || 0;
       const fee = Number(fees) || 0;
       const total = Number(grossAmount) - discount + fee;
+      
       if (!isNaN(total) && typeof total === 'number') {
         const roundedTotal = Number(total.toFixed(2));
-        form.setValue('total_amount', roundedTotal);
-        totalAmountATM.setValue(roundedTotal);
+        const currentTotal = form.getValues('total_amount');
+        
+        if (currentTotal !== roundedTotal) {
+          form.setValue('total_amount', roundedTotal);
+          totalAmountATM.setValue(roundedTotal);
+        }
       }
     }
-  }, [grossAmount, discountAmount, fees, isEditMode]);
+  }, [grossAmount, discountAmount, fees, isEditMode, form]);
 
   // Auto-calculate total for edit mode (simple calculation)
   React.useEffect(() => {
     if (isEditMode && gallons && pricePerGallon) {
       const total = gallons * pricePerGallon;
       const roundedTotal = Number(total.toFixed(2));
-      form.setValue('total_amount', roundedTotal);
+      const currentTotal = form.getValues('total_amount');
+      
+      if (currentTotal !== roundedTotal) {
+        form.setValue('total_amount', roundedTotal);
+      }
     }
-  }, [gallons, pricePerGallon, isEditMode]);
+  }, [gallons, pricePerGallon, isEditMode, form]);
 
   // Auto-select payment period based on transaction date (solo buscar, no crear)
   const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
@@ -416,11 +457,17 @@ export function FuelExpenseDialog({
       });
 
       if (matchingPeriod) {
-        form.setValue('payment_period_id', matchingPeriod.id);
+        const currentPeriodId = form.getValues('payment_period_id');
+        if (currentPeriodId !== matchingPeriod.id) {
+          form.setValue('payment_period_id', matchingPeriod.id);
+        }
         setPredictedPeriod(null);
       } else {
         // Si no hay período, limpiar la selección y calcular el período que se crearía
-        form.setValue('payment_period_id', '');
+        const currentPeriodId = form.getValues('payment_period_id');
+        if (currentPeriodId !== '') {
+          form.setValue('payment_period_id', '');
+        }
         
         // Calcular las fechas del período que se generaría
         if (userCompany?.company_id) {
@@ -429,7 +476,7 @@ export function FuelExpenseDialog({
         }
       }
     }
-  }, [transactionDate, paymentPeriods, userCompany, isEditMode]);
+  }, [transactionDate, paymentPeriods, userCompany, isEditMode, form]);
 
   if (isEditMode && !expenseId) return null;
 
