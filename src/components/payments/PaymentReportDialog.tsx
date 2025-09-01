@@ -400,6 +400,8 @@ export function PaymentReportDialog({
       fuelExpenses: fuelExpenses.map(expense => ({
         transaction_date: expense.transaction_date,
         station_name: expense.station_name || 'Estación',
+        station_city: expense.station_city,
+        station_state: expense.station_state,
         gallons_purchased: expense.gallons_purchased || 0,
         total_amount: expense.total_amount || 0,
         price_per_gallon: expense.price_per_gallon || 0
