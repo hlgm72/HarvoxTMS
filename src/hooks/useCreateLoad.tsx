@@ -148,6 +148,7 @@ export const useCreateLoad = () => {
       
       console.log('🔍 useCreateLoad - Received data for mutation:', data);
       console.log('🔍 useCreateLoad - Dispatcher ID being sent:', data.internal_dispatcher_id);
+      console.log('🔍 useCreateLoad - Mapped to internal_dispatcher_user_id:', data.internal_dispatcher_id || '');
       
       if (!user) {
         throw new Error('Usuario no autenticado');
