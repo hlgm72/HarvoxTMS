@@ -764,6 +764,7 @@
       "detailed_reports": "Reportes detallados"
     },
     "stats": {
+      "active_loads": "Cargas Activas",
       "loads_created": "Cargas Creadas",
       "miles_driven": "Millas Conducidas",
       "total_revenue": "Ingreso Total",

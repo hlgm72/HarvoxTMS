@@ -764,6 +764,7 @@
       "detailed_reports": "Detailed reports"
     },
     "stats": {
+      "active_loads": "Active Loads",
       "loads_created": "Loads Created",
       "miles_driven": "Miles Driven",
       "total_revenue": "Total Revenue",
