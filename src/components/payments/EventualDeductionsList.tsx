@@ -163,26 +163,31 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
-          // Si es período actual, usar el período más reciente de la empresa
+          // Si es período actual, buscar el período que incluya la fecha actual
           else if (filters.periodFilter.type === 'current') {
             console.log('🔄 Buscando período actual para empresa:', userCompany.company_id);
             
-            // Primero buscar períodos activos, luego el más reciente
+            const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+            console.log('📅 Fecha actual para filtro:', currentDate);
+            
+            // Buscar período que incluya la fecha actual
             let currentPeriodQuery = await supabase
               .from('company_payment_periods')
               .select('period_start_date, period_end_date, status, id')
               .eq('company_id', userCompany.company_id)
-              .eq('status', 'open')
-              .order('period_start_date', { ascending: false })
+              .lte('period_start_date', currentDate)
+              .gte('period_end_date', currentDate)
+              .in('status', ['open', 'processing'])
               .limit(1);
             
-            // Si no hay períodos abiertos, buscar el más reciente
+            // Si no hay período que incluya la fecha actual, buscar el más reciente abierto
             if (!currentPeriodQuery.data || currentPeriodQuery.data.length === 0) {
-              console.log('⚠️ No se encontraron períodos abiertos, buscando el más reciente');
+              console.log('⚠️ No se encontró período que incluya la fecha actual, buscando el más reciente abierto');
               currentPeriodQuery = await supabase
                 .from('company_payment_periods')
                 .select('period_start_date, period_end_date, status, id')
                 .eq('company_id', userCompany.company_id)
+                .eq('status', 'open')
                 .order('period_start_date', { ascending: false })
                 .limit(1);
             }
