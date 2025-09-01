@@ -1136,20 +1136,36 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
               gap: 8px;
             }
             .download-btn {
-              background: #3b82f6;
-              color: white;
+              background: hsl(var(--primary));
+              color: hsl(var(--primary-foreground));
               border: none;
-              padding: 6px 12px;
+              padding: 8px 12px;
               border-radius: 6px;
               cursor: pointer;
-              font-size: 13px;
-              display: flex;
+              font-size: 14px;
+              font-weight: 500;
+              display: inline-flex;
               align-items: center;
-              gap: 6px;
-              transition: background-color 0.2s;
+              justify-content: center;
+              gap: 8px;
+              transition: all 0.2s ease-in-out;
+              white-space: nowrap;
+              height: 36px;
+              min-width: 120px;
+              box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             }
             .download-btn:hover {
-              background: #2563eb;
+              background: hsl(var(--primary));
+              opacity: 0.9;
+              box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            }
+            .download-btn:active {
+              scale: 0.98;
+            }
+            .download-icon {
+              width: 16px;
+              height: 16px;
+              stroke-width: 2;
             }
             .pdf-container {
               height: 100vh;
@@ -1254,8 +1270,10 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
               <span>${fileName.replace('.pdf', '')}</span>
             </div>
             <button class="download-btn" onclick="downloadPDF()" title="Descargar PDF">
-              <span>📥</span>
-              <span>Descargar</span>
+              <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              <span>Descargar PDF</span>
             </button>
           </div>
           <div class="pdf-container">
