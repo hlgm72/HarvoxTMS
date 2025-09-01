@@ -20,7 +20,6 @@ export function usePaymentPeriodById(periodId?: string) {
         throw error;
       }
       
-      console.log('✅ Período obtenido:', data);
       return data;
     },
     enabled: !!periodId

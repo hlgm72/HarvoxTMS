@@ -92,10 +92,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const getFilterLabel = () => {
     switch (value.type) {
       case 'current':
+        // SIEMPRE usar el período real de la BD, no fechas calculadas
         if (currentPeriod) {
           return `${t('periods.current')} (${formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)})`;
-        } else if (currentPeriodDates) {
-          return `${t('periods.current')} (${formatPaymentPeriodBadge(currentPeriodDates.startDate, currentPeriodDates.endDate)})`;
         } else {
           return t('periods.current');
         }
@@ -147,68 +146,8 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const processingPeriods = allPeriods.filter(p => p.status === 'processing');
   const otherPeriods = allPeriods.filter(p => !['open', 'processing'].includes(p.status));
 
-  // Calcular fechas del período actual basándose en la frecuencia de pago predeterminada
-  const getCurrentPeriodDates = () => {
-    // Verificar si companyData existe y acceder correctamente al default_payment_frequency
-    const company = Array.isArray(companyData) ? companyData[0] : companyData;
-    if (!company?.default_payment_frequency) return null;
-    
-    const today = new Date();
-    const currentDate = getTodayInUserTimeZone();
-    
-    switch (company.default_payment_frequency) {
-      case 'weekly': {
-        // Obtener el domingo de la semana actual (inicio de semana)
-        const dayOfWeek = today.getDay(); // 0 = domingo
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - dayOfWeek);
-        
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        
-        return {
-          startDate: formatDateInUserTimeZone(startOfWeek),
-          endDate: formatDateInUserTimeZone(endOfWeek)
-        };
-      }
-      case 'bi-weekly': {
-        // Para bi-semanal, necesitamos determinar si estamos en semana par o impar
-        const yearStart = new Date(today.getFullYear(), 0, 1);
-        const weekNumber = Math.ceil(((today.getTime() - yearStart.getTime()) / (24 * 60 * 60 * 1000) + yearStart.getDay() + 1) / 7);
-        const isEvenWeek = weekNumber % 2 === 0;
-        
-        const dayOfWeek = today.getDay();
-        let periodStart = new Date(today);
-        periodStart.setDate(today.getDate() - dayOfWeek);
-        
-        if (isEvenWeek) {
-          // Si estamos en semana par, el período comenzó la semana pasada
-          periodStart.setDate(periodStart.getDate() - 7);
-        }
-        
-        const periodEnd = new Date(periodStart);
-        periodEnd.setDate(periodStart.getDate() + 13); // 14 días - 1
-        
-        return {
-          startDate: formatDateInUserTimeZone(periodStart),
-          endDate: formatDateInUserTimeZone(periodEnd)
-        };
-      }
-      case 'monthly': {
-        const startOfCurrentMonth = startOfMonth(today);
-        const endOfCurrentMonth = endOfMonth(today);
-        
-        return {
-          startDate: formatDateInUserTimeZone(startOfCurrentMonth),
-          endDate: formatDateInUserTimeZone(endOfCurrentMonth)
-        };
-      }
-      default:
-        return null;
-    }
-  };
-
-  const currentPeriodDates = getCurrentPeriodDates();
+  // ❌ REMOVIDO: No usar fechas calculadas, siempre usar períodos de BD
+  // El período actual SIEMPRE debe venir de la base de datos
 
   const clearFilter = () => {
     onChange({ type: 'current' });
@@ -294,6 +233,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   <Button
                     variant={value.type === 'current' ? 'default' : 'ghost'}
                     className="w-full justify-start"
+                    disabled={!currentPeriod}
                     onClick={() => {
                       if (currentPeriod) {
                         handleOptionSelect({ 
@@ -302,19 +242,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           startDate: currentPeriod.period_start_date,
                           endDate: currentPeriod.period_end_date
                         });
-                      } else {
-                        handleOptionSelect({ type: 'current' });
                       }
                     }}
                   >
                     <Clock className="h-4 w-4 mr-2" />
                     {t('periods.current')}
-                    {(currentPeriod || currentPeriodDates) && (
+                    {currentPeriod && (
                       <Badge variant="outline" className="ml-auto text-[8px] md:text-[10px] bg-white/90 text-slate-700 border-slate-300">
-                        {currentPeriod 
-                          ? formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)
-                          : currentPeriodDates && formatPaymentPeriodBadge(currentPeriodDates.startDate, currentPeriodDates.endDate)
-                        }
+                        {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
                       </Badge>
                     )}
                   </Button>

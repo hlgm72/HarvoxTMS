@@ -45,11 +45,11 @@ export default function FuelManagement() {
     periodFilter: { type: 'current' as const, periodId: undefined as string | undefined }
   });
 
-  // Actualizar periodId cuando se carga el período actual o usar el más reciente como fallback
+  // Actualizar periodId cuando se carga el período actual
   useEffect(() => {
     if (filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
       if (currentPeriod) {
-        // Si hay período actual, usarlo
+        console.log('✅ Estableciendo período actual desde BD:', currentPeriod);
         setFilters(prev => ({
           ...prev,
           periodFilter: {
@@ -57,20 +57,11 @@ export default function FuelManagement() {
             periodId: currentPeriod.id
           }
         }));
-      } else if (periods && periods.length > 0) {
-        // Si no hay período actual, usar el más reciente como fallback
-        const mostRecentPeriod = periods[0]; // Los períodos vienen ordenados por fecha desc
-        console.log('⚠️ No hay período actual, usando período más reciente como fallback:', mostRecentPeriod);
-        setFilters(prev => ({
-          ...prev,
-          periodFilter: {
-            ...prev.periodFilter,
-            periodId: mostRecentPeriod.id
-          }
-        }));
+      } else {
+        console.log('⚠️ No hay período actual activo en BD');
       }
     }
-  }, [currentPeriod, periods, filters.periodFilter.type, filters.periodFilter.periodId]);
+  }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
 
   console.log('🔍 Filtros activos en Fuel Management:', filters);
   console.log('📅 Período actual cargado:', currentPeriod);
