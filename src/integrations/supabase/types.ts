@@ -3432,6 +3432,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      ensure_critical_triggers_exist: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       ensure_payment_period_exists: {
         Args: { target_company_id: string; target_date: string }
         Returns: string
