@@ -99,7 +99,7 @@
           "save_changes": "Guardar Cambios"
         },
         "date_error": "Error en la fecha seleccionada"
-      },
+       },
       "assignment": {
         "title": "Asignación",
         "description": "Conductor y dispatcher",
