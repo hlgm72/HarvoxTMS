@@ -233,7 +233,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             />
             
         {/* Dropdown content con fondo sólido y z-index alto */}
-        <div className="absolute top-full left-0 mt-1 w-96 bg-white border border-gray-200 rounded-md shadow-xl z-50"
+        <div className="absolute top-full left-0 mt-1 w-[22rem] bg-white border border-gray-200 rounded-md shadow-xl z-50"
              style={{ backgroundColor: 'white' }}>
               <div className="p-4 space-y-4">
                 {/* Opciones rápidas */}
