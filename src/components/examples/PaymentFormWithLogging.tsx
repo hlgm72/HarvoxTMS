@@ -104,7 +104,7 @@ export function PaymentFormWithLogging() {
         processingTime: performance.end('payment_submission', timer)
       });
 
-      toast.success('Payment created successfully!');
+      toast.success('Pago creado exitosamente!');
 
     } catch (error) {
       performance.end('payment_submission', timer);
@@ -121,7 +121,7 @@ export function PaymentFormWithLogging() {
         timestamp: new Date().toISOString()
       });
 
-      toast.error('Failed to create payment. Please try again.');
+      toast.error('Error al crear el pago. Inténtalo de nuevo.');
       throw error; // Re-lanzar para manejo en el componente
     }
   };
@@ -149,7 +149,7 @@ export function PaymentFormWithLogging() {
           formData: { driverId: formData.driverId, amount: formData.amount }
         });
         
-        toast.error(`Validation failed: ${validationErrors.join(', ')}`);
+        toast.error(`Error de validación: ${validationErrors.join(', ')}`);
         return;
       }
 

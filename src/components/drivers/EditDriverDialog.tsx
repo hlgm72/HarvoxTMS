@@ -423,7 +423,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
         if (invitationError) throw invitationError;
 
-        showSuccess('Invitation information updated successfully');
+        showSuccess('Información de invitación actualizada');
         onSuccess();
         onClose();
         return;
@@ -516,12 +516,12 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
         }
       }
 
-      showSuccess('Driver information updated successfully');
+      showSuccess('Información del conductor actualizada');
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error saving driver data:', error);
-      showError('Error saving driver data');
+      showError('Error al guardar los datos del conductor');
     } finally {
       setSaving(false);
     }

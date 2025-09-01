@@ -81,11 +81,11 @@ export function useUpdateCompanyFinancialSettings() {
       queryClient.invalidateQueries({ 
         queryKey: ['company-financial-settings', data.company_id] 
       });
-      showSuccess('Financial settings updated successfully');
+      showSuccess('Configuración financiera actualizada');
     },
     onError: (error: Error) => {
       console.error('Error updating financial settings:', error);
-      showError(`Error updating financial settings: ${error.message}`);
+      showError(`Error al actualizar la configuración financiera: ${error.message}`);
     },
   });
 }
@@ -116,11 +116,11 @@ export function useCreateCompanyFinancialSettings() {
       queryClient.invalidateQueries({ 
         queryKey: ['company-financial-settings', data.company_id] 
       });
-      showSuccess('Financial settings created successfully');
+      showSuccess('Configuración financiera creada');
     },
     onError: (error: Error) => {
       console.error('Error creating financial settings:', error);
-      showError(`Error creating financial settings: ${error.message}`);
+      showError(`Error al crear la configuración financiera: ${error.message}`);
     },
   });
 }

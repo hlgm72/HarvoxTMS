@@ -166,7 +166,7 @@ export const useLoadDocumentUploadFlowACID = () => {
     onSuccess: (data: LoadDocumentACIDResponse) => {
       // No mostrar mensaje genérico para PODs ya que tienen su propia celebración
       if (data.document?.document_type !== 'pod') {
-        showSuccess('Load document uploaded and validated successfully');
+        showSuccess('Documento de carga subido exitosamente');
       }
       
       // Force immediate refetch of document list for upload flow

@@ -236,16 +236,16 @@ export default function SuperAdminDashboard() {
       if (error) throw error;
 
       if ((data as any)?.success) {
-        showSuccess("Company deleted successfully", `${(data as any).company_name} and all related data has been permanently removed`);
+        showSuccess("Empresa eliminada exitosamente", `${(data as any).company_name} y todos los datos relacionados han sido eliminados permanentemente`);
         
         // Refresh data
         initializeDashboard();
       } else {
-        showError("Deletion failed", (data as any)?.message || "Unknown error occurred");
+        showError("Error al eliminar", (data as any)?.message || "Error desconocido");
       }
     } catch (error: any) {
       console.error('Error deleting company:', error);
-      showError("Error deleting company", error.message || "An error occurred while deleting the company");
+      showError("Error al eliminar empresa", error.message || "Ocurrió un error al eliminar la empresa");
     } finally {
       setIsDeletingCompany(false);
       setCompanyToDelete(null);
@@ -291,7 +291,7 @@ export default function SuperAdminDashboard() {
 
       if (error) throw error;
 
-      showSuccess("Company updated successfully", `${companyToEdit.name} has been updated in the system`);
+      showSuccess("Empresa actualizada exitosamente", `${companyToEdit.name} ha sido actualizada en el sistema`);
       
       // Refresh data and close dialog
       fetchCompanies();
@@ -299,7 +299,7 @@ export default function SuperAdminDashboard() {
       setCompanyToEdit(null);
     } catch (error: any) {
       console.error('Error updating company:', error);
-      showError("Error updating company", error.message || "An error occurred while updating the company");
+      showError("Error al actualizar empresa", error.message || "Ocurrió un error al actualizar la empresa");
     } finally {
       setIsUpdatingCompany(false);
     }
@@ -377,14 +377,14 @@ export default function SuperAdminDashboard() {
                     try {
                       const success = await refreshAuthSession();
                       if (success) {
-                        showSuccess("Session refreshed", "Your authentication session has been refreshed");
+                        showSuccess("Sesión actualizada", "Tu sesión de autenticación ha sido actualizada");
                         window.location.reload();
                       } else {
-                        showError("Session refresh failed", "Could not refresh session, please re-login");
+                        showError("Error al actualizar sesión", "No se pudo actualizar la sesión, por favor vuelve a iniciar sesión");
                       }
                     } catch (error) {
                       console.error('Error refreshing session:', error);
-                      showError("Authentication error", "Please sign out and sign in again");
+                      showError("Error de autenticación", "Por favor cierra sesión e inicia sesión nuevamente");
                     }
                   }}
                   className="bg-white/10 border-white text-white hover:bg-white hover:text-primary transition-all hover:scale-105 font-medium"
