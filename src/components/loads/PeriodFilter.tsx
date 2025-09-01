@@ -119,6 +119,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         // Usar la misma lógica que current - calcular directo si no hay BD
         let displayPreviousPeriod = previousPeriod;
         
+        console.log('🔍 Previous Period Debug:', {
+          previousPeriodFromDB: previousPeriod,
+          calculatedPrevious: calculatedPeriods?.previous,
+        });
+        
         if (!displayPreviousPeriod && userCompany?.company_id && companyData) {
           // Calcular período anterior directamente
           const companyConfig = {
@@ -136,6 +141,12 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             period_type: 'regular'
           };
         }
+        
+        console.log('🔍 Previous Period Final Display:', {
+          finalDisplayPrevious: displayPreviousPeriod,
+          startDate: displayPreviousPeriod?.period_start_date,
+          endDate: displayPreviousPeriod?.period_end_date
+        });
         
         if (displayPreviousPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
