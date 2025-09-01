@@ -116,9 +116,20 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         // Mostrar período calculado si no hay actual en BD
         const shouldUseCalculatedPrev = !currentPeriod;
         const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
-        return displayPreviousPeriod 
-          ? `${t('periods.previous')} (${formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date)})`
-          : t('periods.previous');
+        if (displayPreviousPeriod) {
+          // ✅ NUEVO FORMATO: "Previous WK34 - 2025 (dd/MM - dd/MM)"
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayPreviousPeriod.period_start_date, 
+            displayPreviousPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          // Extraer solo la parte del número de semana/mes del formatDetailedPaymentPeriod
+          const periodNumber = periodLabel.split(':')[0]; // "Week 34/2025" o "JUL/2025"
+          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+          return `Previous ${periodNumber} (${dateRange})`;
+        } else {
+          return 'Previous';
+        }
       case 'next':
         const displayNextPeriod = nextPeriod || calculatedPeriods?.next;
         return displayNextPeriod 
@@ -257,19 +268,37 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                        }
                      }}
                     disabled={!previousPeriod && !calculatedPeriods?.previous}
-                  >
-                    <Clock className="h-4 w-4 mr-2" />
-                    {t('periods.previous')}
-                    {(previousPeriod || calculatedPeriods?.previous) && (
-                      <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
-                        {formatPaymentPeriodBadge(
-                          // Mostrar siempre el calculado si no hay actual en BD
-                          (!currentPeriod ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous)!.period_start_date, 
-                          (!currentPeriod ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous)!.period_end_date
-                        )}
-                      </Badge>
-                    )}
-                  </Button>
+                   >
+                     <Clock className="h-4 w-4 mr-2" />
+                     {/* ✅ NUEVO FORMATO: Solo "Previous" sin "Period" */}
+                     Previous
+                     {(previousPeriod || calculatedPeriods?.previous) && (
+                       <>
+                         {(() => {
+                           const shouldUseCalculatedPrev = !currentPeriod;
+                           const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
+                           const periodLabel = formatDetailedPaymentPeriod(
+                             displayPreviousPeriod!.period_start_date, 
+                             displayPreviousPeriod!.period_end_date, 
+                             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                           );
+                           const periodNumber = periodLabel.split(':')[0]; // "Week 34/2025"
+                           return (
+                             <span className="ml-2 text-xs font-medium">
+                               {periodNumber}
+                             </span>
+                           );
+                         })()}
+                         <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
+                           {formatPaymentPeriodBadge(
+                             // Mostrar siempre el calculado si no hay actual en BD
+                             (!currentPeriod ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous)!.period_start_date, 
+                             (!currentPeriod ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous)!.period_end_date
+                           )}
+                         </Badge>
+                       </>
+                     )}
+                   </Button>
 
                    <Button
                      variant={value.type === 'current' ? 'default' : 'ghost'}
