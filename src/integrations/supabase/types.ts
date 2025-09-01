@@ -3384,6 +3384,10 @@ export type Database = {
         }
         Returns: Json
       }
+      debug_percentage_deduction_creation: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       delete_client_contact_with_validation: {
         Args: { contact_id_param: string }
         Returns: Json
