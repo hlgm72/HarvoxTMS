@@ -113,15 +113,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           return 'Current';
         }
       case 'previous':
-        // Solo mostrar si existe período anterior real en BD
-        if (previousPeriod) {
+        // Usar períodos calculados o reales para previous
+        const displayPreviousPeriod = previousPeriod || calculatedPeriods?.previous;
+        if (displayPreviousPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
-            previousPeriod.period_start_date, 
-            previousPeriod.period_end_date, 
+            displayPreviousPeriod.period_start_date, 
+            displayPreviousPeriod.period_end_date, 
             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
           );
           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date);
+          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
           return `Previous: ${periodNumber} (${dateRange})`;
         } else {
           return 'Previous';
@@ -240,32 +241,34 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     variant={value.type === 'previous' ? 'default' : 'ghost'}
                     className="w-full justify-start"
                      onClick={() => {
-                       // Solo permitir si existe período anterior real en BD
-                       if (previousPeriod) {
+                       // Usar períodos calculados o reales para previous
+                       const displayPrevious = previousPeriod || calculatedPeriods?.previous;
+                       if (displayPrevious) {
                          handleOptionSelect({ 
                            type: 'previous',
-                           periodId: previousPeriod.id,
-                           startDate: previousPeriod.period_start_date,
-                           endDate: previousPeriod.period_end_date
+                           periodId: displayPrevious.id,
+                           startDate: displayPrevious.period_start_date,
+                           endDate: displayPrevious.period_end_date
                          });
                        }
                      }}
-                    disabled={!previousPeriod}
+                    disabled={!previousPeriod && !calculatedPeriods?.previous}
                    >
-                      <Clock className="h-4 w-4 mr-2" />
-                      {(() => {
-                        if (previousPeriod) {
-                          const periodLabel = formatDetailedPaymentPeriod(
-                            previousPeriod.period_start_date, 
-                            previousPeriod.period_end_date, 
-                            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                          );
-                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-                          const dateRange = formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date);
-                          return `Previous: ${periodNumber} (${dateRange})`;
-                        }
-                        return 'Previous';
-                      })()}
+                       <Clock className="h-4 w-4 mr-2" />
+                       {(() => {
+                         const displayPrevious = previousPeriod || calculatedPeriods?.previous;
+                         if (displayPrevious) {
+                           const periodLabel = formatDetailedPaymentPeriod(
+                             displayPrevious.period_start_date, 
+                             displayPrevious.period_end_date, 
+                             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                           );
+                           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+                           const dateRange = formatPaymentPeriodBadge(displayPrevious.period_start_date, displayPrevious.period_end_date);
+                           return `Previous: ${periodNumber} (${dateRange})`;
+                         }
+                         return 'Previous';
+                       })()}
                    </Button>
 
                    <Button
