@@ -9,7 +9,7 @@ import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, u
 import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone, getTodayInUserTimeZone, formatDetailedPaymentPeriod } from '@/lib/dateFormatting';
+import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone, getTodayInUserTimeZone, formatDetailedPaymentPeriod, convertUserDateToUTC } from '@/lib/dateFormatting';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 
@@ -51,41 +51,41 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     switch (type) {
       case 'this_month':
         return {
-           startDate: formatDateInUserTimeZone(startOfMonth(now)),
-           endDate: formatDateInUserTimeZone(endOfMonth(now)),
+           startDate: convertUserDateToUTC(startOfMonth(now)).split('T')[0],
+           endDate: convertUserDateToUTC(endOfMonth(now)).split('T')[0],
           label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
         };
       case 'last_month':
         const lastMonth = subMonths(now, 1);
         return {
-           startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
-           endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
+           startDate: convertUserDateToUTC(startOfMonth(lastMonth)).split('T')[0],
+           endDate: convertUserDateToUTC(endOfMonth(lastMonth)).split('T')[0],
           label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
         };
       case 'this_quarter':
         return {
-           startDate: formatDateInUserTimeZone(startOfQuarter(now)),
-           endDate: formatDateInUserTimeZone(endOfQuarter(now)),
+           startDate: convertUserDateToUTC(startOfQuarter(now)).split('T')[0],
+           endDate: convertUserDateToUTC(endOfQuarter(now)).split('T')[0],
           label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
         };
       case 'last_quarter':
         const lastQuarter = subQuarters(now, 1);
         return {
-           startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
-           endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
+           startDate: convertUserDateToUTC(startOfQuarter(lastQuarter)).split('T')[0],
+           endDate: convertUserDateToUTC(endOfQuarter(lastQuarter)).split('T')[0],
           label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
         };
       case 'this_year':
         return {
-           startDate: formatDateInUserTimeZone(startOfYear(now)),
-           endDate: formatDateInUserTimeZone(endOfYear(now)),
+           startDate: convertUserDateToUTC(startOfYear(now)).split('T')[0],
+           endDate: convertUserDateToUTC(endOfYear(now)).split('T')[0],
           label: `${t('periods.this_year')} (${now.getFullYear()})`
         };
       case 'last_year':
         const lastYear = subYears(now, 1);
         return {
-           startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
-           endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
+           startDate: convertUserDateToUTC(startOfYear(lastYear)).split('T')[0],
+           endDate: convertUserDateToUTC(endOfYear(lastYear)).split('T')[0],
           label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
         };
       default:

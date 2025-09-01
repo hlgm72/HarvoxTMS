@@ -74,77 +74,6 @@ interface LoadsFilters {
   };
 }
 
-interface DateRange {
-  startDate: string;
-  endDate: string;
-}
-
-/**
- * Calcula el rango de fechas según el tipo de filtro de período
- */
-const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): DateRange | null => {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-  const currentQuarter = Math.floor(currentMonth / 3);
-
-  switch (filterType) {
-    case 'current':
-    case 'previous':
-    case 'next':
-      // Para períodos actual, anterior y siguiente, usar la fecha de hoy en la zona horaria del usuario
-      // El filtrado específico se hace por period_id, no por rango de fechas
-      const today = getTodayInUserTimeZone();
-      return {
-        startDate: today,
-        endDate: today
-      };
-
-    case 'this_month':
-      return {
-        startDate: createDateInUserTimeZone(currentYear, currentMonth, 1),
-        endDate: createDateInUserTimeZone(currentYear, currentMonth + 1, 0)
-      };
-
-    case 'last_month':
-      return {
-        startDate: createDateInUserTimeZone(currentYear, currentMonth - 1, 1),
-        endDate: createDateInUserTimeZone(currentYear, currentMonth, 0)
-      };
-
-    case 'this_quarter':
-      const quarterStart = currentQuarter * 3;
-      return {
-        startDate: createDateInUserTimeZone(currentYear, quarterStart, 1),
-        endDate: createDateInUserTimeZone(currentYear, quarterStart + 3, 0)
-      };
-
-    case 'last_quarter':
-      const lastQuarterStart = (currentQuarter - 1) * 3;
-      const lastQuarterYear = currentQuarter === 0 ? currentYear - 1 : currentYear;
-      const adjustedQuarterStart = currentQuarter === 0 ? 9 : lastQuarterStart;
-      return {
-        startDate: createDateInUserTimeZone(lastQuarterYear, adjustedQuarterStart, 1),
-        endDate: createDateInUserTimeZone(lastQuarterYear, adjustedQuarterStart + 3, 0)
-      };
-
-    case 'this_year':
-      return {
-        startDate: createDateInUserTimeZone(currentYear, 0, 1),
-        endDate: createDateInUserTimeZone(currentYear, 11, 31)
-      };
-
-    case 'last_year':
-      return {
-        startDate: createDateInUserTimeZone(currentYear - 1, 0, 1),
-        endDate: createDateInUserTimeZone(currentYear - 1, 11, 31)
-      };
-
-    case 'all':
-    default:
-      return null; // Sin filtro de fechas
-  }
-};
 
 /**
  * Obtiene los period_ids relevantes según el filtro - NUEVA LÓGICA SIMPLE CONSISTENTE CON PAYMENT REPORTS
@@ -178,7 +107,8 @@ const getRelevantPeriodIds = (
       return allPeriods ? allPeriods.map(p => p.id) : [];
     
     case 'custom':
-      // Para filtro personalizado, usaremos las fechas en la query
+      // Para filtros personalizados, se pueden usar las fechas startDate/endDate directamente
+      // desde filters.periodFilter.startDate y filters.periodFilter.endDate
       return [];
     
     default:
