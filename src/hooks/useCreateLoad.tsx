@@ -146,6 +146,9 @@ export const useCreateLoad = () => {
     mutationFn: async (data: CreateLoadData): Promise<string> => {
       // Starting ACID mutation with data
       
+      console.log('🔍 useCreateLoad - Received data for mutation:', data);
+      console.log('🔍 useCreateLoad - Dispatcher ID being sent:', data.internal_dispatcher_id);
+      
       if (!user) {
         throw new Error('Usuario no autenticado');
       }
@@ -184,6 +187,8 @@ export const useCreateLoad = () => {
         leasing_percentage: toNumber(data.leasing_percentage) ?? 0
       };
 
+      console.log('🔍 useCreateLoad - Final loadData being sent to RPC:', loadData);
+      
       // Prepare stops data
       const stopsData = (data.stops || []).map(stop => ({
         stop_number: stop.stop_number,
