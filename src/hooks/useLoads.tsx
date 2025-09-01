@@ -280,10 +280,17 @@ export const useLoads = (filters?: LoadsFilters) => {
           // Incluir cargas del período Y cargas sin período asignado (recién creadas)
           loadsQuery = loadsQuery.or(`payment_period_id.in.(${relevantPeriodIds.join(',')}),payment_period_id.is.null`);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
-          console.log('⚠️ No se encontraron period IDs, usando filtro de fechas:', filters.periodFilter);
-          // Si es un período calculado (previous, current, next) sin periodId pero con fechas
-          if ((filters.periodFilter.type === 'previous' || filters.periodFilter.type === 'current' || filters.periodFilter.type === 'next') 
-              && filters.periodFilter.startDate && filters.periodFilter.endDate) {
+          console.log('⚠️ No se encontraron period IDs, verificando si debe crear período o mostrar vacío:', filters.periodFilter);
+          
+          // Si es current, previous, next pero no hay period IDs → mostrar vacío
+          if (filters.periodFilter.type === 'current' || filters.periodFilter.type === 'previous' || filters.periodFilter.type === 'next') {
+            console.log('❌ No hay período específico en BD para tipo:', filters.periodFilter.type);
+            return []; // No mostrar cargas si no existe el período específico
+          }
+          
+          // Solo usar filtro de fechas para períodos personalizados (custom)
+          if (filters.periodFilter.type === 'custom' && filters.periodFilter.startDate && filters.periodFilter.endDate) {
+            console.log('📅 Aplicando filtro de fechas personalizado:', filters.periodFilter.startDate, 'a', filters.periodFilter.endDate);
             // Filtrar cargas por rango de fechas (fecha de pickup o delivery dentro del período)
             loadsQuery = loadsQuery.or(
               `and(pickup_date.gte.${filters.periodFilter.startDate},pickup_date.lte.${filters.periodFilter.endDate}),and(delivery_date.gte.${filters.periodFilter.startDate},delivery_date.lte.${filters.periodFilter.endDate}),and(created_at.gte.${filters.periodFilter.startDate}T00:00:00,created_at.lte.${filters.periodFilter.endDate}T23:59:59)`
