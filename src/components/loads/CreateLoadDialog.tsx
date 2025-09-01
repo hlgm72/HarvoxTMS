@@ -657,7 +657,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
               if (mode === 'edit') {
                 return loadNumber ? t("loads:create_wizard.title.edit_with_number", { number: loadNumber }) : t("loads:create");
               } else if (mode === 'duplicate') {
-                return loadNumber ? t("loads:create_wizard.title.duplicate_with_number", { number: loadNumber }) : t("loads:duplicate");
+                return loadNumber ? t("loads:create_wizard.title.duplicate_with_number", { number: loadNumber }) : t("loads:create.duplicate");
               } else {
                 return loadNumber ? t("loads:create_wizard.title.create_with_number", { number: loadNumber }) : t("loads:create_wizard.title.new_load");
               }
