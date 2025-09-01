@@ -90,6 +90,11 @@ Para cada transacción de combustible:
   * Cada fila de transacción debe tener su propio número de tarjeta
   * NO asumas que todas las transacciones usan la misma tarjeta
   * Verifica CADA FILA individualmente
+- UBICACIÓN: Extrae nombre de estación, ciudad y estado por separado
+  * Busca columnas como "Location", "Station", "Address", etc.
+  * Si la ubicación está combinada (ej: "Shell - Miami, FL"), separa en name/city/state
+  * Ciudad: nombre de la ciudad (ej: "Miami", "Houston", "Phoenix")
+  * Estado: código de 2 letras (ej: "FL", "TX", "AZ")
 - MONTOS: Lee los números completos exactamente como aparecen, SIN cortar ni modificar
 - FECHAS: En formato MM/DD/YYYY o DD/MM/YYYY o similar
 
@@ -128,6 +133,7 @@ Responde SOLO con JSON válido en este formato:
       "unit": "número de unidad exacto",
       "invoice": "número de factura exacto",
       "location_name": "nombre exacto de la estación",
+      "city": "ciudad de la estación",
       "state": "código de estado",
       "qty": cantidad_galones_numerica_exacta,
       "gross_ppg": precio_por_galón_numerico_exacto,
