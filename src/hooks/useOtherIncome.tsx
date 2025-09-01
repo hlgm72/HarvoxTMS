@@ -109,7 +109,7 @@ export function useCreateOtherIncome() {
       throw new Error('Respuesta inválida del servidor');
     },
     onSuccess: async (result) => {
-      showSuccess('Otro ingreso creado exitosamente con ACID');
+      showSuccess('Ingreso adicional creado exitosamente');
       
       // Invalidar todas las queries de other-income sin importar los filtros
       queryClient.invalidateQueries({ 
@@ -163,7 +163,7 @@ export function useUpdateOtherIncome() {
       return (result as any).income;
     },
     onSuccess: () => {
-      showSuccess('Ingreso actualizado exitosamente con ACID');
+      showSuccess('Ingreso adicional actualizado exitosamente');
       
       // Invalidar todas las queries de other-income sin importar los filtros
       queryClient.invalidateQueries({ 
@@ -216,7 +216,7 @@ export function useDeleteOtherIncome() {
       return result;
     },
     onSuccess: async (result) => {
-      showSuccess('Ingreso eliminado exitosamente con ACID');
+      showSuccess('Ingreso adicional eliminado exitosamente');
       
       // Invalidar todas las queries de other-income sin importar los filtros
       queryClient.invalidateQueries({ 
