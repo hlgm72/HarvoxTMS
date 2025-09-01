@@ -11,6 +11,7 @@ import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
 import { useLoadsStats } from "@/hooks/useLoadsStats";
 import { useDriversList } from "@/hooks/useDriversList";
+import { useEffect } from "react";
 
 export default function Loads() {
   const { t } = useTranslation('loads');
@@ -34,6 +35,15 @@ export default function Loads() {
     sortBy: 'date_desc',
     periodFilter: getCurrentPeriodWithDates()
   });
+
+  // ✅ SINCRONIZACIÓN CRÍTICA: Mantener ambos estados alineados
+  useEffect(() => {
+    console.log('🔄 LOADS PAGE - Sincronizando periodFilter:', periodFilter);
+    setFilters(prev => ({
+      ...prev,
+      periodFilter: periodFilter
+    }));
+  }, [periodFilter]);
   
   // Hook para obtener estadísticas en tiempo real
   const { data: loadsStats, isLoading: statsLoading } = useLoadsStats({ periodFilter: filters.periodFilter });

@@ -255,6 +255,11 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriods
         );
         
+        console.log('🎯 USE LOADS - Período filtro:', filters?.periodFilter);
+        console.log('🎯 USE LOADS - IDs de períodos relevantes:', relevantPeriodIds);
+        console.log('🎯 USE LOADS - Current period:', currentPeriod?.id);
+        console.log('🎯 USE LOADS - Previous period:', previousPeriod?.id);
+        
         // PASO 3: Construir query optimizada de cargas
         let loadsQuery = supabase
           .from('loads')
