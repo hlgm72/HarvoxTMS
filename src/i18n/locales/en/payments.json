@@ -457,5 +457,75 @@
       "error_default": "Could not record payment",
       "error_unexpected": "Error recording payment"
     }
+  },
+  "report_dialog": {
+    "title": "Payment Report",
+    "subtitle": "Payment details and calculations",
+    "loading": "Loading report data...",
+    "driver_info": "Driver Information",
+    "period_info": "Payment Period",
+    "financial_summary": "Financial Summary",
+    "gross_earnings": "Gross Earnings",
+    "fuel_expenses": "Fuel Expenses", 
+    "total_deductions": "Total Deductions",
+    "other_income": "Other Income",
+    "net_payment": "Net Payment",
+    "loads_section": "Loads",
+    "loads_count": "loads",
+    "loads_total": "Total",
+    "deductions_section": "Deductions",
+    "fuel_section": "Fuel Expenses",
+    "other_income_section": "Other Income",
+    "no_loads": "No loads found for this period",
+    "no_deductions": "No deductions for this period",
+    "no_fuel_expenses": "No fuel expenses for this period",
+    "no_other_income": "No other income for this period",
+    "load_details": {
+      "number": "Load #",
+      "po": "PO:",
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "client": "Client",
+      "amount": "Amount",
+      "percentages": {
+        "dispatching": "Dispatching",
+        "factoring": "Factoring", 
+        "leasing": "Leasing",
+        "none_applied": "No percentages applied"
+      }
+    },
+    "deduction_details": {
+      "description": "Description",
+      "date": "Date",
+      "amount": "Amount",
+      "status": {
+        "planned": "Planned",
+        "applied": "Applied"
+      }
+    },
+    "fuel_details": {
+      "date": "Date",
+      "station": "Station",
+      "location": "Location",
+      "gallons": "Gallons",
+      "price_per_gallon": "Price/Gal",
+      "total": "Total"
+    },
+    "actions": {
+      "preview": "View PDF",
+      "download": "Download PDF",
+      "email": "Send by Email",
+      "generating": "Generating...",
+      "sending": "Sending Email..."
+    },
+    "messages": {
+      "pdf_generated": "PDF Generated",
+      "pdf_opened": "The report has been opened in a new window",
+      "pdf_downloaded": "PDF downloaded successfully",
+      "pdf_error": "Could not generate PDF",
+      "email_sent": "Email Sent",
+      "email_success": "Payment report sent successfully",
+      "email_error": "Could not send email"
+    }
   }
 }

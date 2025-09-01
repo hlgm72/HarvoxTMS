@@ -454,5 +454,75 @@
       "error_default": "No se pudo registrar el pago",
       "error_unexpected": "Error al registrar el pago"
     }
+  },
+  "report_dialog": {
+    "title": "Reporte de Pago",
+    "subtitle": "Detalles de pago y cálculos",
+    "loading": "Cargando datos del reporte...",
+    "driver_info": "Información del Conductor",
+    "period_info": "Período de Pago",
+    "financial_summary": "Resumen Financiero",
+    "gross_earnings": "Ingresos Brutos",
+    "fuel_expenses": "Gastos de Combustible",
+    "total_deductions": "Total Deducciones",
+    "other_income": "Otros Ingresos", 
+    "net_payment": "Pago Neto",
+    "loads_section": "Cargas",
+    "loads_count": "cargas",
+    "loads_total": "Total",
+    "deductions_section": "Deducciones",
+    "fuel_section": "Gastos de Combustible",
+    "other_income_section": "Otros Ingresos",
+    "no_loads": "No se encontraron cargas para este período",
+    "no_deductions": "No hay deducciones para este período",
+    "no_fuel_expenses": "No hay gastos de combustible para este período",
+    "no_other_income": "No hay otros ingresos para este período",
+    "load_details": {
+      "number": "Carga #",
+      "po": "PO:",
+      "pickup": "Recogida",
+      "delivery": "Entrega",
+      "client": "Cliente",
+      "amount": "Monto",
+      "percentages": {
+        "dispatching": "Despacho",
+        "factoring": "Factoring",
+        "leasing": "Leasing", 
+        "none_applied": "Sin porcentajes aplicados"
+      }
+    },
+    "deduction_details": {
+      "description": "Descripción",
+      "date": "Fecha",
+      "amount": "Monto",
+      "status": {
+        "planned": "Planificado",
+        "applied": "Aplicado"
+      }
+    },
+    "fuel_details": {
+      "date": "Fecha",
+      "station": "Estación",
+      "location": "Ubicación",
+      "gallons": "Galones",
+      "price_per_gallon": "Precio/Gal",
+      "total": "Total"
+    },
+    "actions": {
+      "preview": "Ver PDF",
+      "download": "Descargar PDF",
+      "email": "Enviar por Email",
+      "generating": "Generando...",
+      "sending": "Enviando Email..."
+    },
+    "messages": {
+      "pdf_generated": "PDF Generado",
+      "pdf_opened": "El reporte se ha abierto en una nueva ventana",
+      "pdf_downloaded": "PDF descargado exitosamente",
+      "pdf_error": "No se pudo generar el PDF",
+      "email_sent": "Email Enviado",
+      "email_success": "Reporte de pago enviado exitosamente",
+      "email_error": "No se pudo enviar el email"
+    }
   }
 }

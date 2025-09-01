@@ -42,6 +42,7 @@ import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from 'react-i18next';
 
 interface PaymentReportDialogProps {
   open: boolean;
@@ -54,6 +55,7 @@ export function PaymentReportDialog({
   onOpenChange, 
   calculationId 
 }: PaymentReportDialogProps) {
+  const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -344,7 +346,7 @@ export function PaymentReportDialog({
         payment_date: calculation.company_payment_periods.payment_date
       },
       company: {
-        name: company.name || 'Tu Empresa',
+        name: company.name || t('reports.company_name'),
         address: company.street_address && company.city && company.state_id && company.zip_code
           ? `${company.street_address}\n${company.city}, ${company.state_id} ${company.zip_code}`
           : [
@@ -357,7 +359,7 @@ export function PaymentReportDialog({
       },
       loads: loads.map(load => {
         const clientData = clients.find(c => c.id === load.client_id);
-        let clientName = 'Sin cliente';
+               let clientName = t('report_dialog.load_details.client');
         
         // Debug: Log individual load percentage calculations
         const dispatchingAmount = (load.total_amount * (load.dispatching_percentage || 0)) / 100;
@@ -399,7 +401,7 @@ export function PaymentReportDialog({
       }),
       fuelExpenses: fuelExpenses.map(expense => ({
         transaction_date: expense.transaction_date,
-        station_name: expense.station_name || 'Estación',
+        station_name: expense.station_name || t('deductions.status.station'),
         station_city: expense.station_city,
         station_state: expense.station_state,
         gallons_purchased: expense.gallons_purchased || 0,
@@ -446,11 +448,11 @@ export function PaymentReportDialog({
       await generatePaymentReportPDF(reportData, true);
       
       console.log('✅ handlePreviewPDF: PDF abierto en nueva ventana con nombre correcto');
-      showSuccess("PDF Generado", "El reporte se ha abierto en una nueva ventana");
+      showSuccess(t('report_dialog.messages.pdf_generated'), t('report_dialog.messages.pdf_opened'));
       
     } catch (error: any) {
       console.error('❌ handlePreviewPDF: Error generating PDF:', error);
-      showError("Error", "No se pudo generar el PDF");
+      showError(t('actions.error'), t('report_dialog.messages.pdf_error'));
     } finally {
       setIsGeneratingPDF(false);
       console.log('🏁 handlePreviewPDF: Proceso completado');
@@ -600,10 +602,10 @@ export function PaymentReportDialog({
 
       if (error) throw error;
 
-      showSuccess("Email Enviado", `Reporte enviado exitosamente a ${driver.display_email}`);
+      showSuccess(t('report_dialog.messages.email_sent'), `${t('report_dialog.messages.email_success')} ${driver.display_email}`);
     } catch (error: any) {
       console.error('Error sending email:', error);
-      showError("Error", "No se pudo enviar el email");
+      showError(t('actions.error'), t('report_dialog.messages.email_error'));
     } finally {
       setIsSendingEmail(false);
     }
@@ -615,15 +617,17 @@ export function PaymentReportDialog({
       <DialogContent className="w-[95vw] max-w-none sm:max-w-4xl h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-lg">
         <div className="p-4 sm:p-6 border-b shrink-0">
           <DialogHeader>
-            <DialogTitle>Detalle del Reporte</DialogTitle>
+            <DialogTitle>
+              {t('report_dialog.title')}
+            </DialogTitle>
             <DialogDescription>
-              Cargando información del reporte de pago
+              {t('report_dialog.loading')}
             </DialogDescription>
           </DialogHeader>
         </div>
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="text-center py-8">
-            {isLoading ? "Cargando..." : "No se encontraron datos"}
+            {isLoading ? t('report_dialog.loading') : t('reports.no_reports')}
           </div>
         </div>
       </DialogContent>
@@ -650,10 +654,10 @@ export function PaymentReportDialog({
               <div className="flex-1 mr-4">
                 <DialogTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
-                  Reporte PDF - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+                  {t('report_dialog.title')} - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
                 </DialogTitle>
                 <DialogDescription className="text-sm mt-1">
-                  Período: {formatPaymentPeriod(
+                  {t('period.period_label')}: {formatPaymentPeriod(
                     calculation.company_payment_periods.period_start_date,
                     calculation.company_payment_periods.period_end_date
                   )}
@@ -692,18 +696,18 @@ export function PaymentReportDialog({
             <DialogTitle className="flex items-center gap-2 min-w-0 text-base sm:text-lg">
               <FileText className="h-5 w-5 shrink-0" />
               <span className="truncate">
-                Reporte de Pago - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+                {t('report_dialog.title')} - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
               </span>
             </DialogTitle>
             <DialogDescription className="text-xs sm:text-sm break-words mt-1">
-              Período: {formatPaymentPeriod(
+              {t('period.period_label')}: {formatPaymentPeriod(
                 calculation.company_payment_periods.period_start_date,
                 calculation.company_payment_periods.period_end_date
               )}
               {calculation.company_payment_periods.payment_date && (
-                <span className="block text-primary font-medium mt-1">
-                  Fecha de Pago: {formatDateAuto(calculation.company_payment_periods.payment_date)}
-                </span>
+                  <span className="block text-primary font-medium mt-1">
+                    {t('report_dialog.fuel_details.date')}: {formatDateAuto(calculation.company_payment_periods.payment_date)}
+                  </span>
               )}
             </DialogDescription>
           </DialogHeader>
@@ -717,12 +721,12 @@ export function PaymentReportDialog({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
-                Resumen Financiero
+                {t('report_dialog.financial_summary')}
               </CardTitle>
               {calculation.has_negative_balance && (
                 <div className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
-                  <span className="text-sm font-medium">Balance Negativo</span>
+                  <span className="text-sm font-medium">{t('deductions.status.undefined_type')}</span>
                 </div>
               )}
             </CardHeader>
@@ -731,7 +735,7 @@ export function PaymentReportDialog({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <DollarSign className="h-4 w-4 shrink-0" />
-                    <span className="truncate">Ingresos Brutos</span>
+                    <span className="truncate">{t('report_dialog.gross_earnings')}</span>
                   </span>
                   <span className="font-semibold text-xs sm:text-sm">
                     {formatCurrency(calculation.gross_earnings)}
@@ -740,7 +744,7 @@ export function PaymentReportDialog({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <TrendingUp className="h-4 w-4 shrink-0" />
-                    <span className="truncate">Otros Ingresos</span>
+                    <span className="truncate">{t('report_dialog.other_income')}</span>
                   </span>
                   <span className="font-semibold text-success text-xs sm:text-sm">
                     {formatCurrency(calculation.other_income)}
@@ -749,7 +753,7 @@ export function PaymentReportDialog({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Receipt className="h-4 w-4 shrink-0" />
-                    <span className="truncate">Deducciones</span>
+                    <span className="truncate">{t('report_dialog.deductions_section')}</span>
                   </span>
                   <span className="font-semibold text-destructive text-xs sm:text-sm">
                     -{formatCurrency(calculation.total_deductions)}
@@ -758,7 +762,7 @@ export function PaymentReportDialog({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Fuel className="h-4 w-4 shrink-0" />
-                    <span className="truncate">Combustible</span>
+                    <span className="truncate">{t('report_dialog.fuel_expenses')}</span>
                   </span>
                   <span className="font-semibold text-warning text-xs sm:text-sm">
                     -{formatCurrency(calculation.fuel_expenses)}
@@ -769,7 +773,7 @@ export function PaymentReportDialog({
               <Separator />
               
               <div className="flex items-center justify-between text-base sm:text-lg font-bold">
-                <span>Pago Neto:</span>
+                <span>{t('report_dialog.net_payment')}:</span>
                 <span className={calculateNetPayment(calculation) >= 0 ? 'text-success' : 'text-destructive'}>
                   {formatCurrency(calculateNetPayment(calculation))}
                 </span>
@@ -783,7 +787,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Package className="h-5 w-5 text-blue-600" />
-                  Cargas del Período ({loads.length} - Total: {formatCurrency(loads.reduce((sum, load) => sum + load.total_amount, 0))})
+                  {t('report_dialog.loads_section')} del Período ({loads.length} - {t('report_dialog.loads_total')}: {formatCurrency(loads.reduce((sum, load) => sum + load.total_amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -796,7 +800,7 @@ export function PaymentReportDialog({
                           <div className="font-medium text-sm sm:text-base">
                             {load.load_number} • {formatDateAuto(load.pickup_date)} • {(() => {
                               const clientData = clients.find(c => c.id === load.client_id);
-                              let clientName = 'Sin cliente';
+                              let clientName = t('report_dialog.load_details.client');
                               
                               if (clientData) {
                                 if (clientData.alias && clientData.alias.trim()) {
@@ -821,22 +825,22 @@ export function PaymentReportDialog({
                              <>
                                {load.dispatching_percentage > 0 && (
                                  <Badge variant="outline" className="text-xs">
-                                   Despacho: {load.dispatching_percentage}% ({formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
+                    {t('report_dialog.load_details.percentages.dispatching')}: {load.dispatching_percentage}% ({formatCurrency((load.total_amount * load.dispatching_percentage) / 100)})
                                  </Badge>
                                )}
                                {load.factoring_percentage > 0 && (
                                  <Badge variant="outline" className="text-xs">
-                                   Factoring: {load.factoring_percentage}% ({formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
+                                   {t('report_dialog.load_details.percentages.factoring')}: {load.factoring_percentage}% ({formatCurrency((load.total_amount * load.factoring_percentage) / 100)})
                                  </Badge>
                                )}
                                {load.leasing_percentage > 0 && (
                                  <Badge variant="outline" className="text-xs">
-                                   Leasing: {load.leasing_percentage}% ({formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
+                                   {t('report_dialog.load_details.percentages.leasing')}: {load.leasing_percentage}% ({formatCurrency((load.total_amount * load.leasing_percentage) / 100)})
                                  </Badge>
                                )}
                              </>
                            ) : (
-                             <span className="text-xs text-muted-foreground">Sin porcentajes aplicados</span>
+                             <span className="text-xs text-muted-foreground">{t('report_dialog.load_details.percentages.none_applied')}</span>
                            )}
                          </div>
                          <div className="flex items-center gap-2">
@@ -851,7 +855,7 @@ export function PaymentReportDialog({
                                setShowEditLoadDialog(true);
                              }}
                              className="h-7 w-7 p-0"
-                             title="Editar carga"
+                             title={t('common.edit')}
                            >
                              <Edit className="h-3 w-3" />
                            </Button>
@@ -870,7 +874,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Receipt className="h-5 w-5 text-red-600" />
-                  Deducciones ({deductions.length} - Total: {formatCurrency(deductions.reduce((sum, deduction) => sum + deduction.amount, 0))})
+                  {t('report_dialog.deductions_section')} ({deductions.length} - {t('report_dialog.loads_total')}: {formatCurrency(deductions.reduce((sum, deduction) => sum + deduction.amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -880,7 +884,7 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">{deduction.description}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
-                          {formatDateAuto(deduction.expense_date)} • {deduction.status === 'planned' ? 'Planificado' : 'Aplicado'}
+                          {formatDateAuto(deduction.expense_date)} • {deduction.status === 'planned' ? t('report_dialog.deduction_details.status.planned') : t('report_dialog.deduction_details.status.applied')}
                         </div>
                       </div>
                       <div className="font-semibold text-destructive sm:text-right shrink-0 text-sm sm:text-base">
@@ -899,7 +903,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Fuel className="h-5 w-5 text-orange-600" />
-                  Gastos de Combustible ({fuelExpenses.length} - Total: {formatCurrency(fuelExpenses.reduce((sum, expense) => sum + expense.total_amount, 0))})
+                  {t('report_dialog.fuel_expenses')} ({fuelExpenses.length} - {t('report_dialog.loads_total')}: {formatCurrency(fuelExpenses.reduce((sum, expense) => sum + expense.total_amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -908,7 +912,7 @@ export function PaymentReportDialog({
                     <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
                        <div className="space-y-1 min-w-0 flex-1">
                          <div className="font-medium truncate text-sm sm:text-base">
-                           {expense.station_name || 'Estación'}
+                           {expense.station_name || t('deductions.status.station')}
                          </div>
                          <div className="text-xs sm:text-sm text-muted-foreground">
                            {expense.gallons_purchased} gal • {formatDateAuto(expense.transaction_date)}
@@ -938,16 +942,16 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-green-600" />
-                  Otros Ingresos (1 - Total: {formatCurrency(calculation.other_income)})
+                  {t('report_dialog.other_income_section')} (1 - {t('report_dialog.loads_total')}: {formatCurrency(calculation.other_income)})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="py-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div className="space-y-1 min-w-0 flex-1">
-                      <div className="font-medium text-sm sm:text-base">Ingresos Adicionales del Período</div>
+                      <div className="font-medium text-sm sm:text-base">{t('income.other')}</div>
                       <div className="text-xs sm:text-sm text-muted-foreground">
-                        Ingresos complementarios registrados
+                        {t('reports.company_name')}
                       </div>
                     </div>
                     <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
@@ -973,7 +977,7 @@ export function PaymentReportDialog({
               className="w-full sm:flex-1"
             >
               <Eye className="h-4 w-4 mr-2" />
-              <span className="truncate">{isGeneratingPDF ? 'Generando...' : 'Ver PDF'}</span>
+              <span className="truncate">{isGeneratingPDF ? t('report_dialog.actions.generating') : t('report_dialog.actions.preview')}</span>
             </Button>
             <Button 
               onClick={handleGeneratePDF}
@@ -982,7 +986,7 @@ export function PaymentReportDialog({
               className="w-full sm:flex-1"
             >
               <Download className="h-4 w-4 mr-2" />
-              <span className="truncate">{isGeneratingPDF ? 'Generando...' : 'Descargar PDF'}</span>
+              <span className="truncate">{isGeneratingPDF ? t('report_dialog.actions.generating') : t('report_dialog.actions.download')}</span>
             </Button>
             <Button 
               variant="outline"
@@ -998,12 +1002,12 @@ export function PaymentReportDialog({
               {isSendingEmail ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-blue-600 mr-2"></div>
-                  <span className="truncate">Enviando Email...</span>
+                  <span className="truncate">{t('report_dialog.actions.sending')}</span>
                 </>
               ) : (
                 <>
                   <Mail className="h-4 w-4 mr-2" />
-                  <span className="truncate">Enviar por Email</span>
+                  <span className="truncate">{t('report_dialog.actions.email')}</span>
                 </>
               )}
             </Button>
