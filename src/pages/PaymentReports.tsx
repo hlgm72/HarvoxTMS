@@ -8,7 +8,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { FileText, Plus, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
-import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateAuto, formatCurrency, formatDateSafe } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
@@ -193,11 +193,11 @@ export default function PaymentReports() {
       
       console.log('✅ PaymentReports Query Result:', data?.length, 'calculations found');
       
-      // Ordenar por fecha de inicio del período (más reciente primero)
+      // Ordenar por fecha de inicio del período (más reciente primero) usando formateo seguro
       const sortedData = (data || []).sort((a, b) => {
-        const dateA = new Date(a.company_payment_periods.period_start_date);
-        const dateB = new Date(b.company_payment_periods.period_start_date);
-        return dateB.getTime() - dateA.getTime(); // Descendente (más reciente primero)
+        const dateA = formatDateSafe(a.company_payment_periods.period_start_date, 'yyyy-MM-dd');
+        const dateB = formatDateSafe(b.company_payment_periods.period_start_date, 'yyyy-MM-dd');
+        return dateB.localeCompare(dateA); // Descendente (más reciente primero)
       });
       
       return sortedData;
