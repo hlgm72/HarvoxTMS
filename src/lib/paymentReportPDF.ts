@@ -65,6 +65,8 @@ interface PaymentReportData {
   fuelExpenses?: Array<{
     transaction_date: string;
     station_name: string;
+    station_city?: string;
+    station_state?: string;
     gallons_purchased: number;
     price_per_gallon?: number;
     total_amount: number;
@@ -815,17 +817,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         color: '#003366' // Color de fuente #003366
       });
       
-      addText(fuel.station_name, margin + 30, currentY, {
+      // Formatear estación con ciudad y estado entre paréntesis
+      let stationText = fuel.station_name || 'N/A';
+      if (fuel.station_city && fuel.station_state) {
+        stationText += ` (${fuel.station_city}, ${fuel.station_state})`;
+      } else if (fuel.station_city) {
+        stationText += ` (${fuel.station_city})`;
+      } else if (fuel.station_state) {
+        stationText += ` (${fuel.station_state})`;
+      }
+      
+      addText(stationText, margin + 30, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
       
-      addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 100, currentY, {
+      addText(`${(fuel.gallons_purchased || 0).toFixed(2)} gal`, margin + 120, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
       
-      addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 140, currentY, {
+      addText(`$${(fuel.price_per_gallon || 0).toFixed(3)}`, margin + 145, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
