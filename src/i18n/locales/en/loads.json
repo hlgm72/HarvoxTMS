@@ -880,7 +880,11 @@
     "confirm_deletion": "Confirm Deletion",
     "deletion_warning": "Are you sure you want to delete Load #{{loadNumber}}?",
     "deletion_irreversible": "This action cannot be undone.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "delete_success": "Load #{{loadNumber}} deleted successfully",
+    "delete_error": "Error deleting load: {{message}}",
+    "user_not_authenticated": "User not authenticated",
+    "deleting": "Deleting..."
   },
   "delete": {
     "title": "Delete Load",

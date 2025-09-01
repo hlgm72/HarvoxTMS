@@ -880,7 +880,11 @@
     "confirm_deletion": "Confirmar Eliminación",
     "deletion_warning": "¿Estás seguro de que quieres eliminar la Carga #{{loadNumber}}?",
     "deletion_irreversible": "Esta acción no se puede deshacer.",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "delete_success": "Carga #{{loadNumber}} eliminada exitosamente",
+    "delete_error": "Error eliminando carga: {{message}}",
+    "user_not_authenticated": "Usuario no autenticado",
+    "deleting": "Eliminando..."
   },
   "delete": {
     "title": "Eliminar Carga",

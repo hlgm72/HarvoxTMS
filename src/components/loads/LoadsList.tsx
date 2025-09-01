@@ -210,9 +210,9 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     load?: any;
   }>({ isOpen: false });
 
-  const handleDeleteLoad = async (loadId: string) => {
+  const handleDeleteLoad = async (loadId: string, loadNumber: string) => {
     try {
-      await deleteLoadMutation.mutateAsync(loadId);
+      await deleteLoadMutation.mutateAsync({ loadId, loadNumber });
       setDeleteDialog({ isOpen: false });
     } catch (error) {
       // El error ya se maneja en el hook
@@ -688,7 +688,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
               {t('list.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteDialog.load && handleDeleteLoad(deleteDialog.load.id)}
+              onClick={() => deleteDialog.load && handleDeleteLoad(deleteDialog.load.id, deleteDialog.load.load_number)}
               disabled={deleteLoadMutation.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
