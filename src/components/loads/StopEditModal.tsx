@@ -230,7 +230,7 @@ export function StopEditModal({
                 <Label>{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_time")}</Label>
                 <Select 
                   value={formData.scheduled_time || ''} 
-                  onValueChange={(value) => updateField('scheduled_time', value)}
+                  onValueChange={(value) => updateField('scheduled_time', value === '' ? null : value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")} />

@@ -342,7 +342,7 @@ export function StopFormCard({
             <Label>Hora Programada</Label>
             <Select 
               value={stop.scheduled_time || ''} 
-              onValueChange={(value) => onUpdate({ scheduled_time: value })}
+              onValueChange={(value) => onUpdate({ scheduled_time: value === '' ? null : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar hora" />
