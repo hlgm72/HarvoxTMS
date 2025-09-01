@@ -135,6 +135,27 @@ export function FuelExpenseDialog({
   const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
   const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'crear/editar este gasto de combustible');
 
+  // ATM formatters for monetary fields
+  const grossAmountATM = useATMInput({
+    initialValue: form.watch('gross_amount') || 0,
+    onValueChange: (value) => form.setValue('gross_amount', value)
+  });
+
+  const discountAmountATM = useATMInput({
+    initialValue: form.watch('discount_amount') || 0,
+    onValueChange: (value) => form.setValue('discount_amount', value)
+  });
+
+  const feesATM = useATMInput({
+    initialValue: form.watch('fees') || 0,
+    onValueChange: (value) => form.setValue('fees', value)
+  });
+
+  const totalAmountATM = useATMInput({
+    initialValue: form.watch('total_amount') || 0,
+    onValueChange: (value) => form.setValue('total_amount', value)
+  });
+
   // Populate form with expense data for edit mode
   React.useEffect(() => {
     if (isEditMode && expense) {
@@ -150,15 +171,21 @@ export function FuelExpenseDialog({
         station_city: expense.station_city || '',
         station_state: expense.station_state || '',
         vehicle_id: expense.vehicle_id || '',
-        driver_card_id: '',
-        card_last_five: '',
-        invoice_number: '',
-        gross_amount: 0,
-        discount_amount: 0,
-        fees: 0,
+        driver_card_id: '', // Not available in expense data
+        card_last_five: expense.card_last_five || '',
+        invoice_number: expense.invoice_number || '',
+        gross_amount: expense.gross_amount || 0,
+        discount_amount: expense.discount_amount || 0,
+        fees: expense.fees || 0,
         receipt_url: expense.receipt_url || '',
         notes: expense.notes || '',
       });
+
+      // ⭐ IMPORTANTE: Sincronizar ATM inputs con los datos del expense
+      grossAmountATM.setValue(expense.gross_amount || 0);
+      discountAmountATM.setValue(expense.discount_amount || 0);
+      feesATM.setValue(expense.fees || 0);
+      totalAmountATM.setValue(expense.total_amount || 0);
     } else if (!isEditMode) {
       // Reset to default values for create mode
       form.reset({
@@ -182,29 +209,14 @@ export function FuelExpenseDialog({
         receipt_url: '',
         notes: '',
       });
+
+      // Reset ATM inputs for create mode
+      grossAmountATM.setValue(0);
+      discountAmountATM.setValue(0);
+      feesATM.setValue(0);
+      totalAmountATM.setValue(0);
     }
-  }, [expense, form, isEditMode]);
-
-  // ATM formatters for monetary fields
-  const grossAmountATM = useATMInput({
-    initialValue: form.watch('gross_amount') || 0,
-    onValueChange: (value) => form.setValue('gross_amount', value)
-  });
-
-  const discountAmountATM = useATMInput({
-    initialValue: form.watch('discount_amount') || 0,
-    onValueChange: (value) => form.setValue('discount_amount', value)
-  });
-
-  const feesATM = useATMInput({
-    initialValue: form.watch('fees') || 0,
-    onValueChange: (value) => form.setValue('fees', value)
-  });
-
-  const totalAmountATM = useATMInput({
-    initialValue: form.watch('total_amount') || 0,
-    onValueChange: (value) => form.setValue('total_amount', value)
-  });
+  }, [expense, form, isEditMode, grossAmountATM, discountAmountATM, feesATM, totalAmountATM]);
 
   // Get available cards for selected driver
   const selectedDriverId = form.watch('driver_user_id');
