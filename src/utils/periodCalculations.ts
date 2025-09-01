@@ -61,6 +61,8 @@ export class PeriodCalculator {
     // Primero obtenemos el período actual, luego calculamos el anterior directamente
     const currentPeriod = this.getCurrentPeriod();
     
+    console.log('🔍 DEBUG - Current period for previous calculation:', currentPeriod);
+    
     switch (this.config.default_payment_frequency) {
       case 'weekly':
         // Para semanal: calcular fechas exactas del período anterior
@@ -69,12 +71,15 @@ export class PeriodCalculator {
         const prevStart = subDays(currentStart, 7);
         const prevEnd = subDays(currentEnd, 7);
         
-        return {
+        const result = {
           startDate: formatDateInUserTimeZone(prevStart),
           endDate: formatDateInUserTimeZone(prevEnd),
           frequency: 'weekly',
-          type: 'previous'
+          type: 'previous' as const
         };
+        
+        console.log('🔍 DEBUG - Previous period calculated:', result);
+        return result;
       case 'biweekly':
         // Para quincenal: calcular fechas exactas del período anterior
         const currentBiStart = parseISO(currentPeriod.startDate + 'T00:00:00');
@@ -86,7 +91,7 @@ export class PeriodCalculator {
           startDate: formatDateInUserTimeZone(prevBiStart),
           endDate: formatDateInUserTimeZone(prevBiEnd),
           frequency: 'biweekly',
-          type: 'previous'
+          type: 'previous' as const
         };
       case 'monthly':
         // Para mensual: restar 1 mes del inicio del período actual
@@ -103,7 +108,7 @@ export class PeriodCalculator {
           startDate: formatDateInUserTimeZone(defaultPrevStart),
           endDate: formatDateInUserTimeZone(defaultPrevEnd),
           frequency: 'weekly',
-          type: 'previous'
+          type: 'previous' as const
         };
     }
   }
