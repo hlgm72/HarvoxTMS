@@ -152,15 +152,12 @@ const getRelevantPeriodIds = async (
   companyId: string, 
   periodFilter: LoadsFilters['periodFilter']
 ): Promise<string[]> => {
-  console.log('🔍 getRelevantPeriodIds - Filtro recibido:', periodFilter);
-  
   if (!periodFilter) {
     return [];
   }
 
   // Caso específico: período único (incluyendo current, previous, next y specific)
   if ((periodFilter.type === 'specific' || periodFilter.type === 'current' || periodFilter.type === 'previous' || periodFilter.type === 'next') && periodFilter.periodId) {
-    console.log('🔍 getRelevantPeriodIds - Usando periodId específico:', periodFilter.periodId);
     return [periodFilter.periodId];
   }
 
@@ -268,8 +265,22 @@ export const useLoads = (filters?: LoadsFilters) => {
           // Incluir cargas del período Y cargas sin período asignado (recién creadas)
           loadsQuery = loadsQuery.or(`payment_period_id.in.(${relevantPeriodIds.join(',')}),payment_period_id.is.null`);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
-          // Si no hay períodos relevantes pero hay filtro, mostrar solo cargas sin período
-          loadsQuery = loadsQuery.is('payment_period_id', null);
+          // Si es un período calculado (previous, current, next) sin periodId pero con fechas
+          if ((filters.periodFilter.type === 'previous' || filters.periodFilter.type === 'current' || filters.periodFilter.type === 'next') 
+              && filters.periodFilter.startDate && filters.periodFilter.endDate) {
+            console.log('🔍 Aplicando filtro por rango de fechas calculado:', {
+              type: filters.periodFilter.type,
+              startDate: filters.periodFilter.startDate,
+              endDate: filters.periodFilter.endDate
+            });
+            // Filtrar cargas por rango de fechas (fecha de pickup o delivery dentro del período)
+            loadsQuery = loadsQuery.or(
+              `and(pickup_date.gte.${filters.periodFilter.startDate},pickup_date.lte.${filters.periodFilter.endDate}),and(delivery_date.gte.${filters.periodFilter.startDate},delivery_date.lte.${filters.periodFilter.endDate}),and(created_at.gte.${filters.periodFilter.startDate}T00:00:00,created_at.lte.${filters.periodFilter.endDate}T23:59:59)`
+            );
+          } else {
+            // Si no hay períodos relevantes pero hay filtro, mostrar solo cargas sin período
+            loadsQuery = loadsQuery.is('payment_period_id', null);
+          }
         }
 
         // Aplicar límites inteligentes
