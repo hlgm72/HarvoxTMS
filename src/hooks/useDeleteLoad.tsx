@@ -40,11 +40,17 @@ export const useDeleteLoad = () => {
     onSuccess: (_, data) => {
       console.log('✅ useDeleteLoad - Eliminación exitosa para:', data.loadId);
       
-      // Invalidar múltiples queries relacionadas con cargas
+      // Remover inmediatamente de cache usando setQueryData para actualización optimista
+      queryClient.setQueryData(['loads', user?.id], (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.filter((load: any) => load.id !== data.loadId);
+      });
+      
+      // Invalidar y refrescar todas las queries relacionadas con cargas
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['load', data.loadId] });
       
-      // Forzar refetch inmediato de las queries de cargas
+      // Refetch inmediato para sincronizar con el servidor
       queryClient.refetchQueries({ queryKey: ['loads'] });
       
       showSuccess(t('list.delete_success', { loadNumber: data.loadNumber }));

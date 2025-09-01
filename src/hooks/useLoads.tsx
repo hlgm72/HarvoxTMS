@@ -218,8 +218,8 @@ export const useLoads = (filters?: LoadsFilters) => {
     enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0, // Solo ejecutar cuando el cache esté listo
     retry: 1, // Reducir reintentos para evitar ERR_INSUFFICIENT_RESOURCES
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Backoff exponencial
-    staleTime: 300000, // Cache muy agresivo - 5 minutos
-    gcTime: 600000, // 10 minutos en cache
+    staleTime: 60000, // Reducir cache - 1 minuto para permitir actualizaciones más rápidas
+    gcTime: 300000, // 5 minutos en cache
     refetchOnWindowFocus: false, // Evitar refetch innecesario
     refetchOnReconnect: false, // Evitar múltiples queries al reconectar
     refetchInterval: false, // Desactivar polling
