@@ -119,10 +119,11 @@ export default function PaymentReports() {
         return currentPeriod ? [currentPeriod.id] : [];
       
       case 'previous':
-        return previousPeriod ? [previousPeriod.id] : [];
+        // ✅ CORREGIDO: Solo usar ID si hay periodId especificado (período real de BD)
+        return periodFilter.periodId && previousPeriod ? [previousPeriod.id] : [];
       
       case 'next':
-        return nextPeriod ? [nextPeriod.id] : [];
+        return periodFilter.periodId && nextPeriod ? [nextPeriod.id] : [];
       
       case 'specific':
         return periodFilter.periodId ? [periodFilter.periodId] : [];
@@ -169,9 +170,16 @@ export default function PaymentReports() {
       if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
         console.log('📊 Adding period filter for IDs:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
-      } else if (filters.periodFilter.type === 'custom' && filters.periodFilter.startDate && filters.periodFilter.endDate) {
-        // Para filtro personalizado, usar las fechas
-        console.log('📊 Adding custom date filter:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
+      } else if (
+        (filters.periodFilter.type === 'custom' || 
+         filters.periodFilter.type === 'previous' || 
+         filters.periodFilter.type === 'current' ||
+         filters.periodFilter.type === 'next') && 
+        filters.periodFilter.startDate && 
+        filters.periodFilter.endDate
+      ) {
+        // Para filtros con fechas específicas (cuando no hay períodos reales en BD)
+        console.log('📊 Adding date range filter:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
         query = query
           .gte('company_payment_periods.period_start_date', filters.periodFilter.startDate)
           .lte('company_payment_periods.period_end_date', filters.periodFilter.endDate);
@@ -205,7 +213,7 @@ export default function PaymentReports() {
     enabled: !!user && (
       filters.periodFilter.type === 'all' || 
       getFilterPeriodIds.length > 0 || 
-      (filters.periodFilter.type === 'custom' && !!filters.periodFilter.startDate && !!filters.periodFilter.endDate)
+      Boolean(filters.periodFilter.startDate && filters.periodFilter.endDate)
     )
   });
 
