@@ -152,12 +152,15 @@ const getRelevantPeriodIds = async (
   companyId: string, 
   periodFilter: LoadsFilters['periodFilter']
 ): Promise<string[]> => {
+  console.log('🔍 getRelevantPeriodIds - Filtro recibido:', periodFilter);
+  
   if (!periodFilter) {
     return [];
   }
 
   // Caso específico: período único (incluyendo current, previous, next y specific)
   if ((periodFilter.type === 'specific' || periodFilter.type === 'current' || periodFilter.type === 'previous' || periodFilter.type === 'next') && periodFilter.periodId) {
+    console.log('🔍 getRelevantPeriodIds - Usando periodId específico:', periodFilter.periodId);
     return [periodFilter.periodId];
   }
 
