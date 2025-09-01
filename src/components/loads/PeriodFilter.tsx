@@ -10,6 +10,7 @@ import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone, getTodayInUserTimeZone, formatDetailedPaymentPeriod } from '@/lib/dateFormatting';
+import { calculatePreviousPeriod } from '@/utils/periodCalculations';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 
@@ -113,8 +114,27 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           return 'Current';
         }
       case 'previous':
-        // Usar períodos calculados o reales para previous
-        const displayPreviousPeriod = previousPeriod || calculatedPeriods?.previous;
+        // Usar la misma lógica que current - calcular directo si no hay BD
+        let displayPreviousPeriod = previousPeriod;
+        
+        if (!displayPreviousPeriod && userCompany?.company_id && companyData) {
+          // Calcular período anterior directamente
+          const companyConfig = {
+            default_payment_frequency: (Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency) as 'weekly' | 'biweekly' | 'monthly',
+            payment_cycle_start_day: (Array.isArray(companyData) ? companyData[0]?.payment_cycle_start_day : companyData?.payment_cycle_start_day) || 1
+          };
+          const previousCalc = calculatePreviousPeriod(companyConfig);
+          displayPreviousPeriod = {
+            id: 'calculated-previous',
+            company_id: userCompany.company_id,
+            period_start_date: previousCalc.startDate,
+            period_end_date: previousCalc.endDate,
+            period_frequency: previousCalc.frequency,
+            status: 'calculated',
+            period_type: 'regular'
+          };
+        }
+        
         if (displayPreviousPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
             displayPreviousPeriod.period_start_date, 
@@ -237,39 +257,76 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
                   
-                   <Button
-                    variant={value.type === 'previous' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                     onClick={() => {
-                       // Usar períodos calculados o reales para previous
-                       const displayPrevious = previousPeriod || calculatedPeriods?.previous;
-                       if (displayPrevious) {
-                         handleOptionSelect({ 
-                           type: 'previous',
-                           periodId: displayPrevious.id,
-                           startDate: displayPrevious.period_start_date,
-                           endDate: displayPrevious.period_end_date
-                         });
-                       }
-                     }}
-                    disabled={!previousPeriod && !calculatedPeriods?.previous}
-                   >
-                       <Clock className="h-4 w-4 mr-2" />
-                       {(() => {
-                         const displayPrevious = previousPeriod || calculatedPeriods?.previous;
-                         if (displayPrevious) {
-                           const periodLabel = formatDetailedPaymentPeriod(
-                             displayPrevious.period_start_date, 
-                             displayPrevious.period_end_date, 
-                             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                           );
-                           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-                           const dateRange = formatPaymentPeriodBadge(displayPrevious.period_start_date, displayPrevious.period_end_date);
-                           return `Previous: ${periodNumber} (${dateRange})`;
-                         }
-                         return 'Previous';
-                       })()}
-                   </Button>
+                    <Button
+                     variant={value.type === 'previous' ? 'default' : 'ghost'}
+                     className="w-full justify-start"
+                      onClick={() => {
+                        // Usar la misma lógica que el label - calcular si no hay BD
+                        let displayPrevious = previousPeriod;
+                        
+                        if (!displayPrevious && userCompany?.company_id && companyData) {
+                          const companyConfig = {
+                            default_payment_frequency: (Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency) as 'weekly' | 'biweekly' | 'monthly',
+                            payment_cycle_start_day: (Array.isArray(companyData) ? companyData[0]?.payment_cycle_start_day : companyData?.payment_cycle_start_day) || 1
+                          };
+                          const previousCalc = calculatePreviousPeriod(companyConfig);
+                          displayPrevious = {
+                            id: 'calculated-previous',
+                            company_id: userCompany.company_id,
+                            period_start_date: previousCalc.startDate,
+                            period_end_date: previousCalc.endDate,
+                            period_frequency: previousCalc.frequency,
+                            status: 'calculated',
+                            period_type: 'regular'
+                          };
+                        }
+                        
+                        if (displayPrevious) {
+                          handleOptionSelect({ 
+                            type: 'previous',
+                            periodId: displayPrevious.id,
+                            startDate: displayPrevious.period_start_date,
+                            endDate: displayPrevious.period_end_date
+                          });
+                        }
+                      }}
+                     disabled={!previousPeriod && !userCompany?.company_id}
+                    >
+                        <Clock className="h-4 w-4 mr-2" />
+                        {(() => {
+                          // Usar la misma lógica que el label
+                          let displayPrevious = previousPeriod;
+                          
+                          if (!displayPrevious && userCompany?.company_id && companyData) {
+                            const companyConfig = {
+                              default_payment_frequency: (Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency) as 'weekly' | 'biweekly' | 'monthly',
+                              payment_cycle_start_day: (Array.isArray(companyData) ? companyData[0]?.payment_cycle_start_day : companyData?.payment_cycle_start_day) || 1
+                            };
+                            const previousCalc = calculatePreviousPeriod(companyConfig);
+                            displayPrevious = {
+                              id: 'calculated-previous',
+                              company_id: userCompany.company_id,
+                              period_start_date: previousCalc.startDate,
+                              period_end_date: previousCalc.endDate,
+                              period_frequency: previousCalc.frequency,
+                              status: 'calculated',
+                              period_type: 'regular'
+                            } as any;
+                          }
+                          
+                          if (displayPrevious) {
+                            const periodLabel = formatDetailedPaymentPeriod(
+                              displayPrevious.period_start_date, 
+                              displayPrevious.period_end_date, 
+                              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                            );
+                            const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+                            const dateRange = formatPaymentPeriodBadge(displayPrevious.period_start_date, displayPrevious.period_end_date);
+                            return `Previous: ${periodNumber} (${dateRange})`;
+                          }
+                          return 'Previous';
+                        })()}
+                    </Button>
 
                    <Button
                      variant={value.type === 'current' ? 'default' : 'ghost'}
