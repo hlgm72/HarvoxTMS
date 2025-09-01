@@ -4054,6 +4054,10 @@ export type Database = {
         }
         Returns: Json
       }
+      update_existing_spanish_deduction_titles: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       update_fuel_expense_with_validation: {
         Args: { expense_id: string; update_data: Json }
         Returns: Json
