@@ -137,6 +137,68 @@ Este sistema genera los reportes oficiales de pago para conductores. Cualquier m
 - ❌ Componentes de procesamiento de pagos
 - ❌ Triggers de recálculo en base de datos
 
+## 🔄 RECÁLCULOS AUTOMÁTICOS DE PERÍODOS
+
+### ⚡ EVENTOS QUE DISPARAN RECÁLCULO COMPLETO DEL PERÍODO:
+
+#### **Al Crear o Editar Cargas:**
+- ✅ **Crear nueva carga** → Recalcula automáticamente el período del conductor asignado
+- ✅ **Editar carga existente** → Recalcula automáticamente el período del conductor afectado  
+- ✅ **Cambiar driver de carga** → Recalcula automáticamente períodos de AMBOS conductores (anterior y nuevo)
+- ✅ **Modificar total_amount** → Recalcula automáticamente `gross_earnings` del período
+- ✅ **Cambiar fechas de carga** → Puede reasignar a diferente período y recalcular ambos
+
+#### **Al Gestionar Gastos y Deducciones:**
+- ✅ **Agregar/editar gastos de combustible** → Recalcula `fuel_expenses` del período
+- ✅ **Agregar/editar deducciones** → Recalcula `total_deductions` del período
+- ✅ **Agregar/editar otros ingresos** → Recalcula `other_income` del período
+
+### 🧮 QUÉ SE RECALCULA AUTOMÁTICAMENTE:
+
+```typescript
+// Cada recálculo actualiza estos campos en driver_period_calculations:
+
+1. gross_earnings    = Suma de total_amount de todas las cargas del período
+2. fuel_expenses     = Suma de gastos de combustible del período  
+3. total_deductions  = Suma de todas las deducciones aplicadas del período
+4. other_income      = Suma de otros ingresos del período
+5. total_income      = gross_earnings + other_income (calculado dinámicamente)
+6. net_payment       = total_income - fuel_expenses - total_deductions (calculado dinámicamente)
+7. has_negative_balance = net_payment < 0 (calculado dinámicamente)
+```
+
+### ⚙️ IMPLEMENTACIÓN TÉCNICA:
+
+#### **Triggers de Base de Datos (CRÍTICOS):**
+- **`auto_recalculate_on_loads`** - Se ejecuta en INSERT/UPDATE/DELETE de cargas
+- **`trigger_recalc_driver_period_after_load()`** - Función específica para cargas
+- **`auto_recalculate_on_fuel_expenses`** - Se ejecuta en cambios de combustible
+- **`auto_recalculate_on_other_income`** - Se ejecuta en cambios de otros ingresos
+
+#### **Funciones de Recálculo:**
+- **`recalculate_driver_period_calculation`** - Recálculo específico por conductor
+- **`calculate_driver_payment_period_v2`** - Recálculo completo con validaciones
+- **`verify_and_recalculate_company_payments`** - Verificación integral de empresa
+
+#### **Alcance del Recálculo:**
+- ✅ **Automático e Inmediato** - No requiere intervención manual
+- ✅ **Específico por Conductor** - Solo afecta al conductor y período correspondiente
+- ✅ **Atómico** - Todo el recálculo se completa o falla como unidad
+- ✅ **Auditado** - Cada recálculo queda registrado en logs
+
+### 📊 EJEMPLO PRÁCTICO:
+
+```sql
+-- Al crear/editar carga:
+INSERT INTO loads (driver_user_id, total_amount, ...) VALUES (...);
+
+-- Automáticamente se ejecuta:
+LOG: auto_recalculate_on_loads: Recálculo ejecutado para período [uuid]
+LOG: calculate_driver_payment_period_v2 COMPLETED: 
+     driver=[uuid], period=[uuid], 
+     gross=[nuevo_total], net=[nuevo_neto]
+```
+
 ## 🔧 TESTING DE FUNCIONES CRÍTICAS
 
 ### Verificaciones Obligatorias:
@@ -144,6 +206,8 @@ Este sistema genera los reportes oficiales de pago para conductores. Cualquier m
 - ✅ NO se generan períodos futuros innecesarios
 - ✅ La asignación de cargas usa el criterio correcto
 - ✅ Los `driver_period_calculations` se crean correctamente
+- ✅ **Los recálculos automáticos se ejecutan en CADA cambio de carga** 
+- ✅ **Los totales se actualizan inmediatamente tras modificar cargas**
 - ✅ Las funciones de cálculo matemático producen resultados correctos
 - ✅ Los recálculos automáticos mantienen la integridad de datos
 - ✅ Los reportes de pagos muestran información precisa
