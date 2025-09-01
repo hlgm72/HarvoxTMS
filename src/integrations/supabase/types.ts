@@ -3332,6 +3332,17 @@ export type Database = {
         }
         Returns: string
       }
+      create_percentage_deduction_safe: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_expense_date: string
+          p_expense_type_id: string
+          p_payment_period_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       create_percentage_deductions_for_load: {
         Args:
           | {
@@ -3466,6 +3477,10 @@ export type Database = {
         Returns: Json
       }
       generate_deductions_for_existing_loads: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      generate_deductions_for_existing_loads_safe: {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
