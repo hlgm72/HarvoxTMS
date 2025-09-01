@@ -75,6 +75,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
         // Aplicar filtro de período si está especificado
         if (filters?.periodFilter) {
+          console.log('🔍 Aplicando filtro de período:', filters.periodFilter);
+          
           // Si es período específico, obtener las fechas del período
           if (filters.periodFilter.type === 'specific' && (filters.periodFilter as any).periodId) {
             // Obtener fechas del período específico desde la base de datos
@@ -86,26 +88,50 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               .single();
             
             if (periodQuery.data) {
+              console.log('📅 Filtrando por período específico:', periodQuery.data);
               query = query
                 .gte('expense_date', periodQuery.data.period_start_date)
                 .lte('expense_date', periodQuery.data.period_end_date);
             }
           }
-          // Si es período actual, usar el período activo de la empresa
+          // Si es período actual, usar el período más reciente de la empresa
           else if (filters.periodFilter.type === 'current') {
-            const currentPeriodQuery = await supabase
-              .from('company_payment_periods')
-              .select('period_start_date, period_end_date')
-              .eq('company_id', user?.user_metadata?.company_id)
-              .eq('status', 'active')
-              .single();
+            console.log('🔄 Buscando período actual para empresa:', user?.user_metadata?.company_id);
             
-            if (currentPeriodQuery.data) {
+            // Primero buscar períodos activos, luego el más reciente
+            let currentPeriodQuery = await supabase
+              .from('company_payment_periods')
+              .select('period_start_date, period_end_date, status, id')
+              .eq('company_id', user?.user_metadata?.company_id)
+              .eq('status', 'open')
+              .order('period_start_date', { ascending: false })
+              .limit(1);
+            
+            // Si no hay períodos abiertos, buscar el más reciente
+            if (!currentPeriodQuery.data || currentPeriodQuery.data.length === 0) {
+              console.log('⚠️ No se encontraron períodos abiertos, buscando el más reciente');
+              currentPeriodQuery = await supabase
+                .from('company_payment_periods')
+                .select('period_start_date, period_end_date, status, id')
+                .eq('company_id', user?.user_metadata?.company_id)
+                .order('period_start_date', { ascending: false })
+                .limit(1);
+            }
+            
+            if (currentPeriodQuery.data && currentPeriodQuery.data.length > 0) {
+              const periodData = currentPeriodQuery.data[0];
+              console.log('📅 Filtrando por período actual:', periodData);
               query = query
-                .gte('expense_date', currentPeriodQuery.data.period_start_date)
-                .lte('expense_date', currentPeriodQuery.data.period_end_date);
+                .gte('expense_date', periodData.period_start_date)
+                .lte('expense_date', periodData.period_end_date);
+            } else {
+              console.log('❌ No se encontraron períodos para esta empresa');
+              // Si no hay períodos, aplicar filtro que no retorne nada
+              query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
+        } else {
+          console.log('🔍 No se aplicó filtro de período');
         }
 
         // Aplicar filtros de fecha si existen (solo si no se aplicó filtro de período)
@@ -137,7 +163,12 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
         const { data, error } = await query;
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Error en consulta de deducciones eventuales:', error);
+          throw error;
+        }
+
+        console.log('📊 Deducciones eventuales encontradas:', data?.length || 0);
         
         // Enriquecer con información de períodos y conductores
         const enrichedData = await Promise.all(
