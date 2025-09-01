@@ -198,6 +198,11 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         targetCompanyId = userCompanyRole.company_id;
       }
 
+      console.log('🔍 usePreviousPaymentPeriod - Fetching previous period:', {
+        currentDate,
+        targetCompanyId
+      });
+      
       // Buscar el período anterior (el período que terminó justo antes de la fecha actual)
       const { data: period, error } = await supabase
         .from('company_payment_periods')
@@ -207,6 +212,14 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         .order('period_end_date', { ascending: false })
         .limit(1)
         .maybeSingle();
+
+      console.log('🔍 usePreviousPaymentPeriod - DB Result:', {
+        period,
+        error,
+        period_start_date: period?.period_start_date,
+        period_end_date: period?.period_end_date,
+        status: period?.status
+      });
 
       if (error && error.code !== 'PGRST116') {
         throw error;
