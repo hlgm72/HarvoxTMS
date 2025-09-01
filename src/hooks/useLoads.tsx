@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useMemo } from 'react';
 import { useCompanyCache } from './useCompanyCache';
+import { useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod, usePaymentPeriods } from './usePaymentPeriods';
 import { getTodayInUserTimeZone, createDateInUserTimeZone } from '@/lib/dateFormatting';
 
 export interface LoadStop {
@@ -146,64 +147,54 @@ const calculateDateRange = (filterType: LoadsFilters['periodFilter']['type']): D
 };
 
 /**
- * Obtiene los period_ids relevantes según el filtro de fechas (ACTUALIZADO para company_payment_periods)
+ * Obtiene los period_ids relevantes según el filtro - NUEVA LÓGICA SIMPLE CONSISTENTE CON PAYMENT REPORTS
  */
-const getRelevantPeriodIds = async (
-  companyId: string, 
-  periodFilter: LoadsFilters['periodFilter']
-): Promise<string[]> => {
+const getRelevantPeriodIds = (
+  periodFilter: LoadsFilters['periodFilter'],
+  currentPeriod: any,
+  previousPeriod: any, 
+  nextPeriod: any,
+  allPeriods: any[]
+): string[] => {
   if (!periodFilter) {
     return [];
   }
 
-  // Caso específico: período único (incluyendo current, previous, next y specific)
-  if ((periodFilter.type === 'specific' || periodFilter.type === 'current' || periodFilter.type === 'previous' || periodFilter.type === 'next') && periodFilter.periodId) {
-    return [periodFilter.periodId];
+  // USAR LA MISMA LÓGICA QUE PAYMENT REPORTS
+  switch (periodFilter.type) {
+    case 'current':
+      return currentPeriod ? [currentPeriod.id] : [];
+    
+    case 'previous':
+      return previousPeriod ? [previousPeriod.id] : [];
+    
+    case 'next':
+      return nextPeriod ? [nextPeriod.id] : [];
+    
+    case 'specific':
+      return periodFilter.periodId ? [periodFilter.periodId] : [];
+    
+    case 'all':
+      return allPeriods ? allPeriods.map(p => p.id) : [];
+    
+    case 'custom':
+      // Para filtro personalizado, usaremos las fechas en la query
+      return [];
+    
+    default:
+      return currentPeriod ? [currentPeriod.id] : [];
   }
-
-  // Calcular rango de fechas según el tipo de filtro
-  let dateRange: DateRange | null = null;
-  
-  if (periodFilter.type === 'custom' && periodFilter.startDate && periodFilter.endDate) {
-    dateRange = {
-      startDate: periodFilter.startDate,
-      endDate: periodFilter.endDate
-    };
-  } else if ((periodFilter.type === 'previous' || periodFilter.type === 'current' || periodFilter.type === 'next') && periodFilter.startDate && periodFilter.endDate) {
-    // USAR LAS FECHAS CALCULADAS QUE VIENEN DEL FILTRO
-    dateRange = {
-      startDate: periodFilter.startDate,
-      endDate: periodFilter.endDate
-    };
-  } else {
-    dateRange = calculateDateRange(periodFilter.type);
-  }
-
-  // Sin filtro de fechas para 'all'
-  if (!dateRange) {
-    return [];
-  }
-
-  // Buscar períodos que se solapen con el rango de fechas (NUEVA LÓGICA para períodos por empresa)
-  const { data: periodsInRange, error } = await supabase
-    .from('company_payment_periods')
-    .select('id')
-    .eq('company_id', companyId)
-    .lte('period_start_date', dateRange.endDate)
-    .gte('period_end_date', dateRange.startDate);
-
-  if (error) {
-    console.error('❌ Error obteniendo períodos:', error);
-    throw new Error('Error consultando períodos de pago');
-  }
-
-  const periodIds = periodsInRange?.map(p => p.id) || [];
-  return periodIds;
 };
 
 export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
   const { userCompany, companyUsers, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
+
+  // Obtener períodos como en PaymentReports para consistencia
+  const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
+  const { data: previousPeriod } = usePreviousPaymentPeriod(userCompany?.company_id);
+  const { data: nextPeriod } = useNextPaymentPeriod(userCompany?.company_id);
+  const { data: allPeriods = [] } = usePaymentPeriods();
 
   // Memoizar el queryKey para evitar re-renders innecesarios y deduplicar queries
   const queryKey = useMemo(() => {
@@ -255,8 +246,14 @@ export const useLoads = (filters?: LoadsFilters) => {
       }
 
       try {
-        // PASO 2: Obtener period_ids relevantes según el filtro (OPTIMIZACIÓN CLAVE)
-        const relevantPeriodIds = await getRelevantPeriodIds(userCompany.company_id, filters?.periodFilter);
+        // PASO 2: Obtener period_ids relevantes usando la misma lógica que PaymentReports
+        const relevantPeriodIds = getRelevantPeriodIds(
+          filters?.periodFilter,
+          currentPeriod,
+          previousPeriod,
+          nextPeriod,
+          allPeriods
+        );
         
         // PASO 3: Construir query optimizada de cargas
         let loadsQuery = supabase
