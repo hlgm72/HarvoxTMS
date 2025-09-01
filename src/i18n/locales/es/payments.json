@@ -23,6 +23,7 @@
     "create": "Crear Período",
     "creating": "Creando...",
     "current": "Período Actual",
+    "payment_period": "Período de Pago",
     "no_periods": "No hay períodos de pago disponibles",
     "no_periods_for_role": "No hay períodos de pago disponibles para este {{role}}.",
     "special_period": "Período Especial",

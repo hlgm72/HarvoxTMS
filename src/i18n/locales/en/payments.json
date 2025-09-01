@@ -23,6 +23,7 @@
     "create": "Create Period",
     "creating": "Creating...",
     "current": "Current Period",
+    "payment_period": "Payment Period",
     "no_periods": "No payment periods available",
     "no_periods_for_role": "No payment periods available for this {{role}}.",
     "special_period": "Special Period",
