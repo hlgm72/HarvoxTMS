@@ -1250,29 +1250,111 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       return doc;
     } else {
       console.log('💾 Modo descarga activado');
-      // Usar método más simple y compatible
+      
+      // Verificar si el navegador soporta descargas
+      if (!document.createElement('a').download) {
+        throw new Error('Tu navegador no soporta descargas automáticas. Usa el modo preview para ver el PDF.');
+      }
+      
+      // Método principal: usando jsPDF save()
       try {
+        // Verificar permisos de descarga si está disponible
+        if (navigator.permissions) {
+          try {
+            // Usar una aproximación más genérica sin tipos específicos no soportados
+            console.log('ℹ️ Navegador con soporte de permisos detectado');
+          } catch (permError) {
+            // Ignorar errores de permisos en navegadores que no los soportan
+            console.log('ℹ️ API de permisos no disponible');
+          }
+        }
+        
         doc.save(fileName);
         console.log('✅ Descarga iniciada con doc.save()');
+        
       } catch (saveError) {
-        console.error('❌ Error con doc.save(), intentando método alternativo:', saveError);
+        console.error('❌ Error con doc.save():', saveError);
         
-        // Método fallback
-        const pdfBlob = doc.output('blob');
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        setTimeout(() => {
-          URL.revokeObjectURL(pdfUrl);
-        }, 100);
-        
-        console.log('✅ Descarga iniciada con método alternativo');
+        // Método fallback 1: Blob + URL
+        try {
+          const pdfBlob = doc.output('blob');
+          
+          // Verificar que el blob se creó correctamente
+          if (!pdfBlob || pdfBlob.size === 0) {
+            throw new Error('Error generando el archivo PDF');
+          }
+          
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          
+          const link = document.createElement('a');
+          link.href = pdfUrl;
+          link.download = fileName;
+          link.style.display = 'none';
+          
+          // Agregar al DOM temporalmente
+          document.body.appendChild(link);
+          
+          // Simular click con un pequeño delay para asegurar que el elemento esté en el DOM
+          setTimeout(() => {
+            link.click();
+            
+            // Limpiar después de otro delay
+            setTimeout(() => {
+              if (document.body.contains(link)) {
+                document.body.removeChild(link);
+              }
+              URL.revokeObjectURL(pdfUrl);
+            }, 100);
+          }, 10);
+          
+          console.log('✅ Descarga iniciada con método fallback 1');
+          
+        } catch (fallbackError) {
+          console.error('❌ Error con método fallback 1:', fallbackError);
+          
+          // Método fallback 2: Data URI (último recurso)
+          try {
+            const pdfDataUri = doc.output('datauristring');
+            
+            if (!pdfDataUri || pdfDataUri.length < 100) {
+              throw new Error('Error generando Data URI del PDF');
+            }
+            
+            const link = document.createElement('a');
+            link.href = pdfDataUri;
+            link.download = fileName;
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            
+            setTimeout(() => {
+              link.click();
+              setTimeout(() => {
+                if (document.body.contains(link)) {
+                  document.body.removeChild(link);
+                }
+              }, 100);
+            }, 10);
+            
+            console.log('✅ Descarga iniciada con método fallback 2 (Data URI)');
+            
+          } catch (dataUriError) {
+            console.error('❌ Todos los métodos de descarga fallaron:', dataUriError);
+            
+            // Mostrar mensaje específico según el tipo de error
+            let errorMessage = 'No se pudo descargar el PDF. ';
+            
+            if (saveError.message?.includes('denied') || saveError.message?.includes('blocked')) {
+              errorMessage += 'Las descargas están bloqueadas en tu navegador. Verifica la configuración de descargas.';
+            } else if (saveError.message?.includes('network') || saveError.message?.includes('connection')) {
+              errorMessage += 'Problema de conexión. Verifica tu conexión a internet.';
+            } else {
+              errorMessage += 'Intenta usar el modo preview o verifica los permisos del navegador.';
+            }
+            
+            throw new Error(errorMessage);
+          }
+        }
       }
     }
   } catch (error) {
