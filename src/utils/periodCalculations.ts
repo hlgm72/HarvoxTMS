@@ -9,7 +9,8 @@ import {
   subDays,
   addMonths,
   subMonths,
-  format
+  format,
+  parseISO
 } from 'date-fns';
 import { formatDateInUserTimeZone, getUserTimeZone } from '@/lib/dateFormatting';
 
@@ -59,15 +60,25 @@ export class PeriodCalculator {
   getPreviousPeriod(): CalculatedPeriod {
     const today = new Date();
     
+    // Primero obtenemos el período actual, luego calculamos el anterior
+    const currentPeriod = this.getCurrentPeriod();
+    
     switch (this.config.default_payment_frequency) {
       case 'weekly':
-        return this.getWeeklyPeriod(subWeeks(today, 1), 'previous');
+        // Para semanal: restar 7 días del inicio del período actual
+        const prevWeekStart = subDays(parseISO(currentPeriod.startDate + 'T00:00:00'), 7);
+        return this.getWeeklyPeriod(prevWeekStart, 'previous');
       case 'biweekly':
-        return this.getBiweeklyPeriod(subWeeks(today, 2), 'previous');
+        // Para quincenal: restar 14 días del inicio del período actual
+        const prevBiweekStart = subDays(parseISO(currentPeriod.startDate + 'T00:00:00'), 14);
+        return this.getBiweeklyPeriod(prevBiweekStart, 'previous');
       case 'monthly':
-        return this.getMonthlyPeriod(subMonths(today, 1), 'previous');
+        // Para mensual: restar 1 mes del inicio del período actual
+        const prevMonthStart = subMonths(parseISO(currentPeriod.startDate + 'T00:00:00'), 1);
+        return this.getMonthlyPeriod(prevMonthStart, 'previous');
       default:
-        return this.getWeeklyPeriod(subWeeks(today, 1), 'previous');
+        const defaultPrevStart = subDays(parseISO(currentPeriod.startDate + 'T00:00:00'), 7);
+        return this.getWeeklyPeriod(defaultPrevStart, 'previous');
     }
   }
 
@@ -77,15 +88,25 @@ export class PeriodCalculator {
   getNextPeriod(): CalculatedPeriod {
     const today = new Date();
     
+    // Primero obtenemos el período actual, luego calculamos el siguiente
+    const currentPeriod = this.getCurrentPeriod();
+    
     switch (this.config.default_payment_frequency) {
       case 'weekly':
-        return this.getWeeklyPeriod(addWeeks(today, 1), 'next');
+        // Para semanal: agregar 7 días al final del período actual
+        const nextWeekStart = addDays(parseISO(currentPeriod.endDate + 'T00:00:00'), 1);
+        return this.getWeeklyPeriod(nextWeekStart, 'next');
       case 'biweekly':
-        return this.getBiweeklyPeriod(addWeeks(today, 2), 'next');
+        // Para quincenal: agregar 1 día al final del período actual
+        const nextBiweekStart = addDays(parseISO(currentPeriod.endDate + 'T00:00:00'), 1);
+        return this.getBiweeklyPeriod(nextBiweekStart, 'next');
       case 'monthly':
-        return this.getMonthlyPeriod(addMonths(today, 1), 'next');
+        // Para mensual: agregar 1 mes al inicio del período actual
+        const nextMonthStart = addMonths(parseISO(currentPeriod.startDate + 'T00:00:00'), 1);
+        return this.getMonthlyPeriod(nextMonthStart, 'next');
       default:
-        return this.getWeeklyPeriod(addWeeks(today, 1), 'next');
+        const defaultNextStart = addDays(parseISO(currentPeriod.endDate + 'T00:00:00'), 1);
+        return this.getWeeklyPeriod(defaultNextStart, 'next');
     }
   }
 
