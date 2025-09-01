@@ -7,13 +7,20 @@ export function usePaymentPeriodById(periodId?: string) {
     queryFn: async () => {
       if (!periodId) return null;
       
+      console.log('🔍 Buscando período con ID:', periodId);
+      
       const { data, error } = await supabase
         .from('company_payment_periods')
         .select('*')
         .eq('id', periodId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error obteniendo período:', error);
+        throw error;
+      }
+      
+      console.log('✅ Período obtenido:', data);
       return data;
     },
     enabled: !!periodId

@@ -37,11 +37,15 @@ export function CurrentFiltersDisplay({
   const getFilterBadges = () => {
     const badges = [];
     
+    console.log('🔍 Generando badges - periodId:', filters.periodFilter?.periodId);
+    console.log('📅 Datos del período obtenidos:', periodData);
+    
     // Período actual - siempre mostrar si hay periodId
     if (filters.periodFilter?.periodId) {
       if (periodData) {
         const startDate = format(new Date(periodData.period_start_date), 'dd MMM');
         const endDate = format(new Date(periodData.period_end_date), 'dd MMM yyyy');
+        console.log('📅 Fechas formateadas:', { startDate, endDate });
         badges.push({ 
           key: 'period', 
           label: `Período: ${startDate} - ${endDate}` 
