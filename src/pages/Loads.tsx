@@ -10,6 +10,7 @@ import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
 import { useLoadsStats } from "@/hooks/useLoadsStats";
+import { useDriversList } from "@/hooks/useDriversList";
 
 export default function Loads() {
   const { t } = useTranslation('loads');
@@ -36,6 +37,14 @@ export default function Loads() {
   
   // Hook para obtener estadísticas en tiempo real
   const { data: loadsStats, isLoading: statsLoading } = useLoadsStats({ periodFilter: filters.periodFilter });
+  
+  // Hook para obtener conductores para los filtros
+  const { data: drivers } = useDriversList();
+  
+  console.log('🚛 Loads - Conductores cargados:', {
+    drivers,
+    driversCount: drivers?.length || 0
+  });
 
   // console.log('🎯 Loads component - periodFilter state:', periodFilter);
 
@@ -177,7 +186,12 @@ export default function Loads() {
             totalLoads: loadsStats.totalActive || 0,
             totalRevenue: loadsStats.totalAmount || 0,
             activeDrivers: loadsStats.pendingAssignment || 0
-          } : undefined
+          } : undefined,
+          drivers: drivers?.map(driver => ({
+            user_id: driver.user_id,
+            first_name: driver.label.split(' ')[0] || '',
+            last_name: driver.label.split(' ').slice(1).join(' ') || ''
+          })) || []
         }}
         onExportHandler={async (format) => {
           console.log(`Exportando loads como ${format}`);
