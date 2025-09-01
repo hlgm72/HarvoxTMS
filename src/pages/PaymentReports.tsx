@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
 import { FinancialLockWarning, FinancialLockIndicator } from "@/components/payments/FinancialLockWarning";
 import { formatPeriodLabel } from "@/utils/periodUtils";
+import { DeductionRecalculatorButton } from "@/components/payments/DeductionRecalculatorButton";
 
 export default function PaymentReports() {
   const { t } = useTranslation(['payments', 'common']);
@@ -350,10 +351,20 @@ export default function PaymentReports() {
         title={t('reports.title')}
         subtitle={t('reports.subtitle')}
         actions={
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            {t('reports.generate_bulk')}
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Botón de validación para Semana 35 */}
+            {filters.periodFilter.type === 'current' && currentPeriod && (
+              <DeductionRecalculatorButton
+                periodId={currentPeriod.id}
+                periodStartDate={currentPeriod.period_start_date}
+                periodEndDate={currentPeriod.period_end_date}
+              />
+            )}
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('reports.generate_bulk')}
+            </Button>
+          </div>
         }
       />
 
