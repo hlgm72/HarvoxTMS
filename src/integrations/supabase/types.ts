@@ -3219,8 +3219,16 @@ export type Database = {
         Args: { target_company_id: string; target_user_id: string }
         Returns: boolean
       }
+      cleanup_all_empty_periods_for_company: {
+        Args: { target_company_id: string }
+        Returns: Json
+      }
       cleanup_empty_legacy_periods: {
         Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      cleanup_empty_payment_period: {
+        Args: { period_id: string }
         Returns: Json
       }
       cleanup_expired_backups: {
@@ -3830,6 +3838,10 @@ export type Database = {
       }
       is_financial_data_protected: {
         Args: { target_driver_user_id: string; target_period_id: string }
+        Returns: boolean
+      }
+      is_payment_period_empty: {
+        Args: { period_id: string }
         Returns: boolean
       }
       is_payment_period_locked: {
