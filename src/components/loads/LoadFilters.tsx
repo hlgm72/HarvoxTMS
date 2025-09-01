@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { formatShortDate, formatMediumDate } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
+import { useDriversList } from "@/hooks/useDriversList";
 
 const statusOptions = [
   { value: "all", label: "Todos los estados" },
@@ -19,13 +20,6 @@ const statusOptions = [
   { value: "completed", label: "Completada" }
 ];
 
-// Mock data - will be replaced with real data
-const driverOptions = [
-  { value: "all", label: "Todos los conductores" },
-  { value: "driver1", label: "María García" },
-  { value: "driver2", label: "Carlos Rodríguez" },
-  { value: "driver3", label: "Ana Martínez" }
-];
 
 const brokerOptions = [
   { value: "all", label: "Todos los brokers" },
@@ -46,6 +40,13 @@ interface LoadFiltersProps {
 
 export function LoadFilters({ filters, onFiltersChange }: LoadFiltersProps) {
   const { t } = useTranslation();
+  const { data: drivers, isLoading: driversLoading } = useDriversList();
+
+  // Crear opciones de conductores con opción "Todos"
+  const driverOptions = [
+    { value: "all", label: "Todos los conductores" },
+    ...(drivers || [])
+  ];
 
   const handleFilterChange = (key: string, value: any) => {
     onFiltersChange({
@@ -93,9 +94,10 @@ export function LoadFilters({ filters, onFiltersChange }: LoadFiltersProps) {
             <Select 
               value={filters.driver} 
               onValueChange={(value) => handleFilterChange("driver", value)}
+              disabled={driversLoading}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar conductor" />
+                <SelectValue placeholder={driversLoading ? "Cargando conductores..." : "Seleccionar conductor"} />
               </SelectTrigger>
               <SelectContent>
                 {driverOptions.map((option) => (
