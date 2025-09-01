@@ -9,7 +9,7 @@
   "create": {
     "button": "Nueva Carga",
     "title": "Crear Nueva Carga", 
-    "duplicate": "Duplicar Carga",
+    "duplicate": "Nueva Carga Basada en Existente",
     "edit": "Editar Carga"
   },
   "create_wizard": {

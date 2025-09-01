@@ -9,7 +9,7 @@
   "create": {
     "button": "New Load",
     "title": "Create New Load", 
-    "duplicate": "Duplicate Load",
+    "duplicate": "New Load Based on Existing",
     "edit": "Edit Load"
   },
   "create_wizard": {
