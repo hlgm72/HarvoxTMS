@@ -1170,12 +1170,73 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
             document.title = '${fileName.replace('.pdf', '')}';
             
             function downloadPDF() {
-              const link = document.createElement('a');
-              link.href = '${pdfUrl}';
-              link.download = '${fileName}';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              console.log('💾 Iniciando descarga desde preview...');
+              
+              // Método principal: crear enlace
+              try {
+                const link = document.createElement('a');
+                link.href = '${pdfUrl}';
+                link.download = '${fileName}';
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                
+                setTimeout(() => {
+                  if (document.body.contains(link)) {
+                    document.body.removeChild(link);
+                  }
+                }, 100);
+                
+                console.log('✅ Descarga iniciada método principal');
+                
+              } catch (error) {
+                console.error('❌ Error método principal:', error);
+                
+                // Método fallback: fetch + blob
+                try {
+                  fetch('${pdfUrl}')
+                    .then(response => response.blob())
+                    .then(blob => {
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = '${fileName}';
+                      link.style.display = 'none';
+                      
+                      document.body.appendChild(link);
+                      link.click();
+                      
+                      setTimeout(() => {
+                        if (document.body.contains(link)) {
+                          document.body.removeChild(link);
+                        }
+                        URL.revokeObjectURL(url);
+                      }, 100);
+                      
+                      console.log('✅ Descarga iniciada método fallback');
+                    })
+                    .catch(fetchError => {
+                      console.error('❌ Error método fallback:', fetchError);
+                      
+                      // Último recurso: forzar descarga con nueva ventana
+                      try {
+                        const newWindow = window.open('${pdfUrl}', '_blank');
+                        if (!newWindow) {
+                          alert('No se pudo descargar el PDF. Verifica que los popups estén permitidos o haz click derecho en el PDF y selecciona "Guardar como".');
+                        } else {
+                          console.log('✅ PDF abierto en nueva ventana como último recurso');
+                        }
+                      } catch (finalError) {
+                        console.error('❌ Error final:', finalError);
+                        alert('Error descargando el PDF. Haz click derecho en el PDF y selecciona "Guardar como".');
+                      }
+                    });
+                    
+                } catch (fallbackError) {
+                  console.error('❌ Error iniciando fallback:', fallbackError);
+                  alert('Error descargando el PDF. Haz click derecho en el PDF y selecciona "Guardar como".');
+                }
+              }
             }
             
             // Asegurar que el título se mantenga
