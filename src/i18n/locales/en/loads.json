@@ -876,7 +876,11 @@
     "weight": "Weight:",
     "dimensions": "Dimensions:",
     "no_commodity": "No commodity information",
-    "no_dimensions": "No dimensions specified"
+    "no_dimensions": "No dimensions specified",
+    "confirm_deletion": "Confirm Deletion",
+    "deletion_warning": "Are you sure you want to delete this load?",
+    "deletion_irreversible": "This action cannot be undone.",
+    "cancel": "Cancel"
   },
   "delete": {
     "title": "Delete Load",
