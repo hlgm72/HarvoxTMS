@@ -23,8 +23,8 @@ export const calculateWeekNumber = (date: Date): number => {
   const daysDiff = Math.floor((mondayOfWeek.getTime() - firstMondayOfYear.getTime()) / (1000 * 60 * 60 * 24));
   const weekNumber = Math.floor(daysDiff / 7) + 1;
   
-  // 🔍 LOG MÁS VISIBLE
-  console.error('🔢 WEEK CALCULATION:', { 
+  // Debug logs (now using console.log instead of console.error)
+  console.log('🔢 WEEK CALCULATION:', { 
     inputDate: date.toLocaleDateString(),
     weekNumber, 
     year,
@@ -35,7 +35,7 @@ export const calculateWeekNumber = (date: Date): number => {
   
   // Test específico para 25 de agosto 2025
   if (date.getMonth() === 7 && date.getDate() === 25 && year === 2025) {
-    console.error('🎯 AUGUST 25 TEST - Should be Week 35:', {
+    console.log('🎯 AUGUST 25 TEST - Should be Week 35:', {
       weekNumber,
       expectedWeek: 35,
       isCorrect: weekNumber === 35
