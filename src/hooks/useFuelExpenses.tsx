@@ -7,6 +7,7 @@ import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { formatDateInUserTimeZone, convertUserDateToUTC } from '@/lib/dateFormatting';
 
 export interface FuelExpenseFilters {
+  search?: string;
   driverId?: string;
   periodId?: string;
   status?: string;
@@ -100,7 +101,33 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
         throw error;
       }
 
-      return data || [];
+      let results = data || [];
+
+      // Aplicar filtro de búsqueda localmente (más flexible para múltiples campos)
+      if (filters.search && filters.search.trim() !== '') {
+        const searchTerm = filters.search.toLowerCase().trim();
+        
+        results = results.filter(expense => {
+          // Filtrar por nombre de estación
+          if (expense.station_name?.toLowerCase().includes(searchTerm)) return true;
+          
+          // Filtrar por ciudad de estación
+          if (expense.station_city?.toLowerCase().includes(searchTerm)) return true;
+          
+          // Filtrar por estado de estación
+          if (expense.station_state?.toLowerCase().includes(searchTerm)) return true;
+          
+          // Filtrar por número de factura
+          if (expense.invoice_number?.toLowerCase().includes(searchTerm)) return true;
+          
+          // Filtrar por últimos 5 dígitos de tarjeta
+          if (expense.card_last_five?.toLowerCase().includes(searchTerm)) return true;
+          
+          return false;
+        });
+      }
+
+      return results;
     },
     enabled: !!user?.id && !!selectedCompany?.id,
   });

@@ -18,6 +18,7 @@ import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { useConsolidatedDrivers } from '@/hooks/useConsolidatedDrivers';
 import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
+import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 
 export default function FuelManagement() {
   const { t } = useTranslation(['fuel', 'common']);
@@ -35,6 +36,7 @@ export default function FuelManagement() {
   // Obtener el período actual y todos los períodos para fallback
   const { data: currentPeriod } = useCurrentPaymentPeriod();
   const { data: periods = [] } = usePaymentPeriods();
+  const { data: calculatedPeriods } = useCalculatedPeriods();
 
   // Estado de filtros con período actual por defecto
   const [filters, setFilters] = useState({
@@ -107,13 +109,19 @@ export default function FuelManagement() {
     }
   };
 
-  // Convertir filtros para las consultas - maneja período actual y seleccionado
+  // Convertir filtros para las consultas - maneja período actual y seleccionado  
   const queryFilters = {
+    search: filters.search || undefined,
     driverId: filters.driverId !== 'all' ? filters.driverId : undefined,
     status: filters.status !== 'all' ? filters.status : undefined,
     vehicleId: filters.vehicleId !== 'all' ? filters.vehicleId : undefined,
     // Usar período seleccionado o actual por defecto
-    periodId: filters.periodFilter?.periodId || currentPeriod?.id
+    periodId: filters.periodFilter?.periodId || currentPeriod?.id,
+    // Para períodos calculados, agregar fechas de rango
+    ...(filters.periodFilter?.type === 'current' && !filters.periodFilter?.periodId && calculatedPeriods?.current ? {
+      startDate: calculatedPeriods.current.period_start_date,
+      endDate: calculatedPeriods.current.period_end_date
+    } : {})
   };
 
   console.log('🔍 Query filters aplicados:', queryFilters);
