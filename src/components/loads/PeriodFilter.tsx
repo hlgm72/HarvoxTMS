@@ -113,19 +113,15 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           return 'Current';
         }
       case 'previous':
-        // Mostrar período calculado si no hay actual en BD
-        const shouldUseCalculatedPrev = !currentPeriod;
-        const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
-        if (displayPreviousPeriod) {
-          // ✅ NUEVO FORMATO: "Previous: W34/2025 (08/18 - 08/24)"
+        // Solo mostrar si existe período anterior real en BD
+        if (previousPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
-            displayPreviousPeriod.period_start_date, 
-            displayPreviousPeriod.period_end_date, 
+            previousPeriod.period_start_date, 
+            previousPeriod.period_end_date, 
             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
           );
-          // Extraer solo la parte del número de semana/mes y reemplazar "Week" con "W"
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W34/2025" o "AGO/2025"
-          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date);
           return `Previous: ${periodNumber} (${dateRange})`;
         } else {
           return 'Previous';
@@ -244,43 +240,28 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     variant={value.type === 'previous' ? 'default' : 'ghost'}
                     className="w-full justify-start"
                      onClick={() => {
-                       // LÓGICA CONSISTENTE PARA PREVIOUS PERIOD
-                       const shouldUseCalculated = !currentPeriod;
-                       const displayPeriod = shouldUseCalculated ? calculatedPeriods?.previous : previousPeriod;
-                       
-                       if (displayPeriod) {
-                         if (!shouldUseCalculated && previousPeriod) {
-                           // Si hay período anterior en BD, usar su ID
-                           handleOptionSelect({ 
-                             type: 'previous',
-                             periodId: previousPeriod.id,
-                             startDate: previousPeriod.period_start_date,
-                             endDate: previousPeriod.period_end_date
-                           });
-                         } else {
-                           // Si solo hay período calculado, usar fechas sin ID
-                           handleOptionSelect({ 
-                             type: 'previous',
-                             startDate: displayPeriod.period_start_date,
-                             endDate: displayPeriod.period_end_date
-                           });
-                         }
+                       // Solo permitir si existe período anterior real en BD
+                       if (previousPeriod) {
+                         handleOptionSelect({ 
+                           type: 'previous',
+                           periodId: previousPeriod.id,
+                           startDate: previousPeriod.period_start_date,
+                           endDate: previousPeriod.period_end_date
+                         });
                        }
                      }}
-                    disabled={!previousPeriod && !calculatedPeriods?.previous}
+                    disabled={!previousPeriod}
                    >
                       <Clock className="h-4 w-4 mr-2" />
                       {(() => {
-                        const shouldUseCalculatedPrev = !currentPeriod;
-                        const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
-                        if (displayPreviousPeriod) {
+                        if (previousPeriod) {
                           const periodLabel = formatDetailedPaymentPeriod(
-                            displayPreviousPeriod.period_start_date, 
-                            displayPreviousPeriod.period_end_date, 
+                            previousPeriod.period_start_date, 
+                            previousPeriod.period_end_date, 
                             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
                           );
-                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W34/2025"
-                          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+                          const dateRange = formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date);
                           return `Previous: ${periodNumber} (${dateRange})`;
                         }
                         return 'Previous';
