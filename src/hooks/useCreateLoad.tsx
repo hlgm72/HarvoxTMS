@@ -208,12 +208,13 @@ export const useCreateLoad = () => {
         scheduled_date: stop.scheduled_date ? 
           (stop.scheduled_date instanceof Date ? 
             formatDateInUserTimeZone(stop.scheduled_date) : 
-            stop.scheduled_date) : '',
-        scheduled_time: stop.scheduled_time || '',
+            stop.scheduled_date) : null,
+        // ✅ CORREGIDO: Enviar null para campos de tiempo vacíos en lugar de cadena vacía
+        scheduled_time: stop.scheduled_time && stop.scheduled_time.trim() !== '' ? stop.scheduled_time.trim() : null,
         actual_date: stop.actual_date ? 
           (stop.actual_date instanceof Date ? 
             formatDateInUserTimeZone(stop.actual_date) : 
-            stop.actual_date) : ''
+            stop.actual_date) : null
       }));
 
       console.log('🔍 useCreateLoad - Stops data being sent to RPC:', stopsData);
