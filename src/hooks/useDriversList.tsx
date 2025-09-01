@@ -13,12 +13,24 @@ export const useDriversList = () => {
   const { user } = useAuth();
   const { userCompany, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
+  console.log('🔍 useDriversList - Debug:', {
+    user: !!user,
+    userCompany,
+    cacheLoading,
+    cacheError
+  });
+
   return useQuery({
     queryKey: ['drivers-list', user?.id, userCompany?.company_id],
     queryFn: async (): Promise<DriverOption[]> => {
+      console.log('🔄 useDriversList - Ejecutando query...');
+      
       if (!user || !userCompany?.company_id) {
+        console.log('❌ useDriversList - Usuario o compañía no disponible:', { user: !!user, companyId: userCompany?.company_id });
         throw new Error('Usuario o compañía no disponible');
       }
+
+      console.log('🏢 useDriversList - Buscando conductores para compañía:', userCompany.company_id);
 
       // Estrategia optimizada: obtener roles de conductores primero
       const { data: driverRoles, error: rolesError } = await supabase
@@ -28,16 +40,20 @@ export const useDriversList = () => {
         .eq('role', 'driver')
         .eq('is_active', true);
 
+      console.log('👥 useDriversList - Roles de conductores:', { driverRoles, rolesError });
+
       if (rolesError) {
         console.error('Error fetching driver roles:', rolesError);
         throw rolesError;
       }
 
       if (!driverRoles || driverRoles.length === 0) {
+        console.log('⚠️ useDriversList - No se encontraron conductores en la empresa');
         return [];
       }
 
       const driverUserIds = driverRoles.map(role => role.user_id);
+      console.log('🆔 useDriversList - IDs de conductores:', driverUserIds);
 
       // Obtener perfiles de los conductores por separado
       const { data: profiles, error: profilesError } = await supabase
@@ -45,12 +61,15 @@ export const useDriversList = () => {
         .select('user_id, first_name, last_name')
         .in('user_id', driverUserIds);
 
+      console.log('👤 useDriversList - Perfiles de conductores:', { profiles, profilesError });
+
       if (profilesError) {
         console.error('Error fetching driver profiles:', profilesError);
         throw profilesError;
       }
 
       if (!profiles || profiles.length === 0) {
+        console.log('⚠️ useDriversList - No se encontraron perfiles para los conductores');
         return [];
       }
 
@@ -67,6 +86,8 @@ export const useDriversList = () => {
 
       // Ordenar alfabéticamente
       driverOptions.sort((a, b) => a.label.localeCompare(b.label));
+
+      console.log('✅ useDriversList - Opciones finales de conductores:', driverOptions);
 
       return driverOptions;
     },

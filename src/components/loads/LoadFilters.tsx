@@ -40,13 +40,22 @@ interface LoadFiltersProps {
 
 export function LoadFilters({ filters, onFiltersChange }: LoadFiltersProps) {
   const { t } = useTranslation();
-  const { data: drivers, isLoading: driversLoading } = useDriversList();
+  const { data: drivers, isLoading: driversLoading, error: driversError } = useDriversList();
+
+  console.log('🚛 LoadFilters - Debug:', {
+    drivers,
+    driversLoading,
+    driversError,
+    driversCount: drivers?.length || 0
+  });
 
   // Crear opciones de conductores con opción "Todos"
   const driverOptions = [
     { value: "all", label: "Todos los conductores" },
     ...(drivers || [])
   ];
+
+  console.log('📋 LoadFilters - Opciones de conductores:', driverOptions);
 
   const handleFilterChange = (key: string, value: any) => {
     onFiltersChange({
