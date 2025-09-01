@@ -1,4 +1,4 @@
-import { format, getISOWeek, getISOWeekYear, getYear, differenceInDays } from 'date-fns';
+import { format, getYear, differenceInDays } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 
 /**
@@ -40,19 +40,22 @@ export const formatPeriodLabel = (startDate: string, endDate: string): string =>
   const durationDays = differenceInDays(end, start) + 1;
   console.log('🔍 Duration days:', durationDays);
   
-  // Si es semanal (7-10 días), mostrar número de semana
+  // Si es semanal (7-10 días), mostrar número de semana usando cálculo consistente con BD
   if (durationDays <= 10) {
-    const weekNumber = getISOWeek(start); // Semana ISO estándar (lunes como primer día)
-    const weekYear = getISOWeekYear(start); // Año ISO de la semana (puede diferir del año calendario)
+    // ✅ CORREGIDO: Usar cálculo de semana consistente con PostgreSQL, no ISO
+    const startOfYear = new Date(year, 0, 1); // 1 de enero del año
+    const dayOfYear = Math.floor((start.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const weekNumber = Math.ceil((dayOfYear + startOfYear.getDay()) / 7);
     
     console.log('🔍 Week calculation:', { 
       weekNumber, 
-      weekYear,
+      year,
+      dayOfYear,
       startDate: start.toISOString(),
       startDateLocalString: start.toLocaleDateString()
     });
     
-    return `WK${weekNumber.toString().padStart(2, '0')} - ${weekYear}`;
+    return `WK${weekNumber.toString().padStart(2, '0')} - ${year}`;
   }
   
   // Si es mensual (25-35 días), mostrar nombre del mes
