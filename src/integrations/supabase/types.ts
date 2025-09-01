@@ -3402,6 +3402,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      emergency_cleanup_week36_period: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       enable_service_operation: {
         Args: Record<PropertyKey, never>
         Returns: undefined
