@@ -878,7 +878,7 @@
     "no_commodity": "No commodity information",
     "no_dimensions": "No dimensions specified",
     "confirm_deletion": "Confirm Deletion",
-    "deletion_warning": "Are you sure you want to delete this load?",
+    "deletion_warning": "Are you sure you want to delete Load #{{loadNumber}}?",
     "deletion_irreversible": "This action cannot be undone.",
     "cancel": "Cancel"
   },

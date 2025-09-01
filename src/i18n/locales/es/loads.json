@@ -878,7 +878,7 @@
     "no_commodity": "Sin información de mercancía",
     "no_dimensions": "Sin dimensiones especificadas",
     "confirm_deletion": "Confirmar Eliminación",
-    "deletion_warning": "¿Estás seguro de que quieres eliminar esta carga?",
+    "deletion_warning": "¿Estás seguro de que quieres eliminar la Carga #{{loadNumber}}?",
     "deletion_irreversible": "Esta acción no se puede deshacer.",
     "cancel": "Cancelar"
   },
