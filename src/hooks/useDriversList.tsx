@@ -91,8 +91,9 @@ export const useDriversList = () => {
 
       return driverOptions;
     },
-    enabled: !!user && !!userCompany?.company_id && !cacheLoading && !cacheError,
+    enabled: !!user && !!userCompany?.company_id && !cacheLoading,
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos
+    retry: 2,
   });
 };
