@@ -209,7 +209,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       <div className="relative">
         <Button 
           variant="outline" 
-          className="justify-between min-w-[200px] bg-white hover:bg-gray-50 border-gray-300 shadow-sm"
+          className="justify-between min-w-[200px] sm:min-w-[200px] w-full sm:w-auto bg-white hover:bg-gray-50 border-gray-300 shadow-sm"
           disabled={isLoading}
           onClick={() => setOpen(!open)}
         >
@@ -233,7 +233,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             />
             
         {/* Dropdown content con fondo sólido y z-index alto */}
-        <div className="absolute top-full left-0 mt-1 w-[18rem] bg-white border border-gray-200 rounded-md shadow-xl z-50"
+        <div className="absolute top-full left-0 mt-1 w-screen max-w-sm sm:w-[18rem] sm:max-w-none bg-white border border-gray-200 rounded-md shadow-xl z-50 -ml-4 sm:ml-0"
              style={{ backgroundColor: 'white' }}>
               <div className="p-4 space-y-4">
                 {/* Opciones rápidas */}
