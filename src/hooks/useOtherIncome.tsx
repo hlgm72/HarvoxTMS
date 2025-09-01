@@ -111,8 +111,9 @@ export function useCreateOtherIncome() {
     onSuccess: async (result) => {
       showSuccess('Otro ingreso creado exitosamente con ACID');
       
+      // Invalidar todas las queries de other-income sin importar los filtros
       queryClient.invalidateQueries({ 
-        queryKey: ['other-income', user?.id, selectedCompany?.id] 
+        queryKey: ['other-income'] 
       });
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
@@ -163,8 +164,10 @@ export function useUpdateOtherIncome() {
     },
     onSuccess: () => {
       showSuccess('Ingreso actualizado exitosamente con ACID');
+      
+      // Invalidar todas las queries de other-income sin importar los filtros
       queryClient.invalidateQueries({ 
-        queryKey: ['other-income', user?.id, selectedCompany?.id] 
+        queryKey: ['other-income'] 
       });
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
@@ -215,8 +218,9 @@ export function useDeleteOtherIncome() {
     onSuccess: async (result) => {
       showSuccess('Ingreso eliminado exitosamente con ACID');
       
+      // Invalidar todas las queries de other-income sin importar los filtros
       queryClient.invalidateQueries({ 
-        queryKey: ['other-income', user?.id, selectedCompany?.id] 
+        queryKey: ['other-income'] 
       });
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
