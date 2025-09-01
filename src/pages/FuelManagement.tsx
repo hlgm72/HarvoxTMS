@@ -7,6 +7,8 @@ import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { UniversalFloatingActions } from '@/components/ui/UniversalFloatingActions';
 import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
+import { ActiveFiltersDisplay } from '@/components/ui/ActiveFiltersDisplay';
+import { CONTEXT_CONFIGS } from '@/components/ui/filterConfigs';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { FuelExpenseDialog } from '@/components/fuel/FuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
@@ -131,6 +133,14 @@ export default function FuelManagement() {
     setViewExpenseId(expenseId);
   };
 
+  // Configuración de filtros para el componente ActiveFiltersDisplay
+  const fuelFilterConfig = CONTEXT_CONFIGS.fuel.filterConfig;
+  
+  const handleClearFilters = () => {
+    const clearedFilters = fuelFilterConfig.clearFilters();
+    setFilters(clearedFilters);
+  };
+
   return (
     <>
       {/* Header */}
@@ -171,6 +181,18 @@ export default function FuelManagement() {
           <TabsContent value="expenses" className="space-y-6 mt-6">
             {/* Estadísticas */}
             <FuelStatsCards filters={queryFilters} />
+
+            {/* Filtros Activos */}
+            <ActiveFiltersDisplay
+              filters={filters}
+              getFilterBadges={fuelFilterConfig.getActiveFilterBadges}
+              hasActiveFilters={fuelFilterConfig.hasActiveFilters}
+              onClearFilters={handleClearFilters}
+              additionalData={{
+                drivers: drivers,
+                vehicles: vehicles
+              }}
+            />
 
             {/* Lista de Gastos */}
             <FuelExpensesList 

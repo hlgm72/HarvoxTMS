@@ -120,6 +120,11 @@
       "coming_soon": "History functionality coming soon..."
     }
   },
+  "active_filters": {
+    "title": "Applied filters",
+    "clear": "Clear filters",
+    "clear_short": "Clear"
+  },
   "stats": {
     "total_loads": "Total Loads",
     "total_revenue": "Total Revenue",
