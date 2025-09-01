@@ -886,6 +886,7 @@
     "deleting": "Eliminando..."
   },
   "period": {
+    "payment_period": "Período de Pago",
     "frequency": {
       "weekly": "Semanal",
       "biweekly": "Quincenal", 
