@@ -7,6 +7,13 @@ export function usePaymentPeriodById(periodId?: string) {
     queryFn: async () => {
       if (!periodId) return null;
       
+      // ✅ Detectar períodos calculados y evitar queries inválidas
+      const isCalculatedPeriod = periodId.startsWith('calculated-');
+      if (isCalculatedPeriod) {
+        console.log('🔍 Período calculado detectado:', periodId, '- retornando null sin query');
+        return null;
+      }
+      
       console.log('🔍 Buscando período con ID:', periodId);
       
       const { data, error } = await supabase

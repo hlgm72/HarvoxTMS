@@ -115,6 +115,23 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const { data: period, refetch: refetchPeriod } = useQuery({
     queryKey: ['company-payment-period', periodId],
     queryFn: async () => {
+      // ✅ Detectar períodos calculados y evitar queries inválidas
+      if (periodId?.startsWith('calculated-')) {
+        console.log('🔍 Período calculado detectado en PaymentPeriodDetails:', periodId, '- retornando datos simulados');
+        return {
+          id: periodId,
+          company_id: 'calculated-company',
+          period_start_date: '2025-09-01',
+          period_end_date: '2025-09-07',
+          period_frequency: 'weekly',
+          status: 'calculated',
+          period_type: 'regular',
+          is_locked: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+      }
+
       const { data, error } = await supabase
         .from('company_payment_periods')
         .select('*')
@@ -123,7 +140,8 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!periodId
   });
 
   // Obtener cálculos de conductores

@@ -25,6 +25,16 @@ export const usePaymentPeriodProtection = () => {
     try {
       setIsLoading(true);
       
+      // ✅ Detectar períodos calculados y evitar queries inválidas
+      if (periodId.startsWith('calculated-')) {
+        console.log('🔍 Período calculado detectado en checkPeriodStatus:', periodId, '- retornando estado por defecto');
+        return {
+          isLocked: false,
+          lockedAt: undefined,
+          lockedBy: undefined
+        };
+      }
+      
       const { data, error } = await supabase
         .from('company_payment_periods')
         .select('is_locked, locked_at, locked_by')

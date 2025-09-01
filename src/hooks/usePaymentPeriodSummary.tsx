@@ -30,6 +30,21 @@ export function usePaymentPeriodSummary(periodId?: string) {
     queryFn: async (): Promise<PaymentPeriodSummary | null> => {
       if (!periodId) throw new Error('Period ID is required');
       
+      // ✅ Detectar períodos calculados y evitar queries inválidas
+      if (periodId.startsWith('calculated-')) {
+        console.log('🔍 Período calculado detectado en usePaymentPeriodSummary:', periodId, '- retornando resumen vacío');
+        return {
+          period_id: periodId,
+          gross_earnings: 0,
+          other_income: 0,
+          fuel_expenses: 0,
+          deductions: 0,
+          net_payment: 0,
+          driver_count: 0,
+          drivers_with_negative_balance: 0,
+        };
+      }
+      
       // Primero obtener el company_id del período para verificar integridad
       const { data: periodData, error: periodError } = await supabase
         .from('company_payment_periods')
