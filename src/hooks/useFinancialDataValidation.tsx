@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface FinancialDataValidation {
   can_modify: boolean;
   is_locked: boolean;
+  driver_is_paid?: boolean; // ⭐ NUEVO: Estado individual del conductor
   paid_drivers: number;
   total_drivers: number;
   warning_message: string;
@@ -13,24 +14,27 @@ interface FinancialDataValidation {
  * Hook para validar si se pueden modificar datos financieros en un período
  * Usa la función de base de datos can_modify_financial_data para verificar el estado
  */
-export function useFinancialDataValidation(periodId: string | null) {
+export function useFinancialDataValidation(periodId: string | null, driverId?: string | null) {
   return useQuery<FinancialDataValidation>({
-    queryKey: ['financial-data-validation', periodId],
+    queryKey: ['financial-data-validation', periodId, driverId],
     queryFn: async () => {
       if (!periodId) {
         return {
           can_modify: true,
           is_locked: false,
+          driver_is_paid: false,
           paid_drivers: 0,
           total_drivers: 0,
           warning_message: 'No hay período seleccionado'
         };
       }
 
-      console.log('🔒 Validating financial data access for period:', periodId);
+      console.log('🔒 Validating financial data access for period:', periodId, 'driver:', driverId);
       
-      const { data, error } = await supabase.rpc('can_modify_financial_data', {
-        period_id: periodId
+      // ⭐ USAR FUNCIÓN MEJORADA que considera el conductor individual
+      const { data, error } = await supabase.rpc('can_modify_financial_data_with_driver_check', {
+        period_id: periodId,
+        driver_id: driverId || null
       });
 
       if (error) {
@@ -94,11 +98,12 @@ export function useMultiplePeriodsValidation(periodIds: string[]) {
 /**
  * Hook simplificado que solo verifica si un período está bloqueado
  */
-export function usePeriodLockStatus(periodId: string | null) {
-  const { data, isLoading, error } = useFinancialDataValidation(periodId);
+export function usePeriodLockStatus(periodId: string | null, driverId?: string | null) {
+  const { data, isLoading, error } = useFinancialDataValidation(periodId, driverId);
   
   return {
     isLocked: data?.is_locked ?? false,
+    driverIsPaid: data?.driver_is_paid ?? false, // ⭐ NUEVO: Estado del conductor
     canModify: data?.can_modify ?? true,
     warningMessage: data?.warning_message ?? '',
     paidDrivers: data?.paid_drivers ?? 0,

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 export interface FinancialDataValidation {
   can_modify: boolean;
   is_locked: boolean;
+  driver_is_paid?: boolean; // ⭐ NUEVO: Estado individual del conductor
   paid_drivers: number;
   total_drivers: number;
   warning_message: string;
@@ -135,7 +136,7 @@ export function shouldDisableFinancialOperation(
   validation: FinancialDataValidation | null,
   isLoading: boolean = false
 ): boolean {
-  return isLoading || validation?.is_locked === true;
+  return isLoading || validation?.is_locked === true || validation?.driver_is_paid === true;
 }
 
 /**
@@ -149,6 +150,10 @@ export function getFinancialOperationTooltip(
   
   if (validation.is_locked) {
     return `No se puede ${operation}: período bloqueado`;
+  }
+  
+  if (validation.driver_is_paid) {
+    return `No se puede ${operation}: conductor ya pagado`;
   }
   
   if (validation.paid_drivers > 0) {

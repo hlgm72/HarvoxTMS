@@ -3187,6 +3187,10 @@ export type Database = {
         Args: { period_id: string }
         Returns: Json
       }
+      can_modify_financial_data_with_driver_check: {
+        Args: { driver_id?: string; period_id: string }
+        Returns: Json
+      }
       can_user_be_permanently_deleted: {
         Args: { user_id_param: string }
         Returns: Json
