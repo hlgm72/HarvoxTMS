@@ -35,14 +35,24 @@ export function CurrentFiltersDisplay({
   const getFilterBadges = () => {
     const badges = [];
     
-    // Período actual
-    if (filters.periodFilter?.periodId && currentPeriod) {
-      const startDate = format(new Date(currentPeriod.period_start_date), 'dd MMM');
-      const endDate = format(new Date(currentPeriod.period_end_date), 'dd MMM');
-      badges.push({ 
-        key: 'period', 
-        label: `Período: ${startDate} - ${endDate}` 
-      });
+    // Período actual - siempre mostrar si hay periodId
+    if (filters.periodFilter?.periodId) {
+      if (currentPeriod) {
+        const startDate = format(new Date(currentPeriod.period_start_date), 'dd MMM');
+        const endDate = format(new Date(currentPeriod.period_end_date), 'dd MMM');
+        badges.push({ 
+          key: 'period', 
+          label: `Período: ${startDate} - ${endDate}` 
+        });
+      } else {
+        // Mostrar el ID del período si no tenemos los detalles
+        badges.push({ 
+          key: 'period', 
+          label: `Período: ${filters.periodFilter.periodId.slice(0, 8)}...` 
+        });
+      }
+    } else {
+      badges.push({ key: 'period', label: 'Período: No seleccionado' });
     }
     
     // Conductor
