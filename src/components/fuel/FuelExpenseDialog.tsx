@@ -135,54 +135,54 @@ export function FuelExpenseDialog({
   const canModify = !shouldDisableFinancialOperation(financialValidation, isValidationLoading);
   const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'crear/editar este gasto de combustible');
 
-  // ATM formatters for monetary fields - memoized to prevent infinite loops
-  const grossAmountATM = React.useMemo(() => {
-    return useATMInput({
-      initialValue: form.getValues('gross_amount') || 0,
-      onValueChange: (value) => {
-        const currentValue = form.getValues('gross_amount');
-        if (currentValue !== value) {
-          form.setValue('gross_amount', value);
-        }
+  // ATM formatters for monetary fields - reverted to direct calls
+  console.log('🔧 FuelExpenseDialog: Creating ATM inputs, form:', !!form);
+  
+  const grossAmountATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      console.log('💰 grossAmountATM onValueChange:', value);
+      const currentValue = form.getValues('gross_amount');
+      if (currentValue !== value) {
+        form.setValue('gross_amount', value);
       }
-    });
-  }, [form]);
+    }
+  });
 
-  const discountAmountATM = React.useMemo(() => {
-    return useATMInput({
-      initialValue: form.getValues('discount_amount') || 0,
-      onValueChange: (value) => {
-        const currentValue = form.getValues('discount_amount');
-        if (currentValue !== value) {
-          form.setValue('discount_amount', value);
-        }
+  const discountAmountATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      console.log('💸 discountAmountATM onValueChange:', value);
+      const currentValue = form.getValues('discount_amount');
+      if (currentValue !== value) {
+        form.setValue('discount_amount', value);
       }
-    });
-  }, [form]);
+    }
+  });
 
-  const feesATM = React.useMemo(() => {
-    return useATMInput({
-      initialValue: form.getValues('fees') || 0,
-      onValueChange: (value) => {
-        const currentValue = form.getValues('fees');
-        if (currentValue !== value) {
-          form.setValue('fees', value);
-        }
+  const feesATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      console.log('📋 feesATM onValueChange:', value);
+      const currentValue = form.getValues('fees');
+      if (currentValue !== value) {
+        form.setValue('fees', value);
       }
-    });
-  }, [form]);
+    }
+  });
 
-  const totalAmountATM = React.useMemo(() => {
-    return useATMInput({
-      initialValue: form.getValues('total_amount') || 0,
-      onValueChange: (value) => {
-        const currentValue = form.getValues('total_amount');
-        if (currentValue !== value) {
-          form.setValue('total_amount', value);
-        }
+  const totalAmountATM = useATMInput({
+    initialValue: 0,
+    onValueChange: (value) => {
+      console.log('🎯 totalAmountATM onValueChange:', value);
+      const currentValue = form.getValues('total_amount');
+      if (currentValue !== value) {
+        form.setValue('total_amount', value);
       }
-    });
-  }, [form]);
+    }
+  });
+
+  console.log('✅ FuelExpenseDialog: ATM inputs created successfully');
 
   // Populate form with expense data for edit mode
   React.useEffect(() => {
