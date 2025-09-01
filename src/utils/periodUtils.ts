@@ -42,20 +42,38 @@ export const formatPeriodLabel = (startDate: string, endDate: string): string =>
   
   // Si es semanal (7-10 días), mostrar número de semana usando cálculo consistente con BD
   if (durationDays <= 10) {
-    // ✅ CORREGIDO: Usar cálculo de semana consistente con PostgreSQL, no ISO
-    const startOfYear = new Date(year, 0, 1); // 1 de enero del año
-    const dayOfYear = Math.floor((start.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    const weekNumber = Math.ceil((dayOfYear + startOfYear.getDay()) / 7);
+    // ✅ USAR MÉTODO COMPATIBLE CON POSTGRESQL EXTRACT(WEEK FROM date)
+    // PostgreSQL calcula la semana donde el lunes es el primer día de la semana
+    // y la primera semana del año es la que contiene el 4 de enero
     
-    console.log('🔍 Week calculation:', { 
+    // Encontrar el lunes de la semana que contiene startDate
+    const dayOfWeek = start.getDay(); // 0=domingo, 1=lunes, ... 6=sábado
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convertir a lunes=0
+    const mondayOfWeek = new Date(start);
+    mondayOfWeek.setDate(start.getDate() - daysFromMonday);
+    
+    // Encontrar el lunes de la primera semana del año
+    // La primera semana es la que contiene el 4 de enero
+    const jan4 = new Date(year, 0, 4); // 4 de enero
+    const jan4DayOfWeek = jan4.getDay();
+    const jan4DaysFromMonday = jan4DayOfWeek === 0 ? 6 : jan4DayOfWeek - 1;
+    const firstMondayOfYear = new Date(jan4);
+    firstMondayOfYear.setDate(4 - jan4DaysFromMonday);
+    
+    // Calcular diferencia en días y convertir a semanas
+    const daysDiff = Math.floor((mondayOfWeek.getTime() - firstMondayOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    const weekNumber = Math.floor(daysDiff / 7) + 1;
+    
+    console.log('🔍 Week calculation FIXED:', { 
       weekNumber, 
       year,
-      dayOfYear,
-      startDate: start.toISOString(),
-      startDateLocalString: start.toLocaleDateString()
+      startDate: start.toLocaleDateString(),
+      mondayOfWeek: mondayOfWeek.toLocaleDateString(),
+      firstMondayOfYear: firstMondayOfYear.toLocaleDateString(),
+      daysDiff
     });
     
-    return `WK${weekNumber.toString().padStart(2, '0')} - ${year}`;
+    return `W${weekNumber.toString().padStart(2, '0')}/${year}`;
   }
   
   // Si es mensual (25-35 días), mostrar nombre del mes
