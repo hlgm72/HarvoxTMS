@@ -216,6 +216,9 @@ export const useCreateLoad = () => {
             stop.actual_date) : ''
       }));
 
+      console.log('🔍 useCreateLoad - Stops data being sent to RPC:', stopsData);
+      console.log('🔍 useCreateLoad - Number of stops:', stopsData.length);
+
       // ===============================================
       // 🚨 SISTEMA DE PERÍODOS BAJO DEMANDA v2.0 - CRÍTICO
       // ⚠️ NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA
@@ -280,6 +283,7 @@ export const useCreateLoad = () => {
         {
           operation_type: isEdit ? 'UPDATE' : 'CREATE', // ✅ Correct parameter name and values
           load_data: loadDataForRPC,
+          stops_data: stopsData, // ✅ FIXED: Include stops data
           load_id_param: isEdit ? data.id : null // ✅ Add load_id for UPDATE operations
         }
       );
