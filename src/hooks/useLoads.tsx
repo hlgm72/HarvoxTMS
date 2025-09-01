@@ -198,8 +198,10 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   // Memoizar el queryKey para evitar re-renders innecesarios y deduplicar queries
   const queryKey = useMemo(() => {
-    return ['loads', user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
-  }, [user?.id, filters?.periodFilter?.type, filters?.periodFilter?.periodId, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate]);
+    const key = ['loads', user?.id, JSON.stringify(filters?.periodFilter)];
+    console.log('🔑 useLoads - QueryKey:', key);
+    return key;
+  }, [user?.id, filters?.periodFilter]);
 
   // console.log('🎯 useLoads hook - Estado antes del query:', {
   //   user: !!user,
@@ -224,16 +226,16 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
-
-      if (!user) {
-        console.error('❌ useLoads - Usuario no autenticado');
-        throw new Error('User not authenticated');
+      console.log('📥 useLoads - Query ejecutándose con filtros:', filters?.periodFilter);
+      
+      if (!user?.id || cacheLoading || !userCompany) {
+        console.log('⏳ useLoads - Usuario/empresa no disponible:', { user: !!user, cacheLoading, userCompany: !!userCompany });
+        return [];
       }
 
-      // Verificar errores de cache
       if (cacheError) {
-        console.error('❌ Error en cache de compañía:', cacheError);
-        throw new Error(`Error cargando cargas: ${cacheError.message || 'Error de base de datos'}`);
+        console.error('💥 useLoads - Error de cache:', cacheError);
+        throw new Error(`Error de cache: ${cacheError.message}`);
       }
 
       // console.log('🚛 Cargando loads para compañía:', userCompany?.company_id);
@@ -255,10 +257,14 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriods
         );
         
-        console.log('🎯 USE LOADS - Período filtro:', filters?.periodFilter);
-        console.log('🎯 USE LOADS - IDs de períodos relevantes:', relevantPeriodIds);
-        console.log('🎯 USE LOADS - Current period:', currentPeriod?.id);
-        console.log('🎯 USE LOADS - Previous period:', previousPeriod?.id);
+        console.log('🎯 USE LOADS - Filtro de período completo:', {
+          periodFilter: filters?.periodFilter,
+          relevantPeriodIds,
+          currentPeriodId: currentPeriod?.id,
+          previousPeriodId: previousPeriod?.id,
+          nextPeriodId: nextPeriod?.id,
+          allPeriodsCount: allPeriods.length
+        });
         
         // PASO 3: Construir query optimizada de cargas
         let loadsQuery = supabase
@@ -270,9 +276,11 @@ export const useLoads = (filters?: LoadsFilters) => {
 
         // Aplicar filtro de períodos si hay alguno
         if (relevantPeriodIds.length > 0) {
+          console.log('✅ Aplicando filtro de períodos:', relevantPeriodIds);
           // Incluir cargas del período Y cargas sin período asignado (recién creadas)
           loadsQuery = loadsQuery.or(`payment_period_id.in.(${relevantPeriodIds.join(',')}),payment_period_id.is.null`);
         } else if (filters?.periodFilter?.type !== 'all' && filters?.periodFilter) {
+          console.log('⚠️ No se encontraron period IDs, usando filtro de fechas:', filters.periodFilter);
           // Si es un período calculado (previous, current, next) sin periodId pero con fechas
           if ((filters.periodFilter.type === 'previous' || filters.periodFilter.type === 'current' || filters.periodFilter.type === 'next') 
               && filters.periodFilter.startDate && filters.periodFilter.endDate) {
@@ -281,9 +289,11 @@ export const useLoads = (filters?: LoadsFilters) => {
               `and(pickup_date.gte.${filters.periodFilter.startDate},pickup_date.lte.${filters.periodFilter.endDate}),and(delivery_date.gte.${filters.periodFilter.startDate},delivery_date.lte.${filters.periodFilter.endDate}),and(created_at.gte.${filters.periodFilter.startDate}T00:00:00,created_at.lte.${filters.periodFilter.endDate}T23:59:59)`
             );
           } else {
-            // Si no hay períodos relevantes pero hay filtro, mostrar solo cargas sin período
-            loadsQuery = loadsQuery.is('payment_period_id', null);
+            console.log('❌ Sin filtro válido para períodos');
+            return []; // No mostrar nada si no hay criterio válido
           }
+        } else {
+          console.log('📋 Mostrando todas las cargas (sin filtro de período)');
         }
 
         // Aplicar límites inteligentes
@@ -292,6 +302,11 @@ export const useLoads = (filters?: LoadsFilters) => {
         loadsQuery = loadsQuery.limit(limit);
 
         const { data: loads, error: loadsError } = await loadsQuery;
+        
+        console.log('📦 Cargas obtenidas de la DB:', {
+          totalCargas: loads?.length || 0,
+          periodIds: loads?.map(l => ({ loadNumber: l.load_number, periodId: l.payment_period_id })) || []
+        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
