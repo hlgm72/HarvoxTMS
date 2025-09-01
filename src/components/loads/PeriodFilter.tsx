@@ -99,16 +99,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         // Mostrar período calculado si no hay período real
         const displayCurrentPeriod = currentPeriod || calculatedPeriods?.current;
         if (displayCurrentPeriod) {
-          // ✅ NUEVO FORMATO: "Current Week 35/2025: 08/25 - 08/31"
+          // ✅ NUEVO FORMATO: "Current: W35/2025 (08/25 - 08/31)"
           const periodLabel = formatDetailedPaymentPeriod(
             displayCurrentPeriod.period_start_date, 
             displayCurrentPeriod.period_end_date, 
             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
           );
-          // Extraer solo la parte del número de semana/mes del formatDetailedPaymentPeriod
-          const periodNumber = periodLabel.split(':')[0]; // "Week 35/2025" o "AGO/2025"
+          // Extraer solo la parte del número de semana/mes y reemplazar "Week" con "W"
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W35/2025" o "AGO/2025"
           const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
-          return `Current ${periodNumber}: ${dateRange}`;
+          return `Current: ${periodNumber} (${dateRange})`;
         } else {
           return 'Current';
         }
@@ -117,16 +117,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         const shouldUseCalculatedPrev = !currentPeriod;
         const displayPreviousPeriod = shouldUseCalculatedPrev ? calculatedPeriods?.previous : previousPeriod || calculatedPeriods?.previous;
         if (displayPreviousPeriod) {
-          // ✅ NUEVO FORMATO: "Previous Week 34/2025: 08/18 - 08/24"
+          // ✅ NUEVO FORMATO: "Previous: W34/2025 (08/18 - 08/24)"
           const periodLabel = formatDetailedPaymentPeriod(
             displayPreviousPeriod.period_start_date, 
             displayPreviousPeriod.period_end_date, 
             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
           );
-          // Extraer solo la parte del número de semana/mes del formatDetailedPaymentPeriod
-          const periodNumber = periodLabel.split(':')[0]; // "Week 34/2025" o "JUL/2025"
+          // Extraer solo la parte del número de semana/mes y reemplazar "Week" con "W"
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W34/2025" o "AGO/2025"
           const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
-          return `Previous ${periodNumber}: ${dateRange}`;
+          return `Previous: ${periodNumber} (${dateRange})`;
         } else {
           return 'Previous';
         }
@@ -282,13 +282,13 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                              displayPreviousPeriod!.period_end_date, 
                              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
                            );
-                           const periodNumber = periodLabel.split(':')[0]; // "Week 34/2025"
-                           const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod!.period_start_date, displayPreviousPeriod!.period_end_date);
-                           return (
-                             <span className="ml-2 text-xs">
-                               {periodNumber}: {dateRange}
-                             </span>
-                           );
+                            const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W34/2025"
+                            const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod!.period_start_date, displayPreviousPeriod!.period_end_date);
+                            return (
+                              <span className="ml-2 text-xs">
+                                {periodNumber} ({dateRange})
+                              </span>
+                            );
                          })()}
                        </>
                      )}
@@ -333,13 +333,13 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                              displayPeriod!.period_end_date, 
                              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
                            );
-                           const periodNumber = periodLabel.split(':')[0]; // "Week 35/2025"
-                           const dateRange = formatPaymentPeriodBadge(displayPeriod!.period_start_date, displayPeriod!.period_end_date);
-                           return (
-                             <span className="ml-2 text-xs">
-                               {periodNumber}: {dateRange}
-                             </span>
-                           );
+                            const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W35/2025"
+                            const dateRange = formatPaymentPeriodBadge(displayPeriod!.period_start_date, displayPeriod!.period_end_date);
+                            return (
+                              <span className="ml-2 text-xs">
+                                {periodNumber} ({dateRange})
+                              </span>
+                            );
                          })()}
                        </>
                      )}
