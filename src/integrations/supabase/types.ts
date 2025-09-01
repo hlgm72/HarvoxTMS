@@ -3461,6 +3461,10 @@ export type Database = {
         Args: { load_id_param: string; period_id_param: string }
         Returns: boolean
       }
+      force_create_percentage_deductions_week35: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       force_recalculate_driver_deductions: {
         Args: { driver_id_param: string; period_id_param: string }
         Returns: Json
