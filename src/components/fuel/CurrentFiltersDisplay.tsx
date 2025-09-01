@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FilterX, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { usePaymentPeriodById } from '@/hooks/usePaymentPeriodById';
+import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 
 interface CurrentFiltersDisplayProps {
   filters: {
@@ -31,21 +32,32 @@ export function CurrentFiltersDisplay({
 }: CurrentFiltersDisplayProps) {
   const { t } = useTranslation(['fuel', 'common']);
   
-  // Obtener información del período por ID
+  // Obtener información del período por ID (real de BD)
   const { data: periodData } = usePaymentPeriodById(filters.periodFilter?.periodId);
+  
+  // Obtener períodos calculados para casos donde no hay período real
+  const { data: calculatedPeriods } = useCalculatedPeriods();
   
   const getFilterBadges = () => {
     const badges = [];
     
-    // Período actual - siempre mostrar si hay periodId
+    // Período actual - mostrar período real o calculado
     if (filters.periodFilter?.periodId) {
       if (periodData) {
-        // Usar fechas como strings locales sin conversión de zona horaria
+        // Período real de BD
         const startDate = format(new Date(periodData.period_start_date + 'T00:00:00'), 'dd MMM');
         const endDate = format(new Date(periodData.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
         badges.push({ 
           key: 'period', 
           label: `Período: ${startDate} - ${endDate}` 
+        });
+      } else if (filters.periodFilter.type === 'current' && calculatedPeriods?.current) {
+        // Período calculado para período actual
+        const startDate = format(new Date(calculatedPeriods.current.period_start_date + 'T00:00:00'), 'dd MMM');
+        const endDate = format(new Date(calculatedPeriods.current.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
+        badges.push({ 
+          key: 'period', 
+          label: `Período: ${startDate} - ${endDate} (calculado)` 
         });
       } else {
         badges.push({ 
