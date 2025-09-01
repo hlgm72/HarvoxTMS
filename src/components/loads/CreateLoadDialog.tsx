@@ -646,14 +646,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         );
         
         // Close dialog after showing toast
-        // In edit mode, don't close dialog when in documents phase (phase 4)
-        // User might be generating documents and wants to stay open
-        if (mode === 'edit' && currentPhase === 4) {
-          console.log('✅ CreateLoadDialog - Staying open in documents phase after successful edit');
-        } else {
-          console.log('✅ CreateLoadDialog - Closing dialog after successful creation/edit');
-          onClose();
-        }
+        // SIEMPRE cerrar el modal después de guardar exitosamente
+        console.log('✅ CreateLoadDialog - Closing dialog after successful save');
+        onClose();
       },
       onError: (error) => {
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
