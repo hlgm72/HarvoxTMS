@@ -12,6 +12,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { useTranslation } from 'react-i18next';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
+import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -46,6 +47,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  // Obtener períodos calculados
+  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
 
   console.log('🔍 EventualDeductionsList - Filtros recibidos:', filters);
 
@@ -141,93 +145,46 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               .gte('expense_date', filters.periodFilter.startDate)
               .lte('expense_date', filters.periodFilter.endDate);
           }
-          // Si es período anterior
-          else if (filters.periodFilter.type === 'previous') {
-            console.log('🔄 Buscando período anterior para empresa:', userCompany.company_id);
+          // Si es período actual, usar períodos calculados en lugar de buscar en BD
+          else if (filters.periodFilter.type === 'current') {
+            console.log('📅 Usando período calculado para current:', calculatedPeriods?.current);
             
-            const previousPeriodQuery = await supabase
-              .from('company_payment_periods')
-              .select('period_start_date, period_end_date, status, id')
-              .eq('company_id', userCompany.company_id)
-              .order('period_start_date', { ascending: false })
-              .limit(2); // Obtener los 2 más recientes
-            
-            if (previousPeriodQuery.data && previousPeriodQuery.data.length > 1) {
-              const periodData = previousPeriodQuery.data[1]; // El segundo (anterior)
-              console.log('📅 Filtrando por período anterior:', periodData);
+            if (calculatedPeriods?.current) {
+              const startDate = calculatedPeriods.current.period_start_date;
+              const endDate = calculatedPeriods.current.period_end_date;
+              
+              console.log('📅 Filtrando por período actual calculado:', {
+                startDate,
+                endDate,
+                periodo: calculatedPeriods.current
+              });
+              
               query = query
-                .gte('expense_date', periodData.period_start_date)
-                .lte('expense_date', periodData.period_end_date);
+                .gte('expense_date', startDate)
+                .lte('expense_date', endDate);
             } else {
-              console.log('❌ No se encontró período anterior');
+              console.log('❌ No se encontró período calculado actual');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
-          // Si es período actual, buscar el período que incluya la fecha actual
-          else if (filters.periodFilter.type === 'current') {
-            console.log('🔄 Buscando período actual para empresa:', userCompany.company_id);
+          // Si es período anterior, usar períodos calculados
+          else if (filters.periodFilter.type === 'previous') {
+            console.log('📅 Usando período calculado para previous:', calculatedPeriods?.previous);
             
-            const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-            console.log('📅 Fecha actual para filtro:', currentDate);
-            console.log('📅 Fecha actual completa:', new Date());
-            
-            // Listar todos los períodos de la empresa para debugging
-            const allPeriodsQuery = await supabase
-              .from('company_payment_periods')
-              .select('period_start_date, period_end_date, status, id, created_at')
-              .eq('company_id', userCompany.company_id)
-              .order('period_start_date', { ascending: false });
-            
-            console.log('📋 Todos los períodos de la empresa:', allPeriodsQuery.data);
-            
-            // Mostrar detalles de cada período para debugging
-            if (allPeriodsQuery.data) {
-              allPeriodsQuery.data.forEach((period, index) => {
-                console.log(`📅 Período ${index + 1}:`, {
-                  id: period.id,
-                  start: period.period_start_date,
-                  end: period.period_end_date,
-                  status: period.status,
-                  incluye_fecha_actual: period.period_start_date <= currentDate && period.period_end_date >= currentDate
-                });
-              });
-            }
-            
-            // Buscar período que incluya la fecha actual
-            let currentPeriodQuery = await supabase
-              .from('company_payment_periods')
-              .select('period_start_date, period_end_date, status, id')
-              .eq('company_id', userCompany.company_id)
-              .lte('period_start_date', currentDate)
-              .gte('period_end_date', currentDate)
-              .in('status', ['open', 'processing'])
-              .limit(1);
-            
-            console.log('🔍 Resultado de búsqueda por fecha actual:', currentPeriodQuery.data);
-            
-            // Si no hay período que incluya la fecha actual, buscar el más reciente abierto
-            if (!currentPeriodQuery.data || currentPeriodQuery.data.length === 0) {
-              console.log('⚠️ No se encontró período que incluya la fecha actual, buscando el más reciente abierto');
-              currentPeriodQuery = await supabase
-                .from('company_payment_periods')
-                .select('period_start_date, period_end_date, status, id')
-                .eq('company_id', userCompany.company_id)
-                .eq('status', 'open')
-                .order('period_start_date', { ascending: false })
-                .limit(1);
+            if (calculatedPeriods?.previous) {
+              const startDate = calculatedPeriods.previous.period_start_date;
+              const endDate = calculatedPeriods.previous.period_end_date;
               
-              console.log('🔍 Resultado de búsqueda por más reciente:', currentPeriodQuery.data);
-            }
-            
-            if (currentPeriodQuery.data && currentPeriodQuery.data.length > 0) {
-              const periodData = currentPeriodQuery.data[0];
-              console.log('📅 Filtrando por período actual:', periodData);
+              console.log('📅 Filtrando por período anterior calculado:', {
+                startDate,
+                endDate
+              });
+              
               query = query
-                .gte('expense_date', periodData.period_start_date)
-                .lte('expense_date', periodData.period_end_date);
+                .gte('expense_date', startDate)
+                .lte('expense_date', endDate);
             } else {
-              console.log('❌ No se encontraron períodos para esta empresa');
-              // Si no hay períodos, aplicar filtro que no retorne nada
+              console.log('❌ No se encontró período calculado anterior');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
@@ -236,22 +193,22 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             console.log('📋 Mostrando todas las deducciones (sin filtro de período)');
           }
         } else {
-          console.log('🔍 No se aplicó filtro de período - usando período actual por defecto');
-          // Si no hay filtro de período, usar el período actual por defecto
-          const currentPeriodQuery = await supabase
-            .from('company_payment_periods')
-            .select('period_start_date, period_end_date, status, id')
-            .eq('company_id', userCompany.company_id)
-            .eq('status', 'open')
-            .order('period_start_date', { ascending: false })
-            .limit(1);
-          
-          if (currentPeriodQuery.data && currentPeriodQuery.data.length > 0) {
-            const periodData = currentPeriodQuery.data[0];
-            console.log('📅 Aplicando filtro de período actual por defecto:', periodData);
+          console.log('🔍 No se aplicó filtro de período - usando período actual calculado por defecto');
+          // Si no hay filtro de período, usar el período actual calculado por defecto
+          if (calculatedPeriods?.current) {
+            const startDate = calculatedPeriods.current.period_start_date;
+            const endDate = calculatedPeriods.current.period_end_date;
+            
+            console.log('📅 Aplicando período actual calculado por defecto:', {
+              startDate,
+              endDate
+            });
+            
             query = query
-              .gte('expense_date', periodData.period_start_date)
-              .lte('expense_date', periodData.period_end_date);
+              .gte('expense_date', startDate)
+              .lte('expense_date', endDate);
+          } else {
+            console.log('❌ No hay período calculado disponible por defecto');
           }
         }
 
