@@ -58,27 +58,53 @@ export class PeriodCalculator {
    * Obtiene el período anterior
    */
   getPreviousPeriod(): CalculatedPeriod {
-    const today = new Date();
-    
-    // Primero obtenemos el período actual, luego calculamos el anterior
+    // Primero obtenemos el período actual, luego calculamos el anterior directamente
     const currentPeriod = this.getCurrentPeriod();
     
     switch (this.config.default_payment_frequency) {
       case 'weekly':
-        // Para semanal: restar 7 días del inicio del período actual
-        const prevWeekStart = subDays(parseISO(currentPeriod.startDate + 'T00:00:00'), 7);
-        return this.getWeeklyPeriod(prevWeekStart, 'previous');
+        // Para semanal: calcular fechas exactas del período anterior
+        const currentStart = parseISO(currentPeriod.startDate + 'T00:00:00');
+        const currentEnd = parseISO(currentPeriod.endDate + 'T00:00:00');
+        const prevStart = subDays(currentStart, 7);
+        const prevEnd = subDays(currentEnd, 7);
+        
+        return {
+          startDate: formatDateInUserTimeZone(prevStart),
+          endDate: formatDateInUserTimeZone(prevEnd),
+          frequency: 'weekly',
+          type: 'previous'
+        };
       case 'biweekly':
-        // Para quincenal: restar 14 días del inicio del período actual
-        const prevBiweekStart = subDays(parseISO(currentPeriod.startDate + 'T00:00:00'), 14);
-        return this.getBiweeklyPeriod(prevBiweekStart, 'previous');
+        // Para quincenal: calcular fechas exactas del período anterior
+        const currentBiStart = parseISO(currentPeriod.startDate + 'T00:00:00');
+        const currentBiEnd = parseISO(currentPeriod.endDate + 'T00:00:00');
+        const prevBiStart = subDays(currentBiStart, 14);
+        const prevBiEnd = subDays(currentBiEnd, 14);
+        
+        return {
+          startDate: formatDateInUserTimeZone(prevBiStart),
+          endDate: formatDateInUserTimeZone(prevBiEnd),
+          frequency: 'biweekly',
+          type: 'previous'
+        };
       case 'monthly':
         // Para mensual: restar 1 mes del inicio del período actual
         const prevMonthStart = subMonths(parseISO(currentPeriod.startDate + 'T00:00:00'), 1);
         return this.getMonthlyPeriod(prevMonthStart, 'previous');
       default:
-        const defaultPrevStart = subDays(parseISO(currentPeriod.startDate + 'T00:00:00'), 7);
-        return this.getWeeklyPeriod(defaultPrevStart, 'previous');
+        // Default semanal
+        const defaultCurrentStart = parseISO(currentPeriod.startDate + 'T00:00:00');
+        const defaultCurrentEnd = parseISO(currentPeriod.endDate + 'T00:00:00');
+        const defaultPrevStart = subDays(defaultCurrentStart, 7);
+        const defaultPrevEnd = subDays(defaultCurrentEnd, 7);
+        
+        return {
+          startDate: formatDateInUserTimeZone(defaultPrevStart),
+          endDate: formatDateInUserTimeZone(defaultPrevEnd),
+          frequency: 'weekly',
+          type: 'previous'
+        };
     }
   }
 
