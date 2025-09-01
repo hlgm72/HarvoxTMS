@@ -787,7 +787,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Package className="h-5 w-5 text-blue-600" />
-                  {t('report_dialog.loads_section')} del Período ({loads.length} - {t('report_dialog.loads_total')}: {formatCurrency(loads.reduce((sum, load) => sum + load.total_amount, 0))})
+                  {t('report_dialog.loads_period_title')} ({loads.length} - {t('report_dialog.loads_total')}: {formatCurrency(loads.reduce((sum, load) => sum + load.total_amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
