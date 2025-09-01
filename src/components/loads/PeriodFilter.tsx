@@ -99,7 +99,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         // Mostrar período calculado si no hay período real
         const displayCurrentPeriod = currentPeriod || calculatedPeriods?.current;
         if (displayCurrentPeriod) {
-          return `${t('periods.current')} (${formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date)})`;
+          // ✅ NUEVO FORMATO: "Current WK35 - 2025 (dd/MM - dd/MM)"
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayCurrentPeriod.period_start_date, 
+            displayCurrentPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          // Extraer solo la parte del número de semana/mes del formatDetailedPaymentPeriod
+          const periodNumber = periodLabel.split(':')[0]; // "Week 35/2025" o "AGO/2025"
+          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
+          return `${t('periods.current')} ${periodNumber} (${dateRange})`;
         } else {
           return t('periods.current');
         }
@@ -288,18 +297,35 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                          }
                        }
                      }}
-                  >
-                    <Clock className="h-4 w-4 mr-2" />
-                    {t('periods.current')}
-                    {(currentPeriod || calculatedPeriods?.current) && (
-                      <Badge variant="outline" className="ml-auto text-[8px] md:text-[10px] bg-white/90 text-slate-700 border-slate-300">
-                        {formatPaymentPeriodBadge(
-                          (currentPeriod || calculatedPeriods?.current)!.period_start_date, 
-                          (currentPeriod || calculatedPeriods?.current)!.period_end_date
-                        )}
-                      </Badge>
-                    )}
-                  </Button>
+                   >
+                     <Clock className="h-4 w-4 mr-2" />
+                     {/* ✅ NUEVO FORMATO: Solo "Current" sin "Period" */}
+                     {t('periods.current')}
+                     {(currentPeriod || calculatedPeriods?.current) && (
+                       <>
+                         {(() => {
+                           const displayPeriod = currentPeriod || calculatedPeriods?.current;
+                           const periodLabel = formatDetailedPaymentPeriod(
+                             displayPeriod!.period_start_date, 
+                             displayPeriod!.period_end_date, 
+                             Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                           );
+                           const periodNumber = periodLabel.split(':')[0]; // "Week 35/2025"
+                           return (
+                             <span className="ml-2 text-xs font-medium">
+                               {periodNumber}
+                             </span>
+                           );
+                         })()}
+                         <Badge variant="outline" className="ml-auto text-[8px] md:text-[10px] bg-white/90 text-slate-700 border-slate-300">
+                           {formatPaymentPeriodBadge(
+                             (currentPeriod || calculatedPeriods?.current)!.period_start_date, 
+                             (currentPeriod || calculatedPeriods?.current)!.period_end_date
+                           )}
+                         </Badge>
+                       </>
+                     )}
+                   </Button>
 
                   <Button
                     variant={value.type === 'all' ? 'default' : 'ghost'}
