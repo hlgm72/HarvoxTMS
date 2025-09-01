@@ -23,6 +23,27 @@ import { formatCurrency } from "@/lib/dateFormatting";
 import { FuelFiltersType } from "@/components/fuel/FuelFilters";
 
 // ========================================
+// FUNCIÓN HELPER PARA TRADUCIR TIPOS DE PERÍODO
+// ========================================
+
+const getPeriodTypeLabel = (type: string) => {
+  switch (type) {
+    case 'current': return 'Período Actual';
+    case 'previous': return 'Período Anterior';
+    case 'next': return 'Próximo Período';
+    case 'this_month': return 'Este Mes';
+    case 'last_month': return 'Mes Anterior';
+    case 'this_quarter': return 'Este Trimestre';
+    case 'last_quarter': return 'Trimestre Anterior';
+    case 'this_year': return 'Este Año';
+    case 'last_year': return 'Año Anterior';
+    case 'specific': return 'Período Específico';
+    case 'custom': return 'Personalizado';
+    default: return type;
+  }
+};
+
+// ========================================
 // CONFIGURACIÓN PARA FUEL MANAGEMENT
 // ========================================
 
@@ -153,10 +174,10 @@ export const fuelConfig: ContextConfig<FuelFilters> = {
         badges.push({ key: 'status', label: `Estado: ${filters.status}` });
       }
       
-      if (filters.periodFilter?.type !== 'current') {
+      if (filters.periodFilter?.type !== 'current') {        
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || filters.periodFilter?.type}` 
+          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
         });
       }
       
@@ -329,7 +350,7 @@ export const loadsConfig: ContextConfig<LoadsFilters> = {
       if (filters.periodFilter?.type !== 'current') {
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || filters.periodFilter?.type}` 
+          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
         });
       }
       
@@ -485,7 +506,7 @@ export const deductionsConfig: ContextConfig<DeductionsFilters> = {
       if (filters.periodFilter?.type !== 'current') {
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || filters.periodFilter?.type}` 
+          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
         });
       }
       
@@ -631,7 +652,7 @@ export const paymentReportsConfig: ContextConfig<PaymentFilters> = {
       if (filters.periodFilter?.type !== 'current') {
         badges.push({ 
           key: 'period', 
-          label: `Período: ${filters.periodFilter?.label || filters.periodFilter?.type}` 
+          label: `Período: ${filters.periodFilter?.label || getPeriodTypeLabel(filters.periodFilter?.type)}` 
         });
       }
       
