@@ -32,9 +32,10 @@ export function ActiveFiltersDisplay({
   const { t } = useTranslation(['common']);
   
   const isActive = hasActiveFilters(filters);
-  const activeBadges = isActive ? getFilterBadges(filters, additionalData) : [];
+  const activeBadges = getFilterBadges(filters, additionalData);
 
-  if (!isActive) {
+  // Siempre mostrar si hay badges disponibles
+  if (!activeBadges || activeBadges.length === 0) {
     return null;
   }
 
@@ -61,16 +62,18 @@ export function ActiveFiltersDisplay({
             </div>
           </div>
           
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={onClearFilters}
-            className="text-muted-foreground hover:text-foreground shrink-0"
-          >
-            <FilterX className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">{t('active_filters.clear', 'Limpiar filtros')}</span>
-            <span className="sm:hidden">{t('active_filters.clear_short', 'Limpiar')}</span>
-          </Button>
+          {isActive && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={onClearFilters}
+              className="text-muted-foreground hover:text-foreground shrink-0"
+            >
+              <FilterX className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">{t('active_filters.clear', 'Limpiar filtros')}</span>
+              <span className="sm:hidden">{t('active_filters.clear_short', 'Limpiar')}</span>
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

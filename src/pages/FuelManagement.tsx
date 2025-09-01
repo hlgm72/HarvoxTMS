@@ -182,11 +182,11 @@ export default function FuelManagement() {
             {/* Estadísticas */}
             <FuelStatsCards filters={queryFilters} />
 
-            {/* Filtros Activos */}
+            {/* Filtros Activos - Siempre visible para mostrar criterios aplicados */}
             <ActiveFiltersDisplay
               filters={filters}
               getFilterBadges={fuelFilterConfig.getActiveFilterBadges}
-              hasActiveFilters={fuelFilterConfig.hasActiveFilters}
+              hasActiveFilters={() => true} // Siempre mostrar para transparencia
               onClearFilters={handleClearFilters}
               additionalData={{
                 drivers: drivers,
