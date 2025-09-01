@@ -179,9 +179,9 @@ export const useCreateLoad = () => {
         weight_lbs: toNumber(data.weight_lbs),
         notes: data.notes || '',
         customer_name: data.customer_name || '',
-        factoring_percentage: toNumber(data.factoring_percentage),
-        dispatching_percentage: toNumber(data.dispatching_percentage),
-        leasing_percentage: toNumber(data.leasing_percentage)
+        factoring_percentage: toNumber(data.factoring_percentage) ?? 0,
+        dispatching_percentage: toNumber(data.dispatching_percentage) ?? 0,
+        leasing_percentage: toNumber(data.leasing_percentage) ?? 0
       };
 
       // Prepare stops data

@@ -60,9 +60,9 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
         weight_lbs: initialData.weight_lbs || undefined,
         customer_name: initialData.customer_name || "",
         notes: initialData.notes || "",
-        factoring_percentage: initialData.factoring_percentage,
-        dispatching_percentage: initialData.dispatching_percentage,
-        leasing_percentage: initialData.leasing_percentage,
+        factoring_percentage: initialData.factoring_percentage ?? undefined,
+        dispatching_percentage: initialData.dispatching_percentage ?? undefined,
+        leasing_percentage: initialData.leasing_percentage ?? undefined,
       });
 
       setIsFormReady(true);
