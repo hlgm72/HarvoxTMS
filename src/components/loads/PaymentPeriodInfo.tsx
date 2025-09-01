@@ -81,21 +81,15 @@ const PaymentPeriodInfo = ({
 
   return (
     <div className={`${className}`}>
-      <div className="flex items-center gap-2 mb-2">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase">
-          {t('period.payment_period')}
-        </h3>
-        {periodNumber && (
-          <span className="text-xs text-muted-foreground">
-            ({periodNumber})
-          </span>
-        )}
-      </div>
-      
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>{formattedPeriod}</span>
+          {periodNumber && (
+            <span className="text-xs text-muted-foreground ml-2">
+              ({periodNumber})
+            </span>
+          )}
         </div>
         
         {periodFrequency && (
