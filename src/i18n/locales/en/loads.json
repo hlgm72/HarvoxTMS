@@ -17,13 +17,13 @@
       "new_load": "New Load",
       "create_with_number": "Create Load #{{number}}",
       "edit_with_number": "Edit Load #{{number}}",
-      "duplicate_with_number": "Duplicate Load #{{number}}",
+      "duplicate_with_number": "New Load based on #{{number}}",
       "step": "Step {{current}} of {{total}}"
     },
     "description": {
       "create": "Follow these steps to create a complete load with all necessary information",
       "edit": "Modify this load's information by following the steps",
-      "duplicate": "Duplicate this load using existing information as base"
+      "duplicate": "Create a new load using some data from this load as starting point"
     },
     "progress": {
       "step_x_of_y": "Step {{x}} of {{y}}"

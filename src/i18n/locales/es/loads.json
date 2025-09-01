@@ -17,13 +17,13 @@
       "new_load": "Nueva Carga",
       "create_with_number": "Crear Carga #{{number}}",
       "edit_with_number": "Editar Carga #{{number}}",
-      "duplicate_with_number": "Duplicar Carga #{{number}}",
+      "duplicate_with_number": "Nueva Carga basada en #{{number}}",
       "step": "Paso {{current}} de {{total}}"
     },
     "description": {
       "create": "Sigue estos pasos para crear una carga completa con toda la información necesaria",
       "edit": "Modifica la información de esta carga siguiendo los pasos",
-      "duplicate": "Duplica esta carga usando la información existente como base"
+      "duplicate": "Crea una nueva carga usando algunos datos de esta carga como punto de partida"
     },
     "progress": {
       "step_x_of_y": "Paso {{x}} de {{y}}"
