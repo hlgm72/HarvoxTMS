@@ -169,6 +169,16 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             
             const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
             console.log('📅 Fecha actual para filtro:', currentDate);
+            console.log('📅 Fecha actual completa:', new Date());
+            
+            // Listar todos los períodos de la empresa para debugging
+            const allPeriodsQuery = await supabase
+              .from('company_payment_periods')
+              .select('period_start_date, period_end_date, status, id, created_at')
+              .eq('company_id', userCompany.company_id)
+              .order('period_start_date', { ascending: false });
+            
+            console.log('📋 Todos los períodos de la empresa:', allPeriodsQuery.data);
             
             // Buscar período que incluya la fecha actual
             let currentPeriodQuery = await supabase
@@ -180,6 +190,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               .in('status', ['open', 'processing'])
               .limit(1);
             
+            console.log('🔍 Resultado de búsqueda por fecha actual:', currentPeriodQuery.data);
+            
             // Si no hay período que incluya la fecha actual, buscar el más reciente abierto
             if (!currentPeriodQuery.data || currentPeriodQuery.data.length === 0) {
               console.log('⚠️ No se encontró período que incluya la fecha actual, buscando el más reciente abierto');
@@ -190,6 +202,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 .eq('status', 'open')
                 .order('period_start_date', { ascending: false })
                 .limit(1);
+              
+              console.log('🔍 Resultado de búsqueda por más reciente:', currentPeriodQuery.data);
             }
             
             if (currentPeriodQuery.data && currentPeriodQuery.data.length > 0) {
