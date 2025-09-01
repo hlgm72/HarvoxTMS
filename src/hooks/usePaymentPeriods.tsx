@@ -117,7 +117,7 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
   };
 };
 
-// Hook para obtener el período actual calculado dinámicamente
+// Hook para obtener el período actual de empresa - solo devuelve períodos reales de BD
 export const useCurrentPaymentPeriod = (companyId?: string) => {
   const { user } = useAuth();
 
@@ -126,6 +126,8 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
     queryFn: async (): Promise<PaymentPeriod | null> => {
       if (!user) throw new Error('User not authenticated');
 
+      const currentDate = getTodayInUserTimeZone();
+      
       // Obtener la compañía del usuario si no se especifica
       let targetCompanyId = companyId;
       
@@ -145,41 +147,28 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         targetCompanyId = userCompanyRole.company_id;
       }
 
-      // Obtener configuración de la empresa
-      const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('default_payment_frequency, payment_cycle_start_day')
-        .eq('id', targetCompanyId)
-        .single();
+      // Buscar período actual abierto de la empresa que incluya la fecha actual
+      let { data: period, error } = await supabase
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', targetCompanyId)
+        .lte('period_start_date', currentDate)
+        .gte('period_end_date', currentDate)
+        .in('status', ['open', 'processing'])
+        .limit(1)
+        .maybeSingle();
 
-      if (companyError || !companyData) {
-        return null;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
       }
 
-      // Importar y usar el calculador de períodos
-      const { calculateCurrentPeriod } = await import('@/utils/periodCalculations');
-      
-      const calculatedPeriod = calculateCurrentPeriod({
-        default_payment_frequency: companyData.default_payment_frequency as 'weekly' | 'biweekly' | 'monthly',
-        payment_cycle_start_day: companyData.payment_cycle_start_day || 1
-      });
-
-      // Devolver período calculado dinámicamente en formato PaymentPeriod
-      return {
-        id: 'calculated-current',
-        company_id: targetCompanyId,
-        period_start_date: calculatedPeriod.startDate,
-        period_end_date: calculatedPeriod.endDate,
-        period_frequency: calculatedPeriod.frequency,
-        status: 'calculated',
-        period_type: 'regular'
-      };
+      return period || null;
     },
     enabled: !!user,
   });
 };
 
-// Hook para obtener el período anterior calculado dinámicamente
+// Hook para obtener el período anterior de empresa - solo devuelve períodos reales de BD
 export const usePreviousPaymentPeriod = (companyId?: string) => {
   const { user } = useAuth();
 
@@ -188,6 +177,8 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
     queryFn: async (): Promise<PaymentPeriod | null> => {
       if (!user) throw new Error('User not authenticated');
 
+      const currentDate = getTodayInUserTimeZone();
+      
       // Obtener la compañía del usuario si no se especifica
       let targetCompanyId = companyId;
       
@@ -207,41 +198,27 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         targetCompanyId = userCompanyRole.company_id;
       }
 
-      // Obtener configuración de la empresa
-      const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('default_payment_frequency, payment_cycle_start_day')
-        .eq('id', targetCompanyId)
-        .single();
+      // Buscar el período anterior (el período que terminó justo antes de la fecha actual)
+      const { data: period, error } = await supabase
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', targetCompanyId)
+        .lt('period_end_date', currentDate)
+        .order('period_end_date', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (companyError || !companyData) {
-        return null;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
       }
 
-      // Importar y usar el calculador de períodos
-      const { calculatePreviousPeriod } = await import('@/utils/periodCalculations');
-      
-      const calculatedPeriod = calculatePreviousPeriod({
-        default_payment_frequency: companyData.default_payment_frequency as 'weekly' | 'biweekly' | 'monthly',
-        payment_cycle_start_day: companyData.payment_cycle_start_day || 1
-      });
-
-      // Devolver período calculado dinámicamente en formato PaymentPeriod
-      return {
-        id: 'calculated-previous',
-        company_id: targetCompanyId,
-        period_start_date: calculatedPeriod.startDate,
-        period_end_date: calculatedPeriod.endDate,
-        period_frequency: calculatedPeriod.frequency,
-        status: 'calculated',
-        period_type: 'regular'
-      };
+      return period || null;
     },
     enabled: !!user,
   });
 };
 
-// Hook para obtener el próximo período calculado dinámicamente
+// Hook para obtener el siguiente período de pago - solo devuelve períodos reales de BD
 export const useNextPaymentPeriod = (companyId?: string) => {
   const { user } = useAuth();
 
@@ -250,6 +227,8 @@ export const useNextPaymentPeriod = (companyId?: string) => {
     queryFn: async (): Promise<PaymentPeriod | null> => {
       if (!user) throw new Error('User not authenticated');
 
+      const currentDate = getTodayInUserTimeZone();
+      
       // Obtener la compañía del usuario si no se especifica
       let targetCompanyId = companyId;
       
@@ -269,35 +248,21 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         targetCompanyId = userCompanyRole.company_id;
       }
 
-      // Obtener configuración de la empresa
-      const { data: companyData, error: companyError } = await supabase
-        .from('companies')
-        .select('default_payment_frequency, payment_cycle_start_day')
-        .eq('id', targetCompanyId)
-        .single();
+      // Buscar el siguiente período (el período que comienza después de la fecha actual)
+      let { data: period, error } = await supabase
+        .from('company_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .eq('company_id', targetCompanyId)
+        .gt('period_start_date', currentDate)
+        .order('period_start_date', { ascending: true })
+        .limit(1)
+        .maybeSingle();
 
-      if (companyError || !companyData) {
-        return null;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
       }
 
-      // Importar y usar el calculador de períodos
-      const { calculateNextPeriod } = await import('@/utils/periodCalculations');
-      
-      const calculatedPeriod = calculateNextPeriod({
-        default_payment_frequency: companyData.default_payment_frequency as 'weekly' | 'biweekly' | 'monthly',
-        payment_cycle_start_day: companyData.payment_cycle_start_day || 1
-      });
-
-      // Devolver período calculado dinámicamente en formato PaymentPeriod
-      return {
-        id: 'calculated-next',
-        company_id: targetCompanyId,
-        period_start_date: calculatedPeriod.startDate,
-        period_end_date: calculatedPeriod.endDate,
-        period_frequency: calculatedPeriod.frequency,
-        status: 'calculated',
-        period_type: 'regular'
-      };
+      return period || null;
     },
     enabled: !!user,
   });

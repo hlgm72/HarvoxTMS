@@ -58,7 +58,9 @@ export default function FuelManagement() {
           }
         }));
       } else {
-        console.log('⚠️ No hay período actual activo en BD');
+        // Si no hay período real, mantener periodId como undefined
+        // Esto permitirá filtrar por fechas calculadas sin romper las consultas
+        console.log('⚠️ No hay período actual real en BD - usando período calculado solo para display');
       }
     }
   }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);

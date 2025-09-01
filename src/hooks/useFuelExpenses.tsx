@@ -72,8 +72,17 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
         query = query.eq('driver_user_id', filters.driverId);
       }
 
+      // ✅ Filtrar por período: si hay periodId usar ese, sino usar fechas si están disponibles
       if (filters.periodId && filters.periodId !== 'all') {
         query = query.eq('payment_period_id', filters.periodId);
+      } else if (!filters.periodId && (filters.startDate || filters.endDate)) {
+        // Si no hay periodId pero hay fechas de rango (períodos calculados), filtrar por fechas
+        if (filters.startDate) {
+          query = query.gte('transaction_date', filters.startDate);
+        }
+        if (filters.endDate) {
+          query = query.lte('transaction_date', filters.endDate);
+        }
       }
 
       if (filters.status && filters.status !== 'all') {
@@ -82,26 +91,6 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
 
       if (filters.vehicleId && filters.vehicleId !== 'all') {
         query = query.eq('vehicle_id', filters.vehicleId);
-      }
-
-      // ✅ Filtrado de fechas mejorado - aplicar si al menos una fecha está presente
-      if (filters.startDate || filters.endDate) {
-        if (filters.startDate && filters.endDate) {
-          // Rango completo
-          const startUTC = convertUserDateToUTC(new Date(filters.startDate));
-          const endUTC = convertUserDateToUTC(new Date(filters.endDate));
-          query = query
-            .gte('transaction_date', startUTC.split('T')[0])
-            .lte('transaction_date', endUTC.split('T')[0]);
-        } else if (filters.startDate) {
-          // Solo fecha de inicio
-          const startUTC = convertUserDateToUTC(new Date(filters.startDate));
-          query = query.gte('transaction_date', startUTC.split('T')[0]);
-        } else if (filters.endDate) {
-          // Solo fecha final
-          const endUTC = convertUserDateToUTC(new Date(filters.endDate));
-          query = query.lte('transaction_date', endUTC.split('T')[0]);
-        }
       }
 
       const { data, error } = await query;

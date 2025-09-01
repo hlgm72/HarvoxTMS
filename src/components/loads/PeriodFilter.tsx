@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, CalendarDays, ChevronDown, Clock, Loader2 } from 'lucide-react';
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
+import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBadge, formatDateOnly, formatMonthName, formatDateInUserTimeZone, getTodayInUserTimeZone, formatDetailedPaymentPeriod } from '@/lib/dateFormatting';
@@ -40,6 +41,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
   const { data: previousPeriod } = usePreviousPaymentPeriod(userCompany?.company_id);
   const { data: nextPeriod } = useNextPaymentPeriod(userCompany?.company_id);
+  
+  // Obtener períodos calculados para mostrar en el dropdown
+  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
 
   const getDateRangeForType = (type: string) => {
     const now = new Date();
@@ -92,19 +96,22 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const getFilterLabel = () => {
     switch (value.type) {
       case 'current':
-        // SIEMPRE usar el período real de la BD, no fechas calculadas
-        if (currentPeriod) {
-          return `${t('periods.current')} (${formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)})`;
+        // Mostrar período calculado si no hay período real
+        const displayCurrentPeriod = currentPeriod || calculatedPeriods?.current;
+        if (displayCurrentPeriod) {
+          return `${t('periods.current')} (${formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date)})`;
         } else {
           return t('periods.current');
         }
       case 'previous':
-        return previousPeriod 
-          ? `${t('periods.previous')} (${formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)})`
+        const displayPreviousPeriod = previousPeriod || calculatedPeriods?.previous;
+        return displayPreviousPeriod 
+          ? `${t('periods.previous')} (${formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date)})`
           : t('periods.previous');
       case 'next':
-        return nextPeriod 
-          ? `${t('periods.next')} (${formatPaymentPeriodBadge(nextPeriod.period_start_date, nextPeriod.period_end_date)})`
+        const displayNextPeriod = nextPeriod || calculatedPeriods?.next;
+        return displayNextPeriod 
+          ? `${t('periods.next')} (${formatPaymentPeriodBadge(displayNextPeriod.period_start_date, displayNextPeriod.period_end_date)})`
           : t('periods.next');
       case 'all':
         return t('periods.all');
@@ -210,22 +217,26 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     variant={value.type === 'previous' ? 'default' : 'ghost'}
                     className="w-full justify-start"
                     onClick={() => {
-                      if (previousPeriod) {
+                      const displayPeriod = previousPeriod || calculatedPeriods?.previous;
+                      if (displayPeriod) {
                         handleOptionSelect({ 
                           type: 'previous',
-                          periodId: previousPeriod.id,
-                          startDate: previousPeriod.period_start_date,
-                          endDate: previousPeriod.period_end_date
+                          periodId: previousPeriod?.id, // Solo usar ID real si existe
+                          startDate: displayPeriod.period_start_date,
+                          endDate: displayPeriod.period_end_date
                         });
                       }
                     }}
-                    disabled={!previousPeriod}
+                    disabled={!previousPeriod && !calculatedPeriods?.previous}
                   >
                     <Clock className="h-4 w-4 mr-2" />
                     {t('periods.previous')}
-                    {previousPeriod && (
+                    {(previousPeriod || calculatedPeriods?.previous) && (
                       <Badge variant="secondary" className="ml-auto text-[8px] md:text-[10px]">
-                        {formatPaymentPeriodBadge(previousPeriod.period_start_date, previousPeriod.period_end_date)}
+                        {formatPaymentPeriodBadge(
+                          (previousPeriod || calculatedPeriods?.previous)!.period_start_date, 
+                          (previousPeriod || calculatedPeriods?.previous)!.period_end_date
+                        )}
                       </Badge>
                     )}
                   </Button>
@@ -233,23 +244,27 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   <Button
                     variant={value.type === 'current' ? 'default' : 'ghost'}
                     className="w-full justify-start"
-                    disabled={!currentPeriod}
+                    disabled={!currentPeriod && !calculatedPeriods?.current}
                     onClick={() => {
-                      if (currentPeriod) {
+                      const displayPeriod = currentPeriod || calculatedPeriods?.current;
+                      if (displayPeriod) {
                         handleOptionSelect({ 
                           type: 'current',
-                          periodId: currentPeriod.id,
-                          startDate: currentPeriod.period_start_date,
-                          endDate: currentPeriod.period_end_date
+                          periodId: currentPeriod?.id, // Solo usar ID real si existe
+                          startDate: displayPeriod.period_start_date,
+                          endDate: displayPeriod.period_end_date
                         });
                       }
                     }}
                   >
                     <Clock className="h-4 w-4 mr-2" />
                     {t('periods.current')}
-                    {currentPeriod && (
+                    {(currentPeriod || calculatedPeriods?.current) && (
                       <Badge variant="outline" className="ml-auto text-[8px] md:text-[10px] bg-white/90 text-slate-700 border-slate-300">
-                        {formatPaymentPeriodBadge(currentPeriod.period_start_date, currentPeriod.period_end_date)}
+                        {formatPaymentPeriodBadge(
+                          (currentPeriod || calculatedPeriods?.current)!.period_start_date, 
+                          (currentPeriod || calculatedPeriods?.current)!.period_end_date
+                        )}
                       </Badge>
                     )}
                   </Button>

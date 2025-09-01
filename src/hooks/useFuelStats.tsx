@@ -35,22 +35,26 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
           driver_user_id
         `);
 
-      // Aplicar filtros
-      if (filters.driverId && filters.driverId !== 'all') {
-        query = query.eq('driver_user_id', filters.driverId);
-      }
-
+      // ✅ Aplicar filtros - usar periodId si existe, sino usar fechas
       if (filters.periodId && filters.periodId !== 'all') {
         query = query.eq('payment_period_id', filters.periodId);
+      } else if (!filters.periodId && (filters.startDate || filters.endDate)) {
+        // Si no hay periodId pero hay fechas de rango (períodos calculados), filtrar por fechas
+        if (filters.startDate && filters.endDate) {
+          const startUTC = convertUserDateToUTC(new Date(filters.startDate));
+          const endUTC = convertUserDateToUTC(new Date(filters.endDate));
+          query = query
+            .gte('transaction_date', startUTC.split('T')[0])
+            .lte('transaction_date', endUTC.split('T')[0]);
+        } else if (filters.startDate) {
+          query = query.gte('transaction_date', filters.startDate);
+        } else if (filters.endDate) {
+          query = query.lte('transaction_date', filters.endDate);
+        }
       }
 
-      if (filters.startDate && filters.endDate) {
-        // ✅ CORREGIDO: Usar funciones centralizadas para conversión UTC
-        const startUTC = convertUserDateToUTC(new Date(filters.startDate));
-        const endUTC = convertUserDateToUTC(new Date(filters.endDate));
-        query = query
-          .gte('transaction_date', startUTC.split('T')[0])
-          .lte('transaction_date', endUTC.split('T')[0]);
+      if (filters.driverId && filters.driverId !== 'all') {
+        query = query.eq('driver_user_id', filters.driverId);
       }
 
       const { data, error } = await query;
