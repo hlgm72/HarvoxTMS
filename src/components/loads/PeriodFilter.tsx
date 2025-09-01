@@ -209,6 +209,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       label: option.label 
     });
     
+    console.log('🔍 handleOptionSelect - DEBUGGING:', {
+      type: option.type,
+      periodId: option.periodId,
+      startDate: option.startDate,
+      endDate: option.endDate,
+      label: option.label
+    });
+    
     // Log de negocio para analytics (desarrollo solamente)
     business.payment('period_filter_changed', {
       filterType: option.type,
