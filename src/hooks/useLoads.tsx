@@ -169,6 +169,12 @@ const getRelevantPeriodIds = async (
       startDate: periodFilter.startDate,
       endDate: periodFilter.endDate
     };
+  } else if ((periodFilter.type === 'previous' || periodFilter.type === 'current' || periodFilter.type === 'next') && periodFilter.startDate && periodFilter.endDate) {
+    // USAR LAS FECHAS CALCULADAS QUE VIENEN DEL FILTRO
+    dateRange = {
+      startDate: periodFilter.startDate,
+      endDate: periodFilter.endDate
+    };
   } else {
     dateRange = calculateDateRange(periodFilter.type);
   }
@@ -268,11 +274,6 @@ export const useLoads = (filters?: LoadsFilters) => {
           // Si es un período calculado (previous, current, next) sin periodId pero con fechas
           if ((filters.periodFilter.type === 'previous' || filters.periodFilter.type === 'current' || filters.periodFilter.type === 'next') 
               && filters.periodFilter.startDate && filters.periodFilter.endDate) {
-            console.log('🔍 Aplicando filtro por rango de fechas calculado:', {
-              type: filters.periodFilter.type,
-              startDate: filters.periodFilter.startDate,
-              endDate: filters.periodFilter.endDate
-            });
             // Filtrar cargas por rango de fechas (fecha de pickup o delivery dentro del período)
             loadsQuery = loadsQuery.or(
               `and(pickup_date.gte.${filters.periodFilter.startDate},pickup_date.lte.${filters.periodFilter.endDate}),and(delivery_date.gte.${filters.periodFilter.startDate},delivery_date.lte.${filters.periodFilter.endDate}),and(created_at.gte.${filters.periodFilter.startDate}T00:00:00,created_at.lte.${filters.periodFilter.endDate}T23:59:59)`
