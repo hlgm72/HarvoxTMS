@@ -166,9 +166,21 @@ export default function PaymentReports() {
         `)
         .order('created_at', { ascending: false });
 
-      // Filtrar por períodos específicos si no es filtro personalizado
-      if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
-        console.log('📊 Adding period filter for IDs:', getFilterPeriodIds);
+      // ✅ CORREGIDO: Manejar períodos calculados vs reales de BD
+      if (filters.periodFilter.periodId?.startsWith('calculated-')) {
+        // Para períodos calculados, usar filtros de fecha
+        if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+          console.log('📊 Adding date range filter for calculated period:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
+          query = query
+            .gte('company_payment_periods.period_start_date', filters.periodFilter.startDate)
+            .lte('company_payment_periods.period_end_date', filters.periodFilter.endDate);
+        } else {
+          console.log('❌ No date range available for calculated period');
+          return [];
+        }
+      } else if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
+        // Para períodos reales de BD, usar payment_period_id
+        console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
       } else if (
         (filters.periodFilter.type === 'custom' || 
