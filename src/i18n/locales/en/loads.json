@@ -97,7 +97,8 @@
           "instructions_placeholder": "Enter any special instructions...",
           "cancel": "Cancel",
           "save_changes": "Save Changes"
-        }
+        },
+        "date_error": "Error in selected date"
       },
       "assignment": {
         "title": "Assignment",

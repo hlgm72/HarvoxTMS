@@ -97,7 +97,8 @@
           "instructions_placeholder": "Ingresa cualquier instrucción especial...",
           "cancel": "Cancelar",
           "save_changes": "Guardar Cambios"
-        }
+        },
+        "date_error": "Error en la fecha seleccionada"
       },
       "assignment": {
         "title": "Asignación",
