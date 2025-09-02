@@ -40,11 +40,8 @@ export const useDeleteLoad = () => {
     onSuccess: (_, data) => {
       console.log('✅ useDeleteLoad - Eliminación exitosa para:', data.loadId);
       
-      // Remover inmediatamente de cache usando setQueryData para actualización optimista
-      queryClient.setQueryData(['loads', user?.id], (oldData: any) => {
-        if (!oldData) return oldData;
-        return oldData.filter((load: any) => load.id !== data.loadId);
-      });
+      // 🚨 ARREGLO: Remover actualización optimista problemática y depender de invalidaciones
+      // La query key de useLoads incluye filtros, por lo que es complejo hacer actualización optimista
       
       // Invalidar y refrescar todas las queries relacionadas con cargas
       queryClient.invalidateQueries({ queryKey: ['loads'] });
@@ -56,7 +53,7 @@ export const useDeleteLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
       
-      // Refetch inmediato para sincronizar con el servidor
+      // Refetch inmediato para sincronización rápida
       queryClient.refetchQueries({ queryKey: ['loads'] });
       queryClient.refetchQueries({ queryKey: ['company-payment-periods'] });
       
