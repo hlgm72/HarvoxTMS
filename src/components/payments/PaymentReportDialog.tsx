@@ -726,7 +726,7 @@ export function PaymentReportDialog({
               {calculation.has_negative_balance && (
                 <div className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
-                  <span className="text-sm font-medium">{t('report_dialog.negative_balance_warning')}</span>
+                  <span className="text-sm font-medium">{t('payments.report_dialog.negative_balance_warning')}</span>
                 </div>
               )}
             </CardHeader>
