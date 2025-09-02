@@ -165,6 +165,12 @@ export const useCreateLoad = () => {
         return isNaN(num) ? null : num;
       };
 
+      // Helper function to convert to UUID or null
+      const toUUID = (value: any): string | null => {
+        if (value === '' || value === null || value === undefined) return null;
+        return value;
+      };
+
       // Get company_id from user's current role
       if (!userRole?.company_id) {
         throw new Error('No se pudo determinar la empresa del usuario');
@@ -175,10 +181,10 @@ export const useCreateLoad = () => {
         ...(isEdit && { id: data.id }),
         load_number: data.load_number,
         po_number: data.po_number || '',
-        driver_user_id: data.driver_user_id || '',
+        driver_user_id: toUUID(data.driver_user_id),
         internal_dispatcher_id: data.internal_dispatcher_id || null,
-        client_id: data.client_id || '',
-        client_contact_id: data.client_contact_id || '',
+        client_id: toUUID(data.client_id),
+        client_contact_id: toUUID(data.client_contact_id),
         total_amount: data.total_amount,
         commodity: data.commodity || '',
         weight_lbs: toNumber(data.weight_lbs),
