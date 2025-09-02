@@ -3211,6 +3211,10 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: Json
       }
+      check_and_cleanup_empty_periods: {
+        Args: { target_period_id: string }
+        Returns: Json
+      }
       check_data_access_permissions: {
         Args: { operation?: string; table_name: string }
         Returns: boolean
@@ -3230,6 +3234,10 @@ export type Database = {
       check_user_role_access: {
         Args: { target_company_id: string; target_user_id: string }
         Returns: boolean
+      }
+      cleanup_all_empty_periods: {
+        Args: { target_company_id: string }
+        Returns: Json
       }
       cleanup_all_empty_periods_for_company: {
         Args: { target_company_id: string }
