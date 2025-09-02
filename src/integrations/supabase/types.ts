@@ -4148,6 +4148,10 @@ export type Database = {
         Args: { driver_id_param: string; period_id_param: string }
         Returns: Json
       }
+      regenerate_percentage_deductions_for_period: {
+        Args: { target_period_calculation_id: string }
+        Returns: Json
+      }
       report_payment_and_lock: {
         Args: {
           amount_paid: number
