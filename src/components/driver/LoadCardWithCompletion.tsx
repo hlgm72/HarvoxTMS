@@ -7,6 +7,8 @@ interface LoadCardWithCompletionProps {
     id: string;
     load_number: string;
     client_name: string;
+    client_contact_name?: string;
+    client_contact_id?: string;
     origin_city: string;
     origin_state: string;
     destination_city: string;

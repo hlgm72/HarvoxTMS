@@ -119,15 +119,6 @@ export function LoadCard({
           {load.client_contact_name && (
             <p className="text-xs">Contact: {load.client_contact_name}</p>
           )}
-          {/* 🔍 DEBUG: Mostrar siempre para load 25-417 */}
-          {load.load_number === '25-417' && (
-            <div className="text-xs text-red-500 border border-red-300 p-1 rounded mt-1">
-              <div>DEBUG LoadCard - Load: {load.load_number}</div>
-              <div>Client Contact ID: {load.client_contact_id || 'NULL'}</div>
-              <div>Client Contact Name: '{load.client_contact_name}' (type: {typeof load.client_contact_name})</div>
-              <div>Condition Check: {load.client_contact_name ? 'TRUE - should show' : 'FALSE - will not show'}</div>
-            </div>
-          )}
         </div>
       </CardHeader>
 
