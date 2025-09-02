@@ -46,6 +46,11 @@ interface CreateLoadDialogProps {
 export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: externalLoadData }: CreateLoadDialogProps) {
   const { t, i18n } = useTranslation();
   const { userRole } = useAuth();
+  
+  // 🚨 NUEVO: Debug logs para rastrear cuándo se abre el dialog
+  console.log('🚨🚨🚨 CreateLoadDialog RENDERED - Mode:', mode, 'IsOpen:', isOpen);
+  console.log('🚨🚨🚨 External LoadData received:', externalLoadData);
+  
   const [currentPhase, setCurrentPhase] = useState(1);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateClient, setShowCreateClient] = useState(false);
