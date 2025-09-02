@@ -34,6 +34,16 @@ interface LoadCardWithCompletionProps {
 export function LoadCardWithCompletion(props: LoadCardWithCompletionProps) {
   const completionState = useLoadCompletion(props.load.id, props.load.status);
 
+  // 🔍 DEBUG: Para load 25-417
+  if (props.load.load_number === '25-417') {
+    console.log('🔍 LoadCardWithCompletion - Props received:', {
+      loadNumber: props.load.load_number,
+      clientContactName: props.load.client_contact_name,
+      clientContactId: props.load.client_contact_id,
+      showCelebration: completionState.showCelebration
+    });
+  }
+
   console.log('🎉 LoadCardWithCompletion - Render:', { 
     loadId: props.load.id, 
     status: props.load.status, 

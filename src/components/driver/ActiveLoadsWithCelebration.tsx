@@ -29,6 +29,16 @@ export function ActiveLoadsWithCelebration({
   function LoadWithCelebrationCheck({ load }: { load: any }) {
     const completionState = useLoadCompletion(load.id, load.status);
     
+    // 🔍 DEBUG: Para load 25-417
+    if (load.load_number === '25-417') {
+      console.log('🔍 ActiveLoadsWithCelebration - Load data:', {
+        loadNumber: load.load_number,
+        clientContactName: load.client_contact_name,
+        clientContactId: load.client_contact_id,
+        allLoadProps: Object.keys(load)
+      });
+    }
+    
     console.log('🎉 LoadWithCelebrationCheck - Checking load:', {
       loadId: load.id,
       loadNumber: load.load_number,
