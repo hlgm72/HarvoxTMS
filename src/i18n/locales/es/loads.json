@@ -238,6 +238,7 @@
       "load_number": "Número de Carga",
       "load_number_required": "*",
       "load_number_placeholder": "Ej: LD-001, 2024-001, etc.",
+      "load_number_duplicate": "Este número de carga ya existe. Por favor usa un número diferente.",
       "po_number": "Número de PO",
       "po_number_placeholder": "Número de orden de compra...",
       "client_broker": "Cliente/Broker",

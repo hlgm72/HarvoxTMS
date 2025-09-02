@@ -239,6 +239,7 @@
       "load_number": "Load Number",
       "load_number_required": "*",
       "load_number_placeholder": "Ex: LD-001, 2024-001, etc.",
+      "load_number_duplicate": "This load number already exists. Please use a different number.",
       "po_number": "PO Number",
       "po_number_placeholder": "Purchase order number...",
       "client_broker": "Client/Broker",
