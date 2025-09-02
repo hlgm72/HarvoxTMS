@@ -275,6 +275,7 @@
       "load_number_required": "Load number is required",
       "client_required": "Client/Broker is required",
       "commodity_required": "Commodity description is required",
+      "amount_required": "Total amount must be greater than 0",
       "stops_minimum": "Must have at least 2 stops",
       "first_pickup": "First stop must be a pickup",
       "last_delivery": "Last stop must be a delivery",
