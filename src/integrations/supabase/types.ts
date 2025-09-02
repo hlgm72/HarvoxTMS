@@ -4132,6 +4132,15 @@ export type Database = {
           | { operation_data: Json }
         Returns: Json
       }
+      simple_load_operation_with_deductions: {
+        Args: {
+          load_data: Json
+          load_id_param?: string
+          operation_type: string
+          stops_data?: Json[]
+        }
+        Returns: Json
+      }
       sync_existing_user_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined

@@ -286,9 +286,9 @@ export const useCreateLoad = () => {
         ...(isEdit && data.id && { id: data.id }) // Include ID for edit mode
       };
       
-      // ✅ PRIMERO: Crear/actualizar la carga usando la función normal
+      // ✅ PRIMERO: Crear/actualizar la carga usando la función con deducciones automáticas
       const { data: loadResult, error: loadError } = await supabase.rpc(
-        'simple_load_operation',
+        'simple_load_operation_with_deductions',
         {
           operation_type: isEdit ? 'UPDATE' : 'CREATE',
           load_data: loadDataForRPC,
@@ -315,45 +315,11 @@ export const useCreateLoad = () => {
 
       const loadId = (loadResult as any).load?.id || data.id;
 
-      // ✅ SEGUNDO: Generar deducciones automáticas si hay porcentajes configurados y período asignado
-      let deductionsResult = null;
-      const hasPercentages = (loadData.factoring_percentage || 0) > 0 || 
-                            (loadData.dispatching_percentage || 0) > 0 || 
-                            (loadData.leasing_percentage || 0) > 0;
-
-      if (hasPercentages && paymentPeriodId && loadId) {
-        console.log('🔍 useCreateLoad - Generating automatic percentage deductions for load:', loadId);
-        
-        const { data: deductionsRes, error: deductionsError } = await supabase.rpc(
-          'create_load_percentage_deductions',
-          {
-            load_id_param: loadId,
-            driver_user_id_param: data.driver_user_id,
-            payment_period_id_param: paymentPeriodId,
-            total_amount_param: data.total_amount,
-            factoring_percentage_param: loadData.factoring_percentage || 0,
-            dispatching_percentage_param: loadData.dispatching_percentage || 0,
-            leasing_percentage_param: loadData.leasing_percentage || 0,
-            operation_type: isEdit ? 'UPDATE' : 'CREATE'
-          }
-        );
-
-        if (deductionsError) {
-          console.warn('⚠️ useCreateLoad - Deductions generation failed:', deductionsError);
-          // No fallar la operación completa por esto
-        } else {
-          deductionsResult = deductionsRes;
-          console.log('✅ useCreateLoad - Automatic deductions created:', deductionsResult);
-        }
-      } else {
-        console.log('ℹ️ useCreateLoad - No automatic deductions needed (no percentages or period)');
+      // ✅ Log de deducciones automáticas generadas
+      if ((loadResult as any)?.automatic_deductions) {
+        const deductions = (loadResult as any).automatic_deductions;
+        console.log('✅ useCreateLoad - Automatic deductions generated:', deductions);
       }
-
-      const result = {
-        success: true,
-        load: (loadResult as any).load,
-        automatic_deductions: deductionsResult
-      };
 
       // Handle temporary documents upload (outside ACID transaction for performance)
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
