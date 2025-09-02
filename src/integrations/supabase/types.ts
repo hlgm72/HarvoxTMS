@@ -3127,7 +3127,10 @@ export type Database = {
         Returns: Json
       }
       auto_recalculate_driver_payment_period: {
-        Args: { target_driver_user_id: string; target_period_id: string }
+        Args: {
+          target_company_payment_period_id: string
+          target_driver_user_id: string
+        }
         Returns: undefined
       }
       calculate_driver_payment_period: {
