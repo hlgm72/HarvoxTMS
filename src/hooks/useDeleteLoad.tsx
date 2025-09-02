@@ -50,8 +50,15 @@ export const useDeleteLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['load', data.loadId] });
       
+      // 🚨 CRÍTICO: Invalidar períodos porque el trigger puede haber eliminado períodos vacíos
+      queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+      
       // Refetch inmediato para sincronizar con el servidor
       queryClient.refetchQueries({ queryKey: ['loads'] });
+      queryClient.refetchQueries({ queryKey: ['company-payment-periods'] });
       
       showSuccess(t('list.delete_success', { loadNumber: data.loadNumber }));
     },
