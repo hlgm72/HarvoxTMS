@@ -254,6 +254,9 @@
       "close_period": "Close Period",
       "station": "Station"
     },
+    "report_dialog": {
+      "negative_balance_warning": "Negative balance detected"
+    },
     "notifications": {
       "success": "Deduction template updated successfully",
       "error": "Error updating deduction template",

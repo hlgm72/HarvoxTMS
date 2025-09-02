@@ -254,6 +254,9 @@
       "close_period": "Cerrar Período",
       "station": "Estación"
     },
+    "report_dialog": {
+      "negative_balance_warning": "Balance negativo detectado"
+    },
     "notifications": {
       "success": "Plantilla de deducción actualizada exitosamente",
       "error": "Error al actualizar la plantilla de deducción",
