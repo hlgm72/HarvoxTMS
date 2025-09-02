@@ -110,12 +110,34 @@ const getRelevantPeriodIds = (
   // USAR LA MISMA LÓGICA QUE PAYMENT REPORTS PARA PERÍODOS DE BD
   switch (periodFilter.type) {
     case 'current':
+      // Si hay fechas específicas en el filtro (período calculado), usarlas
+      if (periodFilter.startDate && periodFilter.endDate) {
+        return {
+          periodIds: [],
+          useDateFilter: true,
+          startDate: periodFilter.startDate,
+          endDate: periodFilter.endDate
+        };
+      }
       return { 
         periodIds: currentPeriod ? [currentPeriod.id] : [], 
         useDateFilter: false 
       };
     
     case 'previous':
+      // Si hay fechas específicas en el filtro (período calculado), usarlas
+      if (periodFilter.startDate && periodFilter.endDate) {
+        console.log('🎯 Previous con fechas calculadas - usando filtro de fechas:', {
+          startDate: periodFilter.startDate,
+          endDate: periodFilter.endDate
+        });
+        return {
+          periodIds: [],
+          useDateFilter: true,
+          startDate: periodFilter.startDate,
+          endDate: periodFilter.endDate
+        };
+      }
       return { 
         periodIds: previousPeriod ? [previousPeriod.id] : [], 
         useDateFilter: false 
