@@ -286,9 +286,9 @@ export const useCreateLoad = () => {
         ...(isEdit && data.id && { id: data.id }) // Include ID for edit mode
       };
       
-      // ✅ PRIMERO: Crear/actualizar la carga usando la función simple (sin deducciones complejas)
+      // ✅ PRIMERO: Crear/actualizar la carga usando la función con deducciones automáticas (arreglada)
       const { data: loadResult, error: loadError } = await supabase.rpc(
-        'simple_load_operation',
+        'simple_load_operation_with_deductions',
         {
           operation_type: isEdit ? 'UPDATE' : 'CREATE',
           load_data: loadDataForRPC,
