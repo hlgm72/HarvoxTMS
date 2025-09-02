@@ -8,6 +8,8 @@ interface CelebrationLoadCardProps {
     id: string;
     load_number: string;
     client_name: string;
+    client_contact_name?: string;
+    client_contact_id?: string;
   };
   showCelebration: boolean;
 }
@@ -40,6 +42,9 @@ export function CelebrationLoadCard({ load, showCelebration }: CelebrationLoadCa
         <p className="text-sm text-muted-foreground font-medium">
           {load.client_name}
         </p>
+        {load.client_contact_name && (
+          <p className="text-xs text-muted-foreground">Contact: {load.client_contact_name}</p>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-4">
