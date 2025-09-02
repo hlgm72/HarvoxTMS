@@ -3138,7 +3138,12 @@ export type Database = {
         Returns: Json
       }
       calculate_driver_payment_period_v2: {
-        Args: { period_calculation_id: string }
+        Args:
+          | {
+              company_payment_period_id_param: string
+              driver_user_id_param: string
+            }
+          | { period_calculation_id: string }
         Returns: Json
       }
       calculate_driver_payment_period_with_validation: {
