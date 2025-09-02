@@ -119,13 +119,6 @@ export function LoadCard({
           {load.client_contact_name && (
             <p className="text-xs">Contact: {load.client_contact_name}</p>
           )}
-          {/* 🔍 DEBUG: Show contact debug info */}
-          {load.load_number === '25-417' && (
-            <p className="text-xs text-orange-500">
-              DEBUG - Contact ID: {load.client_contact_id || 'null'}, 
-              Contact Name: {load.client_contact_name || 'null'}
-            </p>
-          )}
         </div>
       </CardHeader>
 
