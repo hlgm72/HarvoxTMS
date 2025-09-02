@@ -584,6 +584,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
     console.log('🔍 Form values before submission:', values);
     console.log('🔍 Weight value specifically:', values.weight_lbs);
+    console.log('🔍 Contact ID from form:', values.contact_id);
+    console.log('🔍 Selected contact from form:', values.contact_id ? 'YES' : 'NO');
     
     const loadDataToSubmit = {
       mode,

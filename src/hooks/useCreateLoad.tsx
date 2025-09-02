@@ -196,6 +196,7 @@ export const useCreateLoad = () => {
       };
 
       console.log('🔍 useCreateLoad - Final loadData being sent to RPC:', loadData);
+      console.log('🔍 useCreateLoad - Client contact ID being sent:', loadData.client_contact_id);
       console.log('🔍 useCreateLoad - Dispatcher in loadData:', loadData.internal_dispatcher_id);
       
       // Prepare stops data
