@@ -391,6 +391,10 @@ export const useCreateLoad = () => {
         queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
         queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
         
+        // 🚨 CRÍTICO: Invalidar períodos para actualizar filtros cuando se crea nuevo período
+        queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
+        queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+        
         // 🚨 INVALIDAR QUERIES DE DEDUCCIONES PARA MOSTRAR LAS NUEVAS AUTOMÁTICAS
         queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
         queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
