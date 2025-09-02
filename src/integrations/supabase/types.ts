@@ -3122,6 +3122,17 @@ export type Database = {
         Args: { company_id_param: string; delivery_date_param: string }
         Returns: string
       }
+      auto_fix_payment_calculation_issues: {
+        Args: { target_company_id: string }
+        Returns: Json
+      }
+      auto_recalculate_driver_payment_period: {
+        Args: {
+          target_company_payment_period_id: string
+          target_driver_user_id: string
+        }
+        Returns: undefined
+      }
       calculate_driver_payment_period: {
         Args: { period_calculation_id: string }
         Returns: Json
@@ -3313,6 +3324,10 @@ export type Database = {
       }
       create_equipment_with_documents: {
         Args: { documents_data?: Json; equipment_data: Json }
+        Returns: Json
+      }
+      create_expense_instance_with_validation: {
+        Args: { expense_data: Json }
         Returns: Json
       }
       create_first_superadmin: {
@@ -4304,6 +4319,10 @@ export type Database = {
           last_name: string
           role: Database["public"]["Enums"]["user_role"]
         }[]
+      }
+      validate_payment_calculation_integrity: {
+        Args: { target_company_id: string }
+        Returns: Json
       }
       validate_reset_token: {
         Args: { token_param: string }
