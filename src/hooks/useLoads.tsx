@@ -422,6 +422,16 @@ export const useLoads = (filters?: LoadsFilters) => {
           const dispatcher = dispatchers.find(d => d.user_id === load.internal_dispatcher_id);
           const period = periods.find(p => p.id === load.payment_period_id);
           
+          // 🔍 DEBUG: Log contact information for debugging
+          if (load.load_number === '25-417') {
+            console.log('🔍 CONTACT DEBUG for Load 25-417:', {
+              load_client_contact_id: load.client_contact_id,
+              contacts_available: contacts.map(c => ({ id: c.id, name: c.name })),
+              found_contact: contact,
+              contact_name: contact?.name
+            });
+          }
+          
           const loadStops = stopsData.filter(s => s.load_id === load.id);
           const loadDocuments = documentsData.filter(d => d.load_id === load.id);
           

@@ -26,6 +26,7 @@ interface LoadCardProps {
     load_number: string;
     client_name: string;
     client_contact_name?: string;
+    client_contact_id?: string;
     origin_city: string;
     origin_state: string;
     destination_city: string;
@@ -117,6 +118,13 @@ export function LoadCard({
           <p className="font-medium">{load.client_name}</p>
           {load.client_contact_name && (
             <p className="text-xs">Contact: {load.client_contact_name}</p>
+          )}
+          {/* 🔍 DEBUG: Show contact debug info */}
+          {load.load_number === '25-417' && (
+            <p className="text-xs text-orange-500">
+              DEBUG - Contact ID: {load.client_contact_id || 'null'}, 
+              Contact Name: {load.client_contact_name || 'null'}
+            </p>
           )}
         </div>
       </CardHeader>
