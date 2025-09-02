@@ -25,6 +25,7 @@ interface LoadCardProps {
     id: string;
     load_number: string;
     client_name: string;
+    client_contact_name?: string;
     origin_city: string;
     origin_state: string;
     destination_city: string;
@@ -112,9 +113,12 @@ export function LoadCard({
             </Badge>
           </div>
         </CardTitle>
-        <p className="text-sm text-muted-foreground font-medium">
-          {load.client_name}
-        </p>
+        <div className="text-sm text-muted-foreground">
+          <p className="font-medium">{load.client_name}</p>
+          {load.client_contact_name && (
+            <p className="text-xs">Contact: {load.client_contact_name}</p>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-4">

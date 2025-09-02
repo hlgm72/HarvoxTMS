@@ -52,6 +52,7 @@ export interface Load {
   broker_alias?: string;
   broker_logo_url?: string;
   dispatcher_name?: string | null;
+  client_contact_name?: string | null;
   internal_dispatcher_name?: string | null;
   pickup_city?: string;
   delivery_city?: string;
@@ -505,7 +506,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             broker_name: brokerDisplayName,
             broker_alias: broker?.alias || null,
             broker_logo_url: broker?.logo_url || null,
-            dispatcher_name: contact?.name || null,
+            client_contact_name: contact?.name || null,
             internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
             pickup_city: pickupCityDisplay,
             delivery_city: deliveryCityDisplay,
