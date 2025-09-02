@@ -3282,6 +3282,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      cleanup_incorrect_recurring_instances: {
+        Args: { period_id: string }
+        Returns: Json
+      }
       cleanup_load_percentage_deductions: {
         Args: { load_id_param: string; load_number_param: string }
         Returns: number
@@ -4322,6 +4326,10 @@ export type Database = {
       }
       validate_payment_calculation_integrity: {
         Args: { target_company_id: string }
+        Returns: Json
+      }
+      validate_recurring_expenses_integrity: {
+        Args: { company_id_param: string }
         Returns: Json
       }
       validate_reset_token: {
