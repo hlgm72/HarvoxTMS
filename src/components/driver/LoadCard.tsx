@@ -62,6 +62,17 @@ export function LoadCard({
   const { t, i18n } = useTranslation(['loads', 'common', 'dashboard']);
   const { openInMaps } = useNavigationMaps();
 
+  // 🔍 DEBUG: Solo para load 25-417
+  if (load.load_number === '25-417') {
+    console.log('🔍 LoadCard Render - Contact Data:', {
+      loadNumber: load.load_number,
+      clientContactName: load.client_contact_name,
+      clientContactId: load.client_contact_id,
+      hasContact: !!load.client_contact_name,
+      contactType: typeof load.client_contact_name
+    });
+  }
+
   console.log('🔍 LoadCard - Translation test:', {
     status: load.status,
     statusTrimmed: load.status.trim(),
