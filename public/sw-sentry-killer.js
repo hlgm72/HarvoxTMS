@@ -1,6 +1,6 @@
 /**
  * 🚨 ULTIMATE SENTRY KILLER - Service Worker Level
- * Intercepta TODAS las requests de red antes de que salgan del navegador
+ * Intercepta SOLO las requests de Sentry para evitar conflictos con otros SW
  */
 
 const SENTRY_DOMAINS = [
@@ -13,15 +13,15 @@ const isSentryUrl = (url) => {
   return SENTRY_DOMAINS.some(domain => url.includes(domain));
 };
 
-// Interceptar TODAS las requests de red
+// Interceptar SOLO las requests de Sentry (no interferir con otras)
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
   
-  // Si es una request a Sentry, BLOQUEARLA COMPLETAMENTE
+  // Solo interceptar requests a Sentry
   if (isSentryUrl(url)) {
-    console.log('🚨 SERVICE WORKER: Sentry request DESTROYED at network level:', url);
+    console.log('🚨 SERVICE WORKER: Sentry request BLOCKED at network level:', url);
     
-    // Retornar respuesta fake exitosa
+    // Retornar respuesta fake exitosa solo para Sentry
     event.respondWith(
       new Response(JSON.stringify({ success: true, blocked: true }), {
         status: 200,
@@ -34,8 +34,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Para todas las demás requests, continuar normal
-  event.respondWith(fetch(event.request));
+  // Para todas las demás requests, NO INTERFERIR - dejar que el navegador/otros SW manejen
+  // No llamar event.respondWith() aquí para evitar conflictos con otros service workers
 });
 
 // Instalar el service worker inmediatamente
@@ -50,4 +50,4 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-console.log('🚨 SENTRY KILLER SERVICE WORKER LOADED - Network level blocking active');
+console.log('🚨 SENTRY KILLER SERVICE WORKER LOADED - Selective Sentry blocking active');
