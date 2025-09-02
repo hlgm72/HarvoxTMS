@@ -279,41 +279,81 @@ export const useCreateLoad = () => {
         console.warn('⚠️ useCreateLoad - No scheduled dates in stops, creating load without payment period');
       }
 
-      // ✅ USE ACID FUNCTION FOR ATOMIC OPERATION
+      // ✅ USE NEW ACID FUNCTION WITH AUTOMATIC PERCENTAGE DEDUCTIONS
       const loadDataForRPC = {
         ...loadData,
         payment_period_id: paymentPeriodId, // ✅ Incluir payment_period_id
         ...(isEdit && data.id && { id: data.id }) // Include ID for edit mode
       };
       
-      const { data: result, error: acidError } = await supabase.rpc(
+      // ✅ PRIMERO: Crear/actualizar la carga usando la función normal
+      const { data: loadResult, error: loadError } = await supabase.rpc(
         'simple_load_operation',
         {
-          operation_type: isEdit ? 'UPDATE' : 'CREATE', // ✅ Correct parameter name and values
+          operation_type: isEdit ? 'UPDATE' : 'CREATE',
           load_data: loadDataForRPC,
-          stops_data: stopsData, // ✅ FIXED: Include stops data
-          load_id_param: isEdit ? data.id : null // ✅ Add load_id for UPDATE operations
+          stops_data: stopsData,
+          load_id_param: isEdit ? data.id : null
         }
       );
 
-      if (acidError) {
-        console.error('❌ useCreateLoad - ACID function error:', acidError);
+      if (loadError) {
+        console.error('❌ useCreateLoad - Load operation error:', loadError);
         
-        if (acidError.message.includes('ya existe')) {
-          throw new Error(acidError.message);
+        if (loadError.message.includes('ya existe')) {
+          throw new Error(loadError.message);
         }
-        throw new Error(`Error en operación ACID: ${acidError.message}`);
+        throw new Error(`Error en operación de carga: ${loadError.message}`);
       }
 
-      console.log('🔍 useCreateLoad - Full ACID result object:', JSON.stringify(result, null, 2));
+      console.log('🔍 useCreateLoad - Load operation result:', JSON.stringify(loadResult, null, 2));
       
-      if (!(result as any)?.success) {
-        console.error('❌ useCreateLoad - ACID operation failed. Result:', result);
-        throw new Error(`La operación ACID no fue exitosa. Detalle: ${JSON.stringify(result)}`);
+      if (!(loadResult as any)?.success) {
+        console.error('❌ useCreateLoad - Load operation failed. Result:', loadResult);
+        throw new Error(`La operación de carga no fue exitosa. Detalle: ${JSON.stringify(loadResult)}`);
       }
 
-      console.log('✅ useCreateLoad - ACID operation completed:', result);
-      const loadId = (result as any).load?.id;
+      const loadId = (loadResult as any).load?.id || data.id;
+
+      // ✅ SEGUNDO: Generar deducciones automáticas si hay porcentajes configurados y período asignado
+      let deductionsResult = null;
+      const hasPercentages = (loadData.factoring_percentage || 0) > 0 || 
+                            (loadData.dispatching_percentage || 0) > 0 || 
+                            (loadData.leasing_percentage || 0) > 0;
+
+      if (hasPercentages && paymentPeriodId && loadId) {
+        console.log('🔍 useCreateLoad - Generating automatic percentage deductions for load:', loadId);
+        
+        const { data: deductionsRes, error: deductionsError } = await supabase.rpc(
+          'create_load_percentage_deductions',
+          {
+            load_id_param: loadId,
+            driver_user_id_param: data.driver_user_id,
+            payment_period_id_param: paymentPeriodId,
+            total_amount_param: data.total_amount,
+            factoring_percentage_param: loadData.factoring_percentage || 0,
+            dispatching_percentage_param: loadData.dispatching_percentage || 0,
+            leasing_percentage_param: loadData.leasing_percentage || 0,
+            operation_type: isEdit ? 'UPDATE' : 'CREATE'
+          }
+        );
+
+        if (deductionsError) {
+          console.warn('⚠️ useCreateLoad - Deductions generation failed:', deductionsError);
+          // No fallar la operación completa por esto
+        } else {
+          deductionsResult = deductionsRes;
+          console.log('✅ useCreateLoad - Automatic deductions created:', deductionsResult);
+        }
+      } else {
+        console.log('ℹ️ useCreateLoad - No automatic deductions needed (no percentages or period)');
+      }
+
+      const result = {
+        success: true,
+        load: (loadResult as any).load,
+        automatic_deductions: deductionsResult
+      };
 
       // Handle temporary documents upload (outside ACID transaction for performance)
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
@@ -384,6 +424,11 @@ export const useCreateLoad = () => {
         queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
         queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
         queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+        
+        // 🚨 INVALIDAR QUERIES DE DEDUCCIONES PARA MOSTRAR LAS NUEVAS AUTOMÁTICAS
+        queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
+        queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+        queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
         
       } catch (error) {
         console.warn('⚠️ useCreateLoad - Error triggering calculations refresh:', error);

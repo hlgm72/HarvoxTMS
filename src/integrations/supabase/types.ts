@@ -3316,6 +3316,19 @@ export type Database = {
         Args: { expense_data: Json; receipt_file_data?: Json }
         Returns: Json
       }
+      create_load_percentage_deductions: {
+        Args: {
+          dispatching_percentage_param?: number
+          driver_user_id_param: string
+          factoring_percentage_param?: number
+          leasing_percentage_param?: number
+          load_id_param: string
+          operation_type?: string
+          payment_period_id_param: string
+          total_amount_param: number
+        }
+        Returns: Json
+      }
       create_load_with_stops_and_documents: {
         Args: { documents_data?: Json; load_data: Json; stops_data?: Json }
         Returns: Json
