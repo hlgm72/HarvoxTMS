@@ -3074,6 +3074,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_automatic_deductions: {
+        Args: {
+          dispatching_percentage?: number
+          driver_user_id: string
+          factoring_percentage?: number
+          leasing_percentage?: number
+          load_pickup_date?: string
+          load_total_amount: number
+          payment_period_id: string
+        }
+        Returns: Json
+      }
       approve_fuel_expenses_for_paid_drivers: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -3361,6 +3373,15 @@ export type Database = {
         Args: { expense_data: Json; expense_id?: string }
         Returns: Json
       }
+      create_or_update_load_basic: {
+        Args: {
+          load_data: Json
+          load_id_param?: string
+          operation_type: string
+          payment_period_id?: string
+        }
+        Returns: Json
+      }
       create_or_update_load_document_with_validation: {
         Args: { document_data: Json; document_id?: string }
         Returns: Json
@@ -3379,9 +3400,9 @@ export type Database = {
       }
       create_payment_period_if_needed: {
         Args: {
-          created_by_user_id?: string
           target_company_id: string
           target_date: string
+          target_user_id?: string
         }
         Returns: string
       }
@@ -3821,6 +3842,10 @@ export type Database = {
           email: string
           user_id: string
         }[]
+      }
+      handle_load_stops: {
+        Args: { load_id: string; operation_type: string; stops_data: Json[] }
+        Returns: Json[]
       }
       has_exclusion_access: {
         Args: {
