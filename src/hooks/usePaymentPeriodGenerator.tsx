@@ -34,14 +34,13 @@ export const usePaymentPeriodGenerator = () => {
     targetDate
   }: PaymentPeriodGeneratorParams): Promise<string | null> => {
     try {
-      console.log('🔍 ensurePaymentPeriodExists v2.0 - CALL STACK TRACE:', new Error().stack);
-      console.log('🔍 ensurePaymentPeriodExists v2.0 - Using on-demand generation for:', { companyId, userId, targetDate });
+      console.log('🔍 ensurePaymentPeriodExists v3.0 - Enhanced with user-specific creation:', { companyId, userId, targetDate });
 
-      // ✅ NUEVA IMPLEMENTACIÓN: Usar la función SQL optimizada
+      // ✅ IMPLEMENTACIÓN MEJORADA: Pasar el user_id específico para evitar creación masiva
       const { data: periodId, error } = await supabase.rpc('create_payment_period_if_needed', {
         target_company_id: companyId,
         target_date: targetDate,
-        target_user_id: userId
+        target_user_id: userId // Now required for proper driver calculation creation
       });
 
       if (error) {
