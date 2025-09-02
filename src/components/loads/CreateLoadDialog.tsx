@@ -586,6 +586,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('🔍 Weight value specifically:', values.weight_lbs);
     console.log('🔍 Contact ID from form:', values.contact_id);
     console.log('🔍 Selected contact from form:', values.contact_id ? 'YES' : 'NO');
+    console.log('🔍 CLIENT ID from form:', values.client_id);
+    console.log('🔍 Selected client from form:', values.client_id ? 'YES' : 'NO');
+    console.log('🔍 Selected client state:', selectedClient?.name);
+    console.log('🔍 Form values RAW:', JSON.stringify(values, null, 2));
     
     const loadDataToSubmit = {
       mode,
@@ -907,12 +911,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  <ClientCombobox
                                    clients={clients}
                                    value={field.value}
-                                     onValueChange={(value) => {
-                                       field.onChange(value);
-                                       const client = clients.find(c => c.id === value);
-                                       setSelectedClient(client || null);
-                                       form.setValue("contact_id", "");
-                                       // Limpiar error cuando el usuario seleccione un cliente
+                                      onValueChange={(value) => {
+                                        console.log('🔍 CLIENT SELECTED - Value:', value);
+                                        field.onChange(value);
+                                        const client = clients.find(c => c.id === value);
+                                        console.log('🔍 CLIENT SELECTED - Found client:', client?.name);
+                                        setSelectedClient(client || null);
+                                        form.setValue("contact_id", "");
+                                        console.log('🔍 CLIENT SELECTED - Cleared contact_id');
+                                        // Limpiar error cuando el usuario seleccione un cliente
                                        if (form.formState.errors.client_id) {
                                          form.clearErrors("client_id");
                                        }
@@ -936,11 +943,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                            <FormItem>
                              <FormLabel>{t("loads:create_wizard.form.client_contact")}</FormLabel>
                              <FormControl>
-                                 <ContactCombobox
-                                   clientId={selectedClient?.id}
-                                   value={field.value}
-                                   onValueChange={field.onChange}
-                                   placeholder={t("loads:create_wizard.form.contact_placeholder")}
+                                  <ContactCombobox
+                                    clientId={selectedClient?.id}
+                                    value={field.value}
+                                    onValueChange={(value) => {
+                                      console.log('🔍 CONTACT SELECTED - Value:', value);
+                                      field.onChange(value);
+                                    }}
+                                    placeholder={t("loads:create_wizard.form.contact_placeholder")}
                                    disabled={!selectedClient}
                                    className="w-full"
                                    onCreateNew={selectedClient ? () => setShowCreateDispatcher(true) : undefined}
