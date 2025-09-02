@@ -742,6 +742,7 @@
       "all": "All statuses",
       "available": "Available",
       "assigned": "Assigned",
+      "unassigned": "Unassigned",
       "in_transit": "In Transit",
       "delivered": "Delivered"
     },

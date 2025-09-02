@@ -742,6 +742,7 @@
       "all": "Todos los estados",
       "available": "Disponible",
       "assigned": "Asignado",
+      "unassigned": "Sin Asignar",
       "in_transit": "En Tránsito",
       "delivered": "Entregado"
     },
