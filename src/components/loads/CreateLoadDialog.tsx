@@ -9,7 +9,7 @@ import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
 import { usePONumberValidation } from "@/hooks/usePONumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
-import { useLoadForm } from "@/hooks/useLoadForm";
+import { useLoadForm, LoadFormData } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
 import { useCommodityAutocomplete } from "@/hooks/useCommodityAutocomplete";
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation"; // ⭐ NUEVO
@@ -446,7 +446,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     };
   };
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: LoadFormData) => {
+    console.log('🚨🚨🚨 onSubmit STARTED!!! Mode:', mode);
+    console.log('🚨🚨🚨 CLIENT_ID VALUE:', values.client_id);
+    console.log('🚨🚨🚨 CONTACT_ID VALUE:', values.contact_id);
+    console.log('🚨🚨🚨 SELECTED CLIENT:', selectedClient?.name);
     console.log('🚨 onSubmit called with values:', values);
     console.log('🚨 Current mode:', mode);
     console.log('🚨 Current phase:', currentPhase);
@@ -600,7 +604,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       client_contact_id: values.contact_id && values.contact_id.trim() !== '' ? values.contact_id : null,
       driver_user_id: selectedDriver?.user_id || (mode === 'edit' ? activeLoadData?.driver_user_id : null),
       internal_dispatcher_id: selectedDispatcher?.user_id || null,
-      total_amount: parseFloat(values.total_amount) || 0,
+      total_amount: values.total_amount || 0,
       commodity: values.commodity || null,
       weight_lbs: values.weight_lbs,
       notes: values.notes || '',
