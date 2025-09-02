@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLogger, business } from '@/lib/logger';
 import { Button } from '@/components/ui/button';
@@ -220,6 +220,27 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     onChange(option);
     setOpen(false);
   };
+
+  // Hook para detectar si el período actual existe y cambiar automáticamente si fue eliminado
+  useEffect(() => {
+    if (value.type === 'specific' && value.periodId) {
+      const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
+      
+      // Si el período específico ya no existe (fue eliminado), cambiar a "current"
+      if (!selectedPeriod && !isLoading && allPeriods.length > 0) {
+        console.log('🔄 PeriodFilter - Período eliminado, cambiando a current:', value.periodId);
+        handleOptionSelect({ type: 'current' });
+      }
+    } else if (value.type === 'previous' && value.periodId) {
+      const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
+      
+      // Si el período anterior ya no existe (fue eliminado), cambiar a "current"
+      if (!selectedPeriod && !isLoading && allPeriods.length > 0) {
+        console.log('🔄 PeriodFilter - Período anterior eliminado, cambiando a current:', value.periodId);
+        handleOptionSelect({ type: 'current' });
+      }
+    }
+  }, [allPeriods, value.periodId, value.type, isLoading, handleOptionSelect]);
 
   return (
     <div className="flex items-center gap-2">
