@@ -4107,12 +4107,6 @@ export type Database = {
               operation_type: string
               stops_data?: Json[]
             }
-          | {
-              load_data: Json
-              load_id_param?: string
-              operation_type: string
-              stops_data?: Json
-            }
           | { load_data: Json; operation_mode?: string; stops_data: Json }
           | { operation_data: Json }
         Returns: Json
