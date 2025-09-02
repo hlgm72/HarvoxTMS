@@ -3687,6 +3687,14 @@ export type Database = {
           security_level: string
         }[]
       }
+      get_driver_period_calculation_secure: {
+        Args: {
+          company_id_param: string
+          driver_user_id_param: string
+          payment_period_id_param: string
+        }
+        Returns: string
+      }
       get_driver_sensitive_info: {
         Args: { target_user_id: string }
         Returns: {
