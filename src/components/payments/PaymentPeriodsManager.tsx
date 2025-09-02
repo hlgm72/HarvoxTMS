@@ -10,7 +10,6 @@ import { formatPaymentPeriod, formatCurrency } from '@/lib/dateFormatting';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateSpecialPeriodDialog } from "./CreateSpecialPeriodDialog";
 import { PaymentPeriodDetails } from "./PaymentPeriodDetails";
-import { CleanupPeriodDialog } from "./CleanupPeriodDialog";
 import { useTranslation } from 'react-i18next';
 
 export function PaymentPeriodsManager() {
@@ -80,32 +79,29 @@ export function PaymentPeriodsManager() {
           <h2 className="text-2xl font-bold tracking-tight">{t('period.title')}</h2>
           <p className="text-muted-foreground">{t('period.subtitle')}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <CleanupPeriodDialog />
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('period.special_period')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('period.create_special_title')}</DialogTitle>
-                <DialogDescription>
-                  {t('period.create_special_description')}
-                </DialogDescription>
-              </DialogHeader>
-              <CreateSpecialPeriodDialog 
-                onClose={() => setShowCreateDialog(false)}
-                onSuccess={() => {
-                  setShowCreateDialog(false);
-                  refetch();
-                }}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('period.special_period')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t('period.create_special_title')}</DialogTitle>
+              <DialogDescription>
+                {t('period.create_special_description')}
+              </DialogDescription>
+            </DialogHeader>
+            <CreateSpecialPeriodDialog 
+              onClose={() => setShowCreateDialog(false)}
+              onSuccess={() => {
+                setShowCreateDialog(false);
+                refetch();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats Cards */}
