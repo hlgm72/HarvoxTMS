@@ -572,6 +572,7 @@
     "created": "Creado",
     "route_planned": "Ruta Planeada",
     "assigned": "Asignado",
+    "unassigned": "Sin Asignar",
     "en_route_pickup": "En Ruta a Recogida",
     "at_pickup": "En Recogida",
     "loaded": "Cargado",
