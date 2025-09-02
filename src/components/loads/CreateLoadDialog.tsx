@@ -233,10 +233,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       if (!currentContactId) {
         console.log('🔄 Auto-selecting single contact:', singleContact.name);
         form.setValue("contact_id", singleContact.id);
-        showSuccess(
-          "Contacto seleccionado automáticamente", 
-          `${singleContact.name} ha sido seleccionado automáticamente como el único contacto disponible`
-        );
       }
     }
   }, [selectedClient, clientContacts, form, showSuccess]);
