@@ -432,10 +432,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-medium">{load.broker_name}</p>
-                       {load.dispatcher_name && (
-                          <p className="text-xs text-muted-foreground">{t('list.contact')} {load.dispatcher_name}</p>
-                        )}
+                       <p className="text-sm font-medium">{load.broker_name}</p>
+                        {load.client_contact_name && (
+                           <p className="text-xs text-muted-foreground">{t('list.contact')} {load.client_contact_name}</p>
+                         )}
                     </div>
                   </div>
                 </div>
