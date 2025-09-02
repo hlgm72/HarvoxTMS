@@ -164,6 +164,7 @@
     "created": "Created",
     "route_planned": "Route Planned",
     "assigned": "Assigned",
+    "unassigned": "Unassigned",
     "en_route_pickup": "En Route to Pickup",
     "at_pickup": "At Pickup",
     "loaded": "Loaded",
