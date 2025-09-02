@@ -34,6 +34,7 @@ export const usePaymentPeriodGenerator = () => {
     targetDate
   }: PaymentPeriodGeneratorParams): Promise<string | null> => {
     try {
+      console.log('🔍 ensurePaymentPeriodExists v2.0 - CALL STACK TRACE:', new Error().stack);
       console.log('🔍 ensurePaymentPeriodExists v2.0 - Using on-demand generation for:', { companyId, userId, targetDate });
 
       // ✅ NUEVA IMPLEMENTACIÓN: Usar la función SQL optimizada
