@@ -273,6 +273,7 @@
       "validation_error": "Error de validación",
       "load_number_required": "El número de carga es requerido",
       "client_required": "Cliente/Broker es requerido",
+      "commodity_required": "La descripción de mercancía es requerida",
       "stops_minimum": "Debe haber al menos 2 paradas",
       "first_pickup": "La primera parada debe ser una recogida (pickup)",
       "last_delivery": "La última parada debe ser una entrega (delivery)",
