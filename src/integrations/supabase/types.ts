@@ -3522,6 +3522,13 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: Json
       }
+      diagnose_payment_calculation_issues: {
+        Args: {
+          target_company_payment_period_id: string
+          target_driver_user_id: string
+        }
+        Returns: Json
+      }
       disable_service_operation: {
         Args: Record<PropertyKey, never>
         Returns: undefined
