@@ -4197,6 +4197,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      test_recurring_expenses_system: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       unassign_equipment_with_validation: {
         Args: { assignment_id: string; unassignment_reason?: string }
         Returns: Json
