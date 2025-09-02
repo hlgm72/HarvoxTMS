@@ -223,7 +223,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
 
   // Hook para detectar si el período actual existe y cambiar automáticamente si fue eliminado
   useEffect(() => {
-    if (value.type === 'specific' && value.periodId) {
+    // Solo verificar períodos reales de BD, no períodos calculados
+    const isCalculatedPeriod = value.periodId?.startsWith('calculated-');
+    
+    if (!isCalculatedPeriod && value.type === 'specific' && value.periodId) {
       const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
       
       // Si el período específico ya no existe (fue eliminado), cambiar a "current"
@@ -231,7 +234,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         console.log('🔄 PeriodFilter - Período eliminado, cambiando a current:', value.periodId);
         handleOptionSelect({ type: 'current' });
       }
-    } else if (value.type === 'previous' && value.periodId) {
+    } else if (!isCalculatedPeriod && value.type === 'previous' && value.periodId) {
       const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
       
       // Si el período anterior ya no existe (fue eliminado), cambiar a "current"
