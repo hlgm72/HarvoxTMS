@@ -18,7 +18,8 @@ export const useDeleteLoad = () => {
         throw new Error(t('list.user_not_authenticated'));
       }
 
-      // ✅ USE ACID FUNCTION FOR ATOMIC DELETION
+      // Usar la función ACID para eliminar la carga
+      // Los triggers automáticos se encargarán del recálculo completo
       const { data: result, error: acidError } = await supabase.rpc(
         'delete_load_with_validation',
         {
@@ -40,22 +41,23 @@ export const useDeleteLoad = () => {
     onSuccess: (_, data) => {
       console.log('✅ useDeleteLoad - Eliminación exitosa para:', data.loadId);
       
-      // 🚨 ARREGLO: Remover actualización optimista problemática y depender de invalidaciones
-      // La query key de useLoads incluye filtros, por lo que es complejo hacer actualización optimista
-      
-      // Invalidar y refrescar todas las queries relacionadas con cargas
+      // Los triggers automáticos han recalculado todo
+      // Solo invalidamos cache para mostrar datos actualizados
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['load', data.loadId] });
-      
-      // 🚨 CRÍTICO: Invalidar períodos porque el trigger puede haber eliminado períodos vacíos
+      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
       queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
       
       // Refetch inmediato para sincronización rápida
       queryClient.refetchQueries({ queryKey: ['loads'] });
       queryClient.refetchQueries({ queryKey: ['company-payment-periods'] });
+      
+      console.log('✅ useDeleteLoad - Cache invalidated - triggers handled recalculation');
       
       showSuccess(t('list.delete_success', { loadNumber: data.loadNumber }));
     },

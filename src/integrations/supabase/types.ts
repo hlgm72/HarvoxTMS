@@ -4121,6 +4121,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      recalculate_driver_payment_period: {
+        Args: {
+          target_company_payment_period_id: string
+          target_driver_user_id: string
+        }
+        Returns: Json
+      }
       recalculate_driver_period_calculation: {
         Args: { calculation_id: string }
         Returns: Json
@@ -4313,6 +4320,10 @@ export type Database = {
           required_role?: string
         }
         Returns: boolean
+      }
+      validate_driver_calculation_consistency: {
+        Args: { target_calculation_id: string }
+        Returns: Json
       }
       validate_invitation_token: {
         Args: { token_param: string }

@@ -340,74 +340,24 @@ export const useCreateLoad = () => {
     onSuccess: async (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
       
-      // 🚨 RECÁLCULO ULTRA-OPTIMIZADO - Solo recalcular el conductor específico
-      try {
-        console.log('🔄 useCreateLoad - Triggering driver-specific calculation refresh...');
-        
-        // Obtener el driver_period_calculation específico para este conductor y carga
-        const { data: driverCalcData, error: driverCalcError } = await supabase
-          .from('loads')
-          .select(`
-            payment_period_id,
-            driver_user_id
-          `)
-          .eq('id', loadId)
-          .single();
-
-        if (driverCalcError || !driverCalcData?.payment_period_id || !driverCalcData?.driver_user_id) {
-          console.warn('⚠️ useCreateLoad - Could not get driver calculation data, skipping recalculation');
-          return;
-        }
-
-        // Buscar el driver_period_calculation específico
-        const { data: specificCalc, error: specificCalcError } = await supabase
-          .from('driver_period_calculations')
-          .select('id')
-          .eq('company_payment_period_id', driverCalcData.payment_period_id)
-          .eq('driver_user_id', driverCalcData.driver_user_id)
-          .single();
-
-        if (specificCalcError || !specificCalc?.id) {
-          console.warn('⚠️ useCreateLoad - Driver calculation not found, skipping recalculation');
-          return;
-        }
-
-        // Optimización máxima: recalcular solo este conductor específico
-        console.log('🎯 useCreateLoad - Recalculating specific driver calculation:', specificCalc.id);
-        
-        const { data: driverRecalcResult, error: driverRecalcError } = await supabase
-          .rpc('recalculate_driver_period_calculation' as any, {
-            calculation_id: specificCalc.id
-          });
-
-        if (driverRecalcError) {
-          console.warn('⚠️ useCreateLoad - Driver recalculation warning:', driverRecalcError);
-        } else {
-          console.log('✅ useCreateLoad - Driver calculation updated for calculation:', specificCalc.id);
-        }
-
-        // Invalidar específicamente los cálculos del período afectado
-        queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
-        queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
-        queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
-        
-        // 🚨 CRÍTICO: Invalidar períodos para actualizar filtros cuando se crea nuevo período
-        queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
-        queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
-        
-        // 🚨 INVALIDAR QUERIES DE DEDUCCIONES PARA MOSTRAR LAS NUEVAS AUTOMÁTICAS
-        queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
-        queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
-        queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
-        
-      } catch (error) {
-        console.warn('⚠️ useCreateLoad - Error triggering calculations refresh:', error);
-        // No fallar por esto, solo loguear
-      }
-      
-      // Invalidar todas las queries relacionadas con loads
+      // Los triggers automáticos se encargan del recálculo completo
+      // Solo necesitamos invalidar el cache para mostrar datos actualizados
       queryClient.invalidateQueries({ queryKey: ['loads'] });
+      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
+      queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
+      queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+      
+      // Refetch inmediato para sincronización rápida
       queryClient.refetchQueries({ queryKey: ['loads'] });
+      
+      console.log('✅ useCreateLoad - Cache invalidated - triggers handle automatic recalculation');
       
       // No mostramos toast aquí - se maneja en el componente
       console.log('✅ useCreateLoad - Load operation completed successfully');
