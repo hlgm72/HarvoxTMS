@@ -4216,12 +4216,14 @@ export type Database = {
         Returns: Json
       }
       simple_load_operation_with_deductions: {
-        Args: {
-          load_data: Json
-          load_id_param?: string
-          operation_type: string
-          stops_data?: Json[]
-        }
+        Args:
+          | {
+              load_data: Json
+              load_id_param?: string
+              operation_type: string
+              stops_data?: Json[]
+            }
+          | { load_data: Json; percentage_calculation_data?: Json }
         Returns: Json
       }
       sync_existing_user_profiles: {
