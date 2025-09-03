@@ -667,6 +667,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       },
       onError: (error) => {
         console.error('❌ CreateLoadDialog - Load mutation failed:', error);
+        console.error('❌ CreateLoadDialog - Error details:', JSON.stringify(error, null, 2));
+        console.error('❌ CreateLoadDialog - Error message:', error?.message);
+        console.error('❌ CreateLoadDialog - Error stack:', error?.stack);
+        console.error('❌ CreateLoadDialog - Full error object:', error);
+        
         const loadNumber = form.getValues("load_number");
         const errorTitle = mode === 'edit' 
           ? t("loads:messages.error.update_title", { number: loadNumber })
@@ -674,6 +679,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           ? t("loads:messages.error.duplicate_title", { number: loadNumber })
           : t("loads:messages.error.create_title", { number: loadNumber });
         
+        console.log('🔍 CreateLoadDialog - About to show error toast:', errorTitle, error.message);
         showError(errorTitle, error.message || t("loads:messages.error.general_message"));
       }
     });

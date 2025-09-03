@@ -395,7 +395,9 @@ const [uploading, setUploading] = useState<string | null>(null);
       setDocuments(formattedDocuments);
       onDocumentsChange?.(formattedDocuments);
     } catch (error) {
-      console.error('Error loading documents:', error);
+      console.error('❌ LoadDocumentsSection - Error loading documents:', error);
+      console.error('❌ LoadDocumentsSection - Error details:', JSON.stringify(error, null, 2));
+      console.error('❌ LoadDocumentsSection - Error message:', error?.message);
       showError("Error", t("loads:create_wizard.phases.documents.error_messages.load_documents"));
     }
   };
