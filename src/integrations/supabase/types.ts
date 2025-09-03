@@ -4217,6 +4217,7 @@ export type Database = {
       }
       simple_load_operation_with_deductions: {
         Args:
+          | { load_data: Json; load_id?: string; stops_data?: Json }
           | {
               load_data: Json
               load_id_param?: string
