@@ -1120,7 +1120,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                   loadId={mode === 'edit' ? activeLoadData?.id : null}
                   loadData={{
                     load_number: form.getValues("load_number") || '',
-                    total_amount: form.getValues("total_amount") || 0,
+                    total_amount: mode === 'edit' && activeLoadData ? activeLoadData.total_amount : (form.getValues("total_amount") || 0),
                     commodity: form.getValues("commodity") || '',
                     weight_lbs: form.getValues("weight_lbs"),
                     client_name: selectedClient?.name,
