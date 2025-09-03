@@ -181,14 +181,14 @@ const canGenerateLoadOrder = (loadData: any): boolean => {
   const hasBasicInfo = !!(
     loadData.load_number &&
     loadData.commodity &&
-    loadData.total_amount &&
-    loadData.pickup_date &&
-    loadData.delivery_date
+    loadData.total_amount
   );
   
-  const hasStops = loadData.stops && loadData.stops.length >= 2;
+  // Check for both 'stops' and 'loadStops' properties
+  const stops = loadData.stops || loadData.loadStops || [];
+  const hasStops = stops && stops.length >= 2;
   
-  const stopsHaveInfo = hasStops && loadData.stops.every((stop: any) => 
+  const stopsHaveInfo = hasStops && stops.every((stop: any) => 
     stop.company_name && 
     stop.address && 
     stop.city && 
@@ -199,7 +199,7 @@ const canGenerateLoadOrder = (loadData: any): boolean => {
     hasBasicInfo,
     hasStops,
     stopsHaveInfo,
-    stopsCount: loadData.stops?.length || 0,
+    stopsCount: stops?.length || 0,
     finalResult: hasBasicInfo && hasStops && stopsHaveInfo
   });
   
