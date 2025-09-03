@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Plus, Package, Clock } from "lucide-react";
@@ -11,16 +11,26 @@ import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
 import { useLoadsStats } from "@/hooks/useLoadsStats";
 import { useDriversList } from "@/hooks/useDriversList";
-import { useEffect } from "react";
+import { useCurrentPaymentPeriod } from "@/hooks/usePaymentPeriods";
+import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
+import { useCompanyCache } from "@/hooks/useCompanyCache";
 
 export default function Loads() {
   const { t } = useTranslation('loads');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const { userCompany } = useCompanyCache();
+  
+  // Hooks para obtener datos de períodos
+  const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
+  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   
   // Inicializar con período actual simple (sin fechas pre-calculadas)
   const getCurrentPeriodWithDates = (): PeriodFilterValue => {
     return {
-      type: 'current'
+      type: 'current',
+      periodId: undefined,
+      startDate: undefined, 
+      endDate: undefined
     };
   };
   
@@ -35,6 +45,33 @@ export default function Loads() {
     sortBy: 'date_desc',
     periodFilter: getCurrentPeriodWithDates()
   });
+
+  // ✅ INICIALIZACIÓN AUTOMÁTICA: Poblar período actual cuando esté disponible
+  useEffect(() => {
+    // Solo inicializar si el periodo actual aún no tiene datos
+    if (periodFilter.type === 'current' && !periodFilter.periodId && !periodFilter.startDate) {
+      const displayPeriod = currentPeriod || calculatedPeriods?.current;
+      
+      if (displayPeriod) {
+        if (currentPeriod) {
+          // Si hay período actual en BD, usar su ID
+          setPeriodFilter({
+            type: 'current',
+            periodId: currentPeriod.id,
+            startDate: currentPeriod.period_start_date,
+            endDate: currentPeriod.period_end_date
+          });
+        } else {
+          // Si solo hay período calculado, usar fechas sin ID
+          setPeriodFilter({
+            type: 'current',
+            startDate: displayPeriod.period_start_date,
+            endDate: displayPeriod.period_end_date
+          });
+        }
+      }
+    }
+  }, [currentPeriod, calculatedPeriods, periodFilter.type, periodFilter.periodId, periodFilter.startDate]);
 
   // ✅ SINCRONIZACIÓN CRÍTICA: Mantener ambos estados alineados
   useEffect(() => {
