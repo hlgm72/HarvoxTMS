@@ -70,7 +70,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           .from('expense_instances')
           .select(`
             *,
-            expense_types(name)
+            expense_types(name, category)
           `)
           .is('recurring_template_id', null); // Solo gastos eventuales (sin plantilla)
 
@@ -159,9 +159,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 periodo: calculatedPeriods.current
               });
               
-              query = query
-                .gte('expense_date', startDate)
-                .lte('expense_date', endDate);
+            query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),and(expense_date.is.null,expense_types.category.eq.percentage_deduction)`);
             } else {
               console.log('❌ No se encontró período calculado actual');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -180,9 +178,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 endDate
               });
               
-              query = query
-                .gte('expense_date', startDate)
-                .lte('expense_date', endDate);
+              query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),and(expense_date.is.null,expense_types.category.eq.percentage_deduction)`);
             } else {
               console.log('❌ No se encontró período calculado anterior');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -204,9 +200,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               endDate
             });
             
-            query = query
-              .gte('expense_date', startDate)
-              .lte('expense_date', endDate);
+            query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),and(expense_date.is.null,expense_types.category.eq.percentage_deduction)`);
           } else {
             console.log('❌ No hay período calculado disponible por defecto');
           }
