@@ -63,7 +63,12 @@ export function PaymentReportDialog({
     namespaces: i18n.options.ns,
     translationResult: t('report_dialog.negative_balance_warning'),
     translationExists: i18n.exists('report_dialog.negative_balance_warning'),
-    resourcesLoaded: i18n.hasResourceBundle(i18n.language, 'payments')
+    resourcesLoaded: i18n.hasResourceBundle(i18n.language, 'payments'),
+    // Try different paths
+    fullPath: t('payments:report_dialog.negative_balance_warning'),
+    directPath: i18n.t('payments:report_dialog.negative_balance_warning'),
+    // Check what's actually in the payments namespace
+    paymentsResource: i18n.getResourceBundle(i18n.language, 'payments')
   });
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
