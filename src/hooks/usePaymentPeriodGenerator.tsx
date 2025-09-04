@@ -40,7 +40,7 @@ export const usePaymentPeriodGenerator = () => {
       const { data: periodId, error } = await supabase.rpc('create_payment_period_if_needed', {
         target_company_id: companyId,
         target_date: targetDate,
-        target_user_id: userId // Now required for proper driver calculation creation
+        created_by_user_id: userId // Fixed parameter name to match DB function
       });
 
       if (error) {
