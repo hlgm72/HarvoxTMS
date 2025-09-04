@@ -4222,6 +4222,12 @@ export type Database = {
               load_data: Json
               load_id_param?: string
               operation_type: string
+              stops_data: Json[]
+            }
+          | {
+              load_data: Json
+              load_id_param?: string
+              operation_type: string
               stops_data?: Json
             }
           | { load_data: Json; percentage_calculation_data?: Json }
