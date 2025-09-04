@@ -55,7 +55,16 @@ export function PaymentReportDialog({
   onOpenChange, 
   calculationId 
 }: PaymentReportDialogProps) {
-  const { t } = useTranslation('payments');
+  const { t, i18n } = useTranslation('payments');
+  
+  // Debug translation
+  console.log('🔍 Translation Debug:', {
+    currentLanguage: i18n.language,
+    namespaces: i18n.options.ns,
+    translationResult: t('report_dialog.negative_balance_warning'),
+    translationExists: i18n.exists('report_dialog.negative_balance_warning'),
+    resourcesLoaded: i18n.hasResourceBundle(i18n.language, 'payments')
+  });
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
