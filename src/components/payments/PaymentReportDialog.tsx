@@ -56,20 +56,6 @@ export function PaymentReportDialog({
   calculationId 
 }: PaymentReportDialogProps) {
   const { t, i18n } = useTranslation('payments');
-  
-  // Debug translation
-  console.log('🔍 Translation Debug:', {
-    currentLanguage: i18n.language,
-    namespaces: i18n.options.ns,
-    translationResult: t('report_dialog.negative_balance_warning'),
-    translationExists: i18n.exists('report_dialog.negative_balance_warning'),
-    resourcesLoaded: i18n.hasResourceBundle(i18n.language, 'payments'),
-    // Try different paths
-    fullPath: t('payments:report_dialog.negative_balance_warning'),
-    directPath: i18n.t('payments:report_dialog.negative_balance_warning'),
-    // Check what's actually in the payments namespace
-    paymentsResource: i18n.getResourceBundle(i18n.language, 'payments')
-  });
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -740,7 +726,9 @@ export function PaymentReportDialog({
               {calculation.has_negative_balance && (
                 <div className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
-                  <span className="text-sm font-medium">{t('report_dialog.negative_balance_warning')}</span>
+                  <span className="text-sm font-medium">
+                    {t('report_dialog.negative_balance_warning', 'Negative balance detected')}
+                  </span>
                 </div>
               )}
             </CardHeader>
