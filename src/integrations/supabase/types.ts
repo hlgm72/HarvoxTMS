@@ -3432,9 +3432,9 @@ export type Database = {
       }
       create_payment_period_if_needed: {
         Args: {
+          created_by_user_id?: string
           target_company_id: string
           target_date: string
-          target_user_id?: string
         }
         Returns: string
       }
