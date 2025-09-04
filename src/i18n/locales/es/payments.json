@@ -459,6 +459,10 @@
       "error_unexpected": "Error al registrar el pago"
     }
   },
+  "eventual_dialog": {
+    "create_title": "Crear Deducción Eventual",
+    "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado."
+  },
   "report_dialog": {
     "title": "Reporte de Pago",
     "subtitle": "Detalles de pago y cálculos",
