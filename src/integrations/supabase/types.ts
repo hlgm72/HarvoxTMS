@@ -3141,6 +3141,10 @@ export type Database = {
         Args: { target_driver_user_id: string; target_period_id: string }
         Returns: undefined
       }
+      calculate_driver_payment_no_auth: {
+        Args: { calculation_id: string }
+        Returns: Json
+      }
       calculate_driver_payment_period: {
         Args: { period_calculation_id: string }
         Returns: Json
