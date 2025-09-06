@@ -3550,7 +3550,7 @@ export type Database = {
         Returns: Json
       }
       ensure_driver_period_calculation_exists: {
-        Args: { target_driver_user_id: string; target_period_id: string }
+        Args: { p_driver_user_id: string; p_payment_period_id: string }
         Returns: string
       }
       ensure_payment_period_exists: {
