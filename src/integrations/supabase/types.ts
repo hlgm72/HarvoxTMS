@@ -3553,6 +3553,10 @@ export type Database = {
         Args: { p_driver_user_id: string; p_payment_period_id: string }
         Returns: string
       }
+      ensure_driver_period_calculation_exists_no_auth: {
+        Args: { p_driver_user_id: string; p_payment_period_id: string }
+        Returns: string
+      }
       ensure_payment_period_exists: {
         Args: { target_company_id: string; target_date: string }
         Returns: string
