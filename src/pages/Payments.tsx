@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageToolbar } from "@/components/layout/PageToolbar";
+import { RecalculatePeriodButton } from "@/components/RecalculatePeriodButton";
 import { 
   CreditCard, 
   Plus, 
@@ -254,6 +255,22 @@ export default function Payments() {
         </TabsContent>
 
         <TabsContent value="periods" className="space-y-6">
+          {/* Temporary recalculation button for Week 36 fix */}
+          <Card>
+            <CardHeader>
+              <CardTitle>🔧 Fix Current Period Calculations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Click to recalculate Week 36 (Sept 1-7) to properly reflect moved percentage deductions.
+              </p>
+              <RecalculatePeriodButton 
+                periodId="91f545d0-0bd7-40ce-b61a-10f402a96bb5"
+                driverUserId="484d83b3-b928-46b3-9705-db225ddb9b0c"
+                label="Recalculate Week 36"
+              />
+            </CardContent>
+          </Card>
           <PaymentPeriodsManager />
         </TabsContent>
       </Tabs>
