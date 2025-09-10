@@ -1136,6 +1136,7 @@ export type Database = {
           is_active: boolean
           month_week: number | null
           notes: string | null
+          percentage: number | null
           start_date: string
           updated_at: string
           user_id: string
@@ -1152,6 +1153,7 @@ export type Database = {
           is_active?: boolean
           month_week?: number | null
           notes?: string | null
+          percentage?: number | null
           start_date: string
           updated_at?: string
           user_id: string
@@ -1168,6 +1170,7 @@ export type Database = {
           is_active?: boolean
           month_week?: number | null
           notes?: string | null
+          percentage?: number | null
           start_date?: string
           updated_at?: string
           user_id?: string
@@ -3343,6 +3346,10 @@ export type Database = {
       }
       create_client_with_contacts: {
         Args: { client_data: Json; contacts_data?: Json }
+        Returns: Json
+      }
+      create_default_percentage_templates: {
+        Args: { driver_user_id_param: string }
         Returns: Json
       }
       create_equipment_with_documents: {
