@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -3310,7 +3310,7 @@ export type Database = {
         Args:
           | { load_id_param: string }
           | { load_id_param: string; load_number_param: string }
-        Returns: number
+        Returns: undefined
       }
       cleanup_old_recurring_expense_descriptions: {
         Args: Record<PropertyKey, never>
@@ -3493,7 +3493,7 @@ export type Database = {
               target_payment_period_id: string
               total_amount_param: number
             }
-        Returns: Json
+        Returns: undefined
       }
       create_user_with_company_role_validation: {
         Args: { company_role_data: Json; user_data: Json }
@@ -3685,6 +3685,7 @@ export type Database = {
         Args: Record<PropertyKey, never> | { target_company_id?: string }
         Returns: {
           city: string
+          contract_start_date: string
           created_at: string
           default_dispatching_percentage: number
           default_factoring_percentage: number
@@ -3694,12 +3695,12 @@ export type Database = {
           ein: string
           email: string
           id: string
+          load_assignment_criteria: string
+          logo_url: string
+          max_users: number
+          max_vehicles: number
           mc_number: string
           name: string
-          owner_email: string
-          owner_name: string
-          owner_phone: string
-          owner_title: string
           payment_cycle_start_day: number
           payment_day: string
           phone: string
