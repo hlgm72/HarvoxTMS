@@ -228,72 +228,49 @@ export const useCreateLoad = () => {
       console.log('🔍 useCreateLoad - Number of stops:', stopsData.length);
 
       // ===============================================
-      // 🚨 SISTEMA DE PERÍODOS BAJO DEMANDA v2.0 - CRÍTICO
-      // ⚠️ NO MODIFICAR SIN AUTORIZACIÓN EXPLÍCITA
+      // 🚨 SISTEMA DE PERÍODOS BAJO DEMANDA v3.0 - CRÍTICO 
+      // ⚠️ DELEGAMOS LA CREACIÓN DE PERÍODOS A LA FUNCIÓN SQL
       // ===============================================
-      console.log('🔍 useCreateLoad - Starting payment period assignment');
+      console.log('🔍 useCreateLoad - Delegating payment period creation to SQL function');
       
-      // Calcular fechas de pickup y delivery desde los stops
+      // ✅ VALIDACIÓN: Verificar que hay conductor asignado para cálculos correctos
+      if (!data.driver_user_id) {
+        console.warn('⚠️ useCreateLoad - No driver assigned, period calculations may be incomplete');
+      }
+      
+      // ✅ La función SQL simple_load_operation_with_deductions se encarga de:
+      // 1. Crear el período de pago usando create_payment_period_if_needed
+      // 2. Crear los driver_period_calculations para el conductor correcto
+      // 3. Generar las deducciones automáticas
+      console.log('✅ useCreateLoad - Payment period creation delegated to SQL function');
+
+      // ✅ PREPARAR DATOS PARA FUNCIÓN SQL CON FECHAS CORRECTAS
       const stopsWithDates = stopsData.filter(stop => stop.scheduled_date);
-      const pickupDate = stopsWithDates.find(stop => stop.stop_type === 'pickup')?.scheduled_date || 
-                         stopsWithDates[0]?.scheduled_date;
+      const pickupDate = stopsWithDates.find(stop => stop.stop_type === 'pickup')?.scheduled_date;
       const deliveryDate = stopsWithDates.find(stop => stop.stop_type === 'delivery')?.scheduled_date || 
                           stopsWithDates[stopsWithDates.length - 1]?.scheduled_date;
-
-      console.log('🔍 useCreateLoad - Calculated dates:', { pickupDate, deliveryDate });
-
-      let paymentPeriodId: string | null = null;
-
-      if (pickupDate || deliveryDate) {
-        // Obtener configuración de la empresa para determinar qué fecha usar
-        const { data: companyData, error: companyError } = await supabase
-          .from('companies')
-          .select('load_assignment_criteria')
-          .eq('id', userRole.company_id)
-          .single();
-
-        if (companyError) {
-          console.error('❌ Error getting company config:', companyError);
-          throw new Error('No se pudo obtener la configuración de la empresa');
-        }
-
-        // Determinar fecha objetivo según configuración
-        const assignmentCriteria = companyData?.load_assignment_criteria || 'delivery_date';
-        const targetDate = assignmentCriteria === 'pickup_date' ? pickupDate : deliveryDate;
-
-        console.log('🔍 useCreateLoad - Using assignment criteria:', assignmentCriteria, 'Target date:', targetDate);
-
-        if (targetDate) {
-          // Usar el sistema bajo demanda para obtener/crear período
-          paymentPeriodId = await ensurePaymentPeriodExists({
-            companyId: userRole.company_id,
-            userId: data.driver_user_id || user.id,
-            targetDate: targetDate
-          });
-
-          console.log('✅ useCreateLoad - Payment period assigned:', paymentPeriodId);
-        } else {
-          console.warn('⚠️ useCreateLoad - No target date available, creating load without payment period');
-        }
-      } else {
-        console.warn('⚠️ useCreateLoad - No scheduled dates in stops, creating load without payment period');
-      }
-
-      // ✅ USE NEW ACID FUNCTION WITH AUTOMATIC PERCENTAGE DEDUCTIONS
+      
       const loadDataForRPC = {
         ...loadData,
-        payment_period_id: paymentPeriodId, // ✅ Incluir payment_period_id
+        pickup_date: pickupDate || null,
+        delivery_date: deliveryDate || null,
         ...(isEdit && data.id && { id: data.id }) // Include ID for edit mode
       };
       
-      // ✅ PRIMERO: Crear/actualizar la carga usando la función con deducciones automáticas (arreglada)
+      // ✅ CREAR/ACTUALIZAR CARGA CON PERÍODOS Y CÁLCULOS AUTOMÁTICOS
+      console.log('🔍 useCreateLoad - Calling SQL function with data:', {
+        operation_type: isEdit ? 'UPDATE' : 'CREATE',
+        has_driver: !!loadDataForRPC.driver_user_id,
+        pickup_date: loadDataForRPC.pickup_date,
+        delivery_date: loadDataForRPC.delivery_date
+      });
+      
       const { data: loadResult, error: loadError } = await supabase.rpc(
         'simple_load_operation_with_deductions',
         {
-          operation_type: isEdit ? 'UPDATE' : 'CREATE',
           load_data: loadDataForRPC,
           stops_data: stopsData,
-          load_id_param: isEdit ? data.id : null
+          load_id: isEdit ? data.id : null
         }
       );
 
