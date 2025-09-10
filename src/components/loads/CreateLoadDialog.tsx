@@ -685,54 +685,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     });
   };
 
-  // 🚨 TEMPORARY DEBUG FUNCTION - REMOVE AFTER TESTING
-  const debugMutation = () => {
-    console.log('🔥 DEBUG: Manual mutation test triggered!');
-    console.log('🔥 DEBUG: Mode:', mode);
-    console.log('🔥 DEBUG: createLoadMutation available:', !!createLoadMutation);
-    console.log('🔥 DEBUG: createLoadMutation.mutate available:', !!createLoadMutation?.mutate);
-    
-    if (mode === 'edit' && externalLoadData) {
-      const testData = {
-        mode: 'edit' as const,
-        id: externalLoadData.id,
-        load_number: externalLoadData.load_number,
-        driver_user_id: externalLoadData.driver_user_id,
-        total_amount: externalLoadData.total_amount || 100,
-        commodity: externalLoadData.commodity || 'Test',
-        stops: externalLoadData.stops || []
-      };
-      
-      console.log('🔥 DEBUG: Test data:', testData);
-      console.log('🔥 DEBUG: About to call mutate...');
-      
-      createLoadMutation.mutate(testData, {
-        onSuccess: (result) => {
-          console.log('🔥 DEBUG: Manual mutation SUCCESS!', result);
-        },
-        onError: (error) => {
-          console.log('🔥 DEBUG: Manual mutation ERROR!', error);
-        }
-      });
-    }
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="w-full max-w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        {/* 🔥 TEMPORARY DEBUG BUTTON - REMOVE AFTER TESTING */}
-        {mode === 'edit' && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-300 rounded">
-            <p className="text-red-800 mb-2">🔥 DEBUG MODE - Testing manual mutation</p>
-            <Button 
-              onClick={debugMutation}
-              variant="destructive"
-              size="sm"
-            >
-              🔥 Test Manual Mutation
-            </Button>
-          </div>
-        )}
         <DialogHeader>
           <DialogTitle>
             {(() => {
