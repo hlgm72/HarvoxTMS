@@ -5,6 +5,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { useRecalculateDriverPeriod } from '@/hooks/useRecalculateDriverPeriod';
 
 export interface CreateLoadData {
   id?: string;
@@ -141,6 +142,7 @@ export const useCreateLoad = () => {
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
+  const recalculateDriverPeriod = useRecalculateDriverPeriod();
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
@@ -317,8 +319,24 @@ export const useCreateLoad = () => {
     onSuccess: async (loadId, variables) => {
       console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
       
-      // Los triggers automáticos se encargan del recálculo completo
-      // Solo necesitamos invalidar el cache para mostrar datos actualizados
+      const isEdit = variables.mode === 'edit';
+      
+      // If editing and driver is assigned, recalculate their payment period
+      if (isEdit && variables.driver_user_id) {
+        console.log('🔄 useCreateLoad - Triggering driver period recalculation for edit mode');
+        try {
+          await recalculateDriverPeriod.mutateAsync({
+            driverUserId: variables.driver_user_id,
+            loadId: loadId
+          });
+          console.log('✅ useCreateLoad - Driver period recalculated automatically');
+        } catch (recalcError) {
+          console.error('❌ useCreateLoad - Error in automatic recalculation:', recalcError);
+          // Don't fail the main operation, just log the error
+        }
+      }
+      
+      // Standard cache invalidations
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
@@ -334,9 +352,7 @@ export const useCreateLoad = () => {
       // Refetch inmediato para sincronización rápida
       queryClient.refetchQueries({ queryKey: ['loads'] });
       
-      console.log('✅ useCreateLoad - Cache invalidated - triggers handle automatic recalculation');
-      
-      // No mostramos toast aquí - se maneja en el componente
+      console.log('✅ useCreateLoad - Cache invalidated and driver period recalculated');
       console.log('✅ useCreateLoad - Load operation completed successfully');
     },
     onError: (error: Error) => {
