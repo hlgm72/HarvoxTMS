@@ -270,7 +270,7 @@ export const useCreateLoad = () => {
         {
           load_data: loadDataForRPC,
           stops_data: stopsData,
-          load_id: isEdit ? data.id : null
+          load_id_param: isEdit ? data.id : null
         }
       );
 
