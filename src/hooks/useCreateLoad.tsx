@@ -146,12 +146,14 @@ export const useCreateLoad = () => {
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
-      // Starting ACID mutation with data
-      
-      console.log('🔍 useCreateLoad - Received data for mutation:', data);
-      console.log('🔍 useCreateLoad - Dispatcher ID being sent:', data.internal_dispatcher_id);
-      console.log('🔍 useCreateLoad - Mapped to internal_dispatcher_id:', data.internal_dispatcher_id || '');
-      console.log('🔍 useCreateLoad - Raw data object:', JSON.stringify(data, null, 2));
+      console.log('🚚 ========== INICIO MUTACIÓN useCreateLoad ==========');
+      console.log('📦 Datos completos de entrada:', JSON.stringify(data, null, 2));
+      console.log('🔍 Modo:', data.mode);
+      console.log('🔍 ID de carga:', data.id);
+      console.log('🔍 Driver User ID:', data.driver_user_id);
+      console.log('🔍 Dispatcher ID being sent:', data.internal_dispatcher_id);
+      console.log('🔍 Mapped to internal_dispatcher_id:', data.internal_dispatcher_id || '');
+      console.log('🔍 Raw data object:', JSON.stringify(data, null, 2));
       
       if (!user) {
         throw new Error('Usuario no autenticado');
@@ -260,29 +262,64 @@ export const useCreateLoad = () => {
       };
       
       // ✅ CREAR/ACTUALIZAR CARGA CON PERÍODOS Y CÁLCULOS AUTOMÁTICOS
-      console.log('🔍 useCreateLoad - Calling SQL function with data:', {
+      console.log('📞 ========== LLAMANDO RPC ==========');
+      console.log('🔍 Función: simple_load_operation_with_deductions');
+      console.log('🔍 Parámetros completos:', {
         operation_type: isEdit ? 'UPDATE' : 'CREATE',
         has_driver: !!loadDataForRPC.driver_user_id,
         pickup_date: loadDataForRPC.pickup_date,
-        delivery_date: loadDataForRPC.delivery_date
+        delivery_date: loadDataForRPC.delivery_date,
+        load_data: loadDataForRPC,
+        stops_data: stopsData,
+        load_id_param: isEdit ? data.id : null
       });
       
-      const { data: loadResult, error: loadError } = await supabase.rpc(
-        'simple_load_operation_with_deductions',
-        {
-          load_data: loadDataForRPC,
-          stops_data: stopsData,
-          load_id_param: isEdit ? data.id : null
-        }
-      );
-
-      if (loadError) {
-        console.error('❌ useCreateLoad - Load operation error:', loadError);
+      let loadResult: any;
+      let loadError: any;
+      
+      try {
+        const rpcResponse = await supabase.rpc(
+          'simple_load_operation_with_deductions',
+          {
+            load_data: loadDataForRPC,
+            stops_data: stopsData,
+            load_id_param: isEdit ? data.id : null
+          }
+        );
         
-        if (loadError.message.includes('ya existe')) {
-          throw new Error(loadError.message);
+        loadResult = rpcResponse.data;
+        loadError = rpcResponse.error;
+
+        console.log('📞 ========== RESPUESTA RPC ==========');
+        console.log('📊 Data recibida:', JSON.stringify(loadResult, null, 2));
+        console.log('📊 Error recibido:', loadError);
+
+        if (loadError) {
+          console.error('❌ ERROR RPC:', {
+            message: loadError.message,
+            details: loadError.details,
+            hint: loadError.hint,
+            code: loadError.code
+          });
+          
+          if (loadError.message.includes('ya existe')) {
+            throw new Error(loadError.message);
+          }
+          throw new Error(`Error en operación de carga: ${loadError.message}`);
         }
-        throw new Error(`Error en operación de carga: ${loadError.message}`);
+
+        if (!loadResult) {
+          console.error('❌ ERROR: RPC sin error pero data es null/undefined');
+          throw new Error('Load operation completed but no data returned');
+        }
+
+        console.log('✅ RPC EXITOSO');
+        
+      } catch (rpcError) {
+        console.error('❌ ========== ERROR EN RPC CALL ==========');
+        console.error('❌ Error completo:', rpcError);
+        console.error('❌ Stack trace:', rpcError instanceof Error ? rpcError.stack : 'No stack');
+        throw rpcError;
       }
 
       console.log('🔍 useCreateLoad - Load operation result:', JSON.stringify(loadResult, null, 2));
@@ -313,58 +350,77 @@ export const useCreateLoad = () => {
         }
       }
 
-      console.log('✅ useCreateLoad - ACID operation completed successfully');
+      console.log('🚚 ========== MUTACIÓN COMPLETADA EXITOSAMENTE ==========');
+      console.log('🆔 Load ID retornado:', loadId);
       return loadId;
     },
     onSuccess: async (loadId, variables) => {
-      console.log('🚨 DIAGNÓSTICO: useCreateLoad - onSuccess EJECUTADO');
-      console.log('🔍 DIAGNÓSTICO: Load ID recibido:', loadId);
-      console.log('🔍 DIAGNÓSTICO: Variables completas:', JSON.stringify(variables, null, 2));
-      console.log('🔍 DIAGNÓSTICO: variables.mode:', variables.mode);
-      console.log('🔍 DIAGNÓSTICO: variables.driver_user_id:', variables.driver_user_id);
-      console.log('🔍 DIAGNÓSTICO: variables.id:', variables.id);
+      console.log('🎉 ========== ON SUCCESS EJECUTADO ==========');
+      console.log('🎉 Load ID recibido:', loadId);
+      console.log('🎉 Variables completas:', JSON.stringify(variables, null, 2));
+      console.log('🔍 Modo:', variables.mode);
+      console.log('🔍 Driver User ID:', variables.driver_user_id);
+      console.log('🔍 Load ID original:', variables.id);
+      console.log('🔍 typeof loadId:', typeof loadId);
+      console.log('🔍 loadId value:', loadId);
       
       const isEdit = variables.mode === 'edit';
-      console.log('🔍 DIAGNÓSTICO: isEdit evaluado como:', isEdit);
+      console.log('🔍 ¿Es edición?', isEdit);
       
-      // DIAGNÓSTICO: Verificar estados del hook de recálculo
-      console.log('🔍 DIAGNÓSTICO: recalculateDriverPeriod.isPending:', recalculateDriverPeriod.isPending);
-      console.log('🔍 DIAGNÓSTICO: recalculateDriverPeriod.error:', recalculateDriverPeriod.error);
+      // Verificar estado del hook de recálculo
+      console.log('🔍 ========== VERIFICANDO HOOK RECÁLCULO ==========');
+      console.log('🔍 recalculateDriverPeriod disponible:', !!recalculateDriverPeriod);
+      console.log('🔍 recalculateDriverPeriod.mutateAsync disponible:', !!recalculateDriverPeriod?.mutateAsync);
+      console.log('🔍 recalculateDriverPeriod.isPending:', recalculateDriverPeriod?.isPending);
+      console.log('🔍 recalculateDriverPeriod.error:', recalculateDriverPeriod?.error);
       
+      // Check recalculation conditions
+      console.log('🔍 ========== VERIFICANDO CONDICIONES PARA RECÁLCULO ==========');
+      console.log('🔍 isEdit:', isEdit);
+      console.log('🔍 variables.driver_user_id:', variables.driver_user_id);
+      console.log('🔍 typeof recalculateDriverPeriod:', typeof recalculateDriverPeriod);
+      console.log('🔍 recalculateDriverPeriod.mutateAsync:', typeof recalculateDriverPeriod?.mutateAsync);
+
       // If editing and driver is assigned, recalculate their payment period
       if (isEdit && variables.driver_user_id) {
-        console.log('🚨 DIAGNÓSTICO: CONDICIÓN CUMPLIDA - Iniciando recálculo automático');
-        console.log('🔄 useCreateLoad - Triggering driver period recalculation for edit mode');
-        console.log('🔍 DIAGNÓSTICO: Parámetros para recálculo:', {
+        console.log('🔄 ========== INICIANDO RECÁLCULO ==========');
+        console.log('🔄 Condiciones cumplidas para recálculo automático');
+        
+        const recalculateParams = {
           driverUserId: variables.driver_user_id,
           loadId: loadId
-        });
+        };
+        
+        console.log('🔄 Parámetros de recálculo:', JSON.stringify(recalculateParams, null, 2));
         
         try {
-          console.log('🚨 DIAGNÓSTICO: Llamando recalculateDriverPeriod.mutateAsync...');
-          const recalcResult = await recalculateDriverPeriod.mutateAsync({
-            driverUserId: variables.driver_user_id,
-            loadId: loadId
-          });
-          console.log('✅ useCreateLoad - Driver period recalculated automatically');
-          console.log('🔍 DIAGNÓSTICO: Resultado del recálculo:', recalcResult);
+          console.log('🔄 Llamando recalculateDriverPeriod.mutateAsync...');
+          const recalcResult = await recalculateDriverPeriod.mutateAsync(recalculateParams);
+          console.log('✅ Driver period recalculated automatically');
+          console.log('✅ Resultado del recálculo:', recalcResult);
         } catch (recalcError) {
-          console.error('❌ useCreateLoad - Error in automatic recalculation:', recalcError);
-          console.error('🚨 DIAGNÓSTICO: Detalles del error de recálculo:', JSON.stringify(recalcError, null, 2));
+          console.error('❌ ========== ERROR EN RECÁLCULO ==========');
+          console.error('❌ Error completo:', recalcError);
+          console.error('❌ Error message:', recalcError instanceof Error ? recalcError.message : 'Unknown error');
+          console.error('❌ Stack trace:', recalcError instanceof Error ? recalcError.stack : 'No stack');
           // Don't fail the main operation, just log the error
         }
       } else {
-        console.log('🚨 DIAGNÓSTICO: CONDICIÓN NO CUMPLIDA para recálculo');
-        console.log('🔍 DIAGNÓSTICO: isEdit:', isEdit, 'driver_user_id:', variables.driver_user_id);
+        console.log('🚫 ========== RECÁLCULO NO EJECUTADO ==========');
+        console.log('🚫 Razones de no ejecución:');
+        console.log('   - isEdit:', isEdit, '(debe ser true)');
+        console.log('   - driver_user_id:', variables.driver_user_id, '(debe existir)');
+        console.log('   - recalculateDriverPeriod disponible:', !!recalculateDriverPeriod);
         if (!isEdit) {
-          console.log('🔍 DIAGNÓSTICO: No es modo edición');
+          console.log('🚫 No es modo edición');
         }
         if (!variables.driver_user_id) {
-          console.log('🔍 DIAGNÓSTICO: No hay conductor asignado');
+          console.log('🚫 No hay conductor asignado');
         }
       }
       
       // Standard cache invalidations
+      console.log('🔄 Invalidando queries...');
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
@@ -379,13 +435,26 @@ export const useCreateLoad = () => {
       
       // Refetch inmediato para sincronización rápida
       queryClient.refetchQueries({ queryKey: ['loads'] });
+      console.log('✅ Queries invalidadas');
       
-      console.log('✅ useCreateLoad - Cache invalidated and driver period recalculated');
-      console.log('✅ useCreateLoad - Load operation completed successfully');
+      // Show success message
+      showSuccess(
+        isEdit ? 'Carga actualizada exitosamente' : 'Carga creada exitosamente'
+      );
+      console.log('✅ Mensaje de éxito mostrado');
+      
+      console.log('🎉 ========== ON SUCCESS COMPLETADO ==========');
     },
-    onError: (error: Error) => {
-      console.error('❌ useCreateLoad - Mutation error:', error);
-      // No mostramos toast aquí - se maneja en el componente
+    onError: (error: Error, variables) => {
+      console.error('💥 ========== ON ERROR EJECUTADO ==========');
+      console.error('💥 Error completo:', error);
+      console.error('💥 Error message:', error.message);
+      console.error('💥 Error stack:', error.stack);
+      console.error('💥 Variables que causaron error:', JSON.stringify(variables, null, 2));
+      console.error('💥 Tipo de error:', error.constructor.name);
+      
+      showError('Error al guardar la carga: ' + error.message);
+      console.error('💥 ========== ON ERROR COMPLETADO ==========');
     },
   });
 };
