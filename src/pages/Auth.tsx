@@ -154,26 +154,13 @@ export default function Auth() {
     'email'
   );
 
-  // Enhanced autofill detection specifically for Samsung Browser credentials
+  // Simplified autofill detection that doesn't interfere with validation
   const detectCredentialAutofill = () => {
     try {
-      // Don't interfere if there are active validation errors
-      if (Object.keys(fieldErrors).length > 0 || loading) {
-        console.log('🚫 detectCredentialAutofill blocked - validation errors present:', fieldErrors);
-        return;
-      }
-
-      console.log('✅ detectCredentialAutofill executing - no validation errors');
       const emailInput = document.getElementById('email') as HTMLInputElement;
       const passwordInput = document.getElementById('password') as HTMLInputElement;
       
-      // Add safety checks for null elements
       if (!emailInput || !passwordInput) {
-        return;
-      }
-
-      // Additional safety check for the value property
-      if (!emailInput.hasOwnProperty('value') || !passwordInput.hasOwnProperty('value')) {
         return;
       }
       
@@ -181,22 +168,27 @@ export default function Auth() {
       const passwordValue = passwordInput.value || '';
       let hasChanges = false;
       
-      // Update form data if values changed - ONLY update, don't validate to avoid clearing existing errors
+      // Always sync form data with DOM values, regardless of validation state
       if (emailValue !== formData.email) {
         setFormData(prev => ({ ...prev, email: emailValue }));
-        // Only validate if we're adding content (not removing it)
-        if (emailValue && !formData.email) {
-          validateField('email', emailValue);
+        // Clear validation errors when autofill provides a value
+        if (emailValue && fieldErrors.email) {
+          setFieldErrors(prev => {
+            const { email, ...rest } = prev;
+            return rest;
+          });
         }
         hasChanges = true;
       }
       
-      // Only validate password field if we're adding content (not removing it)
       if (passwordValue !== formData.password) {
         setFormData(prev => ({ ...prev, password: passwordValue }));
-        // Only validate if we're adding content (not removing it)
-        if (passwordValue && !formData.password) {
-          validateField('password', passwordValue);
+        // Clear validation errors when autofill provides a value
+        if (passwordValue && fieldErrors.password) {
+          setFieldErrors(prev => {
+            const { password, ...rest } = prev;
+            return rest;
+          });
         }
         hasChanges = true;
       }
@@ -205,11 +197,11 @@ export default function Auth() {
         setError(null);
       }
     } catch (err) {
-      console.log('🔍 Credential check error (safely handled):', err);
+      console.log('🔍 Autofill detection error (safely handled):', err);
     }
   };
 
-  // MutationObserver to detect DOM changes from autofill
+  // Improved autofill detection using multiple strategies
   useEffect(() => {
     if (!mounted) return;
 
@@ -218,20 +210,27 @@ export default function Auth() {
     
     if (!emailInput || !passwordInput) return;
 
-    // Create mutation observer for value changes
-    const observer = new MutationObserver((mutations) => {
-      let needsCheck = false;
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && 
-            (mutation.attributeName === 'value' || mutation.attributeName === 'class')) {
-          needsCheck = true;
-        }
-      });
-      
-      if (needsCheck) {
-        setTimeout(detectCredentialAutofill, 50);
-      }
+    // Strategy 1: Input event listeners for immediate detection
+    const handleInputChange = () => {
+      setTimeout(detectCredentialAutofill, 10);
+    };
+
+    // Strategy 2: MutationObserver for DOM changes
+    const observer = new MutationObserver(() => {
+      setTimeout(detectCredentialAutofill, 10);
     });
+
+    // Strategy 3: Focus events for autofill triggers
+    const handleFocus = () => {
+      setTimeout(detectCredentialAutofill, 50);
+      setTimeout(detectCredentialAutofill, 200);
+    };
+
+    // Add all event listeners
+    emailInput.addEventListener('input', handleInputChange);
+    passwordInput.addEventListener('input', handleInputChange);
+    emailInput.addEventListener('focus', handleFocus);
+    passwordInput.addEventListener('focus', handleFocus);
 
     // Observe both inputs for attribute changes
     observer.observe(emailInput, { 
@@ -243,100 +242,68 @@ export default function Auth() {
       attributeFilter: ['value', 'class'] 
     });
 
-    return () => observer.disconnect();
-  }, [mounted]); // Solo depender de mounted, no de formData
+    return () => {
+      emailInput.removeEventListener('input', handleInputChange);
+      passwordInput.removeEventListener('input', handleInputChange);
+      emailInput.removeEventListener('focus', handleFocus);
+      passwordInput.removeEventListener('focus', handleFocus);
+      observer.disconnect();
+    };
+  }, [mounted]);
 
   const handleEmailAutofill = (e: React.FocusEvent<HTMLInputElement>) => {
-    const checkValue = () => {
-      if (!e.target) return;
-      
-      // Don't interfere if there are active validation errors
-      if (Object.keys(fieldErrors).length > 0 || loading) {
-        return;
-      }
-      
-      const emailValue = e.target.value?.trim() || '';
-      if (emailValue && emailValue !== formData.email) {
-        setFormData(prev => ({ ...prev, email: emailValue }));
-        validateField('email', emailValue);
-        if (error) setError(null);
-      }
-      // Only check for credential autofill if no validation errors
-      if (Object.keys(fieldErrors).length === 0) {
-        detectCredentialAutofill();
-      }
-    };
-    
-    // Reduce de 6 checks a solo 2 para evitar bucle infinito
-    checkValue();
-    setTimeout(checkValue, 100);
+    // Simple check that always allows synchronization
+    setTimeout(() => {
+      detectCredentialAutofill();
+    }, 100);
   };
 
-  // Input event handler for Samsung Browser
+  // Simplified input event handler
   const handleEmailInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
     if (!e.currentTarget) return;
-    
-    // Don't interfere if there are active validation errors
-    if (Object.keys(fieldErrors).length > 0 || loading) {
-      // Still update the form data but don't validate
-      const emailValue = e.currentTarget.value?.trim() || '';
-      if (emailValue !== formData.email) {
-        setFormData(prev => ({ ...prev, email: emailValue }));
-      }
-      return;
-    }
     
     const emailValue = e.currentTarget.value?.trim() || '';
     if (emailValue !== formData.email) {
       setFormData(prev => ({ ...prev, email: emailValue }));
-      validateField('email', emailValue);
+      // Clear email validation error if value is provided
+      if (emailValue && fieldErrors.email) {
+        setFieldErrors(prev => {
+          const { email, ...rest } = prev;
+          return rest;
+        });
+      }
       if (error) setError(null);
     }
-    // Only check if both fields were filled (credential autofill) if no validation errors
-    if (Object.keys(fieldErrors).length === 0) {
-      setTimeout(detectCredentialAutofill, 50);
-    }
   };
 
-  // Password autofill detection - reducido para evitar bucle infinito
+  // Simplified password focus handler
   const handlePasswordFocus = () => {
-    // Don't interfere if there are active validation errors
-    if (Object.keys(fieldErrors).length > 0 || loading) {
-      console.log('🚫 handlePasswordFocus blocked - validation errors present:', fieldErrors);
-      return;
-    }
-    
-    console.log('✅ handlePasswordFocus executing - no validation errors');
     setTimeout(detectCredentialAutofill, 50);
-    setTimeout(detectCredentialAutofill, 200);
   };
 
-  // Enhanced periodic check for Samsung Browser (reduced frequency)
+  // Periodic check for persistent autofill detection
   useEffect(() => {
     if (!mounted) return;
     
     let checkCount = 0;
-    const maxChecks = 20; // Stop after 10 seconds (20 * 500ms)
+    const maxChecks = 10; // Reduced checks for better performance
     
     const interval = setInterval(() => {
       checkCount++;
       
-      // Don't run autofill detection if there are validation errors or form is loading
-      const hasValidationErrors = Object.keys(fieldErrors).length > 0;
-      
-      // Only check if we haven't reached max attempts and no validation errors
-      if (checkCount <= maxChecks && !hasValidationErrors && !loading) {
+      // Always check for autofill, don't block on validation errors
+      if (checkCount <= maxChecks && !loading) {
         detectCredentialAutofill();
       }
       
-      // Stop the interval after max checks, if form has data, or if there are validation errors
-      if (checkCount >= maxChecks || (formData.email && formData.password) || hasValidationErrors) {
+      // Stop when max checks reached or both fields are populated
+      if (checkCount >= maxChecks || (formData.email && formData.password)) {
         clearInterval(interval);
       }
-    }, 500);
+    }, 300);
     
     return () => clearInterval(interval);
-  }, [mounted, fieldErrors, loading]); // Add fieldErrors and loading as dependencies
+  }, [mounted, loading]);
 
   const firstNameHandlers = createTextHandlers((value) => {
     setFormData(prev => ({ ...prev, firstName: value }));
