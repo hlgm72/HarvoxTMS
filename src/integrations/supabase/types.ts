@@ -3304,7 +3304,9 @@ export type Database = {
         Returns: Json
       }
       cleanup_load_percentage_deductions: {
-        Args: { load_id_param: string; load_number_param: string }
+        Args:
+          | { load_id_param: string }
+          | { load_id_param: string; load_number_param: string }
         Returns: number
       }
       cleanup_old_recurring_expense_descriptions: {
@@ -3476,7 +3478,15 @@ export type Database = {
               load_number_param: string
               payment_period_id_param: string
             }
-        Returns: undefined
+          | {
+              driver_user_id_param: string
+              is_update_mode?: boolean
+              load_id_param: string
+              load_number_param: string
+              target_payment_period_id: string
+              total_amount_param: number
+            }
+        Returns: Json
       }
       create_user_with_company_role_validation: {
         Args: { company_role_data: Json; user_data: Json }
@@ -4224,7 +4234,14 @@ export type Database = {
         Returns: Json
       }
       simple_load_operation_with_deductions: {
-        Args: { load_data: Json; load_id_param?: string; stops_data?: Json }
+        Args:
+          | {
+              load_data: Json
+              load_id_param?: string
+              operation_type: string
+              stops_data?: Json[]
+            }
+          | { load_data: Json; load_id_param?: string; stops_data?: Json }
         Returns: Json
       }
       sync_existing_user_profiles: {
