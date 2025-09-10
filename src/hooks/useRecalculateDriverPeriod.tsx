@@ -14,12 +14,15 @@ export const useRecalculateDriverPeriod = () => {
 
   return useMutation({
     mutationFn: async (params: RecalculateDriverPeriodParams): Promise<void> => {
+      console.log('🚨 DIAGNÓSTICO: useRecalculateDriverPeriod - mutationFn EJECUTADO');
       console.log('🔄 Recalculating driver period for:', params);
+      console.log('🔍 DIAGNÓSTICO: Parámetros recibidos:', JSON.stringify(params, null, 2));
 
       let targetCalculationId: string | null = null;
 
       // If we have a paymentPeriodId, find the calculation directly
       if (params.paymentPeriodId) {
+        console.log('🔍 DIAGNÓSTICO: Buscando cálculo con paymentPeriodId:', params.paymentPeriodId);
         const { data: calculation, error: calcError } = await supabase
           .from('driver_period_calculations')
           .select('id')
@@ -27,21 +30,27 @@ export const useRecalculateDriverPeriod = () => {
           .eq('company_payment_period_id', params.paymentPeriodId)
           .single();
 
+        console.log('🔍 DIAGNÓSTICO: Resultado búsqueda por paymentPeriodId:', { calculation, calcError });
+
         if (calcError && calcError.code !== 'PGRST116') {
           console.error('❌ Error finding calculation:', calcError);
           throw new Error(`Error buscando cálculo: ${calcError.message}`);
         }
 
         targetCalculationId = calculation?.id || null;
+        console.log('🔍 DIAGNÓSTICO: targetCalculationId desde paymentPeriodId:', targetCalculationId);
       }
 
       // If we have a loadId but no paymentPeriodId, find it from the load
       if (!targetCalculationId && params.loadId) {
+        console.log('🔍 DIAGNÓSTICO: Buscando payment_period_id desde loadId:', params.loadId);
         const { data: load, error: loadError } = await supabase
           .from('loads')
           .select('payment_period_id')
           .eq('id', params.loadId)
           .single();
+
+        console.log('🔍 DIAGNÓSTICO: Resultado búsqueda de carga:', { load, loadError });
 
         if (loadError) {
           console.error('❌ Error finding load payment period:', loadError);
@@ -49,6 +58,9 @@ export const useRecalculateDriverPeriod = () => {
         }
 
         if (load?.payment_period_id) {
+          console.log('🔍 DIAGNÓSTICO: payment_period_id encontrado:', load.payment_period_id);
+          console.log('🔍 DIAGNÓSTICO: Buscando driver_period_calculation para driver:', params.driverUserId);
+          
           const { data: calculation, error: calcError } = await supabase
             .from('driver_period_calculations')
             .select('id')
@@ -56,22 +68,31 @@ export const useRecalculateDriverPeriod = () => {
             .eq('company_payment_period_id', load.payment_period_id)
             .single();
 
+          console.log('🔍 DIAGNÓSTICO: Resultado búsqueda de calculation:', { calculation, calcError });
+
           if (calcError && calcError.code !== 'PGRST116') {
             console.error('❌ Error finding calculation by load:', calcError);
             throw new Error(`Error buscando cálculo por carga: ${calcError.message}`);
           }
 
           targetCalculationId = calculation?.id || null;
+          console.log('🔍 DIAGNÓSTICO: targetCalculationId desde loadId:', targetCalculationId);
+        } else {
+          console.log('🚨 DIAGNÓSTICO: load.payment_period_id es null/undefined');
         }
       }
 
       if (!targetCalculationId) {
-        console.warn('⚠️ No calculation found to recalculate for driver:', params.driverUserId);
+        console.warn('🚨 DIAGNÓSTICO: No calculation found to recalculate for driver:', params.driverUserId);
+        console.log('🔍 DIAGNÓSTICO: Parámetros que causaron el fallo:', params);
+        console.log('🔍 DIAGNÓSTICO: targetCalculationId final:', targetCalculationId);
         return;
       }
 
       // Execute the recalculation
+      console.log('🚨 DIAGNÓSTICO: EJECUTANDO RECÁLCULO');
       console.log('🔄 Executing recalculation for calculation ID:', targetCalculationId);
+      console.log('🔍 DIAGNÓSTICO: Llamando supabase.rpc con calculation_id:', targetCalculationId);
       
       const { data: recalcResult, error: recalcError } = await supabase.rpc(
         'calculate_driver_payment_period_with_validation',
@@ -80,12 +101,16 @@ export const useRecalculateDriverPeriod = () => {
         }
       );
 
+      console.log('🔍 DIAGNÓSTICO: Respuesta de RPC:', { recalcResult, recalcError });
+
       if (recalcError) {
         console.error('❌ Error in recalculation:', recalcError);
+        console.error('🚨 DIAGNÓSTICO: Detalles completos del error RPC:', JSON.stringify(recalcError, null, 2));
         throw new Error(`Error en recálculo: ${recalcError.message}`);
       }
 
       console.log('✅ Recalculation completed successfully:', recalcResult);
+      console.log('🚨 DIAGNÓSTICO: RECÁLCULO COMPLETADO EXITOSAMENTE');
     },
     onSuccess: () => {
       console.log('✅ Driver period recalculated successfully');

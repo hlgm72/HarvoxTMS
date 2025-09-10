@@ -317,22 +317,50 @@ export const useCreateLoad = () => {
       return loadId;
     },
     onSuccess: async (loadId, variables) => {
-      console.log('✅ useCreateLoad - Mutation successful, load ID:', loadId);
+      console.log('🚨 DIAGNÓSTICO: useCreateLoad - onSuccess EJECUTADO');
+      console.log('🔍 DIAGNÓSTICO: Load ID recibido:', loadId);
+      console.log('🔍 DIAGNÓSTICO: Variables completas:', JSON.stringify(variables, null, 2));
+      console.log('🔍 DIAGNÓSTICO: variables.mode:', variables.mode);
+      console.log('🔍 DIAGNÓSTICO: variables.driver_user_id:', variables.driver_user_id);
+      console.log('🔍 DIAGNÓSTICO: variables.id:', variables.id);
       
       const isEdit = variables.mode === 'edit';
+      console.log('🔍 DIAGNÓSTICO: isEdit evaluado como:', isEdit);
+      
+      // DIAGNÓSTICO: Verificar estados del hook de recálculo
+      console.log('🔍 DIAGNÓSTICO: recalculateDriverPeriod.isPending:', recalculateDriverPeriod.isPending);
+      console.log('🔍 DIAGNÓSTICO: recalculateDriverPeriod.error:', recalculateDriverPeriod.error);
       
       // If editing and driver is assigned, recalculate their payment period
       if (isEdit && variables.driver_user_id) {
+        console.log('🚨 DIAGNÓSTICO: CONDICIÓN CUMPLIDA - Iniciando recálculo automático');
         console.log('🔄 useCreateLoad - Triggering driver period recalculation for edit mode');
+        console.log('🔍 DIAGNÓSTICO: Parámetros para recálculo:', {
+          driverUserId: variables.driver_user_id,
+          loadId: loadId
+        });
+        
         try {
-          await recalculateDriverPeriod.mutateAsync({
+          console.log('🚨 DIAGNÓSTICO: Llamando recalculateDriverPeriod.mutateAsync...');
+          const recalcResult = await recalculateDriverPeriod.mutateAsync({
             driverUserId: variables.driver_user_id,
             loadId: loadId
           });
           console.log('✅ useCreateLoad - Driver period recalculated automatically');
+          console.log('🔍 DIAGNÓSTICO: Resultado del recálculo:', recalcResult);
         } catch (recalcError) {
           console.error('❌ useCreateLoad - Error in automatic recalculation:', recalcError);
+          console.error('🚨 DIAGNÓSTICO: Detalles del error de recálculo:', JSON.stringify(recalcError, null, 2));
           // Don't fail the main operation, just log the error
+        }
+      } else {
+        console.log('🚨 DIAGNÓSTICO: CONDICIÓN NO CUMPLIDA para recálculo');
+        console.log('🔍 DIAGNÓSTICO: isEdit:', isEdit, 'driver_user_id:', variables.driver_user_id);
+        if (!isEdit) {
+          console.log('🔍 DIAGNÓSTICO: No es modo edición');
+        }
+        if (!variables.driver_user_id) {
+          console.log('🔍 DIAGNÓSTICO: No hay conductor asignado');
         }
       }
       
