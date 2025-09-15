@@ -3558,6 +3558,10 @@ export type Database = {
         }
         Returns: Json
       }
+      diagnose_payment_period_calculations: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       disable_service_operation: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -3600,6 +3604,10 @@ export type Database = {
         Returns: undefined
       }
       fix_missing_percentage_deductions_retroactive: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      fix_payment_period_calculations_safe: {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
