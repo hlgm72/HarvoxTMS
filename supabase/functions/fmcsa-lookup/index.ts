@@ -561,16 +561,28 @@ async function searchFMCSA(searchQuery: string, searchType: 'DOT' | 'MC' | 'NAME
         
         console.log(`🔍 Found ${allLinks.length} total links on results page`);
         
-        // Find carrier links
-        const carrierLinks = allLinks.filter(link => 
-          link.href && (
+        // Find carrier links - exclude administrative links
+        const carrierLinks = allLinks.filter(link => {
+          // Exclude administrative/PIN request links
+          const textLower = link.text.toLowerCase();
+          const isAdminLink = textLower.includes('request') || 
+                             textLower.includes('pin') || 
+                             textLower.includes('email') || 
+                             textLower.includes('text') || 
+                             textLower.includes('mail') ||
+                             textLower.includes('click here');
+          
+          if (isAdminLink) {
+            return false;
+          }
+          
+          // Only include actual carrier snapshot links
+          return link.href && (
             link.href.includes('MC_MX') || 
             link.href.includes('USDOT') || 
-            link.href.includes('queryCarrierSnapshot') ||
-            link.text.includes('MC-') ||
-            link.text.includes('DOT')
-          )
-        );
+            link.href.includes('queryCarrierSnapshot')
+          );
+        });
         
         console.log(`🔍 Found ${carrierLinks.length} potential carrier links:`);
         carrierLinks.forEach((link, index) => {
