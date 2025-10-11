@@ -281,7 +281,6 @@ export const useCreateLoad = () => {
         const rpcResponse = await supabase.rpc(
           'simple_load_operation_with_deductions',
           {
-            operation_type: isEdit ? 'UPDATE' : 'CREATE',
             load_data: loadDataForRPC,
             stops_data: stopsData,
             load_id_param: isEdit ? data.id : null
