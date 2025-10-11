@@ -11,6 +11,7 @@ import { formatCurrency, formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
 
 interface DriverPayment {
+  period_id: string; // Unique ID for the period
   driver_id: string;
   driver_name: string;
   driver_avatar?: string;
@@ -110,6 +111,7 @@ export function RealtimeDriverPayments() {
         const driverPayments = periods.map((calculation: any) => {
           const profile = profilesMap.get(calculation.user_id);
           return {
+            period_id: calculation.id, // Use unique period ID
             driver_id: calculation.user_id,
             driver_name: profile ? `${profile.first_name || 'N/A'} ${profile.last_name || ''}`.trim() : 'Driver',
             driver_avatar: profile?.avatar_url,
@@ -177,7 +179,7 @@ export function RealtimeDriverPayments() {
         ) : (
           <div className="space-y-4">
             {payments.map((payment) => (
-              <div key={payment.driver_id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
+              <div key={payment.period_id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
