@@ -98,7 +98,7 @@ export const useClientContacts = (clientId: string) => {
       if (error) throw error;
       return data as ClientContact[];
     },
-    enabled: !!clientId,
+    enabled: !!clientId && clientId.length > 0,
   });
 };
 
@@ -115,7 +115,7 @@ export const useClientContactCount = (clientId: string) => {
       if (error) throw error;
       return count || 0;
     },
-    enabled: !!clientId,
+    enabled: !!clientId && clientId.length > 0,
   });
 };
 
