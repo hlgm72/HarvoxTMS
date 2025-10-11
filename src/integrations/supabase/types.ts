@@ -1341,7 +1341,7 @@ export type Database = {
           invoice_number: string | null
           is_verified: boolean
           notes: string | null
-          payment_period_id: string
+          payment_period_id: string | null
           price_per_gallon: number
           raw_webhook_data: Json | null
           receipt_url: string | null
@@ -1370,7 +1370,7 @@ export type Database = {
           invoice_number?: string | null
           is_verified?: boolean
           notes?: string | null
-          payment_period_id: string
+          payment_period_id?: string | null
           price_per_gallon: number
           raw_webhook_data?: Json | null
           receipt_url?: string | null
@@ -1399,7 +1399,7 @@ export type Database = {
           invoice_number?: string | null
           is_verified?: boolean
           notes?: string | null
-          payment_period_id?: string
+          payment_period_id?: string | null
           price_per_gallon?: number
           raw_webhook_data?: Json | null
           receipt_url?: string | null
@@ -1416,10 +1416,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_fuel_expenses_payment_period"
+            foreignKeyName: "fuel_expenses_payment_period_id_fkey"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "company_payment_periods"
+            referencedRelation: "user_payment_periods"
             referencedColumns: ["id"]
           },
           {
