@@ -266,7 +266,7 @@ export default function Payments() {
               </p>
               <RecalculatePeriodButton 
                 periodId="91f545d0-0bd7-40ce-b61a-10f402a96bb5"
-                driverUserId="484d83b3-b928-46b3-9705-db225ddb9b0c"
+                userId="484d83b3-b928-46b3-9705-db225ddb9b0c"
                 label="Recalculate Week 36"
               />
             </CardContent>

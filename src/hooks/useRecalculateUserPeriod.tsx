@@ -2,20 +2,20 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 
-interface RecalculateDriverPeriodParams {
-  driverUserId: string;
+interface RecalculateUserPeriodParams {
+  userId: string;
   paymentPeriodId?: string;
   loadId?: string;
 }
 
-export const useRecalculateDriverPeriod = () => {
+export const useRecalculateUserPeriod = () => {
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: RecalculateDriverPeriodParams): Promise<void> => {
-      console.log('🚨 DIAGNÓSTICO: useRecalculateDriverPeriod - mutationFn EJECUTADO');
-      console.log('🔄 Recalculating driver period for:', params);
+    mutationFn: async (params: RecalculateUserPeriodParams): Promise<void> => {
+      console.log('🚨 DIAGNÓSTICO: useRecalculateUserPeriod - mutationFn EJECUTADO');
+      console.log('🔄 Recalculating user period for:', params);
       console.log('🔍 DIAGNÓSTICO: Parámetros recibidos:', JSON.stringify(params, null, 2));
 
       let targetCalculationId: string | null = null;
@@ -26,7 +26,7 @@ export const useRecalculateDriverPeriod = () => {
         const { data: calculation, error: calcError } = await supabase
           .from('user_payment_periods')
           .select('id')
-          .eq('user_id', params.driverUserId)
+          .eq('user_id', params.userId)
           .eq('company_payment_period_id', params.paymentPeriodId)
           .single();
 
@@ -59,12 +59,12 @@ export const useRecalculateDriverPeriod = () => {
 
         if (load?.payment_period_id) {
           console.log('🔍 DIAGNÓSTICO: payment_period_id encontrado:', load.payment_period_id);
-          console.log('🔍 DIAGNÓSTICO: Buscando driver_period_calculation para driver:', params.driverUserId);
+          console.log('🔍 DIAGNÓSTICO: Buscando user_payment_period para user:', params.userId);
           
           const { data: calculation, error: calcError } = await supabase
             .from('user_payment_periods')
             .select('id')
-            .eq('user_id', params.driverUserId)
+            .eq('user_id', params.userId)
             .eq('company_payment_period_id', load.payment_period_id)
             .single();
 
@@ -83,7 +83,7 @@ export const useRecalculateDriverPeriod = () => {
       }
 
       if (!targetCalculationId) {
-        console.warn('🚨 DIAGNÓSTICO: No calculation found to recalculate for driver:', params.driverUserId);
+        console.warn('🚨 DIAGNÓSTICO: No calculation found to recalculate for user:', params.userId);
         console.log('🔍 DIAGNÓSTICO: Parámetros que causaron el fallo:', params);
         console.log('🔍 DIAGNÓSTICO: targetCalculationId final:', targetCalculationId);
         return;
@@ -95,7 +95,7 @@ export const useRecalculateDriverPeriod = () => {
       console.log('🔍 DIAGNÓSTICO: Llamando supabase.rpc con calculation_id:', targetCalculationId);
       
       const { data: recalcResult, error: recalcError } = await supabase.rpc(
-        'calculate_driver_payment_period_with_validation',
+        'calculate_user_payment_period_with_validation',
         {
           calculation_id: targetCalculationId
         }

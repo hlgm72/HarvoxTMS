@@ -5,7 +5,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
-import { useRecalculateDriverPeriod } from '@/hooks/useRecalculateDriverPeriod';
+import { useRecalculateUserPeriod } from '@/hooks/useRecalculateUserPeriod';
 
 export interface CreateLoadData {
   id?: string;
@@ -142,7 +142,7 @@ export const useCreateLoad = () => {
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
-  const recalculateDriverPeriod = useRecalculateDriverPeriod();
+  const recalculateUserPeriod = useRecalculateUserPeriod();
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
@@ -370,17 +370,17 @@ export const useCreateLoad = () => {
       
       // Verificar estado del hook de recálculo
       console.log('🔍 ========== VERIFICANDO HOOK RECÁLCULO ==========');
-      console.log('🔍 recalculateDriverPeriod disponible:', !!recalculateDriverPeriod);
-      console.log('🔍 recalculateDriverPeriod.mutateAsync disponible:', !!recalculateDriverPeriod?.mutateAsync);
-      console.log('🔍 recalculateDriverPeriod.isPending:', recalculateDriverPeriod?.isPending);
-      console.log('🔍 recalculateDriverPeriod.error:', recalculateDriverPeriod?.error);
+      console.log('🔍 recalculateUserPeriod disponible:', !!recalculateUserPeriod);
+      console.log('🔍 recalculateUserPeriod.mutateAsync disponible:', !!recalculateUserPeriod?.mutateAsync);
+      console.log('🔍 recalculateUserPeriod.isPending:', recalculateUserPeriod?.isPending);
+      console.log('🔍 recalculateUserPeriod.error:', recalculateUserPeriod?.error);
       
       // Check recalculation conditions
       console.log('🔍 ========== VERIFICANDO CONDICIONES PARA RECÁLCULO ==========');
       console.log('🔍 isEdit:', isEdit);
       console.log('🔍 variables.driver_user_id:', variables.driver_user_id);
-      console.log('🔍 typeof recalculateDriverPeriod:', typeof recalculateDriverPeriod);
-      console.log('🔍 recalculateDriverPeriod.mutateAsync:', typeof recalculateDriverPeriod?.mutateAsync);
+      console.log('🔍 typeof recalculateUserPeriod:', typeof recalculateUserPeriod);
+      console.log('🔍 recalculateUserPeriod.mutateAsync:', typeof recalculateUserPeriod?.mutateAsync);
 
       // If editing and driver is assigned, recalculate their payment period
       if (isEdit && variables.driver_user_id) {
@@ -388,16 +388,16 @@ export const useCreateLoad = () => {
         console.log('🔄 Condiciones cumplidas para recálculo automático');
         
         const recalculateParams = {
-          driverUserId: variables.driver_user_id,
+          userId: variables.driver_user_id,
           loadId: loadId
         };
         
         console.log('🔄 Parámetros de recálculo:', JSON.stringify(recalculateParams, null, 2));
         
         try {
-          console.log('🔄 Llamando recalculateDriverPeriod.mutateAsync...');
-          const recalcResult = await recalculateDriverPeriod.mutateAsync(recalculateParams);
-          console.log('✅ Driver period recalculated automatically');
+          console.log('🔄 Llamando recalculateUserPeriod.mutateAsync...');
+          const recalcResult = await recalculateUserPeriod.mutateAsync(recalculateParams);
+          console.log('✅ User period recalculated automatically');
           console.log('✅ Resultado del recálculo:', recalcResult);
         } catch (recalcError) {
           console.error('❌ ========== ERROR EN RECÁLCULO ==========');
@@ -411,7 +411,7 @@ export const useCreateLoad = () => {
         console.log('🚫 Razones de no ejecución:');
         console.log('   - isEdit:', isEdit, '(debe ser true)');
         console.log('   - driver_user_id:', variables.driver_user_id, '(debe existir)');
-        console.log('   - recalculateDriverPeriod disponible:', !!recalculateDriverPeriod);
+        console.log('   - recalculateUserPeriod disponible:', !!recalculateUserPeriod);
         if (!isEdit) {
           console.log('🚫 No es modo edición');
         }

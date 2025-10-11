@@ -1,26 +1,26 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useRecalculateDriverPeriod } from '@/hooks/useRecalculateDriverPeriod';
+import { useRecalculateUserPeriod } from '@/hooks/useRecalculateUserPeriod';
 import { RefreshCw } from 'lucide-react';
 import { useFleetNotifications } from '@/components/notifications';
 
 interface RecalculatePeriodButtonProps {
   periodId: string;
-  driverUserId: string;
+  userId: string;
   label?: string;
 }
 
 export function RecalculatePeriodButton({ 
   periodId, 
-  driverUserId, 
+  userId, 
   label = "Recalculate" 
 }: RecalculatePeriodButtonProps) {
-  const { mutate: recalculate, isPending } = useRecalculateDriverPeriod();
+  const { mutate: recalculate, isPending } = useRecalculateUserPeriod();
   const { showSuccess, showError } = useFleetNotifications();
 
   const handleRecalculate = () => {
     recalculate({ 
-      driverUserId, 
+      userId, 
       paymentPeriodId: periodId 
     }, {
       onSuccess: () => {

@@ -29,12 +29,12 @@ export function useFinancialDataValidation(periodId: string | null, driverId?: s
         };
       }
 
-      console.log('🔒 Validating financial data access for period:', periodId, 'driver:', driverId);
+      console.log('🔒 Validating financial data access for period:', periodId, 'user:', driverId);
       
-      // ⭐ USAR FUNCIÓN MEJORADA que considera el conductor individual
-      const { data, error } = await supabase.rpc('can_modify_financial_data_with_driver_check', {
+      // ⭐ USAR FUNCIÓN MEJORADA que considera el usuario individual
+      const { data, error } = await supabase.rpc('can_modify_financial_data_with_user_check', {
         period_id: periodId,
-        driver_id: driverId || null
+        user_id_param: driverId || null
       });
 
       if (error) {

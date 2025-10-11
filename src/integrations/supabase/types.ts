@@ -3462,8 +3462,8 @@ export type Database = {
         Args: { period_id: string }
         Returns: Json
       }
-      can_modify_financial_data_with_driver_check: {
-        Args: { driver_id?: string; period_id: string }
+      can_modify_financial_data_with_user_check: {
+        Args: { period_id: string; user_id_param?: string }
         Returns: Json
       }
       can_user_be_permanently_deleted: {
@@ -4186,12 +4186,8 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
-      is_driver_paid_in_period: {
-        Args: { target_driver_user_id: string; target_period_id: string }
-        Returns: boolean
-      }
       is_financial_data_protected: {
-        Args: { target_driver_user_id: string; target_period_id: string }
+        Args: { target_period_id: string; target_user_id: string }
         Returns: boolean
       }
       is_payment_period_empty: {
@@ -4220,6 +4216,10 @@ export type Database = {
       }
       is_user_company_owner: {
         Args: { company_id_param: string; user_id_param: string }
+        Returns: boolean
+      }
+      is_user_paid_in_period: {
+        Args: { target_period_id: string; target_user_id: string }
         Returns: boolean
       }
       is_user_superadmin: {
@@ -4413,8 +4413,8 @@ export type Database = {
         Args: { period_id: string }
         Returns: undefined
       }
-      refresh_driver_period_deductions: {
-        Args: { driver_id_param: string; period_id_param: string }
+      refresh_user_period_deductions: {
+        Args: { period_id_param: string; user_id_param: string }
         Returns: Json
       }
       regenerate_percentage_deductions_for_period: {
