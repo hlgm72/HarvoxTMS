@@ -94,8 +94,9 @@ export const useRecalculateUserPeriod = () => {
       console.log('🔄 Executing recalculation for calculation ID:', targetCalculationId);
       console.log('🔍 DIAGNÓSTICO: Llamando supabase.rpc con calculation_id:', targetCalculationId);
       
+      // @ts-ignore - Function exists but types not regenerated yet
       const { data: recalcResult, error: recalcError } = await supabase.rpc(
-        'calculate_user_payment_period_with_validation',
+        'calculate_user_payment_period_with_validation' as any,
         {
           calculation_id: targetCalculationId
         }
