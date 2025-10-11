@@ -453,7 +453,13 @@ export const useCreateLoad = () => {
       console.error('💥 Variables que causaron error:', JSON.stringify(variables, null, 2));
       console.error('💥 Tipo de error:', error.constructor.name);
       
-      showError('Error al guardar la carga: ' + error.message);
+      // Detectar error de número de carga duplicado
+      let errorMessage = error.message;
+      if (errorMessage.includes('loads_load_number_unique') || errorMessage.includes('duplicate key')) {
+        errorMessage = `El número de carga "${variables.load_number}" ya existe en el sistema. Por favor usa un número diferente (ejemplo: ${parseInt(variables.load_number.split('-')[1]) + 1}).`;
+      }
+      
+      showError('Error al guardar la carga: ' + errorMessage);
       console.error('💥 ========== ON ERROR COMPLETADO ==========');
     },
   });
