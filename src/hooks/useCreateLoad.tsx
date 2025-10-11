@@ -453,13 +453,20 @@ export const useCreateLoad = () => {
       console.error('💥 Variables que causaron error:', JSON.stringify(variables, null, 2));
       console.error('💥 Tipo de error:', error.constructor.name);
       
-      // Detectar error de número de carga duplicado
-      let errorMessage = error.message;
-      if (errorMessage.includes('loads_load_number_unique') || errorMessage.includes('duplicate key')) {
-        errorMessage = `El número de carga "${variables.load_number}" ya existe en el sistema. Por favor usa un número diferente (ejemplo: ${parseInt(variables.load_number.split('-')[1]) + 1}).`;
+      // Traducir errores técnicos a mensajes amigables
+      let errorMessage = 'No se pudo guardar la carga. Inténtalo de nuevo.';
+      
+      if (error.message.includes('loads_load_number_unique') || error.message.includes('duplicate key')) {
+        errorMessage = `El número "${variables.load_number}" ya está en uso. Por favor ingresa un número diferente.`;
+      } else if (error.message.includes('permission') || error.message.includes('policy')) {
+        errorMessage = 'No tienes permisos para realizar esta acción.';
+      } else if (error.message.includes('foreign key') || error.message.includes('violates')) {
+        errorMessage = 'Algunos datos seleccionados no son válidos. Verifica la información.';
+      } else if (error.message.includes('not null')) {
+        errorMessage = 'Faltan campos obligatorios por completar.';
       }
       
-      showError('Error al guardar la carga: ' + errorMessage);
+      showError(errorMessage);
       console.error('💥 ========== ON ERROR COMPLETADO ==========');
     },
   });
