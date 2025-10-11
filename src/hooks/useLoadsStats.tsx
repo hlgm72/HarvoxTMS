@@ -57,7 +57,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
       try {
         // console.log('🔍 useLoadsStats - Input periodFilter:', periodFilter);
         
-        let targetPeriodId: string | null = null;
+        let targetPeriodId: string | string[] | null = null;
 
         // Determinar el período objetivo basado en el filtro
         if (periodFilter?.type === 'specific' && periodFilter.periodId) {
@@ -99,7 +99,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
             throw new Error('Error consultando períodos actuales');
           }
 
-          targetPeriodId = currentPeriods && currentPeriods.length > 0 ? currentPeriods.map(p => p.id) : null;
+          targetPeriodId = currentPeriods && currentPeriods.length > 0 ? currentPeriods.map(p => p.id) : [];
           // console.log('📅 Current period found:', targetPeriodId);
         } else if (periodFilter?.type === 'all') {
           // Para 'all', no filtrar por período específico
@@ -117,7 +117,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
         }
 
         // Si no hay período objetivo, retornar valores en 0
-        if (!targetPeriodId) {
+        if (!targetPeriodId || (Array.isArray(targetPeriodId) && targetPeriodId.length === 0)) {
           // console.log('❌ No target period found, returning 0s');
           return {
             totalActive: 0,
@@ -143,9 +143,16 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
             .or(`and(pickup_date.gte.${periodFilter.startDate},pickup_date.lte.${periodFilter.endDate}),and(delivery_date.gte.${periodFilter.startDate},delivery_date.lte.${periodFilter.endDate})`);
           // console.log('📅 Applied date filter for calculated period:', periodFilter.startDate, 'to', periodFilter.endDate);
         } else if (targetPeriodId !== 'all' && targetPeriodId !== 'date-filter') {
-          // Para períodos de BD, usar payment_period_id
-          loadsQuery = loadsQuery.eq('payment_period_id', targetPeriodId);
-          // console.log('🎯 Added period filter for:', targetPeriodId);
+          // Para períodos de BD, usar payment_period_id (array o single)
+          if (Array.isArray(targetPeriodId)) {
+            if (targetPeriodId.length > 0) {
+              loadsQuery = loadsQuery.in('payment_period_id', targetPeriodId);
+              // console.log('🎯 Added period filter for multiple IDs:', targetPeriodId);
+            }
+          } else {
+            loadsQuery = loadsQuery.eq('payment_period_id', targetPeriodId);
+            // console.log('🎯 Added period filter for:', targetPeriodId);
+          }
         }
 
         const { data: loads, error: loadsError } = await loadsQuery;

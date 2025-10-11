@@ -53,7 +53,16 @@ export function usePaymentPeriodSummary(periodId?: string) {
         .maybeSingle();
 
       if (periodError) throw periodError;
-      if (!periodData) return getEmptySummary();
+      if (!periodData) return {
+        period_id: periodId,
+        gross_earnings: 0,
+        other_income: 0,
+        fuel_expenses: 0,
+        deductions: 0,
+        net_payment: 0,
+        driver_count: 0,
+        drivers_with_negative_balance: 0,
+      };
 
       // 🚨 RECÁLCULO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
       // FORZAR recálculo completo para asegurar datos correctos después del revert
@@ -77,7 +86,16 @@ export function usePaymentPeriodSummary(periodId?: string) {
         .eq('company_id', periodData.company_id);
 
       if (error) throw error;
-      if (!allUserPeriods || allUserPeriods.length === 0) return getEmptySummary();
+      if (!allUserPeriods || allUserPeriods.length === 0) return {
+        period_id: periodId,
+        gross_earnings: 0,
+        other_income: 0,
+        fuel_expenses: 0,
+        deductions: 0,
+        net_payment: 0,
+        driver_count: 0,
+        drivers_with_negative_balance: 0,
+      };
 
       // Para calcular el summary, sumamos todos los user_payment_periods que coincidan con las fechas del período actual
       const periodStart = await supabase
@@ -163,56 +181,48 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
         // Continuar con los datos disponibles aunque haya error en la verificación
       }
       
-      // Obtener todos los períodos de la empresa
-      const { data: periods, error: periodsError } = await supabase
-        .from('company_payment_periods')
-        .select('id')
-        .eq('company_id', companyId)
-        .order('period_start_date', { ascending: false });
-
-      if (periodsError) throw periodsError;
-
-      if (!periods || periods.length === 0) {
-        return [];
-      }
-
-      // Obtener los cálculos para todos los períodos (ya actualizados)
+      // Obtener todos los cálculos de la empresa
       const { data: allCalculations, error: calcError } = await supabase
         .from('user_payment_periods')
         .select('*')
-        .in('company_payment_period_id', periods.map(p => p.id));
+        .eq('company_id', companyId)
+        .order('period_start_date', { ascending: false });
 
       if (calcError) throw calcError;
 
-      // Agrupar por período y calcular totales
+      if (!allCalculations || allCalculations.length === 0) {
+        return [];
+      }
+
+      // Agrupar por período (start + end date) y calcular totales
       const summaryMap = new Map<string, PaymentPeriodSummary>();
 
-      periods.forEach(period => {
-        summaryMap.set(period.id, {
-          period_id: period.id,
-          gross_earnings: 0,
-          other_income: 0,
-          fuel_expenses: 0,
-          deductions: 0,
-          net_payment: 0,
-          driver_count: 0,
-          drivers_with_negative_balance: 0,
-        });
-      });
+      allCalculations.forEach(calc => {
+        const periodKey = `${calc.period_start_date}-${calc.period_end_date}`;
+        
+        if (!summaryMap.has(periodKey)) {
+          summaryMap.set(periodKey, {
+            period_id: calc.id, // Use first calculation's ID as representative
+            gross_earnings: 0,
+            other_income: 0,
+            fuel_expenses: 0,
+            deductions: 0,
+            net_payment: 0,
+            driver_count: 0,
+            drivers_with_negative_balance: 0,
+          });
+        }
 
-    allCalculations?.forEach(calc => {
-        const summary = summaryMap.get(calc.company_payment_period_id);
-        if (summary) {
-          summary.gross_earnings += calc.gross_earnings || 0;
-          summary.other_income += calc.other_income || 0;
-          summary.fuel_expenses += calc.fuel_expenses || 0;
-          summary.deductions += calc.total_deductions || 0;
-          summary.net_payment += calculateNetPayment(calc);
-          summary.driver_count++;
-          
-          if (calc.has_negative_balance) {
-            summary.drivers_with_negative_balance++;
-          }
+        const summary = summaryMap.get(periodKey)!;
+        summary.gross_earnings += calc.gross_earnings || 0;
+        summary.other_income += calc.other_income || 0;
+        summary.fuel_expenses += calc.fuel_expenses || 0;
+        summary.deductions += calc.total_deductions || 0;
+        summary.net_payment += calculateNetPayment(calc);
+        summary.driver_count++;
+        
+        if (calc.has_negative_balance) {
+          summary.drivers_with_negative_balance++;
         }
       });
 

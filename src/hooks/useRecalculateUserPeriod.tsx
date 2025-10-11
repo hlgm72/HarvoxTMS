@@ -27,7 +27,7 @@ export const useRecalculateUserPeriod = () => {
           .from('user_payment_periods')
           .select('id')
           .eq('user_id', params.userId)
-          .eq('company_payment_period_id', params.paymentPeriodId)
+          .eq('id', params.paymentPeriodId)
           .single();
 
         console.log('🔍 DIAGNÓSTICO: Resultado búsqueda por paymentPeriodId:', { calculation, calcError });
@@ -65,7 +65,7 @@ export const useRecalculateUserPeriod = () => {
             .from('user_payment_periods')
             .select('id')
             .eq('user_id', params.userId)
-            .eq('company_payment_period_id', load.payment_period_id)
+            .eq('id', load.payment_period_id)
             .single();
 
           console.log('🔍 DIAGNÓSTICO: Resultado búsqueda de calculation:', { calculation, calcError });

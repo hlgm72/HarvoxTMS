@@ -172,16 +172,16 @@ export default function PaymentReports() {
         if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
           console.log('📊 Adding date range filter for calculated period:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
           query = query
-            .gte('company_payment_periods.period_start_date', filters.periodFilter.startDate)
-            .lte('company_payment_periods.period_end_date', filters.periodFilter.endDate);
+            .gte('period_start_date', filters.periodFilter.startDate)
+            .lte('period_end_date', filters.periodFilter.endDate);
         } else {
           console.log('❌ No date range available for calculated period');
           return [];
         }
       } else if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
-        // Para períodos reales de BD, usar payment_period_id
+        // Para períodos reales de BD, usar payment_period_id directamente
         console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
-        query = query.in('company_payment_period_id', getFilterPeriodIds);
+        query = query.in('id', getFilterPeriodIds);
       } else if (
         (filters.periodFilter.type === 'custom' || 
          filters.periodFilter.type === 'previous' || 
@@ -193,8 +193,8 @@ export default function PaymentReports() {
         // Para filtros con fechas específicas (cuando no hay períodos reales en BD)
         console.log('📊 Adding date range filter:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
         query = query
-          .gte('company_payment_periods.period_start_date', filters.periodFilter.startDate)
-          .lte('company_payment_periods.period_end_date', filters.periodFilter.endDate);
+          .gte('period_start_date', filters.periodFilter.startDate)
+          .lte('period_end_date', filters.periodFilter.endDate);
       } else if (filters.periodFilter.type === 'all') {
         console.log('📊 Showing all periods - no filter applied');
         // No agregar filtro para mostrar todos
@@ -215,8 +215,8 @@ export default function PaymentReports() {
       
       // Ordenar por fecha de inicio del período (más reciente primero) usando formateo seguro
       const sortedData = (data || []).sort((a, b) => {
-        const dateA = formatDateSafe(a.company_payment_periods.period_start_date, 'yyyy-MM-dd');
-        const dateB = formatDateSafe(b.company_payment_periods.period_start_date, 'yyyy-MM-dd');
+        const dateA = formatDateSafe(a.period_start_date, 'yyyy-MM-dd');
+        const dateB = formatDateSafe(b.period_start_date, 'yyyy-MM-dd');
         return dateB.localeCompare(dateA); // Descendente (más reciente primero)
       });
       
@@ -456,8 +456,8 @@ export default function PaymentReports() {
                             </h4>
                             <span className="text-sm font-medium text-primary/70">
                               ({formatPeriodLabel(
-                                calculation.company_payment_periods.period_start_date,
-                                calculation.company_payment_periods.period_end_date
+                                calculation.period_start_date,
+                                calculation.period_end_date
                               )})
                             </span>
                           </div>
@@ -471,14 +471,14 @@ export default function PaymentReports() {
                           <span className="flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-blue-600" />
                             {formatPaymentPeriod(
-                              calculation.company_payment_periods.period_start_date,
-                              calculation.company_payment_periods.period_end_date
+                              calculation.period_start_date,
+                              calculation.period_end_date
                             )}
                           </span>
-                          {calculation.company_payment_periods.payment_date && (
+                          {calculation.payment_date && (
                             <span className="flex items-center gap-2">
                               <Timer className="h-4 w-4 text-orange-600" />
-                              {t('reports.payment')} {formatDateAuto(calculation.company_payment_periods.payment_date)}
+                              {t('reports.payment')} {formatDateAuto(calculation.payment_date)}
                             </span>
                           )}
                         </div>

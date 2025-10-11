@@ -658,8 +658,8 @@ export function PaymentReportDialog({
                 </DialogTitle>
                 <DialogDescription className="text-sm mt-1">
                   {t('period.period_label')}: {formatPaymentPeriod(
-                    calculation.company_payment_periods.period_start_date,
-                    calculation.company_payment_periods.period_end_date
+                    calculation.period_start_date,
+                    calculation.period_end_date
                   )}
                 </DialogDescription>
                 <Button 
@@ -701,12 +701,12 @@ export function PaymentReportDialog({
             </DialogTitle>
             <DialogDescription className="text-xs sm:text-sm break-words mt-1">
               {t('period.period_label')}: {formatPaymentPeriod(
-                calculation.company_payment_periods.period_start_date,
-                calculation.company_payment_periods.period_end_date
+                calculation.period_start_date,
+                calculation.period_end_date
               )}
-              {calculation.company_payment_periods.payment_date && (
+              {calculation.payment_date && (
                   <span className="block text-primary font-medium mt-1">
-                    {t('report_dialog.fuel_details.date')}: {formatDateAuto(calculation.company_payment_periods.payment_date)}
+                    {t('report_dialog.fuel_details.date')}: {formatDateAuto(calculation.payment_date)}
                   </span>
               )}
             </DialogDescription>

@@ -170,7 +170,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
 
       // Buscar período actual abierto de la empresa que incluya la fecha actual
       let { data: period, error } = await supabase
-        .from('company_payment_periods')
+        .from('user_payment_periods')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
         .lte('period_start_date', currentDate)
