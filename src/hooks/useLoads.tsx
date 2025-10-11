@@ -262,12 +262,15 @@ export const useLoads = (filters?: LoadsFilters) => {
         });
         
         // PASO 3: Construir query optimizada de cargas
+        console.log('🔍 DEBUG - companyUsers:', companyUsers);
+        console.log('🔍 DEBUG - Query filter will be:', `driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`);
+        
         let loadsQuery = supabase
           .from('loads')
           .select('*')
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
-          .order('load_number', { ascending: true });
+          .order('load_number', { ascending: true});
 
         // Aplicar filtro según el tipo de resultado
         if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
@@ -280,6 +283,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             .or(`and(pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),and(delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})`);
         } else if (periodResult.periodIds.length > 0) {
           console.log('✅ Aplicando filtro de períodos de BD:', periodResult.periodIds);
+          console.log('🔍 DEBUG - Period filter query will be:', `payment_period_id.in.(${periodResult.periodIds.join(',')}),payment_period_id.is.null`);
           // Incluir cargas del período específico Y cargas sin período (creadas pero sin conductor)
           loadsQuery = loadsQuery.or(`payment_period_id.in.(${periodResult.periodIds.join(',')}),payment_period_id.is.null`);
         } else if (filters?.periodFilter?.type !== 'all') {
@@ -299,7 +303,8 @@ export const useLoads = (filters?: LoadsFilters) => {
         
         console.log('📦 Cargas obtenidas de la DB:', {
           totalCargas: loads?.length || 0,
-          periodIds: loads?.map(l => ({ loadNumber: l.load_number, periodId: l.payment_period_id })) || []
+          periodIds: loads?.map(l => ({ loadNumber: l.load_number, periodId: l.payment_period_id, driverId: l.driver_user_id, createdBy: l.created_by })) || [],
+          fullLoads: loads
         });
 
         if (loadsError) {
