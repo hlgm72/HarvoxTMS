@@ -82,25 +82,24 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
             };
           }
         } else if (periodFilter?.type === 'current' || !periodFilter?.type) {
-          // Obtener el período actual de la compañía
+          // Get user payment periods for current date range
           const today = getTodayInUserTimeZone();
           // console.log('📅 Getting current period for today:', today);
           
-          const { data: currentPeriod, error: periodError } = await supabase
-            .from('company_payment_periods')
+          const { data: currentPeriods, error: periodError } = await supabase
+            .from('user_payment_periods')
             .select('id')
             .eq('company_id', userCompany.company_id)
             .lte('period_start_date', today)
             .gte('period_end_date', today)
-            .eq('status', 'open')
-            .maybeSingle();
+            .eq('status', 'open');
 
           if (periodError) {
-            console.error('Error obteniendo período actual:', periodError);
-            throw new Error('Error consultando período actual');
+            console.error('Error obteniendo períodos actuales:', periodError);
+            throw new Error('Error consultando períodos actuales');
           }
 
-          targetPeriodId = currentPeriod?.id || null;
+          targetPeriodId = currentPeriods && currentPeriods.length > 0 ? currentPeriods.map(p => p.id) : null;
           // console.log('📅 Current period found:', targetPeriodId);
         } else if (periodFilter?.type === 'all') {
           // Para 'all', no filtrar por período específico

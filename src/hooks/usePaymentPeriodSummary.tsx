@@ -45,14 +45,15 @@ export function usePaymentPeriodSummary(periodId?: string) {
         };
       }
       
-      // Primero obtener el company_id del período para verificar integridad
+      // Get company_id directly from the period
       const { data: periodData, error: periodError } = await supabase
-        .from('company_payment_periods')
+        .from('user_payment_periods')
         .select('company_id')
         .eq('id', periodId)
-        .single();
+        .maybeSingle();
 
       if (periodError) throw periodError;
+      if (!periodData) return getEmptySummary();
 
       // 🚨 RECÁLCULO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
       // FORZAR recálculo completo para asegurar datos correctos después del revert
@@ -69,11 +70,32 @@ export function usePaymentPeriodSummary(periodId?: string) {
         console.log('✅ Recálculo completado:', integrityResult);
       }
       
-      // Obtener todos los cálculos de conductores para este período (ya actualizados)
-      const { data: driverCalculations, error } = await supabase
+      // Obtener todos los user_payment_periods para todos los usuarios de esta empresa
+      const { data: allUserPeriods, error } = await supabase
+        .from('user_payment_periods')
+        .select('id, period_start_date, period_end_date, company_id, status, user_id')
+        .eq('company_id', periodData.company_id);
+
+      if (error) throw error;
+      if (!allUserPeriods || allUserPeriods.length === 0) return getEmptySummary();
+
+      // Para calcular el summary, sumamos todos los user_payment_periods que coincidan con las fechas del período actual
+      const periodStart = await supabase
+        .from('user_payment_periods')
+        .select('period_start_date, period_end_date')
+        .eq('id', periodId)
+        .maybeSingle();
+
+      const relevantPeriods = allUserPeriods.filter(p => 
+        p.period_start_date === periodStart.data?.period_start_date &&
+        p.period_end_date === periodStart.data?.period_end_date
+      );
+
+      // Obtener todos los cálculos de conductores para estos períodos
+      const { data: driverCalculations, error: calcError } = await supabase
         .from('user_payment_periods')
         .select('*')
-        .eq('company_payment_period_id', periodId);
+        .in('id', relevantPeriods.map(p => p.id));
 
       if (error) throw error;
 

@@ -35,34 +35,34 @@ export const useLoadsCount = () => {
       }
 
       try {
-        // 1. Obtener el período actual de la compañía
+        // 1. Get user payment periods for the current date range
         const today = getTodayInUserTimeZone();
         
-        const { data: currentPeriod, error: periodError } = await supabase
-          .from('company_payment_periods')
+        const { data: currentPeriods, error: periodError } = await supabase
+          .from('user_payment_periods')
           .select('id')
           .eq('company_id', userCompany.company_id)
           .lte('period_start_date', today)
           .gte('period_end_date', today)
-          .eq('status', 'open')
-          .maybeSingle();
+          .eq('status', 'open');
 
         if (periodError) {
-          console.error('Error obteniendo período actual:', periodError);
-          throw new Error('Error consultando período actual');
+          console.error('Error obteniendo períodos actuales:', periodError);
+          throw new Error('Error consultando períodos actuales');
         }
 
-        // Si no hay período actual, retornar 0
-        if (!currentPeriod) {
+        // Si no hay períodos actuales, retornar 0
+        if (!currentPeriods || currentPeriods.length === 0) {
           return 0;
         }
 
-        // 2. Contar cargas del período actual
+        // 2. Contar cargas del período actual usando los IDs de user_payment_periods
+        const periodIds = currentPeriods.map(p => p.id);
         const { count, error: loadsError } = await supabase
           .from('loads')
           .select('*', { count: 'exact', head: true })
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
-          .eq('payment_period_id', currentPeriod.id);
+          .in('payment_period_id', periodIds);
 
         if (loadsError) {
           console.error('Error contando cargas:', loadsError);

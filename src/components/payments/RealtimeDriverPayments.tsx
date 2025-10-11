@@ -83,24 +83,19 @@ export function RealtimeDriverPayments() {
     if (!userRole?.company_id) return;
 
     try {
-      // Get latest payment periods for the company with driver calculations
+      // Get latest user payment periods for the company
       const { data: periods, error } = await supabase
-        .from('company_payment_periods')
-        .select(`
-          *,
-          user_payment_periods (*)
-        `)
+        .from('user_payment_periods')
+        .select('*')
         .eq('company_id', userRole.company_id)
         .order('period_start_date', { ascending: false })
-        .limit(1);
+        .limit(10);
 
       if (error) throw error;
 
       if (periods && periods.length > 0) {
-        const latestPeriod = periods[0];
-        
-        // Get profiles for all drivers in this period
-        const driverIds = latestPeriod.user_payment_periods?.map((calc: any) => calc.user_id) || [];
+        // Get profiles for all drivers in these periods
+        const driverIds = periods.map((calc: any) => calc.user_id);
         
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
@@ -112,13 +107,13 @@ export function RealtimeDriverPayments() {
         // Create a map of driver profiles for easy lookup
         const profilesMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
-        const driverPayments = latestPeriod.user_payment_periods?.map((calculation: any) => {
+        const driverPayments = periods.map((calculation: any) => {
           const profile = profilesMap.get(calculation.user_id);
           return {
             driver_id: calculation.user_id,
             driver_name: profile ? `${profile.first_name || 'N/A'} ${profile.last_name || ''}`.trim() : 'Driver',
             driver_avatar: profile?.avatar_url,
-            period_dates: formatPaymentPeriod(latestPeriod.period_start_date, latestPeriod.period_end_date),
+            period_dates: formatPaymentPeriod(calculation.period_start_date, calculation.period_end_date),
             gross_earnings: calculation.gross_earnings || 0,
             fuel_expenses: calculation.fuel_expenses || 0,
             total_deductions: calculation.total_deductions || 0,
@@ -126,7 +121,7 @@ export function RealtimeDriverPayments() {
             status: calculation.payment_status || 'calculated',
             has_negative_balance: calculation.has_negative_balance || false,
           };
-        }) || [];
+        });
 
         setPayments(driverPayments);
       }

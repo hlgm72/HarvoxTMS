@@ -424,7 +424,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', dispatcherIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
-            ? supabase.from('company_payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
+            ? supabase.from('user_payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
              : Promise.resolve({ data: [] })
         ]);
 

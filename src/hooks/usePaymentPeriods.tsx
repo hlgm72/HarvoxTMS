@@ -62,10 +62,11 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
         companyId = userCompanyRole.company_id;
       }
 
-      // Construir query base para períodos de empresa
+      // Construir query base para períodos - ahora trabaja directamente con user_payment_periods
+      // Agruparemos manualmente después
       let query = supabase
-        .from('company_payment_periods')
-        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .from('user_payment_periods')
+        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked, user_id')
         .eq('company_id', companyId)
         .order('period_start_date', { ascending: false });
 
@@ -74,13 +75,33 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
         query = query.eq('status', filters.status);
       }
 
-      const { data: periods, error: periodsError } = await query;
+      const { data: userPeriods, error: periodsError } = await query;
 
       if (periodsError) {
         throw periodsError;
       }
 
-      return periods || [];
+      // Agrupar por período (start_date, end_date, frequency) para compatibilidad
+      const groupedByPeriod = (userPeriods || []).reduce((acc: any[], period) => {
+        const key = `${period.period_start_date}-${period.period_end_date}`;
+        const existing = acc.find(p => `${p.period_start_date}-${p.period_end_date}` === key);
+        
+        if (!existing) {
+          acc.push({
+            id: period.id, // Usar el primer ID como representativo
+            company_id: period.company_id,
+            period_start_date: period.period_start_date,
+            period_end_date: period.period_end_date,
+            period_frequency: period.period_frequency,
+            status: period.status,
+            period_type: period.period_type,
+            is_locked: period.is_locked
+          });
+        }
+        return acc;
+      }, []);
+
+      return groupedByPeriod;
     },
     enabled: !!user,
   });
@@ -203,9 +224,9 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         targetCompanyId
       });
       
-      // Buscar el período anterior (el período que terminó justo antes de la fecha actual)
+      // Buscar el período anterior más reciente de user_payment_periods
       const { data: period, error } = await supabase
-        .from('company_payment_periods')
+        .from('user_payment_periods')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
         .lt('period_end_date', currentDate)
@@ -261,9 +282,9 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         targetCompanyId = userCompanyRole.company_id;
       }
 
-      // Buscar el siguiente período (el período que comienza después de la fecha actual)
+      // Buscar el siguiente período de user_payment_periods
       let { data: period, error } = await supabase
-        .from('company_payment_periods')
+        .from('user_payment_periods')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
         .gt('period_start_date', currentDate)

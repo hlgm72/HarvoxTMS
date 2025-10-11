@@ -157,27 +157,27 @@ export function PaymentReportDialog({
 
   // Obtener información de la compañía
   const { data: company } = useQuery({
-    queryKey: ['company-info', calculation?.company_payment_periods?.company_id],
+    queryKey: ['company-info', calculation?.company_id],
     queryFn: async () => {
-      if (!calculation?.company_payment_periods?.company_id) return null;
+      if (!calculation?.company_id) return null;
       
       const { data, error } = await supabase
         .from('companies')
         .select(`
           id, name, street_address, zip_code, state_id, city, phone, email, logo_url
         `)
-        .eq('id', calculation.company_payment_periods.company_id)
+        .eq('id', calculation.company_id)
         .single();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!calculation?.company_payment_periods?.company_id
+    enabled: !!calculation?.company_id
   });
 
   // Obtener cargas del período
   const { data: loads = [] } = useQuery({
-    queryKey: ['period-loads', calculation?.company_payment_period_id, calculation?.user_id],
+    queryKey: ['period-loads', calculation?.id, calculation?.user_id],
     queryFn: async () => {
       if (!calculation) return [];
       
@@ -203,9 +203,9 @@ export function PaymentReportDialog({
           )
         `)
         .eq('driver_user_id', calculation.user_id)
-        .gte('pickup_date', calculation.company_payment_periods.period_start_date)
-        .lte('delivery_date', calculation.company_payment_periods.period_end_date)
-        .order('pickup_date', { ascending: true });
+        .gte('pickup_date', calculation.period_start_date)
+        .lte('delivery_date', calculation.period_end_date)
+        .order('pickup_date', { ascending: true});
 
       if (error) throw error;
       return data || [];
@@ -235,7 +235,7 @@ export function PaymentReportDialog({
 
   // Obtener gastos de combustible del período
   const { data: fuelExpenses = [] } = useQuery({
-    queryKey: ['period-fuel-expenses', calculation?.company_payment_period_id, calculation?.user_id],
+    queryKey: ['period-fuel-expenses', calculation?.id, calculation?.user_id],
     queryFn: async () => {
       if (!calculation) return [];
       
@@ -243,7 +243,7 @@ export function PaymentReportDialog({
         .from('fuel_expenses')
         .select('*')
         .eq('driver_user_id', calculation.user_id)
-        .eq('payment_period_id', calculation.company_payment_period_id)
+        .eq('payment_period_id', calculation.id)
         .order('transaction_date', { ascending: true });
 
       if (error) throw error;
@@ -336,14 +336,14 @@ export function PaymentReportDialog({
         email: driver.display_email
       },
       period: {
-        start_date: calculation.company_payment_periods.period_start_date,
-        end_date: calculation.company_payment_periods.period_end_date,
+        start_date: calculation.period_start_date,
+        end_date: calculation.period_end_date,
         gross_earnings: calculation.gross_earnings,
         fuel_expenses: calculation.fuel_expenses,
         total_deductions: calculation.total_deductions,
         other_income: calculation.other_income,
         net_payment: calculateNetPayment(calculation),
-        payment_date: calculation.company_payment_periods.payment_date
+        payment_date: calculation.payment_date
       },
       company: {
         name: company.name || t('reports.company_name'),

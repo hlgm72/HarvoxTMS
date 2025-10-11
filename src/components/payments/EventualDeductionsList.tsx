@@ -65,12 +65,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       try {
         console.log('🚀 Iniciando query de deducciones eventuales para company:', userCompany.company_id);
         console.log('🔍 Filtros completos recibidos:', JSON.stringify(filters, null, 2));
-        // Construir la consulta base
+        // Construir la consulta base con joins para obtener información del período
         let query = supabase
           .from('expense_instances')
           .select(`
             *,
-            expense_types(name, category)
+            expense_types(name, category),
+            user_payment_periods!inner(period_start_date, period_end_date, period_frequency)
           `)
           .is('recurring_template_id', null); // Solo gastos eventuales (sin plantilla)
 
@@ -401,11 +402,11 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {deduction.period_start_date && deduction.period_end_date && 
+                    {deduction.user_payment_periods && 
                       formatDetailedPaymentPeriod(
-                        deduction.period_start_date,
-                        deduction.period_end_date,
-                        deduction.period_frequency || 'weekly'
+                        deduction.user_payment_periods.period_start_date,
+                        deduction.user_payment_periods.period_end_date,
+                        deduction.user_payment_periods.period_frequency
                       )
                     }
                   </CardDescription>

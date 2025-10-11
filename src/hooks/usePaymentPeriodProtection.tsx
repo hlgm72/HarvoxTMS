@@ -36,16 +36,18 @@ export const usePaymentPeriodProtection = () => {
       }
       
       const { data, error } = await supabase
-        .from('company_payment_periods')
+        .from('user_payment_periods')
         .select('is_locked, locked_at, locked_by')
         .eq('id', periodId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error checking period status:', error);
         showError("No se pudo verificar el estado del período de pago");
         return null;
       }
+
+      if (!data) return null;
 
       return {
         isLocked: data.is_locked || false,
