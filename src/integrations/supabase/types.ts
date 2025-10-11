@@ -1099,7 +1099,7 @@ export type Database = {
           id: string
           is_critical: boolean
           notes: string | null
-          payment_period_id: string
+          payment_period_id: string | null
           priority: number
           recurring_template_id: string | null
           status: string
@@ -1119,7 +1119,7 @@ export type Database = {
           id?: string
           is_critical?: boolean
           notes?: string | null
-          payment_period_id: string
+          payment_period_id?: string | null
           priority?: number
           recurring_template_id?: string | null
           status?: string
@@ -1139,7 +1139,7 @@ export type Database = {
           id?: string
           is_critical?: boolean
           notes?: string | null
-          payment_period_id?: string
+          payment_period_id?: string | null
           priority?: number
           recurring_template_id?: string | null
           status?: string
@@ -1152,6 +1152,13 @@ export type Database = {
             columns: ["expense_type_id"]
             isOneToOne: false
             referencedRelation: "expense_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expense_instances_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "user_payment_periods"
             referencedColumns: ["id"]
           },
           {
@@ -2347,7 +2354,7 @@ export type Database = {
           income_date: string
           income_type: string
           notes: string | null
-          payment_period_id: string
+          payment_period_id: string | null
           receipt_url: string | null
           reference_number: string | null
           status: string
@@ -2366,7 +2373,7 @@ export type Database = {
           income_date: string
           income_type: string
           notes?: string | null
-          payment_period_id: string
+          payment_period_id?: string | null
           receipt_url?: string | null
           reference_number?: string | null
           status?: string
@@ -2385,14 +2392,22 @@ export type Database = {
           income_date?: string
           income_type?: string
           notes?: string | null
-          payment_period_id?: string
+          payment_period_id?: string | null
           receipt_url?: string | null
           reference_number?: string | null
           status?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "other_income_payment_period_id_fkey"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "user_payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       owner_operators: {
         Row: {
