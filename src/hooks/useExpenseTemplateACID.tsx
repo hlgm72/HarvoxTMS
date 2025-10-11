@@ -72,7 +72,7 @@ export const useExpenseTemplateACID = () => {
       queryClient.invalidateQueries({ queryKey: ['expense-recurring-templates'] });
       queryClient.invalidateQueries({ queryKey: ['expense-template-history'] });
       queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       
       // Mostrar mensaje de éxito específico
       const isCreate = data.operation === 'CREATE';

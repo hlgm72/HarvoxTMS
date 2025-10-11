@@ -117,7 +117,7 @@ export function useCreateOtherIncome() {
       });
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
-        queryKey: ['driver-period-calculations'] 
+        queryKey: ['user-period-calculations']
       });
       // Invalidar los resúmenes de períodos de pago para actualizar contadores
       queryClient.invalidateQueries({ 
@@ -171,7 +171,7 @@ export function useUpdateOtherIncome() {
       });
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
-        queryKey: ['driver-period-calculations'] 
+        queryKey: ['user-period-calculations']
       });
       // Invalidar los resúmenes de períodos de pago para actualizar contadores
       queryClient.invalidateQueries({ 
@@ -224,7 +224,7 @@ export function useDeleteOtherIncome() {
       });
       // Invalidar también los cálculos del período del conductor
       queryClient.invalidateQueries({ 
-        queryKey: ['driver-period-calculations'] 
+        queryKey: ['user-period-calculations'] 
       });
       // Invalidar los resúmenes de períodos de pago para actualizar contadores
       queryClient.invalidateQueries({ 

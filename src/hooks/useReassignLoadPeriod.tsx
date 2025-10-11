@@ -44,7 +44,7 @@ export const useReassignLoadPeriod = () => {
       // Invalidar las queries de cargas para refrescar la lista
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       
       showSuccess('Carga reasignada exitosamente al nuevo período');
     },

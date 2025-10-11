@@ -36,7 +36,7 @@ export function useCreateExpenseInstance() {
       
       // Invalidar queries específicas del conductor
       queryClient.invalidateQueries({ 
-        queryKey: ['driver-period-calculations', variables.user_id] 
+        queryKey: ['user-period-calculations', variables.user_id] 
       });
       
       // Invalidar queries del período específico

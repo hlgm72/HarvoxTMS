@@ -58,7 +58,7 @@ export const useCleanupPeriod = () => {
       // Invalidar todas las queries relacionadas con períodos y deducciones
       queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
       queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
       

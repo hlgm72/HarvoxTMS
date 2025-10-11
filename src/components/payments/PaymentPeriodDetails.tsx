@@ -146,7 +146,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
   // Obtener cálculos de conductores
   const { data: driverCalculations = [], refetch: refetchCalculations } = useQuery({
-    queryKey: ['driver-period-calculations', periodId],
+    queryKey: ['user-period-calculations', periodId],
     queryFn: async () => {
       if (!periodId) return [];
       

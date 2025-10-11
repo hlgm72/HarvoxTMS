@@ -45,7 +45,7 @@ export const useDeleteLoad = () => {
       // Solo invalidamos cache para mostrar datos actualizados
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['load', data.loadId] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
       queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['expense-instances'] });

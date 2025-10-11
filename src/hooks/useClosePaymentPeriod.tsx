@@ -61,7 +61,7 @@ export const useClosePaymentPeriod = () => {
       // Invalidar queries relacionadas
       queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['payment-reports'] });
       
       // Mostrar mensaje de éxito detallado

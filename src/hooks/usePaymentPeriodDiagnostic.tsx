@@ -54,7 +54,7 @@ export const usePaymentPeriodDiagnostic = () => {
       
       // Invalidar queries relacionadas
       queryClient.invalidateQueries({ queryKey: ['payment-period-diagnostic'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
       
       if (result.error_count > 0) {

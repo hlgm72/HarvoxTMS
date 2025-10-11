@@ -117,7 +117,7 @@ export const useRecalculateUserPeriod = () => {
       console.log('✅ Driver period recalculated successfully');
       
       // Invalidate all relevant queries
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
       queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
@@ -125,7 +125,7 @@ export const useRecalculateUserPeriod = () => {
       queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
       
       // Refetch immediately for quick UI updates
-      queryClient.refetchQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.refetchQueries({ queryKey: ['user-period-calculations'] });
       queryClient.refetchQueries({ queryKey: ['consolidated-drivers'] });
       
       console.log('✅ Recalculation cache invalidated and refetched');

@@ -79,7 +79,7 @@ export function useDriverPaymentActions() {
     }
   };
 
-  const calculateDriverPeriod = async (calculationId: string) => {
+  const calculateUserPeriod = async (calculationId: string) => {
     setIsLoading(true);
     try {
       // ✅ USE NEW IMPROVED V2 FUNCTION
@@ -101,7 +101,7 @@ export function useDriverPaymentActions() {
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
-      console.error('Error calculating driver period with ACID:', error);
+      console.error('Error calculating user period with ACID:', error);
       showError(error.message || "Error al calcular el período con ACID");
       return { success: false, error: error.message };
     } finally {
@@ -205,7 +205,7 @@ export function useDriverPaymentActions() {
 
   return {
     markDriverAsPaid,
-    calculateDriverPeriod,
+    calculateUserPeriod,
     markMultipleDriversAsPaid,
     checkPeriodClosureStatus,
     closePeriodWhenComplete,

@@ -423,7 +423,7 @@ export const useCreateLoad = () => {
       // Standard cache invalidations
       console.log('🔄 Invalidando queries...');
       queryClient.invalidateQueries({ queryKey: ['loads'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
       queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['expense-instances'] });

@@ -109,7 +109,7 @@ export const useUpdateLoadStatus = () => {
       
       // Invalidar las queries de cargas para refrescar la lista
       queryClient.invalidateQueries({ queryKey: ['loads'] });
-      queryClient.invalidateQueries({ queryKey: ['driver-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       // 🚨 CRÍTICO - Invalidar resúmenes de períodos para reflejar recálculos automáticos
       queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
       queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });

@@ -78,7 +78,7 @@ export default function PaymentReports() {
     }
   };
   
-  const { markDriverAsPaid, calculateDriverPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
+  const { markDriverAsPaid, calculateUserPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
 
   // Validación de integridad financiera para el período actual
   const currentPeriodId = useMemo(() => {
@@ -353,7 +353,7 @@ export default function PaymentReports() {
   };
 
   const handleCalculatePeriod = async (calculation: any) => {
-    const result = await calculateDriverPeriod(calculation.id);
+    const result = await calculateUserPeriod(calculation.id);
     if (result.success) {
       refetch();
     }
