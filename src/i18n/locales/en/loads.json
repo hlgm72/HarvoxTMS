@@ -278,6 +278,8 @@
       "commodity_required": "Commodity description is required",
       "amount_required": "Total amount must be greater than 0",
       "stops_minimum": "Must have at least 2 stops",
+      "stops_error": "Stop Validation Error",
+      "dates_error": "Date Validation Error",
       "first_pickup": "First stop must be a pickup",
       "last_delivery": "Last stop must be a delivery",
       "chronological_error": "Dates must be in chronological order. Stop {{current}} is before stop {{previous}}",

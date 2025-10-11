@@ -277,6 +277,8 @@
       "commodity_required": "La descripción de mercancía es requerida",
       "amount_required": "El monto total debe ser mayor a 0",
       "stops_minimum": "Debe haber al menos 2 paradas",
+      "stops_error": "Error de validación de paradas",
+      "dates_error": "Error de validación de fechas",
       "first_pickup": "La primera parada debe ser una recogida (pickup)",
       "last_delivery": "La última parada debe ser una entrega (delivery)",
       "chronological_error": "Las fechas deben estar en orden cronológico. Parada {{current}} es anterior a parada {{previous}}",
