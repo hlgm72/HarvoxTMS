@@ -280,8 +280,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             .or(`and(pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),and(delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})`);
         } else if (periodResult.periodIds.length > 0) {
           console.log('✅ Aplicando filtro de períodos de BD:', periodResult.periodIds);
-          // Solo incluir cargas del período específico (sin cargas sin período)
-          loadsQuery = loadsQuery.in('payment_period_id', periodResult.periodIds);
+          // Incluir cargas del período específico Y cargas sin período (creadas pero sin conductor)
+          loadsQuery = loadsQuery.or(`payment_period_id.in.(${periodResult.periodIds.join(',')}),payment_period_id.is.null`);
         } else if (filters?.periodFilter?.type !== 'all') {
           console.log('❌ No hay período específico - devolviendo lista vacía para:', filters?.periodFilter?.type);
           // Si no hay period IDs para tipos específicos (current, previous, next) → lista vacía
