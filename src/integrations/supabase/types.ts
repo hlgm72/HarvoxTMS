@@ -777,86 +777,6 @@ export type Database = {
         }
         Relationships: []
       }
-      driver_period_calculations: {
-        Row: {
-          balance_alert_message: string | null
-          calculated_at: string | null
-          calculated_by: string | null
-          company_payment_period_id: string
-          created_at: string
-          driver_user_id: string
-          fuel_expenses: number
-          gross_earnings: number
-          has_negative_balance: boolean
-          id: string
-          net_payment: number
-          other_income: number
-          paid_at: string | null
-          paid_by: string | null
-          payment_method: string | null
-          payment_notes: string | null
-          payment_reference: string | null
-          payment_status: string | null
-          total_deductions: number
-          total_income: number
-          updated_at: string
-        }
-        Insert: {
-          balance_alert_message?: string | null
-          calculated_at?: string | null
-          calculated_by?: string | null
-          company_payment_period_id: string
-          created_at?: string
-          driver_user_id: string
-          fuel_expenses?: number
-          gross_earnings?: number
-          has_negative_balance?: boolean
-          id?: string
-          net_payment?: number
-          other_income?: number
-          paid_at?: string | null
-          paid_by?: string | null
-          payment_method?: string | null
-          payment_notes?: string | null
-          payment_reference?: string | null
-          payment_status?: string | null
-          total_deductions?: number
-          total_income?: number
-          updated_at?: string
-        }
-        Update: {
-          balance_alert_message?: string | null
-          calculated_at?: string | null
-          calculated_by?: string | null
-          company_payment_period_id?: string
-          created_at?: string
-          driver_user_id?: string
-          fuel_expenses?: number
-          gross_earnings?: number
-          has_negative_balance?: boolean
-          id?: string
-          net_payment?: number
-          other_income?: number
-          paid_at?: string | null
-          paid_by?: string | null
-          payment_method?: string | null
-          payment_notes?: string | null
-          payment_reference?: string | null
-          payment_status?: string | null
-          total_deductions?: number
-          total_income?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "driver_period_calculations_company_payment_period_id_fkey"
-            columns: ["company_payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "company_payment_periods"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       driver_period_calculations_backup_20250211: {
         Row: {
           balance_alert_message: string | null
@@ -3230,6 +3150,86 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_payment_periods: {
+        Row: {
+          balance_alert_message: string | null
+          calculated_at: string | null
+          calculated_by: string | null
+          company_payment_period_id: string
+          created_at: string
+          fuel_expenses: number
+          gross_earnings: number
+          has_negative_balance: boolean
+          id: string
+          net_payment: number
+          other_income: number
+          paid_at: string | null
+          paid_by: string | null
+          payment_method: string | null
+          payment_notes: string | null
+          payment_reference: string | null
+          payment_status: string | null
+          total_deductions: number
+          updated_at: string
+          user_id: string
+          user_role: string | null
+        }
+        Insert: {
+          balance_alert_message?: string | null
+          calculated_at?: string | null
+          calculated_by?: string | null
+          company_payment_period_id: string
+          created_at?: string
+          fuel_expenses?: number
+          gross_earnings?: number
+          has_negative_balance?: boolean
+          id?: string
+          net_payment?: number
+          other_income?: number
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          total_deductions?: number
+          updated_at?: string
+          user_id: string
+          user_role?: string | null
+        }
+        Update: {
+          balance_alert_message?: string | null
+          calculated_at?: string | null
+          calculated_by?: string | null
+          company_payment_period_id?: string
+          created_at?: string
+          fuel_expenses?: number
+          gross_earnings?: number
+          has_negative_balance?: boolean
+          id?: string
+          net_payment?: number
+          other_income?: number
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          total_deductions?: number
+          updated_at?: string
+          user_id?: string
+          user_role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_period_calculations_company_payment_period_id_fkey"
+            columns: ["company_payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_preferences: {
         Row: {
