@@ -156,15 +156,17 @@ export function PaymentPeriodsManager() {
       {/* Lista de Períodos */}
       <div className="grid gap-4">
         {periods.map((period) => {
-          const summary = periodsSummary.find(s => s.period_id === period.id);
+          // For grouped periods, use the first user period's ID for lookup
+          const periodId = period.user_periods[0]?.id;
+          const summary = periodsSummary.find(s => s.period_id === periodId);
           
           return (
             <Card 
-              key={period.id} 
+              key={`${period.period_start_date}-${period.period_end_date}`}
               className={`cursor-pointer transition-colors hover:bg-muted/50 ${
                 period.status === 'needs_review' ? 'border-destructive' : ''
               }`}
-              onClick={() => setSelectedPeriod(period.id)}
+              onClick={() => periodId && setSelectedPeriod(periodId)}
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -173,14 +175,14 @@ export function PaymentPeriodsManager() {
                       {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                     </CardTitle>
                     <CardDescription>
-                      {getPeriodTypeLabel(period.period_type)} • {period.period_frequency}
+                      {getPeriodTypeLabel(period.user_periods[0]?.period_type || 'regular')} • {period.period_frequency}
                       {summary && summary.driver_count > 0 && (
                         <> • {summary.driver_count} {t('period.driver_count', { count: summary.driver_count })}</>
                       )}
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    {period.is_locked && (
+                    {period.user_periods[0]?.is_locked && (
                       <Badge variant="outline">{t('period.status.locked')}</Badge>
                     )}
                     <Badge variant={getStatusBadgeVariant(period.status)}>

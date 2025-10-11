@@ -52,18 +52,10 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
     setIsLoading(true);
 
     try {
-      const { error } = await supabase
-        .from('company_payment_periods')
-        .insert({
-          company_id: user.user_metadata.company_id,
-          period_start_date: formatDateInUserTimeZone(startDate),
-          period_end_date: formatDateInUserTimeZone(endDate),
-          period_frequency: formData.period_frequency,
-          period_type: formData.period_type,
-          status: 'open'
-        });
-
-      if (error) throw error;
+      // Note: Special periods are now created through user_payment_periods
+      // This will be handled by the payment period generator
+      showError("Información", "La creación de períodos especiales requiere actualización del sistema");
+      return;
 
       showSuccess("Éxito", "Período especial creado exitosamente");
 

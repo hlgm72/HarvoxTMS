@@ -456,10 +456,11 @@ export function FuelExpenseDialog({
         return transactionDateStr >= startDate && transactionDateStr <= endDate;
       });
 
-      if (matchingPeriod) {
+      if (matchingPeriod && matchingPeriod.user_periods.length > 0) {
         const currentPeriodId = form.getValues('payment_period_id');
-        if (currentPeriodId !== matchingPeriod.id) {
-          form.setValue('payment_period_id', matchingPeriod.id);
+        const firstUserPeriodId = matchingPeriod.user_periods[0].id;
+        if (currentPeriodId !== firstUserPeriodId) {
+          form.setValue('payment_period_id', firstUserPeriodId);
         }
         setPredictedPeriod(null);
       } else {
@@ -631,9 +632,11 @@ export function FuelExpenseDialog({
                         </FormControl>
                         <SelectContent>
                            {paymentPeriods.map((period) => (
-                             <SelectItem key={period.id} value={period.id}>
-                               {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
-                             </SelectItem>
+                             period.user_periods.map((userPeriod) => (
+                               <SelectItem key={userPeriod.id} value={userPeriod.id}>
+                                 {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
+                               </SelectItem>
+                             ))
                            ))}
                         </SelectContent>
                       </Select>

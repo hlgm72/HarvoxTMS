@@ -235,8 +235,8 @@ export function PDFAnalyzer() {
         .in('user_id', driverIds);
 
       // Obtener períodos de pago de la empresa
-      const { data: companyPeriods } = await supabase
-        .from('company_payment_periods')
+      const { data: userPeriods } = await supabase
+        .from('user_payment_periods')
         .select('*')
         .eq('company_id', companyId)
         .eq('status', 'open');
@@ -355,30 +355,19 @@ export function PDFAnalyzer() {
         }
         const periodTransactionDate = new Date(transaction.date);
         
-        let matchingPeriod = companyPeriods?.find(period => {
+        // Find matching period for this driver
+        let matchingPeriod = userPeriods?.find(period => {
           const startDate = new Date(period.period_start_date);
           const endDate = new Date(period.period_end_date);
-          return periodTransactionDate >= startDate && periodTransactionDate <= endDate;
+          return periodTransactionDate >= startDate && 
+                 periodTransactionDate <= endDate &&
+                 period.user_id === enrichedTransaction.driver_user_id;
         });
 
-        if (matchingPeriod && enrichedTransaction.driver_user_id) {
-          // Período existente encontrado - buscar el driver_period_calculation correspondiente
-          const { data: driverPeriod } = await supabase
-            .from('user_payment_periods')
-            .select('id')
-            .eq('user_id', enrichedTransaction.driver_user_id)
-            .eq('company_payment_period_id', matchingPeriod.id)
-            .maybeSingle();
-
-          if (driverPeriod) {
-            enrichedTransaction.payment_period_id = driverPeriod.id;
-            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
-            enrichedTransaction.period_mapping_status = 'found';
-          } else {
-            // Si existe el company period pero no el driver period, usar las fechas del período existente
-            enrichedTransaction.period_mapping_status = 'will_create';
-            enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
-          }
+        if (matchingPeriod) {
+          enrichedTransaction.payment_period_id = matchingPeriod.id;
+          enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
+          enrichedTransaction.period_mapping_status = 'found';
         } else {
           // Calcular qué período se crearía (sin crearlo)
           if (enrichedTransaction.driver_user_id && companyId) {
@@ -488,18 +477,8 @@ export function PDFAnalyzer() {
             });
             
             if (generatedCompanyPeriodId) {
-              // The ensurePaymentPeriodExists returns a driver_period_calculation ID
-              // but we need the company_payment_period_id for the RPC function
-              const { data: driverPeriod } = await supabase
-                .from('user_payment_periods')
-                .select('company_payment_period_id')
-                .eq('id', generatedCompanyPeriodId)
-                .single();
-              
-              if (driverPeriod) {
-                transaction.payment_period_id = driverPeriod.company_payment_period_id;
-                // Debug logs removed to prevent Sentry spam
-              }
+              // ensurePaymentPeriodExists returns the user_payment_period ID directly
+              transaction.payment_period_id = generatedCompanyPeriodId;
             }
           }
         }

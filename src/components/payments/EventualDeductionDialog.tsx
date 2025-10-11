@@ -177,84 +177,32 @@ export function EventualDeductionDialog({
         const companyId = userCompanyRoles[0].company_id;
         console.log('User company found:', companyId);
 
-        // Obtenemos los períodos que contienen la fecha del gasto
-        console.log('Step 2: Getting company periods for date...');
-        const { data: companyPeriods, error: periodsError } = await supabase
-          .from('company_payment_periods')
+        // Obtenemos los períodos de usuario para el conductor en la fecha del gasto
+        console.log('Step 2: Getting user periods for date...');
+        const { data: userPeriods, error: periodsError } = await supabase
+          .from('user_payment_periods')
           .select('*')
           .eq('company_id', companyId)
+          .eq('user_id', formData.user_id)
           .lte('period_start_date', formatDateInUserTimeZone(expenseDate))
           .gte('period_end_date', formatDateInUserTimeZone(expenseDate))
           .in('status', ['open', 'processing'])
-          .order('period_start_date', { ascending: false });
+          .order('period_start_date', { ascending: false});
 
         if (periodsError) {
-          console.error('Error fetching company periods:', periodsError);
+          console.error('Error fetching user periods:', periodsError);
           return [];
         }
 
-        console.log('Company periods found:', companyPeriods?.length || 0);
+        console.log('User periods found:', userPeriods?.length || 0);
 
-        if (!companyPeriods || companyPeriods.length === 0) {
-          console.log('No company periods found for this date');
+        if (!userPeriods || userPeriods.length === 0) {
+          console.log('No user periods found for this date');
           return [];
         }
 
-        // Para cada período de empresa, verificamos/creamos el driver_period_calculation
-        console.log('Step 3: Processing driver calculations...');
-        const driverPeriods = [];
-        
-        for (const companyPeriod of companyPeriods) {
-          console.log('Processing period:', companyPeriod.id);
-          
-          // Verificar si existe el driver_period_calculation
-          let { data: driverCalc, error: calcError } = await supabase
-            .from('user_payment_periods')
-            .select('id')
-            .eq('company_payment_period_id', companyPeriod.id)
-            .eq('user_id', formData.user_id)
-            .maybeSingle();
-
-          if (calcError && calcError.code !== 'PGRST116') {
-            console.error('Error checking driver calculation:', calcError);
-            continue;
-          }
-
-          console.log('Existing driver calc:', driverCalc?.id || 'none');
-
-          // Si no existe, lo creamos
-          if (!driverCalc) {
-            console.log('Creating new driver calculation...');
-            const { data: newCalc, error: createError } = await supabase
-              .from('user_payment_periods')
-              .insert({
-                company_payment_period_id: companyPeriod.id,
-                user_id: formData.user_id,
-                gross_earnings: 0,
-                total_deductions: 0,
-                other_income: 0,
-                has_negative_balance: false
-              })
-              .select('id')
-              .single();
-
-            if (createError) {
-              console.error('Error creating driver calculation:', createError);
-              continue;
-            }
-            console.log('Created new driver calc:', newCalc?.id);
-            driverCalc = newCalc;
-          }
-
-          driverPeriods.push({
-            id: driverCalc.id,
-            company_payment_period_id: companyPeriod.id,
-            company_payment_periods: companyPeriod
-          });
-        }
-
-        console.log('Final driver periods:', driverPeriods.length);
-        return driverPeriods;
+        console.log('Final driver periods:', userPeriods.length);
+        return userPeriods;
       } catch (error) {
         console.error('Error in payment periods query:', error);
         return [];
@@ -577,10 +525,10 @@ export function EventualDeductionDialog({
               <div className="p-3 border border-green-200 bg-green-50 rounded-md">
                 <p className="text-sm text-green-800">
                   {(() => {
-                    const startDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_start_date);
-                    const endDate = formatDateOnly(paymentPeriods[0].company_payment_periods.period_end_date);
-                    const frequency = paymentPeriods[0].company_payment_periods.period_frequency;
-                    const periodStart = new Date(paymentPeriods[0].company_payment_periods.period_start_date);
+                    const startDate = formatDateOnly(paymentPeriods[0].period_start_date);
+                    const endDate = formatDateOnly(paymentPeriods[0].period_end_date);
+                    const frequency = paymentPeriods[0].period_frequency;
+                    const periodStart = new Date(paymentPeriods[0].period_start_date);
                     
                     let periodLabel = '';
                     

@@ -119,10 +119,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             } else {
               // Para períodos reales de BD, obtener fechas del período específico
               const periodQuery = await supabase
-                .from('company_payment_periods')
+                .from('user_payment_periods')
                 .select('period_start_date, period_end_date')
                 .eq('id', periodId)
-                .single();
+                .maybeSingle();
               
               if (periodQuery.data) {
                 console.log('📅 Filtrando por período específico real:', periodQuery.data);
@@ -401,11 +401,11 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {deduction.company_payment_periods && 
+                    {deduction.period_start_date && deduction.period_end_date && 
                       formatDetailedPaymentPeriod(
-                        deduction.company_payment_periods.period_start_date,
-                        deduction.company_payment_periods.period_end_date,
-                        deduction.company_payment_periods.period_frequency
+                        deduction.period_start_date,
+                        deduction.period_end_date,
+                        deduction.period_frequency || 'weekly'
                       )
                     }
                   </CardDescription>
