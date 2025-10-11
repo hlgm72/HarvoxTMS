@@ -269,55 +269,72 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriodsCount: allPeriods.length
         });
         
-        // PASO 3: Construir query optimizada de cargas
+        // PASO 3: Obtener todas las cargas de la compañía (filtrado por período se hace en cliente)
         console.log('🔍 DEBUG - companyUsers:', companyUsers);
         
-        let loadsQuery = supabase
+        const loadsQuery = supabase
           .from('loads')
           .select('*')
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
-          .order('load_number', { ascending: true});
+          .order('load_number', { ascending: true})
+          .limit(500); // Límite generoso para incluir todas las cargas relevantes
 
-        // Aplicar filtro según el tipo de resultado
+        const { data: allLoads, error: loadsError } = await loadsQuery;
+
+        if (loadsError) {
+          console.error('Error obteniendo cargas:', loadsError);
+          throw new Error('Error de conexión obteniendo cargas');
+        }
+
+        // PASO 4: Filtrar cargas por período en el cliente
+        let loads = allLoads || [];
+        
         if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
-          console.log('📅 Aplicando filtro de fechas para período calculado:', {
+          console.log('📅 Filtrando por fechas en cliente:', {
             startDate: periodResult.startDate,
             endDate: periodResult.endDate
           });
-          // Filtrar por fechas de pickup/delivery cuando es un período calculado
-          loadsQuery = loadsQuery
-            .or(`pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}`)
-            .or(`delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate}`);
+          loads = loads.filter(load => {
+            if (!load.pickup_date && !load.delivery_date) return false;
+            const pickupInRange = load.pickup_date && 
+              load.pickup_date >= periodResult.startDate && 
+              load.pickup_date <= periodResult.endDate;
+            const deliveryInRange = load.delivery_date && 
+              load.delivery_date >= periodResult.startDate && 
+              load.delivery_date <= periodResult.endDate;
+            return pickupInRange || deliveryInRange;
+          });
         } else if (periodResult.periodIds.length > 0) {
-          console.log('✅ Aplicando filtro de períodos de BD:', periodResult.periodIds);
+          console.log('✅ Filtrando por período en cliente:', {
+            periodIds: periodResult.periodIds,
+            startDate: periodResult.startDate,
+            endDate: periodResult.endDate
+          });
           
-          // Si tenemos fechas del período, incluir también cargas sin período que estén en el rango
-          if (periodResult.startDate && periodResult.endDate) {
-            console.log('🔍 DEBUG - Filtro combinado: período + rango de fechas');
-            // Incluir cargas con período asignado O cargas sin período en el rango de fechas
-            loadsQuery = loadsQuery.or(
-              `payment_period_id.in.(${periodResult.periodIds.join(',')}),` +
-              `and(payment_period_id.is.null,or(and(pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),and(delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})))`
-            );
-          } else {
-            console.log('🔍 DEBUG - Filtro solo por período ID');
-            loadsQuery = loadsQuery.in('payment_period_id', periodResult.periodIds);
-          }
+          loads = loads.filter(load => {
+            // Cargas con período asignado
+            if (load.payment_period_id && periodResult.periodIds.includes(load.payment_period_id)) {
+              return true;
+            }
+            
+            // Cargas sin período pero con fechas en el rango
+            if (!load.payment_period_id && periodResult.startDate && periodResult.endDate) {
+              const pickupInRange = load.pickup_date && 
+                load.pickup_date >= periodResult.startDate && 
+                load.pickup_date <= periodResult.endDate;
+              const deliveryInRange = load.delivery_date && 
+                load.delivery_date >= periodResult.startDate && 
+                load.delivery_date <= periodResult.endDate;
+              return pickupInRange || deliveryInRange;
+            }
+            
+            return false;
+          });
         } else if (filters?.periodFilter?.type !== 'all') {
           console.log('❌ No hay período específico - devolviendo lista vacía para:', filters?.periodFilter?.type);
-          // Si no hay period IDs para tipos específicos (current, previous, next) → lista vacía
           return [];
-        } else {
-          console.log('📋 Mostrando todas las cargas (sin filtro de período)');
         }
-
-        // Aplicar límites inteligentes
-        const isHistoricalView = filters?.periodFilter?.type === 'all';
-        const limit = isHistoricalView ? 50 : 200;
-        loadsQuery = loadsQuery.limit(limit);
-
-        const { data: loads, error: loadsError } = await loadsQuery;
         
         console.log('📦 Cargas obtenidas de la DB:', {
           totalCargas: loads?.length || 0,
