@@ -271,7 +271,6 @@ export const useLoads = (filters?: LoadsFilters) => {
         
         // PASO 3: Construir query optimizada de cargas
         console.log('🔍 DEBUG - companyUsers:', companyUsers);
-        console.log('🔍 DEBUG - Query filter will be:', `driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`);
         
         let loadsQuery = supabase
           .from('loads')
@@ -288,17 +287,18 @@ export const useLoads = (filters?: LoadsFilters) => {
           });
           // Filtrar por fechas de pickup/delivery cuando es un período calculado
           loadsQuery = loadsQuery
-            .or(`and(pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),and(delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})`);
+            .or(`pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}`)
+            .or(`delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate}`);
         } else if (periodResult.periodIds.length > 0) {
           console.log('✅ Aplicando filtro de períodos de BD:', periodResult.periodIds);
           
           // Si tenemos fechas del período, incluir también cargas sin período que estén en el rango
           if (periodResult.startDate && periodResult.endDate) {
             console.log('🔍 DEBUG - Filtro combinado: período + rango de fechas');
+            // Incluir cargas con período asignado O cargas sin período en el rango de fechas
             loadsQuery = loadsQuery.or(
               `payment_period_id.in.(${periodResult.periodIds.join(',')}),` +
-              `and(payment_period_id.is.null,pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),` +
-              `and(payment_period_id.is.null,delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})`
+              `and(payment_period_id.is.null,or(and(pickup_date.gte.${periodResult.startDate},pickup_date.lte.${periodResult.endDate}),and(delivery_date.gte.${periodResult.startDate},delivery_date.lte.${periodResult.endDate})))`
             );
           } else {
             console.log('🔍 DEBUG - Filtro solo por período ID');
