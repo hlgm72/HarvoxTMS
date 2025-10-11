@@ -23,8 +23,6 @@ class PDFService {
         delete pdfjs.GlobalWorkerOptions.workerSrc;
       }
       
-      console.log(`📄 React-PDF version: ${pdfjs.version}`);
-      
       // Try multiple worker URLs for the correct version (5.3.93)
       const workerUrls = [
         // Try unpkg with .mjs extension (newer format)
@@ -42,12 +40,6 @@ class PDFService {
       pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
       
       this.isInitialized = true;
-      console.log(`✅ PDF worker configured with matching version ${pdfjs.version}: ${workerUrl}`);
-      
-      // Test if worker loads properly by attempting a simple operation
-      setTimeout(() => {
-        console.log(`🧪 Testing PDF worker with version ${pdfjs.version}`);
-      }, 100);
       
     } catch (error) {
       // If worker setup fails, disable worker (runs on main thread)
@@ -68,7 +60,6 @@ class PDFService {
   // Ensure worker is configured (call this before using PDF.js)
   public ensureWorker(): void {
     if (!pdfjs.GlobalWorkerOptions.workerSrc) {
-      console.log('🔄 Re-initializing PDF worker...');
       this.initializeSync();
     }
   }

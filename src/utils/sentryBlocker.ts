@@ -254,10 +254,6 @@ if (NUCLEAR_SENTRY_DESTRUCTION) {
       super(url, base);
     }
   };
-  
-  console.log('🛡️ SENTRY NUCLEAR DESTRUCTION COMPLETE - Zero communication possible');
-} else {
-  console.log('🛡️ Sentry nuclear blocker is DISABLED');
 }
 
 })();

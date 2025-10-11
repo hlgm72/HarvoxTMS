@@ -191,12 +191,6 @@ const Sidebar = React.forwardRef<
     }
 
     if (isMobile) {
-      console.log('📱 SIDEBAR MOBILE RENDER:', {
-        isMobile,
-        openMobile,
-        hasSetOpenMobile: !!setOpenMobile
-      });
-      
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile}>
           <SheetContent

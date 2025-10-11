@@ -25,29 +25,13 @@ export const usePWA = (): PWAHook => {
   // Check if device is mobile and potentially installable
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const isSamsungBrowser = /SamsungBrowser/i.test(navigator.userAgent);
-  
-  console.log('📱 PWA: Device info:', {
-    isMobile,
-    isSamsungBrowser,
-    userAgent: navigator.userAgent
-  });
 
   useEffect(() => {
-    console.log('🔧 PWA: Hook initialized - Service Worker temporarily disabled');
-    
     // Check if app is installed
     const checkInstalled = () => {
       const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
       const isInWebAppMode = (window.navigator as any).standalone === true;
       const isInstalled = isInStandaloneMode || isInWebAppMode;
-      
-      console.log('🔍 PWA: Installation check:', {
-        isInStandaloneMode,
-        isInWebAppMode,
-        isInstalled,
-        userAgent: navigator.userAgent,
-        displayMode: window.matchMedia('(display-mode: standalone)').matches
-      });
       
       setIsInstalled(isInstalled);
     };

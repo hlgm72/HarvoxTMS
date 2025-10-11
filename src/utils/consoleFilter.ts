@@ -175,10 +175,3 @@ export {
   originalDebug,
   isWithinSentryRateLimit
 };
-
-// Log the filter activation
-if (isDevelopment) {
-  originalLog('🛡️ Anti-Sentry spam filter activated - Development mode');
-} else {
-  originalLog('🛡️ Anti-Sentry spam filter activated - Production mode (strict)');
-}
