@@ -138,7 +138,7 @@ export const useConsolidatedDrivers = () => {
           supabase
             .from('loads')
             .select('driver_user_id, status')
-            .in('driver_user_id', allDriverUserIds)
+            .or(`driver_user_id.in.(${allDriverUserIds.join(',')}),and(driver_user_id.is.null,created_by.in.(${allDriverUserIds.join(',')}))`)
             .in('status', ['assigned', 'in_transit', 'pickup', 'delivery'])
         ]);
 

@@ -183,19 +183,28 @@ export default function OwnerDashboard() {
         .eq('is_active', true);
 
       const driverIds = companyDrivers?.map(d => d.user_id) || [];
+      
+      // Obtener todos los usuarios de la compañía para incluir cargas sin conductor
+      const { data: allCompanyUsers } = await supabase
+        .from('user_company_roles')
+        .select('user_id')
+        .eq('company_id', userRole.company_id)
+        .eq('is_active', true);
+      
+      const companyUserIds = allCompanyUsers?.map(u => u.user_id) || [];
 
       let loadsCount = 0;
       let totalIncome = 0;
-      if (driverIds.length > 0) {
+      if (companyUserIds.length > 0) {
         const { count: loads } = await supabase
           .from('loads')
           .select('*', { count: 'exact', head: true })
-          .in('driver_user_id', driverIds);
+          .or(`driver_user_id.in.(${companyUserIds.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUserIds.join(',')}))`);
 
         const { data: loadsData } = await supabase
           .from('loads')
           .select('total_amount')
-          .in('driver_user_id', driverIds)
+          .or(`driver_user_id.in.(${companyUserIds.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUserIds.join(',')}))`)
           .eq('status', 'completed');
 
         loadsCount = loads || 0;
