@@ -4045,6 +4045,10 @@ export type Database = {
           uploaded_by: string
         }[]
       }
+      get_load_relevant_date: {
+        Args: { load_id_param: string }
+        Returns: string
+      }
       get_payment_calculations_integrity_status: {
         Args: { target_company_id: string }
         Returns: Json
