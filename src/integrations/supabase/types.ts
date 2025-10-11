@@ -2008,7 +2008,7 @@ export type Database = {
             foreignKeyName: "loads_payment_period_id_fkey"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "company_payment_periods"
+            referencedRelation: "user_payment_periods"
             referencedColumns: ["id"]
           },
         ]
