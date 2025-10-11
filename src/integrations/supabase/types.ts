@@ -603,6 +603,54 @@ export type Database = {
         }
         Relationships: []
       }
+      company_payment_periods_backup_20250211: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          id: string | null
+          is_locked: boolean | null
+          locked_at: string | null
+          locked_by: string | null
+          payment_date: string | null
+          period_end_date: string | null
+          period_frequency: string | null
+          period_start_date: string | null
+          period_type: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_locked?: boolean | null
+          locked_at?: string | null
+          locked_by?: string | null
+          payment_date?: string | null
+          period_end_date?: string | null
+          period_frequency?: string | null
+          period_start_date?: string | null
+          period_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_locked?: boolean | null
+          locked_at?: string | null
+          locked_by?: string | null
+          payment_date?: string | null
+          period_end_date?: string | null
+          period_frequency?: string | null
+          period_start_date?: string | null
+          period_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       company_sensitive_data_access_log: {
         Row: {
           access_type: string
@@ -808,6 +856,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      driver_period_calculations_backup_20250211: {
+        Row: {
+          balance_alert_message: string | null
+          calculated_at: string | null
+          calculated_by: string | null
+          company_payment_period_id: string | null
+          created_at: string | null
+          driver_user_id: string | null
+          fuel_expenses: number | null
+          gross_earnings: number | null
+          has_negative_balance: boolean | null
+          id: string | null
+          net_payment: number | null
+          other_income: number | null
+          paid_at: string | null
+          paid_by: string | null
+          payment_method: string | null
+          payment_notes: string | null
+          payment_reference: string | null
+          payment_status: string | null
+          total_deductions: number | null
+          total_income: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          balance_alert_message?: string | null
+          calculated_at?: string | null
+          calculated_by?: string | null
+          company_payment_period_id?: string | null
+          created_at?: string | null
+          driver_user_id?: string | null
+          fuel_expenses?: number | null
+          gross_earnings?: number | null
+          has_negative_balance?: boolean | null
+          id?: string | null
+          net_payment?: number | null
+          other_income?: number | null
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          total_deductions?: number | null
+          total_income?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          balance_alert_message?: string | null
+          calculated_at?: string | null
+          calculated_by?: string | null
+          company_payment_period_id?: string | null
+          created_at?: string | null
+          driver_user_id?: string | null
+          fuel_expenses?: number | null
+          gross_earnings?: number | null
+          has_negative_balance?: boolean | null
+          id?: string | null
+          net_payment?: number | null
+          other_income?: number | null
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          total_deductions?: number | null
+          total_income?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       driver_profiles: {
         Row: {
@@ -2051,6 +2171,30 @@ export type Database = {
         }
         Relationships: []
       }
+      loads_backup_20250211: {
+        Row: {
+          created_at: string | null
+          driver_user_id: string | null
+          id: string | null
+          payment_period_id: string | null
+          total_amount: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          driver_user_id?: string | null
+          id?: string | null
+          payment_period_id?: string | null
+          total_amount?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          driver_user_id?: string | null
+          id?: string | null
+          payment_period_id?: string | null
+          total_amount?: number | null
+        }
+        Relationships: []
+      }
       maintenance_records: {
         Row: {
           created_at: string
@@ -2210,6 +2354,63 @@ export type Database = {
           required_parts?: string[] | null
           safety_requirements?: string[] | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      migration_audit_log: {
+        Row: {
+          error_message: string | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          operation: string
+          phase: string
+          records_affected: number | null
+          status: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          operation: string
+          phase: string
+          records_affected?: number | null
+          status?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          operation?: string
+          phase?: string
+          records_affected?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      migration_fk_backup: {
+        Row: {
+          column_name: unknown | null
+          constraint_name: unknown | null
+          foreign_column_name: unknown | null
+          foreign_table_name: unknown | null
+          table_name: unknown | null
+        }
+        Insert: {
+          column_name?: unknown | null
+          constraint_name?: unknown | null
+          foreign_column_name?: unknown | null
+          foreign_table_name?: unknown | null
+          table_name?: unknown | null
+        }
+        Update: {
+          column_name?: unknown | null
+          constraint_name?: unknown | null
+          foreign_column_name?: unknown | null
+          foreign_table_name?: unknown | null
+          table_name?: unknown | null
         }
         Relationships: []
       }
@@ -3493,7 +3694,7 @@ export type Database = {
               target_payment_period_id: string
               total_amount_param: number
             }
-        Returns: undefined
+        Returns: Json
       }
       create_user_with_company_role_validation: {
         Args: { company_role_data: Json; user_data: Json }
@@ -3693,7 +3894,6 @@ export type Database = {
         Args: Record<PropertyKey, never> | { target_company_id?: string }
         Returns: {
           city: string
-          contract_start_date: string
           created_at: string
           default_dispatching_percentage: number
           default_factoring_percentage: number
@@ -3703,12 +3903,12 @@ export type Database = {
           ein: string
           email: string
           id: string
-          load_assignment_criteria: string
-          logo_url: string
-          max_users: number
-          max_vehicles: number
           mc_number: string
           name: string
+          owner_email: string
+          owner_name: string
+          owner_phone: string
+          owner_title: string
           payment_cycle_start_day: number
           payment_day: string
           phone: string
