@@ -555,54 +555,6 @@ export type Database = {
           },
         ]
       }
-      company_payment_periods: {
-        Row: {
-          company_id: string
-          created_at: string
-          id: string
-          is_locked: boolean
-          locked_at: string | null
-          locked_by: string | null
-          payment_date: string | null
-          period_end_date: string
-          period_frequency: string
-          period_start_date: string
-          period_type: string
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          company_id: string
-          created_at?: string
-          id?: string
-          is_locked?: boolean
-          locked_at?: string | null
-          locked_by?: string | null
-          payment_date?: string | null
-          period_end_date: string
-          period_frequency: string
-          period_start_date: string
-          period_type?: string
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          company_id?: string
-          created_at?: string
-          id?: string
-          is_locked?: boolean
-          locked_at?: string | null
-          locked_by?: string | null
-          payment_date?: string | null
-          period_end_date?: string
-          period_frequency?: string
-          period_start_date?: string
-          period_type?: string
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       company_payment_periods_backup_20250211: {
         Row: {
           company_id: string | null
@@ -2742,13 +2694,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "recurring_expense_exclusions_payment_period_id_fkey"
-            columns: ["payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "company_payment_periods"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "recurring_expense_exclusions_recurring_template_id_fkey"
             columns: ["recurring_template_id"]
             isOneToOne: false
@@ -3171,20 +3116,29 @@ export type Database = {
           balance_alert_message: string | null
           calculated_at: string | null
           calculated_by: string | null
-          company_payment_period_id: string
+          company_id: string
           created_at: string
           fuel_expenses: number
           gross_earnings: number
           has_negative_balance: boolean
           id: string
+          is_locked: boolean | null
+          locked_at: string | null
+          locked_by: string | null
           net_payment: number
           other_income: number
           paid_at: string | null
           paid_by: string | null
+          payment_date: string | null
           payment_method: string | null
           payment_notes: string | null
           payment_reference: string | null
           payment_status: string | null
+          period_end_date: string
+          period_frequency: string
+          period_start_date: string
+          period_type: string | null
+          status: string | null
           total_deductions: number
           updated_at: string
           user_id: string
@@ -3194,20 +3148,29 @@ export type Database = {
           balance_alert_message?: string | null
           calculated_at?: string | null
           calculated_by?: string | null
-          company_payment_period_id: string
+          company_id: string
           created_at?: string
           fuel_expenses?: number
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
+          is_locked?: boolean | null
+          locked_at?: string | null
+          locked_by?: string | null
           net_payment?: number
           other_income?: number
           paid_at?: string | null
           paid_by?: string | null
+          payment_date?: string | null
           payment_method?: string | null
           payment_notes?: string | null
           payment_reference?: string | null
           payment_status?: string | null
+          period_end_date: string
+          period_frequency?: string
+          period_start_date: string
+          period_type?: string | null
+          status?: string | null
           total_deductions?: number
           updated_at?: string
           user_id: string
@@ -3217,20 +3180,29 @@ export type Database = {
           balance_alert_message?: string | null
           calculated_at?: string | null
           calculated_by?: string | null
-          company_payment_period_id?: string
+          company_id?: string
           created_at?: string
           fuel_expenses?: number
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
+          is_locked?: boolean | null
+          locked_at?: string | null
+          locked_by?: string | null
           net_payment?: number
           other_income?: number
           paid_at?: string | null
           paid_by?: string | null
+          payment_date?: string | null
           payment_method?: string | null
           payment_notes?: string | null
           payment_reference?: string | null
           payment_status?: string | null
+          period_end_date?: string
+          period_frequency?: string
+          period_start_date?: string
+          period_type?: string | null
+          status?: string | null
           total_deductions?: number
           updated_at?: string
           user_id?: string
@@ -3238,10 +3210,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "driver_period_calculations_company_payment_period_id_fkey"
-            columns: ["company_payment_period_id"]
+            foreignKeyName: "fk_user_payment_periods_company"
+            columns: ["company_id"]
             isOneToOne: false
-            referencedRelation: "company_payment_periods"
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -3661,7 +3633,7 @@ export type Database = {
       }
       create_payment_period_if_needed: {
         Args: {
-          created_by_user_id?: string
+          created_by_user_id: string
           target_company_id: string
           target_date: string
         }

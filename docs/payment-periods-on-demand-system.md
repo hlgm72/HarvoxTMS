@@ -1,20 +1,24 @@
-# Sistema de Períodos de Pago Bajo Demanda
+# Sistema de Períodos de Pago Bajo Demanda - v3.0 SIMPLIFICADO
+
+## 🎯 NUEVO SISTEMA SIMPLIFICADO (v3.0)
+
+**CAMBIO ARQUITECTÓNICO IMPORTANTE**: Eliminamos `company_payment_periods` y trabajamos solo con `user_payment_periods` individuales.
 
 ## 📋 Filosofía del Sistema
 
-**PRINCIPIO FUNDAMENTAL**: Los períodos de pago solo se crean cuando son realmente necesarios, nunca de forma anticipada o masiva.
+**PRINCIPIO FUNDAMENTAL**: Los períodos de pago se crean INDIVIDUALMENTE para cada usuario cuando ese usuario específico lo necesita.
 
-### ❌ Lo que NO queremos:
-- Generar períodos futuros innecesarios
-- Crear períodos "por si acaso"
-- Generar múltiples períodos de una vez
-- Períodos vacíos sin transacciones
+### ❌ Lo que NO queremos (ANTIGUO SISTEMA):
+- ~~Generar períodos de empresa que luego crean períodos para TODOS los usuarios~~
+- ~~Crear períodos para usuarios que no tienen transacciones~~
+- ~~Tabla `company_payment_periods` con lógica compleja~~
+- ~~Generación masiva de períodos~~
 
-### ✅ Lo que SÍ queremos:
-- Crear períodos solo cuando se necesitan
-- Un período por cada transacción que lo requiera
-- Generación inteligente basada en la fecha de la transacción
-- Sistema eficiente y sin desperdicios
+### ✅ Lo que SÍ queremos (NUEVO SISTEMA v3.0):
+- **Crear períodos SOLO para el usuario que realiza la transacción**
+- **Un usuario, un período, una necesidad específica**
+- **Sin períodos de empresa** - cada usuario gestiona sus propios períodos
+- **Sistema mucho más simple y eficiente**
 
 ## 🎯 Casos de Uso - Cuándo se Crean Períodos
 

@@ -21,8 +21,7 @@ import {
 } from "lucide-react";
 import { OtherIncomeSection } from "@/components/payments/OtherIncomeSection";
 import { PaymentPeriodsManager } from "@/components/payments/PaymentPeriodsManager";
-import { usePaymentPeriodSummary } from "@/hooks/usePaymentPeriodSummary";
-import { useCompanyPaymentPeriods } from "@/hooks/useCompanyPaymentPeriods";
+import { useUserPaymentPeriods } from "@/hooks/useCompanyPaymentPeriods";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { getTodayInUserTimeZone, formatCurrency } from '@/lib/dateFormatting';
 import { useTranslation } from 'react-i18next';
@@ -33,18 +32,18 @@ export default function Payments() {
   const { companies, selectedCompany } = useUserCompanies();
   const [activeTab, setActiveTab] = useState("other-income");
 
-  // Obtener datos reales de períodos de pago
-  const currentCompanyId = selectedCompany?.id; // Compañía seleccionada
-  const { data: paymentPeriods, isLoading: periodsLoading } = useCompanyPaymentPeriods(currentCompanyId);
+  // NUEVO SISTEMA: Obtener períodos del usuario actual
+  const currentCompanyId = selectedCompany?.id;
+  const { data: userPeriods, isLoading: periodsLoading } = useUserPaymentPeriods(currentCompanyId, user?.id);
   
   // Determinar el período actual basado en la fecha actual del usuario (zona horaria local)
   const todayUserDate = getTodayInUserTimeZone(); // YYYY-MM-DD en zona local
   
-  const currentPeriod = paymentPeriods?.find(period => 
+  const currentPeriod = userPeriods?.find(period => 
     todayUserDate >= period.period_start_date && todayUserDate <= period.period_end_date
-  ) || paymentPeriods?.[0]; // Fallback al más reciente si no encuentra uno actual
+  ) || userPeriods?.[0]; // Fallback al más reciente si no encuentra uno actual
   
-  const previousPeriod = paymentPeriods?.find(period => 
+  const previousPeriod = userPeriods?.find(period => 
     period.id !== currentPeriod?.id && period.period_start_date < (currentPeriod?.period_start_date || '')
   );
   
@@ -52,8 +51,22 @@ export default function Payments() {
   console.log('📅 Período actual encontrado:', currentPeriod?.period_start_date, 'a', currentPeriod?.period_end_date);
   console.log('📅 Período anterior encontrado:', previousPeriod?.period_start_date, 'a', previousPeriod?.period_end_date);
   
-  const { data: currentPeriodSummary } = usePaymentPeriodSummary(currentPeriod?.id);
-  const { data: previousPeriodSummary } = usePaymentPeriodSummary(previousPeriod?.id);
+  // Usar los datos directamente del período (ya tiene los cálculos)
+  const currentPeriodSummary = currentPeriod ? {
+    gross_earnings: currentPeriod.gross_earnings,
+    other_income: currentPeriod.other_income,
+    fuel_expenses: currentPeriod.fuel_expenses,
+    deductions: currentPeriod.total_deductions,
+    net_payment: currentPeriod.net_payment,
+  } : null;
+  
+  const previousPeriodSummary = previousPeriod ? {
+    gross_earnings: previousPeriod.gross_earnings,
+    other_income: previousPeriod.other_income,
+    fuel_expenses: previousPeriod.fuel_expenses,
+    deductions: previousPeriod.total_deductions,
+    net_payment: previousPeriod.net_payment,
+  } : null;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
