@@ -52,7 +52,7 @@ export function RealtimeDriverPayments() {
           {
             event: 'UPDATE',
             schema: 'public',
-            table: 'driver_period_calculations',
+            table: 'user_payment_periods',
             // Only listen for payment status changes
             filter: `payment_status=neq.calculated`
           },
@@ -88,7 +88,7 @@ export function RealtimeDriverPayments() {
         .from('company_payment_periods')
         .select(`
           *,
-          driver_period_calculations (*)
+          user_payment_periods (*)
         `)
         .eq('company_id', userRole.company_id)
         .order('period_start_date', { ascending: false })
@@ -100,7 +100,7 @@ export function RealtimeDriverPayments() {
         const latestPeriod = periods[0];
         
         // Get profiles for all drivers in this period
-        const driverIds = latestPeriod.driver_period_calculations?.map((calc: any) => calc.driver_user_id) || [];
+        const driverIds = latestPeriod.user_payment_periods?.map((calc: any) => calc.user_id) || [];
         
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
@@ -112,10 +112,10 @@ export function RealtimeDriverPayments() {
         // Create a map of driver profiles for easy lookup
         const profilesMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
-        const driverPayments = latestPeriod.driver_period_calculations?.map((calculation: any) => {
-          const profile = profilesMap.get(calculation.driver_user_id);
+        const driverPayments = latestPeriod.user_payment_periods?.map((calculation: any) => {
+          const profile = profilesMap.get(calculation.user_id);
           return {
-            driver_id: calculation.driver_user_id,
+            driver_id: calculation.user_id,
             driver_name: profile ? `${profile.first_name || 'N/A'} ${profile.last_name || ''}`.trim() : 'Driver',
             driver_avatar: profile?.avatar_url,
             period_dates: formatPaymentPeriod(latestPeriod.period_start_date, latestPeriod.period_end_date),

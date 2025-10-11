@@ -28,8 +28,8 @@ import {
  * Si no coinciden, indica que las funciones han sido modificadas
  */
 const FUNCTION_CHECKSUMS = Object.freeze({
-  calculateTotalIncome: 'calc_income_v1_abc123',
-  calculateNetPayment: 'calc_net_v1_def456', 
+  // calculateTotalIncome: 'calc_income_v1_abc123', // ❌ ELIMINADO en v2.0
+  calculateNetPayment: 'calc_net_v2_direct', // ✅ Actualizado a cálculo directo
   calculateHasNegativeBalance: 'calc_balance_v1_ghi789',
   calculateLoadDeductions: 'calc_deductions_v1_jkl012',
   calculateFuelTotal: 'calc_fuel_v1_mno345'
@@ -100,7 +100,6 @@ export async function verifyCalculationIntegrity(): Promise<{
   try {
     // Importar dinámicamente las funciones para testing
     const { 
-      calculateTotalIncome, 
       calculateNetPayment, 
       calculateHasNegativeBalance 
     } = await import('./calculations');
@@ -108,7 +107,8 @@ export async function verifyCalculationIntegrity(): Promise<{
     // Ejecutar cada caso de prueba
     for (const testCase of INTEGRITY_TEST_CASES) {
       try {
-        const totalIncome = calculateTotalIncome(testCase.input);
+        // ✅ Calcular total_income localmente solo para validación
+        const totalIncome = (testCase.input.gross_earnings || 0) + (testCase.input.other_income || 0);
         const netPayment = calculateNetPayment(testCase.input);
         const hasNegativeBalance = calculateHasNegativeBalance(testCase.input);
 
@@ -287,8 +287,8 @@ export function validateFunctionIntegrity(functionName: string, functionCode: st
     // Por ahora, verificamos patrones básicos
     
     const expectedPatterns = {
-      calculateTotalIncome: ['gross_earnings', 'other_income', '+'],
-      calculateNetPayment: ['total_income', 'fuel_expenses', 'total_deductions', '-'],
+      // calculateTotalIncome: ['gross_earnings', 'other_income', '+'], // ❌ ELIMINADO
+      calculateNetPayment: ['gross_earnings', 'other_income', 'fuel_expenses', 'total_deductions', '-'],
       calculateHasNegativeBalance: ['< 0', 'calculateNetPayment']
     } as const;
 

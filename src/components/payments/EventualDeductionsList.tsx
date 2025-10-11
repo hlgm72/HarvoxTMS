@@ -277,9 +277,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         // Enriquecer con información de períodos y conductores
         const enrichedData = await Promise.all(
           (data || []).map(async (expense) => {
-            // Obtener información del período a través de driver_period_calculations
+            // Obtener información del período a través de user_payment_periods
             const { data: driverPeriod } = await supabase
-              .from('driver_period_calculations')
+              .from('user_payment_periods')
               .select(`
                 company_payment_periods(
                   period_start_date, 

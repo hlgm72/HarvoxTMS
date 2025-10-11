@@ -71,7 +71,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
       
       // Obtener todos los cálculos de conductores para este período (ya actualizados)
       const { data: driverCalculations, error } = await supabase
-        .from('driver_period_calculations')
+        .from('user_payment_periods')
         .select('*')
         .eq('company_payment_period_id', periodId);
 
@@ -156,7 +156,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
 
       // Obtener los cálculos para todos los períodos (ya actualizados)
       const { data: allCalculations, error: calcError } = await supabase
-        .from('driver_period_calculations')
+        .from('user_payment_periods')
         .select('*')
         .in('company_payment_period_id', periods.map(p => p.id));
 

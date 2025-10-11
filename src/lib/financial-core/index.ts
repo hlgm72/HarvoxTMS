@@ -25,7 +25,7 @@
 
 // Funciones de cálculo principal (blindadas)
 export {
-  calculateTotalIncome,
+  // calculateTotalIncome, // ❌ ELIMINADO - Ya no existe
   calculateNetPayment,
   calculateHasNegativeBalance,
   calculateLoadDeductions,
@@ -173,7 +173,7 @@ export function createCompatibilityLayer() {
   // Importar las funciones dinámicamente para evitar referencias directas
   return import('./calculations').then(module => ({
     calculateNetPayment: module.calculateNetPayment,
-    calculateTotalIncome: module.calculateTotalIncome,
+    // calculateTotalIncome: module.calculateTotalIncome, // ❌ ELIMINADO
     calculateHasNegativeBalance: module.calculateHasNegativeBalance
   }));
 }
@@ -183,11 +183,11 @@ export function createCompatibilityLayer() {
 // ===============================================
 
 export const FINANCIAL_CORE_INFO = Object.freeze({
-  version: '1.0.0',
-  last_updated: '2024-09-01',
+  version: '2.0.0',
+  last_updated: '2025-02-11',
   security_level: 'CRITICAL',
   protected_functions: [
-    'calculateTotalIncome',
+    // 'calculateTotalIncome', // ❌ ELIMINADO en v2.0
     'calculateNetPayment', 
     'calculateHasNegativeBalance',
     'calculateLoadDeductions',

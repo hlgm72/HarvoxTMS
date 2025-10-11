@@ -153,7 +153,7 @@ export default function PaymentReports() {
       console.log('🔍 Obteniendo datos de cálculos sin verificación automática de integridad...');
       
       let query = supabase
-        .from('driver_period_calculations')
+        .from('user_payment_periods')
         .select(`
           *,
           company_payment_periods!inner(
@@ -233,7 +233,7 @@ export default function PaymentReports() {
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers-for-reports'],
     queryFn: async () => {
-      const driverIds = paymentCalculations.map(calc => calc.driver_user_id);
+      const driverIds = paymentCalculations.map(calc => calc.user_id);
       if (driverIds.length === 0) return [];
       
       const { data, error } = await supabase
@@ -249,14 +249,14 @@ export default function PaymentReports() {
 
   // Filtrar cálculos según los filtros aplicados (excepto período que ya se filtra en la query)
   const filteredCalculations = paymentCalculations.filter(calc => {
-    const driver = drivers.find(d => d.user_id === calc.driver_user_id);
+    const driver = drivers.find(d => d.user_id === calc.user_id);
     const driverName = `${driver?.first_name || ''} ${driver?.last_name || ''}`.toLowerCase();
     
     // Filtro de búsqueda
     const matchesSearch = !filters.search || driverName.includes(filters.search.toLowerCase());
     
     // Filtro de conductor
-    const matchesDriver = filters.driverId === "all" || calc.driver_user_id === filters.driverId;
+    const matchesDriver = filters.driverId === "all" || calc.user_id === filters.driverId;
     
     // Filtro de estado
     let matchesStatus = true;
@@ -289,7 +289,7 @@ export default function PaymentReports() {
   // Estadísticas del dashboard
   const totalReports = filteredCalculations.length;
   const totalEarnings = filteredCalculations.reduce((sum, calc) => sum + calculateNetPayment(calc), 0);
-  const totalDrivers = new Set(filteredCalculations.map(calc => calc.driver_user_id)).size;
+  const totalDrivers = new Set(filteredCalculations.map(calc => calc.user_id)).size;
   const pendingReports = filteredCalculations.filter(calc => !calc.calculated_at).length;
 
   const handleGenerateReport = async (calculation: any) => {
@@ -450,7 +450,7 @@ export default function PaymentReports() {
                           <div className="flex items-center gap-2">
                             <h4 className="font-semibold truncate">
                               {(() => {
-                                const driver = drivers.find(d => d.user_id === calculation.driver_user_id);
+                                const driver = drivers.find(d => d.user_id === calculation.user_id);
                                 return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
                               })()}
                             </h4>

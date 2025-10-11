@@ -72,7 +72,7 @@ export function PaymentReportDialog({
       if (!calculationId) return null;
       
       const { data, error } = await supabase
-        .from('driver_period_calculations')
+        .from('user_payment_periods')
         .select(`
           *,
           company_payment_periods!inner(
@@ -93,36 +93,36 @@ export function PaymentReportDialog({
 
   // Obtener información del conductor
   const { data: driver } = useQuery({
-    queryKey: ['driver-info', calculation?.driver_user_id],
+    queryKey: ['driver-info', calculation?.user_id],
     queryFn: async () => {
-      if (!calculation?.driver_user_id) return null;
+      if (!calculation?.user_id) return null;
       
       // Obtener datos básicos del perfil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name, phone, street_address, zip_code, state_id, city')
-        .eq('user_id', calculation.driver_user_id)
+        .eq('user_id', calculation.user_id)
         .single();
 
       if (profileError) throw profileError;
 
       // Obtener email del conductor
       const { data: emailData } = await supabase.rpc('get_user_email_by_id', {
-        user_id_param: calculation.driver_user_id
+        user_id_param: calculation.user_id
       });
 
       // Obtener información adicional del conductor
       const { data: driverData } = await supabase
         .from('driver_profiles')
         .select('license_number, license_state')
-        .eq('user_id', calculation.driver_user_id)
+        .eq('user_id', calculation.user_id)
         .maybeSingle();
 
       // Obtener datos completos de owner_operators si existe
       const { data: ownerData } = await supabase
         .from('owner_operators')
         .select('business_name, business_address, business_email, business_phone, tax_id, is_active')
-        .eq('user_id', calculation.driver_user_id)
+        .eq('user_id', calculation.user_id)
         .eq('is_active', true)
         .maybeSingle();
 
@@ -152,7 +152,7 @@ export function PaymentReportDialog({
         is_owner_operator: !!useOwnerOperatorData
       };
     },
-    enabled: !!calculation?.driver_user_id
+    enabled: !!calculation?.user_id
   });
 
   // Obtener información de la compañía
@@ -177,7 +177,7 @@ export function PaymentReportDialog({
 
   // Obtener cargas del período
   const { data: loads = [] } = useQuery({
-    queryKey: ['period-loads', calculation?.company_payment_period_id, calculation?.driver_user_id],
+    queryKey: ['period-loads', calculation?.company_payment_period_id, calculation?.user_id],
     queryFn: async () => {
       if (!calculation) return [];
       
@@ -202,7 +202,7 @@ export function PaymentReportDialog({
             state
           )
         `)
-        .eq('driver_user_id', calculation.driver_user_id)
+        .eq('driver_user_id', calculation.user_id)
         .gte('pickup_date', calculation.company_payment_periods.period_start_date)
         .lte('delivery_date', calculation.company_payment_periods.period_end_date)
         .order('pickup_date', { ascending: true });
@@ -235,14 +235,14 @@ export function PaymentReportDialog({
 
   // Obtener gastos de combustible del período
   const { data: fuelExpenses = [] } = useQuery({
-    queryKey: ['period-fuel-expenses', calculation?.company_payment_period_id, calculation?.driver_user_id],
+    queryKey: ['period-fuel-expenses', calculation?.company_payment_period_id, calculation?.user_id],
     queryFn: async () => {
       if (!calculation) return [];
       
       const { data, error } = await supabase
         .from('fuel_expenses')
         .select('*')
-        .eq('driver_user_id', calculation.driver_user_id)
+        .eq('driver_user_id', calculation.user_id)
         .eq('payment_period_id', calculation.company_payment_period_id)
         .order('transaction_date', { ascending: true });
 
@@ -328,7 +328,7 @@ export function PaymentReportDialog({
     return {
       driver: {
         name: driver.display_name || `${driver.first_name} ${driver.last_name}`,
-        user_id: calculation.driver_user_id,
+        user_id: calculation.user_id,
         license: driver.license_number,
         license_state: driver.license_state,
         phone: driver.display_phone,
@@ -474,7 +474,7 @@ export function PaymentReportDialog({
       const { data: driverPreferences } = await supabase
         .from('user_preferences')
         .select('preferred_language')
-        .eq('user_id', calculation.driver_user_id)
+        .eq('user_id', calculation.user_id)
         .maybeSingle();
 
       const driverLanguage = driverPreferences?.preferred_language || 'en';

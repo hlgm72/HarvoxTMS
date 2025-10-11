@@ -19,7 +19,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { calculateNetPayment, calculateTotalIncome } from "@/lib/paymentCalculations";
+import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { formatCurrency, getCurrentUTC, formatDateAuto, formatDateInUserTimeZone, formatNumber } from "@/lib/dateFormatting";
 import { FinancialCharts } from "./FinancialCharts";
 
@@ -74,7 +74,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
 
       // Get current payment period calculation
       const { data: currentCalculation, error: calcError } = await supabase
-        .from('driver_period_calculations')
+        .from('user_payment_periods')
         .select(`
           *,
           company_payment_periods (
@@ -83,7 +83,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
             status
           )
         `)
-        .eq('driver_user_id', user.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();

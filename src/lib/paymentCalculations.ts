@@ -19,14 +19,8 @@ export interface PaymentCalculation {
   total_deductions: number;
 }
 
-/**
- * 🚨 CRÍTICO - Calcula el total de ingresos dinámicamente
- * total_income = gross_earnings + other_income
- * NO MODIFICAR SIN AUTORIZACIÓN
- */
-export function calculateTotalIncome(calculation: PaymentCalculation): number {
-  return (calculation.gross_earnings || 0) + (calculation.other_income || 0);
-}
+// ❌ calculateTotalIncome() ELIMINADO - Ya no es necesario
+// El cálculo se hace directamente en calculateNetPayment()
 
 /**
  * 🚨 CRÍTICO - Calcula el pago neto dinámicamente
@@ -34,8 +28,12 @@ export function calculateTotalIncome(calculation: PaymentCalculation): number {
  * NO MODIFICAR SIN AUTORIZACIÓN - ESTA ES LA FUNCIÓN MÁS CRÍTICA
  */
 export function calculateNetPayment(calculation: PaymentCalculation): number {
-  const totalIncome = calculateTotalIncome(calculation);
-  return totalIncome - (calculation.fuel_expenses || 0) - (calculation.total_deductions || 0);
+  return (
+    (calculation.gross_earnings || 0) + 
+    (calculation.other_income || 0) - 
+    (calculation.fuel_expenses || 0) - 
+    (calculation.total_deductions || 0)
+  );
 }
 
 /**

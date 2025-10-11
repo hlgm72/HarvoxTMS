@@ -152,7 +152,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       
       // Obtener los cálculos primero
       const { data: calculations, error: calcError } = await supabase
-        .from('driver_period_calculations')
+        .from('user_payment_periods')
         .select('*')
         .eq('company_payment_period_id', periodId);
 
@@ -160,7 +160,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       if (!calculations || calculations.length === 0) return [];
 
       // Obtener los perfiles de los conductores
-      const driverIds = calculations.map(calc => calc.driver_user_id);
+      const driverIds = calculations.map(calc => calc.user_id);
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, first_name, last_name')
@@ -171,7 +171,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       // Combinar los datos
       return calculations.map(calc => ({
         ...calc,
-        profiles: profiles?.find(p => p.user_id === calc.driver_user_id) || null
+        profiles: profiles?.find(p => p.user_id === calc.user_id) || null
       }));
     },
     enabled: !!periodId

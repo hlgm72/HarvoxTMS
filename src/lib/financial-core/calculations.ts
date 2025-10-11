@@ -32,37 +32,8 @@ import {
 
 import { logFinancialOperation } from './audit';
 
-/**
- * 🚨 CRÍTICO - Calcula el total de ingresos
- * Fórmula: total_income = gross_earnings + other_income
- * 
- * @param calculation Datos de cálculo validados
- * @returns Total de ingresos redondeado
- */
-export function calculateTotalIncome(calculation: PaymentCalculation): number {
-  const operation = 'calculateTotalIncome';
-  
-  try {
-    // Validar entrada
-    if (!validatePaymentCalculation(calculation)) {
-      throw new Error('Invalid payment calculation data');
-    }
-
-    // Realizar cálculo
-    const result = roundCurrency(
-      (calculation.gross_earnings || 0) + (calculation.other_income || 0)
-    );
-
-    // Log de auditoría
-    logFinancialOperation(operation, calculation, result);
-
-    return result;
-  } catch (error) {
-    console.error(`🚨 Error in ${operation}:`, error);
-    logFinancialOperation(operation, calculation, null, error as Error);
-    throw new Error(`Financial calculation failed: ${operation}`);
-  }
-}
+// ❌ calculateTotalIncome() ELIMINADO - Ya no es necesario
+// El cálculo se hace directamente en calculateNetPayment()
 
 /**
  * 🚨 CRÍTICO - Calcula el pago neto
@@ -82,21 +53,16 @@ export function calculateNetPayment(calculation: PaymentCalculation): number {
       throw new Error('Invalid payment calculation data');
     }
 
-    // Calcular componentes
-    const totalIncome = calculateTotalIncome(calculation);
-    const totalExpenses = roundCurrency(
-      (calculation.fuel_expenses || 0) + (calculation.total_deductions || 0)
+    // 🎯 CÁLCULO DIRECTO: net_payment = gross_earnings + other_income - fuel_expenses - total_deductions
+    const result = roundCurrency(
+      (calculation.gross_earnings || 0) + 
+      (calculation.other_income || 0) - 
+      (calculation.fuel_expenses || 0) - 
+      (calculation.total_deductions || 0)
     );
 
-    // Calcular resultado final
-    const result = roundCurrency(totalIncome - totalExpenses);
-
-    // Log de auditoría con detalles extra
-    logFinancialOperation(operation, {
-      ...calculation,
-      calculated_total_income: totalIncome,
-      calculated_total_expenses: totalExpenses
-    }, result);
+    // Log de auditoría
+    logFinancialOperation(operation, calculation, result);
 
     return result;
   } catch (error) {
@@ -223,14 +189,16 @@ export function calculateCompleteFinancialResult(calculation: PaymentCalculation
     }
 
     // Calcular todos los componentes
-    const totalIncome = calculateTotalIncome(calculation);
+    const totalIncome = roundCurrency(
+      (calculation.gross_earnings || 0) + (calculation.other_income || 0)
+    );
     const totalExpenses = roundCurrency(calculation.fuel_expenses + calculation.total_deductions);
     const netPayment = calculateNetPayment(calculation);
     const hasNegativeBalance = calculateHasNegativeBalance(calculation);
 
     // Crear resultado
     const result: FinancialCalculationResult = {
-      total_income: totalIncome,
+      total_income: totalIncome,  // Calculado localmente para display
       total_expenses: totalExpenses,
       total_deductions: calculation.total_deductions,
       net_payment: netPayment,

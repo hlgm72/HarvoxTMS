@@ -24,9 +24,9 @@ export const useRecalculateDriverPeriod = () => {
       if (params.paymentPeriodId) {
         console.log('🔍 DIAGNÓSTICO: Buscando cálculo con paymentPeriodId:', params.paymentPeriodId);
         const { data: calculation, error: calcError } = await supabase
-          .from('driver_period_calculations')
+          .from('user_payment_periods')
           .select('id')
-          .eq('driver_user_id', params.driverUserId)
+          .eq('user_id', params.driverUserId)
           .eq('company_payment_period_id', params.paymentPeriodId)
           .single();
 
@@ -62,9 +62,9 @@ export const useRecalculateDriverPeriod = () => {
           console.log('🔍 DIAGNÓSTICO: Buscando driver_period_calculation para driver:', params.driverUserId);
           
           const { data: calculation, error: calcError } = await supabase
-            .from('driver_period_calculations')
+            .from('user_payment_periods')
             .select('id')
-            .eq('driver_user_id', params.driverUserId)
+            .eq('user_id', params.driverUserId)
             .eq('company_payment_period_id', load.payment_period_id)
             .single();
 

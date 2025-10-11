@@ -364,9 +364,9 @@ export function PDFAnalyzer() {
         if (matchingPeriod && enrichedTransaction.driver_user_id) {
           // Período existente encontrado - buscar el driver_period_calculation correspondiente
           const { data: driverPeriod } = await supabase
-            .from('driver_period_calculations')
+            .from('user_payment_periods')
             .select('id')
-            .eq('driver_user_id', enrichedTransaction.driver_user_id)
+            .eq('user_id', enrichedTransaction.driver_user_id)
             .eq('company_payment_period_id', matchingPeriod.id)
             .maybeSingle();
 
@@ -491,7 +491,7 @@ export function PDFAnalyzer() {
               // The ensurePaymentPeriodExists returns a driver_period_calculation ID
               // but we need the company_payment_period_id for the RPC function
               const { data: driverPeriod } = await supabase
-                .from('driver_period_calculations')
+                .from('user_payment_periods')
                 .select('company_payment_period_id')
                 .eq('id', generatedCompanyPeriodId)
                 .single();

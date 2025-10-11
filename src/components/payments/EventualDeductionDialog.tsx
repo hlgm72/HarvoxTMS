@@ -209,10 +209,10 @@ export function EventualDeductionDialog({
           
           // Verificar si existe el driver_period_calculation
           let { data: driverCalc, error: calcError } = await supabase
-            .from('driver_period_calculations')
+            .from('user_payment_periods')
             .select('id')
             .eq('company_payment_period_id', companyPeriod.id)
-            .eq('driver_user_id', formData.user_id)
+            .eq('user_id', formData.user_id)
             .maybeSingle();
 
           if (calcError && calcError.code !== 'PGRST116') {
@@ -226,10 +226,10 @@ export function EventualDeductionDialog({
           if (!driverCalc) {
             console.log('Creating new driver calculation...');
             const { data: newCalc, error: createError } = await supabase
-              .from('driver_period_calculations')
+              .from('user_payment_periods')
               .insert({
                 company_payment_period_id: companyPeriod.id,
-                driver_user_id: formData.user_id,
+                user_id: formData.user_id,
                 gross_earnings: 0,
                 total_deductions: 0,
                 other_income: 0,
