@@ -41,7 +41,7 @@ interface CleanupResult {
   message: string;
   user_id: string;
   deleted_counts: {
-    driver_period_calculations: number;
+    user_payment_periods: number;
     expense_instances: number;
     equipment_assignments: number;
     driver_fuel_cards: number;
@@ -210,7 +210,7 @@ export function UserActionButton({
         const cleanupData = data as unknown as CleanupResult;
         setCleanupResult(cleanupData);
         const totalDeleted = cleanupData.total_deleted || 0;
-        const calculationsDeleted = cleanupData.deleted_counts?.driver_period_calculations || 0;
+        const calculationsDeleted = cleanupData.deleted_counts?.user_payment_periods || 0;
         
         showSuccess(
           `Datos limpiados exitosamente: ${totalDeleted} registros eliminados` + 

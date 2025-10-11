@@ -244,7 +244,7 @@ export const useCreateLoad = () => {
       
       // ✅ La función SQL simple_load_operation_with_deductions se encarga de:
       // 1. Crear el período de pago usando create_payment_period_if_needed
-      // 2. Crear los driver_period_calculations para el conductor correcto
+      // 2. Crear los user_payment_periods para el usuario correcto
       // 3. Generar las deducciones automáticas
       console.log('✅ useCreateLoad - Payment period creation delegated to SQL function');
 

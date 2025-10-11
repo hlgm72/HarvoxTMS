@@ -319,7 +319,7 @@ export function PaymentReportDialog({
     console.log('🔍 Report Data - Deductions count:', deductions.length);
     console.log('🔍 Report Data - Deductions:', deductions);
     
-    // Usar los totales precalculados de driver_period_calculations
+    // Usar los totales precalculados de user_payment_periods
     console.log('💰 USING PRECALCULATED TOTALS FROM DB:');
     console.log('  Total Deductions from calculation:', calculation.total_deductions);
     console.log('  Gross Earnings from calculation:', calculation.gross_earnings);
