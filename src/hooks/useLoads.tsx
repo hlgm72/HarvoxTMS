@@ -112,6 +112,24 @@ const getRelevantPeriodIds = (
     case 'current':
       // Si hay fechas específicas en el filtro (período calculado), usarlas
       if (periodFilter.startDate && periodFilter.endDate) {
+        // Verificar si el período existe en la BD
+        const periodExistsInDB = periodFilter.periodId && allPeriods.some(p => p.id === periodFilter.periodId);
+        
+        if (!periodExistsInDB) {
+          console.log('⚠️ Período no existe en BD - usando filtro de fechas:', {
+            periodId: periodFilter.periodId,
+            startDate: periodFilter.startDate,
+            endDate: periodFilter.endDate,
+            allPeriodsCount: allPeriods.length
+          });
+          return {
+            periodIds: [],
+            useDateFilter: true,
+            startDate: periodFilter.startDate,
+            endDate: periodFilter.endDate
+          };
+        }
+        
         return {
           periodIds: [],
           useDateFilter: true,
