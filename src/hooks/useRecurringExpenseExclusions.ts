@@ -47,12 +47,19 @@ export const usePaymentPeriodsForExclusion = (userId: string, templateId: string
       // Obtener períodos abiertos de la empresa para este usuario
       const { data: periods, error: periodsError } = await supabase
         .from('user_payrolls')
-        .select('id, period_start_date, period_end_date, status, is_locked')
+        .select(`
+          id,
+          status,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            is_locked
+          )
+        `)
         .eq('company_id', companyId)
         .eq('user_id', userId)
         .eq('status', 'open')
-        .eq('is_locked', false)
-        .order('period_start_date', { ascending: true });
+        .order('created_at', { ascending: true });
 
       if (periodsError) throw periodsError;
 
@@ -70,10 +77,17 @@ export const usePaymentPeriodsForExclusion = (userId: string, templateId: string
       const excludedPeriodIds = new Set(exclusions?.map(e => e.payment_period_id) || []);
 
       // Marcar períodos como excluidos
-      const periodsWithExclusionStatus = periods.map(period => ({
-        ...period,
-        is_excluded: excludedPeriodIds.has(period.id)
-      }));
+      const periodsWithExclusionStatus = periods.map(period => {
+        const pData = period as any;
+        return {
+          id: pData.id,
+          period_start_date: pData.period?.period_start_date,
+          period_end_date: pData.period?.period_end_date,
+          status: pData.status,
+          is_locked: pData.period?.is_locked || false,
+          is_excluded: excludedPeriodIds.has(pData.id)
+        };
+      });
 
       return periodsWithExclusionStatus as PaymentPeriodForExclusion[];
     },

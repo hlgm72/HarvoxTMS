@@ -238,8 +238,8 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">
-            {period.period?.period_start_date && period.period?.period_end_date 
-              ? formatPaymentPeriod(period.period.period_start_date, period.period.period_end_date)
+            {(period as any).period?.period_start_date && (period as any).period?.period_end_date 
+              ? formatPaymentPeriod((period as any).period.period_start_date, (period as any).period.period_end_date)
               : 'Período sin fechas'}
           </h3>
           <div className="flex items-center gap-2 mt-1">
@@ -541,14 +541,14 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.period_label')}</p>
                   <p className="font-semibold">
-                    {period.period?.period_start_date && period.period?.period_end_date
-                      ? formatPaymentPeriod(period.period.period_start_date, period.period.period_end_date)
+                    {(period as any).period?.period_start_date && (period as any).period?.period_end_date
+                      ? formatPaymentPeriod((period as any).period.period_start_date, (period as any).period.period_end_date)
                       : 'N/A'}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.frequency_label')}</p>
-                  <p className="font-semibold">{period.period?.period_frequency || 'N/A'}</p>
+                  <p className="font-semibold">{(period as any).period?.period_frequency || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.status_label')}</p>

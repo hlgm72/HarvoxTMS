@@ -208,8 +208,10 @@ export default function PaymentReports() {
       
       // Ordenar por fecha de inicio del período (más reciente primero) usando formateo seguro
       const sortedData = (data || []).sort((a, b) => {
-        const dateA = formatDateSafe(a.period_start_date, 'yyyy-MM-dd');
-        const dateB = formatDateSafe(b.period_start_date, 'yyyy-MM-dd');
+        const aData = a as any;
+        const bData = b as any;
+        const dateA = formatDateSafe(aData.period?.period_start_date, 'yyyy-MM-dd');
+        const dateB = formatDateSafe(bData.period?.period_start_date, 'yyyy-MM-dd');
         return dateB.localeCompare(dateA); // Descendente (más reciente primero)
       });
       
@@ -449,8 +451,8 @@ export default function PaymentReports() {
                             </h4>
                             <span className="text-sm font-medium text-primary/70">
                               ({formatPeriodLabel(
-                                calculation.period_start_date,
-                                calculation.period_end_date
+                                (calculation as any).period?.period_start_date,
+                                (calculation as any).period?.period_end_date
                               )})
                             </span>
                           </div>
@@ -464,8 +466,8 @@ export default function PaymentReports() {
                           <span className="flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-blue-600" />
                             {formatPaymentPeriod(
-                              calculation.period_start_date,
-                              calculation.period_end_date
+                              (calculation as any).period?.period_start_date,
+                              (calculation as any).period?.period_end_date
                             )}
                           </span>
                           {calculation.payment_date && (

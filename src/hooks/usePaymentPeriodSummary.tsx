@@ -46,14 +46,14 @@ export function usePaymentPeriodSummary(periodId?: string) {
       }
       
       // Get company_id directly from the period
-      const { data: periodData, error: periodError } = await supabase
+      const { data: periodResult, error: periodError } = await supabase
         .from('user_payrolls')
         .select('company_id')
         .eq('id', periodId)
         .maybeSingle();
 
       if (periodError) throw periodError;
-      if (!periodData) return {
+      if (!periodResult) return {
         period_id: periodId,
         gross_earnings: 0,
         other_income: 0,
@@ -66,10 +66,10 @@ export function usePaymentPeriodSummary(periodId?: string) {
 
       // 🚨 RECÁLCULO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
       // FORZAR recálculo completo para asegurar datos correctos después del revert
-      console.log('🔄 Forzando recálculo completo de la empresa:', periodData.company_id);
+      console.log('🔄 Forzando recálculo completo de la empresa:', periodResult.company_id);
       const { data: integrityResult, error: integrityError } = await supabase
         .rpc('verify_and_recalculate_company_payments', {
-          target_company_id: periodData.company_id
+          target_company_id: periodResult.company_id
         });
 
       if (integrityError) {
@@ -82,8 +82,17 @@ export function usePaymentPeriodSummary(periodId?: string) {
       // Obtener todos los user_payrolls para todos los usuarios de esta empresa
       const { data: allUserPeriods, error } = await supabase
         .from('user_payrolls')
-        .select('id, period_start_date, period_end_date, company_id, status, user_id')
-        .eq('company_id', periodData.company_id);
+        .select(`
+          id,
+          company_id,
+          status,
+          user_id,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
+        .eq('company_id', periodResult.company_id);
 
       if (error) throw error;
       if (!allUserPeriods || allUserPeriods.length === 0) return {
@@ -100,20 +109,28 @@ export function usePaymentPeriodSummary(periodId?: string) {
       // Para calcular el summary, sumamos todos los user_payrolls que coincidan con las fechas del período actual
       const periodStart = await supabase
         .from('user_payrolls')
-        .select('period_start_date, period_end_date')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
         .eq('id', periodId)
         .maybeSingle();
 
-      const relevantPeriods = allUserPeriods.filter(p => 
-        p.period_start_date === periodStart.data?.period_start_date &&
-        p.period_end_date === periodStart.data?.period_end_date
-      );
+      const periodData = periodStart.data as any;
+      const relevantPeriods = allUserPeriods.filter(p => {
+        const pData = p as any;
+        return pData.period?.period_start_date === periodData?.period?.period_start_date &&
+               pData.period?.period_end_date === periodData?.period?.period_end_date;
+      });
 
       // Obtener todos los cálculos de conductores para estos períodos
       const { data: driverCalculations, error: calcError } = await supabase
         .from('user_payrolls')
         .select('*')
-        .in('id', relevantPeriods.map(p => p.id));
+        .in('id', relevantPeriods.map(p => (p as any).id));
 
       if (error) throw error;
 
@@ -184,9 +201,15 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
       // Obtener todos los cálculos de la empresa
       const { data: allCalculations, error: calcError } = await supabase
         .from('user_payrolls')
-        .select('*')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
         .eq('company_id', companyId)
-        .order('period_start_date', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (calcError) throw calcError;
 
@@ -198,7 +221,8 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
       const summaryMap = new Map<string, PaymentPeriodSummary>();
 
       allCalculations.forEach(calc => {
-        const periodKey = `${calc.period_start_date}-${calc.period_end_date}`;
+        const calcData = calc as any;
+        const periodKey = `${calcData.period?.period_start_date}-${calcData.period?.period_end_date}`;
         
         if (!summaryMap.has(periodKey)) {
           summaryMap.set(periodKey, {

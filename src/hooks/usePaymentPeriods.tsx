@@ -83,19 +83,20 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
 
       // Agrupar por período (start_date, end_date, frequency) para compatibilidad
       const groupedByPeriod = (userPeriods || []).reduce((acc: any[], period) => {
-        const key = `${period.period_start_date}-${period.period_end_date}`;
-        const existing = acc.find(p => `${p.period_start_date}-${p.period_end_date}` === key);
+        const pData = period as any;
+        const key = `${pData.period?.period_start_date}-${pData.period?.period_end_date}`;
+        const existing = acc.find((p: any) => `${p.period?.period_start_date}-${p.period?.period_end_date}` === key);
         
         if (!existing) {
           acc.push({
-            id: period.id, // Usar el primer ID como representativo
-            company_id: period.company_id,
-            period_start_date: period.period_start_date,
-            period_end_date: period.period_end_date,
-            period_frequency: period.period_frequency,
-            status: period.status,
-            period_type: period.period_type,
-            is_locked: period.is_locked
+            id: pData.id,
+            company_id: pData.company_id,
+            period_start_date: pData.period?.period_start_date,
+            period_end_date: pData.period?.period_end_date,
+            period_frequency: pData.period?.period_frequency,
+            status: pData.status,
+            period_type: pData.period?.period_type,
+            is_locked: pData.period?.is_locked
           });
         }
         return acc;
@@ -171,11 +172,18 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
       // Buscar período actual abierto de la empresa que incluya la fecha actual
       let { data: period, error } = await supabase
         .from('user_payrolls')
-        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency,
+            is_locked
+          )
+        `)
         .eq('company_id', targetCompanyId)
-        .lte('period_start_date', currentDate)
-        .gte('period_end_date', currentDate)
         .in('status', ['open', 'processing'])
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
@@ -183,7 +191,20 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         throw error;
       }
 
-      return period || null;
+      if (!period) return null;
+
+      // Extract nested period data
+      const periodData = period as any;
+      return {
+        id: periodData.id,
+        company_id: periodData.company_id,
+        period_start_date: periodData.period?.period_start_date || '',
+        period_end_date: periodData.period?.period_end_date || '',
+        period_frequency: periodData.period?.period_frequency || '',
+        status: periodData.status,
+        period_type: 'regular',
+        is_locked: periodData.period?.is_locked || false
+      } as PaymentPeriod;
     },
     enabled: !!user,
   });
@@ -227,18 +248,25 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
       // Buscar el período anterior más reciente de user_payrolls
       const { data: period, error } = await supabase
         .from('user_payrolls')
-        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency,
+            is_locked
+          )
+        `)
         .eq('company_id', targetCompanyId)
-        .lt('period_end_date', currentDate)
-        .order('period_end_date', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       console.log('🔍 usePreviousPaymentPeriod - DB Result:', {
         period,
         error,
-        period_start_date: period?.period_start_date,
-        period_end_date: period?.period_end_date,
+        period_start_date: (period as any)?.period?.period_start_date,
+        period_end_date: (period as any)?.period?.period_end_date,
         status: period?.status
       });
 
@@ -246,7 +274,20 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         throw error;
       }
 
-      return period || null;
+      if (!period) return null;
+
+      // Extract nested period data
+      const periodData = period as any;
+      return {
+        id: periodData.id,
+        company_id: periodData.company_id,
+        period_start_date: periodData.period?.period_start_date || '',
+        period_end_date: periodData.period?.period_end_date || '',
+        period_frequency: periodData.period?.period_frequency || '',
+        status: periodData.status,
+        period_type: 'regular',
+        is_locked: periodData.period?.is_locked || false
+      } as PaymentPeriod;
     },
     enabled: !!user,
   });
@@ -285,10 +326,17 @@ export const useNextPaymentPeriod = (companyId?: string) => {
       // Buscar el siguiente período de user_payrolls
       let { data: period, error } = await supabase
         .from('user_payrolls')
-        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency,
+            is_locked
+          )
+        `)
         .eq('company_id', targetCompanyId)
-        .gt('period_start_date', currentDate)
-        .order('period_start_date', { ascending: true })
+        .order('created_at', { ascending: true })
         .limit(1)
         .maybeSingle();
 
@@ -296,7 +344,20 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         throw error;
       }
 
-      return period || null;
+      if (!period) return null;
+
+      // Extract nested period data
+      const periodData = period as any;
+      return {
+        id: periodData.id,
+        company_id: periodData.company_id,
+        period_start_date: periodData.period?.period_start_date || '',
+        period_end_date: periodData.period?.period_end_date || '',
+        period_frequency: periodData.period?.period_frequency || '',
+        status: periodData.status,
+        period_type: 'regular',
+        is_locked: periodData.period?.is_locked || false
+      } as PaymentPeriod;
     },
     enabled: !!user,
   });
