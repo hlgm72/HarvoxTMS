@@ -178,31 +178,26 @@ export default function PaymentReports() {
         `)
         .order('created_at', { ascending: false });
 
-      // ✅ CORREGIDO: Filtrar por company_payment_period_id cuando sea posible
-      // No podemos filtrar directamente por campos del JOIN, así que filtramos por IDs o en cliente
-      if (filters.periodFilter.periodId?.startsWith('calculated-')) {
-        // Para períodos calculados, filtrar en cliente después
-        console.log('📊 Calculated period detected - will filter on client side');
-      } else if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
-        // Para períodos reales de BD, usar company_payment_period_id directamente
+      // ✅ CORREGIDO: Determinar si necesitamos filtrar en BD o en cliente
+      const needsClientSideFiltering = 
+        filters.periodFilter.periodId?.startsWith('calculated-') ||
+        filters.periodFilter.type === 'custom' ||
+        filters.periodFilter.type === 'this_month' ||
+        filters.periodFilter.type === 'this_quarter' ||
+        filters.periodFilter.type === 'this_year' ||
+        (filters.periodFilter.startDate && filters.periodFilter.endDate);
+
+      if (needsClientSideFiltering) {
+        // Para períodos calculados o rangos de fechas, obtener todos y filtrar en cliente
+        console.log('📊 Will filter on client side - fetching all periods');
+      } else if (getFilterPeriodIds.length > 0) {
+        // Para períodos específicos de BD (current, previous, next, specific)
         console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
-      } else if (
-        (filters.periodFilter.type === 'custom' || 
-         filters.periodFilter.type === 'previous' || 
-         filters.periodFilter.type === 'current' ||
-         filters.periodFilter.type === 'next') && 
-        filters.periodFilter.startDate && 
-        filters.periodFilter.endDate
-      ) {
-        // Para filtros con fechas específicas, filtrar en cliente después
-        console.log('📊 Date range filter - will filter on client side');
       } else if (filters.periodFilter.type === 'all') {
         console.log('📊 Showing all periods - no filter applied');
-        // No agregar filtro para mostrar todos
       } else {
-        console.log('📊 No period filter applied - no period IDs available yet');
-        // Si no hay IDs de período, devolver array vacío para evitar mostrar todos
+        console.log('📊 No period filter applied - returning empty');
         return [];
       }
 
@@ -220,6 +215,9 @@ export default function PaymentReports() {
       
       if ((filters.periodFilter.periodId?.startsWith('calculated-') || 
            filters.periodFilter.type === 'custom' ||
+           filters.periodFilter.type === 'this_month' ||
+           filters.periodFilter.type === 'this_quarter' ||
+           filters.periodFilter.type === 'this_year' ||
            filters.periodFilter.type === 'previous' ||
            filters.periodFilter.type === 'current' ||
            filters.periodFilter.type === 'next') &&
