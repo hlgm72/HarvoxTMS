@@ -38,68 +38,30 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
       setIsValidating(true);
 
       try {
-        console.log('🔍 BUILDING QUERY for load_number:', debouncedLoadNumber);
+        console.log('🔍 CALLING RPC check_load_number_exists:', {
+          load_number: debouncedLoadNumber,
+          exclude_load_id: excludeLoadId
+        });
         
-        // Primero obtenemos la info del usuario y su compañía
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          setError('Usuario no autenticado');
-          return;
-        }
+        // Llamar a la función RPC que verifica duplicados sin restricciones RLS
+        const { data: loadExists, error: rpcError } = await supabase
+          .rpc('check_load_number_exists', {
+            load_number_param: debouncedLoadNumber,
+            exclude_load_id_param: excludeLoadId || null
+          });
 
-        // Obtenemos la compañía del usuario
-        const { data: userCompany } = await supabase
-          .from('user_company_roles')
-          .select('company_id')
-          .eq('user_id', user.id)
-          .eq('is_active', true)
-          .limit(1)
-          .maybeSingle();
-
-        if (!userCompany) {
-          setError('No se encontró la compañía del usuario');
-          return;
-        }
-
-        // Ahora buscamos cargas con ese número que pertenezcan a la compañía
-        // Ya sea por tener un conductor de la compañía o por haber sido creadas por alguien de la compañía
-        const { data: companyDrivers } = await supabase
-          .from('user_company_roles')
-          .select('user_id')
-          .eq('company_id', userCompany.company_id)
-          .eq('is_active', true);
-
-        const companyUserIds = companyDrivers?.map(d => d.user_id) || [];
-
-        let query = supabase
-          .from('loads')
-          .select('id, load_number')
-          .eq('load_number', debouncedLoadNumber)
-          .or(`driver_user_id.in.(${companyUserIds.join(',')}),created_by.in.(${companyUserIds.join(',')})`);
-        
-        // Si estamos editando, excluir la carga actual
-        if (excludeLoadId) {
-          console.log('🔍 EXCLUDING load ID:', excludeLoadId);
-          query = query.neq('id', excludeLoadId);
-        }
-        
-        console.log('🔍 EXECUTING QUERY...');
-        const { data, error: queryError } = await query
-          .limit(1)
-          .maybeSingle();
-
-        console.log('🔍🔍🔍 QUERY RESULT:', {
-          data,
-          error: queryError,
-          isDuplicate: !!data,
+        console.log('🔍🔍🔍 RPC RESULT:', {
+          loadExists,
+          error: rpcError,
+          isDuplicate: loadExists === true,
           loadNumber: debouncedLoadNumber
         });
 
-        if (queryError) {
-          console.error('🚨 QUERY ERROR:', queryError);
+        if (rpcError) {
+          console.error('🚨 RPC ERROR:', rpcError);
           setError('Error al validar número de carga');
         } else {
-          const isDuplicateResult = !!data;
+          const isDuplicateResult = loadExists === true;
           console.log('🔍 SETTING isDuplicate to:', isDuplicateResult);
           setIsDuplicate(isDuplicateResult);
         }

@@ -3478,6 +3478,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      check_load_number_exists: {
+        Args: { exclude_load_id_param?: string; load_number_param: string }
+        Returns: boolean
+      }
       check_mass_period_creation: {
         Args: Record<PropertyKey, never>
         Returns: {
