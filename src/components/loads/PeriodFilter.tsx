@@ -345,6 +345,31 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   </Button>
 
                   <Button
+                    variant={value.type === 'this_quarter' ? 'default' : 'ghost'}
+                    className="w-full justify-start"
+                    onClick={() => handleDateRangeSelect('this_quarter')}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    {(() => {
+                      const now = new Date();
+                      const quarter = Math.ceil((now.getMonth() + 1) / 3);
+                      return `This Quarter (Q${quarter} ${now.getFullYear()})`;
+                    })()}
+                  </Button>
+
+                  <Button
+                    variant={value.type === 'this_year' ? 'default' : 'ghost'}
+                    className="w-full justify-start"
+                    onClick={() => handleDateRangeSelect('this_year')}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    {(() => {
+                      const now = new Date();
+                      return `This Year (${now.getFullYear()})`;
+                    })()}
+                  </Button>
+
+                  <Button
                     variant={value.type === 'all' ? 'default' : 'ghost'}
                     className="w-full justify-start"
                     onClick={() => handleOptionSelect({ type: 'all' })}
