@@ -3174,7 +3174,6 @@ export type Database = {
           total_deductions: number
           updated_at: string
           user_id: string
-          user_role: string | null
         }
         Insert: {
           balance_alert_message?: string | null
@@ -3200,7 +3199,6 @@ export type Database = {
           total_deductions?: number
           updated_at?: string
           user_id: string
-          user_role?: string | null
         }
         Update: {
           balance_alert_message?: string | null
@@ -3226,7 +3224,6 @@ export type Database = {
           total_deductions?: number
           updated_at?: string
           user_id?: string
-          user_role?: string | null
         }
         Relationships: [
           {
