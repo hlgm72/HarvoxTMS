@@ -85,43 +85,21 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       errors.push(t("loads:create_wizard.validation.last_delivery"));
     }
 
-    // Validate each stop has required fields (only if showFieldValidations is true)
+    // Validate dates are required (only if showFieldValidations is true)
+    // Address fields are optional
     if (showFieldValidations) {
       stops.forEach((stop, index) => {
         const stopNumber = index + 1;
-        const fieldsErrors: string[] = [];
         
-        if (!stop.company_name.trim()) {
-          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_company"));
-        }
-        if (!stop.address.trim()) {
-          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_address"));
-        }
-        if (!stop.city.trim()) {
-          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_city"));
-        }
-        if (!stop.state.trim()) {
-          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_state"));
-        }
-
-        // Validación obligatoria de fecha para todas las paradas
+        // Solo validar fecha - los campos de dirección son opcionales
         if (!stop.scheduled_date) {
-          fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_date"));
+          const stopType = stop.stop_type === 'pickup' ? 'P' : 'D';
+          errors.push(t("loads:create_wizard.validation.stops_missing_fields", { 
+            stopType, 
+            number: stopNumber, 
+            fields: t("loads:create_wizard.validation.stops_missing_date")
+          }));
         }
-
-        if (fieldsErrors.length > 0) {
-          stopErrors[stopNumber] = fieldsErrors;
-        }
-      });
-
-      // Convertir errores agrupados en mensajes compactos
-      Object.entries(stopErrors).forEach(([stopNum, fieldErrors]) => {
-        const stopType = stops[parseInt(stopNum) - 1]?.stop_type === 'pickup' ? 'P' : 'D';
-        errors.push(t("loads:create_wizard.validation.stops_missing_fields", { 
-          stopType, 
-          number: stopNum, 
-          fields: fieldErrors.join(', ') 
-        }));
       });
     }
 
