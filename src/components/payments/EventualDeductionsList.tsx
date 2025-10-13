@@ -7,12 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatPaymentPeriod, formatDetailedPaymentPeriod, formatDeductionDate, formatDateInUserTimeZone, convertUserDateToUTC } from "@/lib/dateFormatting";
-import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2 } from "lucide-react";
+import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2, Lock } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { useTranslation } from 'react-i18next';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -335,6 +336,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
     return expense.status === 'planned';
   };
 
+  const isAutomaticDeduction = (expense: any) => {
+    return expense.expense_types?.category === 'percentage_deduction';
+  };
+
   if (eventualDeductions.length === 0) {
     return (
       <div className="text-center py-8">
@@ -376,6 +381,12 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 </div>
                 <div className="flex items-center gap-2">
                   {getStatusBadge(deduction.status)}
+                  {isAutomaticDeduction(deduction) && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      Automática
+                    </Badge>
+                  )}
                   {deduction.is_critical && (
                     <Badge variant="destructive" className="flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
@@ -401,25 +412,68 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  {canEdit(deduction) && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditExpense(deduction)}
-                      className="h-8"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDeletingExpense(deduction)}
-                    className="text-destructive hover:text-destructive h-8"
-                    disabled={deduction.status === 'applied'}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <TooltipProvider>
+                    {canEdit(deduction) && !isAutomaticDeduction(deduction) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditExpense(deduction)}
+                        className="h-8"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                    
+                    {isAutomaticDeduction(deduction) ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="h-8"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Las deducciones automáticas no se pueden editar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : null}
+                    
+                    {isAutomaticDeduction(deduction) ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="text-destructive hover:text-destructive h-8"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Las deducciones automáticas no se pueden eliminar manualmente</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDeletingExpense(deduction)}
+                        className="text-destructive hover:text-destructive h-8"
+                        disabled={deduction.status === 'applied'}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </TooltipProvider>
                 </div>
               </div>
 
