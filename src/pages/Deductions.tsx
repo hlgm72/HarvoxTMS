@@ -22,7 +22,24 @@ export default function Deductions() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("period");
-  const { data: stats, isLoading: statsLoading } = useDeductionsStats();
+  
+  // Estado de filtros - adaptado para sistema universal
+  const [filters, setFilters] = useState({
+    search: '',
+    status: "all",
+    driverId: "all",
+    expenseTypeId: "all",
+    periodFilter: { type: 'current' as const }
+  });
+
+  // ✅ Pasar tab activo y filtros al hook de estadísticas
+  const { data: stats, isLoading: statsLoading } = useDeductionsStats({
+    activeTab,
+    driverId: filters.driverId,
+    expenseTypeId: filters.expenseTypeId,
+    periodFilter: filters.periodFilter
+  });
+  
   const { data: expenseTypes = [] } = useExpenseTypes();
   
   // Fetch company drivers using useConsolidatedDrivers
@@ -32,15 +49,6 @@ export default function Deductions() {
     first_name: d.first_name,
     last_name: d.last_name
   }));
-
-  // Estado de filtros - adaptado para sistema universal
-  const [filters, setFilters] = useState({
-    search: '',
-    status: "all",
-    driverId: "all",
-    expenseTypeId: "all",
-    periodFilter: { type: 'current' as const }
-  });
 
   // Estado de configuración de vista
   const [viewConfig, setViewConfig] = useState({
@@ -69,13 +77,24 @@ export default function Deductions() {
     queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
   };
 
-  // Generar subtitle con datos reales
+  // ✅ Generar subtitle dinámico según el tab activo
   const getSubtitle = () => {
     if (statsLoading || !stats) {
       return t("deductions.loadingStats");
     }
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
+    
+    // Diferentes etiquetas según el tab activo
+    if (activeTab === 'period') {
+      return `${activeTemplates} ${t("deductions.periodDeductions")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.totalAmount")} • ${affectedDrivers} ${t("deductions.drivers")}`;
+    } else if (activeTab === 'recurring') {
+      return `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
+    } else if (activeTab === 'expense-types') {
+      return t("deductions.expenseTypesSubtitle");
+    } else if (activeTab === 'history') {
+      return t("deductions.historySubtitle");
+    }
     
     return `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
   };
