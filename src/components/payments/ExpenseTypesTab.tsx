@@ -68,15 +68,10 @@ export function ExpenseTypesTab() {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       // First check if there are any templates using this expense type
-      const { data: templates, error: checkError } = await supabase
+      const { data: templates } = await supabase
         .from('expense_recurring_templates')
         .select('id')
         .eq('expense_type_id', id);
-      
-      if (checkError) {
-        console.error("Error checking templates:", checkError);
-        throw checkError;
-      }
       
       if (templates && templates.length > 0) {
         throw new Error(
@@ -91,14 +86,13 @@ export function ExpenseTypesTab() {
         .eq('id', id);
       
       if (error) {
-        console.error("Error from database:", error);
         // Check if it's a foreign key constraint error
         if (error.code === '23503' || error.message?.includes('foreign key constraint')) {
           throw new Error(
-            'No se puede eliminar este tipo de gasto porque está siendo usado en otras tablas del sistema. Elimine primero todos los registros relacionados.'
+            'No se puede eliminar este tipo de gasto porque está siendo usado en otras tablas del sistema.'
           );
         }
-        throw error;
+        throw new Error(error.message || 'Error al eliminar el tipo de gasto');
       }
     },
     onSuccess: () => {
@@ -108,12 +102,8 @@ export function ExpenseTypesTab() {
       setIsDeleteDialogOpen(false);
       setSelectedExpenseType(null);
     },
-    onError: (error: any) => {
-      console.error("Error deleting expense type:", error);
-      const errorMessage = error?.message || t("deductions.errors.deleteFailed");
-      toast.error(errorMessage, {
-        duration: 6000,
-      });
+    onError: (error: Error) => {
+      toast.error(error.message);
       setIsDeleteDialogOpen(false);
     }
   });

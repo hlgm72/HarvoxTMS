@@ -384,7 +384,13 @@ const App = () => {
         <UserProfileProvider>
           <NotificationProvider>
             <AppContent />
-            <Toaster position="top-right" richColors />
+            <Toaster 
+              position="top-center" 
+              expand={true}
+              richColors 
+              closeButton
+              duration={5000}
+            />
           </NotificationProvider>
         </UserProfileProvider>
       </AuthProvider>
