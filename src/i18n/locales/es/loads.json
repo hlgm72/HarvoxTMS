@@ -104,8 +104,8 @@
       "assignment": {
         "title": "Asignación",
         "description": "Conductor y dispatcher",
-        "card_description": "Asignaciones",
-        "card_title": "Asigna personal para manejar esta carga",
+        "card_description": "Asignar Cliente, Conductor y Dispatcher",
+        "card_title": "Asignaciones",
         "driver_section": {
           "title": "Conductor (Requerido)",
           "placeholder": "Selecciona un conductor...",

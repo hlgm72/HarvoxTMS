@@ -104,8 +104,8 @@
       "assignment": {
         "title": "Assignment",
         "description": "Driver and dispatcher",
-        "card_description": "Assignments",
-        "card_title": "Assign personnel to handle this load",
+        "card_description": "Assign Client, Driver and Dispatcher",
+        "card_title": "Assignments",
         "driver_section": {
           "title": "Driver (Required)",
           "placeholder": "Select a driver...",
