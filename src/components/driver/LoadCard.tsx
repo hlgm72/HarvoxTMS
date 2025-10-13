@@ -39,6 +39,9 @@ interface LoadCardProps {
     latest_status_notes?: string;
     latest_status_eta?: string;
     stops?: any[];
+    factoring_percentage?: number;
+    dispatching_percentage?: number;
+    leasing_percentage?: number;
   };
   onUpdateStatus: (loadId: string, newStatus: string, actionText: string, stopId?: string, stopInfo?: any) => void;
   onUploadPOD: (loadId: string) => void;
@@ -95,6 +98,21 @@ export function LoadCard({
     }
   };
 
+  // Build percentage display string only if there are percentages
+  const buildPercentageDisplay = () => {
+    const percentages: string[] = [];
+    if (load.factoring_percentage && load.factoring_percentage > 0) {
+      percentages.push(`F: ${load.factoring_percentage}%`);
+    }
+    if (load.dispatching_percentage && load.dispatching_percentage > 0) {
+      percentages.push(`D: ${load.dispatching_percentage}%`);
+    }
+    if (load.leasing_percentage && load.leasing_percentage > 0) {
+      percentages.push(`L: ${load.leasing_percentage}%`);
+    }
+    return percentages.length > 0 ? ` (${percentages.join(', ')})` : '';
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-3">
@@ -105,7 +123,7 @@ export function LoadCard({
             <span>
               {/* "Load #" visible solo en pantallas grandes */}
               <span className="hidden md:inline">Load #</span>
-              {load.load_number} ({formatCurrencyAmount(load.total_amount)})
+              {load.load_number} ({formatCurrencyAmount(load.total_amount)}){buildPercentageDisplay()}
             </span>
           </div>
           <div className="flex items-center gap-2">
