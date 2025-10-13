@@ -91,7 +91,7 @@ export function StopListItem({
       parts.push(stop.zip_code);
     }
     
-    return parts.join(', ') || t("loads:create_wizard.phases.route_details.incomplete_address");
+    return parts.join(', ') || t("loads:create_wizard.phases.route_details.address_not_provided");
   };
 
   return (

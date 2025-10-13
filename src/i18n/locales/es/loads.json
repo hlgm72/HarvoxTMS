@@ -55,6 +55,7 @@
         "pickup": "Recogida",
         "delivery": "Entrega", 
         "incomplete_address": "Falta Fecha programada",
+        "address_not_provided": "Dirección no proporcionada",
         "stop_prefix": {
           "pickup": "P{{number}}:",
           "delivery": "D{{number}}:"

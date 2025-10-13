@@ -55,6 +55,7 @@
         "pickup": "Pickup",
         "delivery": "Delivery",
         "incomplete_address": "Missing Scheduled Date",
+        "address_not_provided": "Address not provided",
         "stop_prefix": {
           "pickup": "P{{number}}:",
           "delivery": "D{{number}}:"
