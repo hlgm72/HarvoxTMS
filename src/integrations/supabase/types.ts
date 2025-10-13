@@ -3161,9 +3161,6 @@ export type Database = {
           gross_earnings: number
           has_negative_balance: boolean
           id: string
-          is_locked: boolean | null
-          locked_at: string | null
-          locked_by: string | null
           net_payment: number
           other_income: number
           paid_at: string | null
@@ -3173,10 +3170,6 @@ export type Database = {
           payment_notes: string | null
           payment_reference: string | null
           payment_status: string | null
-          period_end_date: string
-          period_frequency: string
-          period_start_date: string
-          period_type: string | null
           status: string | null
           total_deductions: number
           updated_at: string
@@ -3194,9 +3187,6 @@ export type Database = {
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
-          is_locked?: boolean | null
-          locked_at?: string | null
-          locked_by?: string | null
           net_payment?: number
           other_income?: number
           paid_at?: string | null
@@ -3206,10 +3196,6 @@ export type Database = {
           payment_notes?: string | null
           payment_reference?: string | null
           payment_status?: string | null
-          period_end_date: string
-          period_frequency?: string
-          period_start_date: string
-          period_type?: string | null
           status?: string | null
           total_deductions?: number
           updated_at?: string
@@ -3227,9 +3213,6 @@ export type Database = {
           gross_earnings?: number
           has_negative_balance?: boolean
           id?: string
-          is_locked?: boolean | null
-          locked_at?: string | null
-          locked_by?: string | null
           net_payment?: number
           other_income?: number
           paid_at?: string | null
@@ -3239,10 +3222,6 @@ export type Database = {
           payment_notes?: string | null
           payment_reference?: string | null
           payment_status?: string | null
-          period_end_date?: string
-          period_frequency?: string
-          period_start_date?: string
-          period_type?: string | null
           status?: string | null
           total_deductions?: number
           updated_at?: string

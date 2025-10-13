@@ -14,15 +14,9 @@ export interface UserPaymentPeriod {
   id: string;
   user_id: string;
   company_id: string;
-  period_start_date: string;
-  period_end_date: string;
-  period_frequency: string;
-  period_type: string;
+  company_payment_period_id: string;
   payment_date?: string;
   status: string;
-  is_locked: boolean;
-  locked_at?: string;
-  locked_by?: string;
   gross_earnings: number;
   fuel_expenses: number;
   total_deductions: number;
@@ -31,10 +25,15 @@ export interface UserPaymentPeriod {
   payment_status: string;
   created_at: string;
   updated_at: string;
+  // Campos del JOIN con company_payment_periods
+  period_start_date?: string;
+  period_end_date?: string;
+  period_frequency?: string;
 }
 
-// Para mantener compatibilidad, agrupamos períodos por fechas
+// Para mantener compatibilidad, agrupamos períodos por company_payment_period_id
 export interface GroupedPeriod {
+  company_payment_period_id: string;
   period_start_date: string;
   period_end_date: string;
   period_frequency: string;
@@ -52,9 +51,16 @@ export function useUserPaymentPeriods(companyId?: string, userId?: string) {
       
       let query = supabase
         .from('user_payrolls')
-        .select('*')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency
+          )
+        `)
         .eq('company_id', companyId)
-        .order('period_start_date', { ascending: false });
+        .order('created_at', { ascending: false });
 
       // Si se especifica userId, filtrar solo por ese usuario
       if (userId) {
@@ -64,27 +70,35 @@ export function useUserPaymentPeriods(companyId?: string, userId?: string) {
       const { data, error } = await query;
 
       if (error) throw error;
-      return data as UserPaymentPeriod[];
+      
+      // Aplanar los datos del período
+      return (data || []).map(item => ({
+        ...item,
+        period_start_date: item.period?.period_start_date || '',
+        period_end_date: item.period?.period_end_date || '',
+        period_frequency: item.period?.period_frequency || '',
+      })) as UserPaymentPeriod[];
     },
     enabled: !!companyId,
   });
 }
 
 // Hook para mantener compatibilidad con código antiguo
-// Devuelve períodos agrupados por fechas
+// Devuelve períodos agrupados por company_payment_period_id
 export function useCompanyPaymentPeriods(companyId?: string) {
   const { data: allUserPeriods, ...rest } = useUserPaymentPeriods(companyId);
 
-  // Agrupar por período (start_date, end_date)
+  // Agrupar por company_payment_period_id
   const groupedPeriods: GroupedPeriod[] = allUserPeriods
     ? Object.values(
         allUserPeriods.reduce((acc, period) => {
-          const key = `${period.period_start_date}-${period.period_end_date}`;
+          const key = period.company_payment_period_id;
           if (!acc[key]) {
             acc[key] = {
-              period_start_date: period.period_start_date,
-              period_end_date: period.period_end_date,
-              period_frequency: period.period_frequency,
+              company_payment_period_id: period.company_payment_period_id,
+              period_start_date: period.period_start_date || '',
+              period_end_date: period.period_end_date || '',
+              period_frequency: period.period_frequency || '',
               status: period.status,
               user_periods: [],
               total_net_payment: 0,
