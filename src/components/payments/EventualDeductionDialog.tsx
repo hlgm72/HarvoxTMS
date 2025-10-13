@@ -12,7 +12,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
@@ -330,39 +329,40 @@ export function EventualDeductionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col bg-white p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
-        <DialogTitle>
-          {editingDeduction ? t('deductions.period_dialog.edit_title') : t('deductions.period_dialog.create_title')}
-        </DialogTitle>
-        <DialogDescription>
-          {editingDeduction ? t('deductions.period_dialog.edit_description') : t('deductions.period_dialog.create_description')}
-        </DialogDescription>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
+        {/* Header - Fixed */}
+        <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
+          <DialogTitle>
+            {editingDeduction ? t('deductions.period_dialog.edit_title') : t('deductions.period_dialog.create_title')}
+          </DialogTitle>
+          <DialogDescription>
+            {editingDeduction ? t('deductions.period_dialog.edit_description') : t('deductions.period_dialog.create_description')}
+          </DialogDescription>
 
-        {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
-        {isDriverPaid && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-center gap-2 text-red-800">
-              <div>
-                <h4 className="font-semibold">Conductor Ya Pagado</h4>
-                <p className="text-sm mt-1">
-                  Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
-                  No se pueden realizar modificaciones en deducciones para preservar la integridad financiera.
-                </p>
-                {financialValidation?.warning_message && (
-                  <p className="text-sm mt-2 font-medium">
-                    {financialValidation.warning_message}
+          {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
+          {isDriverPaid && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 text-red-800">
+                <div>
+                  <h4 className="font-semibold">Conductor Ya Pagado</h4>
+                  <p className="text-sm mt-1">
+                    Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
+                    No se pueden realizar modificaciones en deducciones para preservar la integridad financiera.
                   </p>
-                )}
-              </div>  
+                  {financialValidation?.warning_message && (
+                    <p className="text-sm mt-2 font-medium">
+                      {financialValidation.warning_message}
+                    </p>
+                  )}
+                </div>  
+              </div>
             </div>
-          </div>
-        )}
-        </DialogHeader>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <ScrollArea className="flex-1 px-6">
-            <div className="space-y-4 py-4">
+          {/* Scrollable Content */}
+          <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <UserTypeSelector
                 value={selectedRole}
                 onChange={(role) => {
@@ -622,9 +622,9 @@ export function EventualDeductionDialog({
                 />
               </div>
             </div>
-          </ScrollArea>
 
-          <div className="flex gap-2 px-6 py-4 border-t bg-background">
+          {/* Actions - Fixed */}
+          <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               {t("deductions.form.cancel")}
             </Button>
