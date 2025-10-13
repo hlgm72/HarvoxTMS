@@ -173,10 +173,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     }
   };
 
-  // Agrupar períodos por estado para mejor organización
-  const openPeriods = allPeriods.filter(p => p.status === 'open');
-  const processingPeriods = allPeriods.filter(p => p.status === 'processing');
-  const otherPeriods = allPeriods.filter(p => !['open', 'processing'].includes(p.status));
+  // Agrupar períodos por estado - REMOVIDO: company_payment_periods no tiene estado
 
   // ❌ REMOVIDO: No usar fechas calculadas, siempre usar períodos de BD
   // El período actual SIEMPRE debe venir de la base de datos
@@ -352,61 +349,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <CalendarDays className="h-4 w-4 mr-2" />
                     {t('periods.all')}
                     <Badge variant="secondary" className="ml-auto text-xs">
-                      {allPeriods.length}
+                      {new Set(allPeriods.map(p => p.company_payment_period_id)).size}
                     </Badge>
                   </Button>
                 </div>
-
-                <Separator />
-
-                {/* Períodos abiertos con scroll funcional */}
-                {openPeriods.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm text-muted-foreground flex items-center justify-between">
-                      {t('period_filter.open_periods')}
-                      <Badge variant="secondary" className="text-xs">
-                        {openPeriods.length}
-                      </Badge>
-                    </h4>
-                    
-                    <div className="overflow-y-auto max-h-48 border rounded-md bg-gray-50 p-2 space-y-2">
-                       {openPeriods.map((period, index) => (
-                         <div
-                           key={period.id}
-                           className={`p-3 border rounded-md cursor-pointer transition-colors ${
-                             value.periodId === (period.company_payment_period_id || period.id)
-                               ? 'bg-blue-50 border-blue-200' 
-                               : 'bg-white hover:bg-gray-100'
-                           }`}
-                          onClick={() => {
-                            const detailedLabel = formatDetailedPaymentPeriod(
-                              period.period_start_date, 
-                              period.period_end_date, 
-                              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                            );
-                             handleOptionSelect({ 
-                               type: 'specific', 
-                               periodId: period.company_payment_period_id || period.id,
-                               startDate: period.period_start_date,
-                               endDate: period.period_end_date,
-                               label: detailedLabel
-                             });
-                          }}
-                        >
-                          <div>
-                            <span className="text-sm font-medium">
-                              {formatDetailedPaymentPeriod(
-                                period.period_start_date, 
-                                period.period_end_date, 
-                                Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </>
