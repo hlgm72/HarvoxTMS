@@ -375,9 +375,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       
       // Validación obligatoria de fecha para todas las paradas
       if (!stop.scheduled_date) {
-        const stopType = stop.stop_type === 'pickup' ? 'P' : 'D';
         errors.push(t("loads:create_wizard.validation.stop_missing_date", { 
-          stopType, 
           number: stopNumber
         }));
       }

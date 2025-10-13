@@ -93,9 +93,7 @@ export function useLoadStops(initialStops?: LoadStop[]) {
         
         // Solo validar fecha - los campos de dirección son opcionales
         if (!stop.scheduled_date) {
-          const stopType = stop.stop_type === 'pickup' ? 'P' : 'D';
           errors.push(t("loads:create_wizard.validation.stop_missing_date", { 
-            stopType, 
             number: stopNumber
           }));
         }

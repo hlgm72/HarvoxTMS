@@ -291,7 +291,7 @@
       "stops_missing_state": "State",
       "stops_missing_date": "Scheduled Date",
       "stops_missing_fields": "{{stopType}}{{number}}: Missing {{fields}}",
-      "stop_missing_date": "{{stopType}}{{number}}: Missing scheduled date"
+      "stop_missing_date": "Stop {{number}}: Missing scheduled date"
     }
   },
   "load_info": {
