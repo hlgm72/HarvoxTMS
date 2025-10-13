@@ -191,6 +191,8 @@
       "new": "New Type",
       "newType": "New Expense Type",
       "editType": "Edit Expense Type",
+      "createDescription": "Configure a new expense or deduction type for your company",
+      "editDescription": "Update the information for this expense type",
       "deleteTitle": "Delete expense type?",
       "deleteConfirm": "Are you sure you want to delete expense type \"{{name}}\"? This action cannot be undone.",
       "createSuccess": "Expense type created successfully",

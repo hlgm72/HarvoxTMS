@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -132,6 +132,11 @@ export function ExpenseTypeDialog({
                 ? t("deductions.expenseTypes.newType")
                 : t("deductions.expenseTypes.editType")}
             </DialogTitle>
+            <DialogDescription>
+              {mode === "create"
+                ? t("deductions.expenseTypes.createDescription")
+                : t("deductions.expenseTypes.editDescription")}
+            </DialogDescription>
           </DialogHeader>
         </div>
 

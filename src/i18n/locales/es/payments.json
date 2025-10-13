@@ -198,6 +198,8 @@
       "new": "Nuevo Tipo",
       "newType": "Nuevo Tipo de Gasto",
       "editType": "Editar Tipo de Gasto",
+      "createDescription": "Configura un nuevo tipo de gasto o deducción para tu empresa",
+      "editDescription": "Actualiza la información de este tipo de gasto",
       "deleteTitle": "¿Eliminar tipo de gasto?",
       "deleteConfirm": "¿Estás seguro de eliminar el tipo de gasto \"{{name}}\"? Esta acción no se puede deshacer.",
       "createSuccess": "Tipo de gasto creado exitosamente",
