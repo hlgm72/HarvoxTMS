@@ -20,7 +20,6 @@ export interface PaymentPeriodForExclusion {
   period_start_date: string;
   period_end_date: string;
   status: string;
-  is_locked: boolean;
   is_excluded: boolean;
 }
 
@@ -50,11 +49,10 @@ export const usePaymentPeriodsForExclusion = (userId: string, templateId: string
         .select(`
           id,
           status,
-          period:company_payment_periods!company_payment_period_id(
-            period_start_date,
-            period_end_date,
-            is_locked
-          )
+        period:company_payment_periods!company_payment_period_id(
+          period_start_date,
+          period_end_date
+        )
         `)
         .eq('company_id', companyId)
         .eq('user_id', userId)
@@ -76,7 +74,7 @@ export const usePaymentPeriodsForExclusion = (userId: string, templateId: string
 
       const excludedPeriodIds = new Set(exclusions?.map(e => e.payment_period_id) || []);
 
-      // Marcar períodos como excluidos
+      // Mark periods as excluded
       const periodsWithExclusionStatus = periods.map(period => {
         const pData = period as any;
         return {
@@ -84,7 +82,6 @@ export const usePaymentPeriodsForExclusion = (userId: string, templateId: string
           period_start_date: pData.period?.period_start_date,
           period_end_date: pData.period?.period_end_date,
           status: pData.status,
-          is_locked: pData.period?.is_locked || false,
           is_excluded: excludedPeriodIds.has(pData.id)
         };
       });

@@ -13,7 +13,6 @@ export interface PaymentPeriod {
   period_frequency: string;
   status: string;
   period_type: string;
-  is_locked?: boolean;
 }
 
 interface PaymentPeriodsFilters {
@@ -73,8 +72,7 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
           period:company_payment_periods!company_payment_period_id(
             period_start_date,
             period_end_date,
-            period_frequency,
-            is_locked
+            period_frequency
           )
         `)
         .eq('company_id', companyId)
@@ -105,8 +103,7 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
             period_end_date: pData.period?.period_end_date,
             period_frequency: pData.period?.period_frequency,
             status: pData.status,
-            period_type: pData.period?.period_type,
-            is_locked: pData.period?.is_locked
+            period_type: pData.period?.period_type
           });
         }
         return acc;
@@ -184,12 +181,11 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         .from('user_payrolls')
         .select(`
           *,
-          period:company_payment_periods!company_payment_period_id(
-            period_start_date,
-            period_end_date,
-            period_frequency,
-            is_locked
-          )
+        period:company_payment_periods!company_payment_period_id(
+          period_start_date,
+          period_end_date,
+          period_frequency
+        )
         `)
         .eq('company_id', targetCompanyId)
         .in('status', ['open', 'processing'])
@@ -212,8 +208,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         period_end_date: periodData.period?.period_end_date || '',
         period_frequency: periodData.period?.period_frequency || '',
         status: periodData.status,
-        period_type: 'regular',
-        is_locked: periodData.period?.is_locked || false
+        period_type: 'regular'
       } as PaymentPeriod;
     },
     enabled: !!user,
@@ -260,12 +255,11 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         .from('user_payrolls')
         .select(`
           *,
-          period:company_payment_periods!company_payment_period_id(
-            period_start_date,
-            period_end_date,
-            period_frequency,
-            is_locked
-          )
+        period:company_payment_periods!company_payment_period_id(
+          period_start_date,
+          period_end_date,
+          period_frequency
+        )
         `)
         .eq('company_id', targetCompanyId)
         .order('created_at', { ascending: false })
@@ -295,8 +289,7 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         period_end_date: periodData.period?.period_end_date || '',
         period_frequency: periodData.period?.period_frequency || '',
         status: periodData.status,
-        period_type: 'regular',
-        is_locked: periodData.period?.is_locked || false
+        period_type: 'regular'
       } as PaymentPeriod;
     },
     enabled: !!user,
@@ -338,12 +331,11 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         .from('user_payrolls')
         .select(`
           *,
-          period:company_payment_periods!company_payment_period_id(
-            period_start_date,
-            period_end_date,
-            period_frequency,
-            is_locked
-          )
+        period:company_payment_periods!company_payment_period_id(
+          period_start_date,
+          period_end_date,
+          period_frequency
+        )
         `)
         .eq('company_id', targetCompanyId)
         .order('created_at', { ascending: true })
@@ -365,8 +357,7 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         period_end_date: periodData.period?.period_end_date || '',
         period_frequency: periodData.period?.period_frequency || '',
         status: periodData.status,
-        period_type: 'regular',
-        is_locked: periodData.period?.is_locked || false
+        period_type: 'regular'
       } as PaymentPeriod;
     },
     enabled: !!user,

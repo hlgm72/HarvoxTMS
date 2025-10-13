@@ -118,9 +118,8 @@ const PeriodReassignmentDialog = ({
     }
   };
 
-  // Filtrar períodos disponibles (no bloqueados y diferentes al actual)
+  // Filter available periods (different from current and status is open)
   const availablePeriods = paymentPeriods?.filter(period => 
-    !period.is_locked && 
     period.id !== element.currentPeriodId &&
     period.status === 'open'
   ) || [];

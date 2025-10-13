@@ -372,7 +372,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   };
 
   const canEdit = (expense: any) => {
-    return expense.status === 'planned' && !expense.company_payment_periods?.is_locked;
+    return expense.status === 'planned';
   };
 
   if (eventualDeductions.length === 0) {

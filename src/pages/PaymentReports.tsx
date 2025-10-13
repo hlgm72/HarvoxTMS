@@ -159,8 +159,7 @@ export default function PaymentReports() {
           period:company_payment_periods!company_payment_period_id(
             period_start_date,
             period_end_date,
-            period_frequency,
-            is_locked
+            period_frequency
           )
         `)
         .order('created_at', { ascending: false });
