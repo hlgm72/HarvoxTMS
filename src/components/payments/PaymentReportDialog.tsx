@@ -237,11 +237,12 @@ export function PaymentReportDialog({
     queryFn: async () => {
       if (!calculation) return [];
       
+      // ✅ CORREGIDO: payment_period_id debe ser company_payment_period_id
       const { data, error } = await supabase
         .from('fuel_expenses')
         .select('*')
         .eq('driver_user_id', calculation.user_id)
-        .eq('payment_period_id', calculation.id)
+        .eq('payment_period_id', calculation.company_payment_period_id)
         .order('transaction_date', { ascending: true });
 
       if (error) throw error;
@@ -256,8 +257,9 @@ export function PaymentReportDialog({
     queryFn: async () => {
       if (!calculation?.company_payment_period_id || !calculation?.user_id) return [];
       
-      console.log('🔍 Querying deductions for period:', calculation.company_payment_period_id, 'user:', calculation.user_id);
+      console.log('🔍 Querying deductions for company_payment_period:', calculation.company_payment_period_id, 'user:', calculation.user_id);
       
+      // ✅ CORREGIDO: payment_period_id en expense_instances es el company_payment_period_id
       const { data, error } = await supabase
         .from('expense_instances')
         .select(`
