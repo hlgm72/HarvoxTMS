@@ -47,7 +47,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
       
       // Get company_id directly from the period
       const { data: periodData, error: periodError } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('company_id')
         .eq('id', periodId)
         .maybeSingle();
@@ -79,9 +79,9 @@ export function usePaymentPeriodSummary(periodId?: string) {
         console.log('✅ Recálculo completado:', integrityResult);
       }
       
-      // Obtener todos los user_payment_periods para todos los usuarios de esta empresa
+      // Obtener todos los user_payrolls para todos los usuarios de esta empresa
       const { data: allUserPeriods, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('id, period_start_date, period_end_date, company_id, status, user_id')
         .eq('company_id', periodData.company_id);
 
@@ -97,9 +97,9 @@ export function usePaymentPeriodSummary(periodId?: string) {
         drivers_with_negative_balance: 0,
       };
 
-      // Para calcular el summary, sumamos todos los user_payment_periods que coincidan con las fechas del período actual
+      // Para calcular el summary, sumamos todos los user_payrolls que coincidan con las fechas del período actual
       const periodStart = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('period_start_date, period_end_date')
         .eq('id', periodId)
         .maybeSingle();
@@ -111,7 +111,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
 
       // Obtener todos los cálculos de conductores para estos períodos
       const { data: driverCalculations, error: calcError } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .in('id', relevantPeriods.map(p => p.id));
 
@@ -183,7 +183,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
       
       // Obtener todos los cálculos de la empresa
       const { data: allCalculations, error: calcError } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('company_id', companyId)
         .order('period_start_date', { ascending: false });

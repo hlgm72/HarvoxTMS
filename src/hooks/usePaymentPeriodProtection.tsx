@@ -36,7 +36,7 @@ export const usePaymentPeriodProtection = () => {
       }
       
       const { data, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('is_locked, locked_at, locked_by')
         .eq('id', periodId)
         .maybeSingle();

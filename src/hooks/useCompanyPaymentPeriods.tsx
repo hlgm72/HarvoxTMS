@@ -51,7 +51,7 @@ export function useUserPaymentPeriods(companyId?: string, userId?: string) {
       if (!companyId) throw new Error('Company ID is required');
       
       let query = supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('company_id', companyId)
         .order('period_start_date', { ascending: false });

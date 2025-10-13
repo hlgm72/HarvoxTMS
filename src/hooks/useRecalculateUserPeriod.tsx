@@ -24,7 +24,7 @@ export const useRecalculateUserPeriod = () => {
       if (params.paymentPeriodId) {
         console.log('🔍 DIAGNÓSTICO: Buscando cálculo con paymentPeriodId:', params.paymentPeriodId);
         const { data: calculation, error: calcError } = await supabase
-          .from('user_payment_periods')
+          .from('user_payrolls')
           .select('id')
           .eq('user_id', params.userId)
           .eq('id', params.paymentPeriodId)
@@ -59,10 +59,10 @@ export const useRecalculateUserPeriod = () => {
 
         if (load?.payment_period_id) {
           console.log('🔍 DIAGNÓSTICO: payment_period_id encontrado:', load.payment_period_id);
-          console.log('🔍 DIAGNÓSTICO: Buscando user_payment_period para user:', params.userId);
+          console.log('🔍 DIAGNÓSTICO: Buscando user_payroll para user:', params.userId);
           
           const { data: calculation, error: calcError } = await supabase
-            .from('user_payment_periods')
+            .from('user_payrolls')
             .select('id')
             .eq('user_id', params.userId)
             .eq('id', load.payment_period_id)

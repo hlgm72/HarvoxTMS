@@ -74,7 +74,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
 
       // Get current payment period calculation
       const { data: currentCalculation, error: calcError } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('user_id', user.id)
         .order('period_start_date', { ascending: false })

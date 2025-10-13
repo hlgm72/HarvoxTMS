@@ -8,7 +8,7 @@ export function usePaymentPeriodById(periodId?: string) {
       if (!periodId) return null;
       
       const { data, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('id', periodId)
         .maybeSingle();

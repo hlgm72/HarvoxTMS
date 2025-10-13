@@ -62,10 +62,10 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
         companyId = userCompanyRole.company_id;
       }
 
-      // Construir query base para períodos - ahora trabaja directamente con user_payment_periods
+      // Construir query base para períodos - ahora trabaja directamente con user_payrolls
       // Agruparemos manualmente después
       let query = supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked, user_id')
         .eq('company_id', companyId)
         .order('period_start_date', { ascending: false });
@@ -170,7 +170,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
 
       // Buscar período actual abierto de la empresa que incluya la fecha actual
       let { data: period, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
         .lte('period_start_date', currentDate)
@@ -224,9 +224,9 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
         targetCompanyId
       });
       
-      // Buscar el período anterior más reciente de user_payment_periods
+      // Buscar el período anterior más reciente de user_payrolls
       const { data: period, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
         .lt('period_end_date', currentDate)
@@ -282,9 +282,9 @@ export const useNextPaymentPeriod = (companyId?: string) => {
         targetCompanyId = userCompanyRole.company_id;
       }
 
-      // Buscar el siguiente período de user_payment_periods
+      // Buscar el siguiente período de user_payrolls
       let { data: period, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked')
         .eq('company_id', targetCompanyId)
         .gt('period_start_date', currentDate)
