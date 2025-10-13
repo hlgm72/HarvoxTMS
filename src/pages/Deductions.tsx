@@ -21,6 +21,7 @@ export default function Deductions() {
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("period");
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
   const { data: expenseTypes = [] } = useExpenseTypes();
   const { drivers = [] } = useCompanyDrivers();
@@ -80,16 +81,20 @@ export default function Deductions() {
         subtitle={getSubtitle()}
         actions={
           <div className="flex gap-2">
-            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
-              <Repeat className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("deductions.recurringDeduction")}</span>
-              <span className="sm:hidden">{t("deductions.recurringShort")}</span>
-            </Button>
-            <Button variant="outline" onClick={() => setIsEventualDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
-              <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("deductions.periodDeduction")}</span>
-              <span className="sm:hidden">{t("deductions.periodShort")}</span>
-            </Button>
+            {activeTab === "recurring" && (
+              <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
+                <Repeat className="h-4 w-4" />
+                <span className="hidden sm:inline">{t("deductions.newTemplate")}</span>
+                <span className="sm:hidden">{t("deductions.newTemplateShort")}</span>
+              </Button>
+            )}
+            {activeTab === "period" && (
+              <Button onClick={() => setIsEventualDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
+                <Clock className="h-4 w-4" />
+                <span className="hidden sm:inline">{t("deductions.newDeduction")}</span>
+                <span className="sm:hidden">{t("deductions.newDeductionShort")}</span>
+              </Button>
+            )}
           </div>
         }
       />
@@ -104,6 +109,7 @@ export default function Deductions() {
             periodFilter: filters.periodFilter
           }}
           viewConfig={viewConfig}
+          onTabChange={setActiveTab}
         />
       </div>
 

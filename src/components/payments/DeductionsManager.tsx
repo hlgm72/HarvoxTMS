@@ -23,7 +23,7 @@ interface DeductionsManagerProps {
     status: string;
     driver: string;
     expenseType: string;
-    userRole?: string; // Nuevo campo para filtrar por tipo de usuario
+    userRole?: string;
     dateRange: { from: Date | undefined; to: Date | undefined };
     periodFilter?: { type: string };
   };
@@ -36,13 +36,15 @@ interface DeductionsManagerProps {
     showDates: boolean;
     showExpenseType: boolean;
   };
+  onTabChange?: (tab: string) => void;
 }
 
 export function DeductionsManager({ 
   isCreateDialogOpen: externalIsCreateDialogOpen, 
   onCreateDialogOpenChange,
   filters,
-  viewConfig 
+  viewConfig,
+  onTabChange
 }: DeductionsManagerProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -537,9 +539,9 @@ export function DeductionsManager({
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="eventual" className="w-full">
+      <Tabs defaultValue="period" onValueChange={onTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-3 h-auto gap-1">
-          <TabsTrigger value="eventual" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="period" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <CalendarCheck className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.period_deductions")}</span>
             <span className="sm:hidden">{t("deductions.tabs.period_deductions_short")}</span>
@@ -556,7 +558,7 @@ export function DeductionsManager({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="eventual" className="space-y-4 mt-6 md:mt-8">
+        <TabsContent value="period" className="space-y-4 mt-6 md:mt-8">
           <EventualDeductionsList 
             onRefresh={() => setRefreshTrigger(prev => prev + 1)}
             filters={filters}
