@@ -13,8 +13,7 @@ import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency } from '@/lib/dateFormatting';
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useConsolidatedDrivers } from "@/hooks/useConsolidatedDrivers";
 
 export default function Deductions() {
   const { t } = useTranslation('payments');
@@ -26,38 +25,13 @@ export default function Deductions() {
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
   const { data: expenseTypes = [] } = useExpenseTypes();
   
-  // Fetch company drivers
-  const { data: drivers = [] } = useQuery({
-    queryKey: ['company-drivers', userRole?.company_id],
-    queryFn: async () => {
-      if (!userRole?.company_id) return [];
-
-      const { data, error } = await supabase
-        .from('user_company_roles')
-        .select(`
-          user_id,
-          driver_profiles!inner (
-            first_name,
-            last_name
-          )
-        `)
-        .eq('company_id', userRole.company_id)
-        .eq('role', 'driver')
-        .eq('is_active', true);
-
-      if (error) {
-        console.error('Error fetching drivers:', error);
-        return [];
-      }
-
-      return (data || []).map((d: any) => ({
-        id: d.user_id,
-        first_name: d.driver_profiles?.first_name || '',
-        last_name: d.driver_profiles?.last_name || ''
-      }));
-    },
-    enabled: !!userRole?.company_id
-  });
+  // Fetch company drivers using useConsolidatedDrivers
+  const { drivers: consolidatedDrivers } = useConsolidatedDrivers();
+  const drivers = consolidatedDrivers.map(d => ({
+    id: d.user_id,
+    first_name: d.first_name,
+    last_name: d.last_name
+  }));
 
   // Estado de filtros - adaptado para sistema universal
   const [filters, setFilters] = useState({
