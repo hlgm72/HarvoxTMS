@@ -396,11 +396,9 @@ export default function PaymentReports() {
     if (filters.periodFilter) {
       const pf = filters.periodFilter as any;
       
-      // Si hay un label, usarlo directamente (para this_month, this_quarter, this_year, etc.)
-      if (pf.label) {
-        parts.push(pf.label);
-      } else if (pf.type === 'current') {
-        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.startDate/endDate
+      // ✅ PRIMERO verificar current/previous para SIEMPRE usar cálculo dinámico
+      if (pf.type === 'current') {
+        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.label
         const displayCurrentPeriod = calculatedPeriods?.current;
         if (displayCurrentPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
@@ -415,7 +413,7 @@ export default function PaymentReports() {
           parts.push(t("common:periods.current"));
         }
       } else if (pf.type === 'previous') {
-        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.startDate/endDate
+        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.label
         const displayPreviousPeriod = calculatedPeriods?.previous;
         if (displayPreviousPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
@@ -433,6 +431,9 @@ export default function PaymentReports() {
         parts.push(t("common:periods.specific"));
       } else if (pf.type === 'all') {
         parts.push(t("common:periods.all"));
+      } else if (pf.label) {
+        // Solo usar label para otros tipos (this_month, this_quarter, etc.)
+        parts.push(pf.label);
       }
     }
     
@@ -466,7 +467,10 @@ export default function PaymentReports() {
 
   // ✅ Generar subtitle dinámico con estadísticas y filtros
   const getSubtitle = () => {
-    if (statsLoading || !stats) {
+    // ✅ Esperar a que calculatedPeriods esté cargado para Current/Previous
+    const needsCalculatedPeriods = filters.periodFilter?.type === 'current' || filters.periodFilter?.type === 'previous';
+    
+    if (statsLoading || !stats || (needsCalculatedPeriods && !calculatedPeriods)) {
       return <div>{t("reports.loading")}</div>;
     }
 
