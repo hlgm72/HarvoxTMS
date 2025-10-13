@@ -506,17 +506,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
-    // Validar cliente requerido (Paso 1)
-    if (!values.client_id || values.client_id === '') {
-      console.log('🚨 onSubmit blocked - missing client');
-      form.setError("client_id", {
-        type: "manual",
-        message: t("loads:create_wizard.validation.client_required")
-      });
-      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.client_required"));
-      setCurrentPhase(1);
-      return;
-    }
+    // Cliente es opcional - no requiere validación
 
     // Validar commodity requerido (Paso 1)
     if (!values.commodity || values.commodity.trim() === '') {
