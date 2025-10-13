@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check } from "lucide-react";
+import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check, ClipboardList, MapPin, UserCheck, Upload } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
@@ -338,10 +338,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   }
 
   const phases = [
-    { id: 1, title: t("loads:create_wizard.phases.essential_info.title"), description: t("loads:create_wizard.phases.essential_info.description"), completed: false },
-    { id: 2, title: t("loads:create_wizard.phases.route_details.title"), description: t("loads:create_wizard.phases.route_details.description"), completed: false },
-    { id: 3, title: t("loads:create_wizard.phases.assignment.title"), description: t("loads:create_wizard.phases.assignment.description"), completed: false },
-    { id: 4, title: t("loads:create_wizard.phases.documents.title"), description: t("loads:create_wizard.phases.documents.description"), completed: false }
+    { id: 1, title: t("loads:create_wizard.phases.essential_info.title"), description: t("loads:create_wizard.phases.essential_info.description"), completed: false, icon: ClipboardList },
+    { id: 2, title: t("loads:create_wizard.phases.route_details.title"), description: t("loads:create_wizard.phases.route_details.description"), completed: false, icon: MapPin },
+    { id: 3, title: t("loads:create_wizard.phases.assignment.title"), description: t("loads:create_wizard.phases.assignment.description"), completed: false, icon: UserCheck },
+    { id: 4, title: t("loads:create_wizard.phases.documents.title"), description: t("loads:create_wizard.phases.documents.description"), completed: false, icon: Upload }
   ];
 
   const handleClose = () => {
@@ -740,41 +740,69 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         {/* Main Content - Horizontal Layout */}
         <div className="flex h-[calc(90vh-12rem)]">
           {/* Vertical Steps Sidebar */}
-          <div className="hidden md:flex flex-col w-64 border-r bg-muted/20 p-6 space-y-2">
-            {phases.map((phase, index) => (
-              <button
-                key={phase.id}
-                type="button"
-                onClick={() => setCurrentPhase(phase.id)}
-                className={`flex items-start gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
-                  currentPhase === phase.id 
-                    ? 'bg-primary text-primary-foreground shadow-md' 
-                    : 'hover:bg-muted/50'
-                }`}
-              >
-                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ${
-                  currentPhase === phase.id 
-                    ? 'border-primary-foreground bg-primary-foreground text-primary' 
-                    : phase.completed
-                    ? 'border-green-500 bg-green-500 text-white'
-                    : 'border-muted-foreground bg-background'
-                }`}>
-                  {phase.completed ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <span className="text-xs font-bold">{phase.id}</span>
-                  )}
+          <div className="hidden md:flex flex-col w-64 border-r bg-muted/20 p-6">
+            <div className="space-y-2 flex-1">
+              {phases.map((phase, index) => {
+                const PhaseIcon = phase.icon;
+                return (
+                  <button
+                    key={phase.id}
+                    type="button"
+                    onClick={() => setCurrentPhase(phase.id)}
+                    className={`flex items-start gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
+                      currentPhase === phase.id 
+                        ? 'bg-primary text-primary-foreground shadow-md' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                      currentPhase === phase.id 
+                        ? 'border-primary-foreground bg-primary-foreground text-primary' 
+                        : phase.completed
+                        ? 'border-green-500 bg-green-500 text-white'
+                        : 'border-muted-foreground bg-background'
+                    }`}>
+                      {phase.completed ? (
+                        <Check className="h-5 w-5" />
+                      ) : (
+                        <PhaseIcon className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold ${currentPhase === phase.id ? 'text-primary-foreground' : 'text-foreground'}`}>
+                        {phase.title}
+                      </p>
+                      <p className={`text-xs mt-1 ${currentPhase === phase.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                        {phase.description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Step Counter */}
+            <div className="mt-6 pt-4 border-t">
+              <div className="text-center">
+                <p className="text-sm font-medium text-muted-foreground">
+                  {t("loads:create_wizard.progress.step_x_of_y", { x: currentPhase, y: phases.length })}
+                </p>
+                <div className="flex justify-center gap-1.5 mt-2">
+                  {phases.map((p) => (
+                    <div
+                      key={p.id}
+                      className={`h-1.5 rounded-full transition-all ${
+                        p.id === currentPhase 
+                          ? 'w-8 bg-primary' 
+                          : p.id < currentPhase 
+                          ? 'w-4 bg-green-500'
+                          : 'w-4 bg-muted'
+                      }`}
+                    />
+                  ))}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold ${currentPhase === phase.id ? 'text-primary-foreground' : 'text-foreground'}`}>
-                    {phase.title}
-                  </p>
-                  <p className={`text-xs mt-1 ${currentPhase === phase.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
-                    {phase.description}
-                  </p>
-                </div>
-              </button>
-            ))}
+              </div>
+            </div>
           </div>
 
           {/* Mobile compact step indicator */}
