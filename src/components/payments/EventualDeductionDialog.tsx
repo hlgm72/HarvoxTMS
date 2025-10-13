@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { CalendarIcon } from "lucide-react";
 import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
@@ -329,8 +330,8 @@ export function EventualDeductionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col bg-white p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
         <DialogTitle>
           {editingDeduction ? t('deductions.period_dialog.edit_title') : t('deductions.period_dialog.create_title')}
         </DialogTitle>
@@ -359,267 +360,271 @@ export function EventualDeductionDialog({
         )}
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <UserTypeSelector
-            value={selectedRole}
-            onChange={(role) => {
-              setSelectedRole(role);
-              setFormData(prev => ({ ...prev, user_id: '' }));
-            }}
-            label={t("deductions.template.apply_to")}
-          />
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <ScrollArea className="flex-1 px-6">
+            <div className="space-y-4 py-4">
+              <UserTypeSelector
+                value={selectedRole}
+                onChange={(role) => {
+                  setSelectedRole(role);
+                  setFormData(prev => ({ ...prev, user_id: '' }));
+                }}
+                label={t("deductions.template.apply_to")}
+              />
 
-          <div className="space-y-2">
-            <Label htmlFor="user">{selectedRole === "driver" ? t("deductions.form.driver") : t("deductions.form.dispatcher")}</Label>
-            <Popover open={driverComboboxOpen} onOpenChange={setDriverComboboxOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={driverComboboxOpen}
-                  className="w-full justify-between"
-                >
-                  {formData.user_id
-                    ? users.find((user) => user.user_id === formData.user_id)?.first_name + " " + users.find((user) => user.user_id === formData.user_id)?.last_name
-                    : `${selectedRole === "driver" ? t("deductions.form.select_driver") : t("deductions.form.select_dispatcher")}`}
-                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0" align="start">
-                <Command>
-                  <CommandInput placeholder={selectedRole === "driver" ? t("deductions.form.search_driver") : t("deductions.form.search_dispatcher")} />
-                  <CommandEmpty>{selectedRole === "driver" ? t("deductions.form.no_drivers_found") : t("deductions.form.no_dispatchers_found")}</CommandEmpty>
-                  <CommandList>
-                    <CommandGroup>
-                      {users.map((user) => (
-                        <CommandItem
-                          key={user.user_id}
-                          value={`${user.first_name} ${user.last_name}`}
-                          onSelect={() => {
-                            setFormData(prev => ({
-                              ...prev,
-                              user_id: user.user_id
-                            }));
-                            setDriverComboboxOpen(false);
+              <div className="space-y-2">
+                <Label htmlFor="user">{selectedRole === "driver" ? t("deductions.form.driver") : t("deductions.form.dispatcher")}</Label>
+                <Popover open={driverComboboxOpen} onOpenChange={setDriverComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={driverComboboxOpen}
+                      className="w-full justify-between"
+                    >
+                      {formData.user_id
+                        ? users.find((user) => user.user_id === formData.user_id)?.first_name + " " + users.find((user) => user.user_id === formData.user_id)?.last_name
+                        : `${selectedRole === "driver" ? t("deductions.form.select_driver") : t("deductions.form.select_dispatcher")}`}
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder={selectedRole === "driver" ? t("deductions.form.search_driver") : t("deductions.form.search_dispatcher")} />
+                      <CommandEmpty>{selectedRole === "driver" ? t("deductions.form.no_drivers_found") : t("deductions.form.no_dispatchers_found")}</CommandEmpty>
+                      <CommandList>
+                        <CommandGroup>
+                          {users.map((user) => (
+                            <CommandItem
+                              key={user.user_id}
+                              value={`${user.first_name} ${user.last_name}`}
+                              onSelect={() => {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  user_id: user.user_id
+                                }));
+                                setDriverComboboxOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  formData.user_id === user.user_id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {user.first_name} {user.last_name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t("deductions.period_dialog.expense_date_required")}</Label>
+                <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !expenseDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {expenseDate ? formatPrettyDate(expenseDate) : t("deductions.form.select_date")}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <div className="p-4 space-y-4">
+                      {/* Selectores de mes y año */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <Select
+                          value={expenseDate ? formatMonthName(expenseDate) : ""}
+                          onValueChange={(monthName) => {
+                            const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                                              'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+                                              .indexOf(monthName.toLowerCase());
+                            if (monthIndex !== -1) {
+                              const currentYear = expenseDate?.getFullYear() || new Date().getFullYear();
+                              const currentDay = expenseDate?.getDate() || 1;
+                              setExpenseDate(new Date(currentYear, monthIndex, currentDay));
+                            }
                           }}
                         >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              formData.user_id === user.user_id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {user.first_name} {user.last_name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t("deductions.period_dialog.expense_date_required")}</Label>
-            <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !expenseDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expenseDate ? formatPrettyDate(expenseDate) : t("deductions.form.select_date")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <div className="p-4 space-y-4">
-                  {/* Selectores de mes y año */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Select
-                      value={expenseDate ? formatMonthName(expenseDate) : ""}
-                      onValueChange={(monthName) => {
-                        const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                                          'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-                                          .indexOf(monthName.toLowerCase());
-                        if (monthIndex !== -1) {
-                          const currentYear = expenseDate?.getFullYear() || new Date().getFullYear();
-                          const currentDay = expenseDate?.getDate() || 1;
-                          setExpenseDate(new Date(currentYear, monthIndex, currentDay));
-                        }
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("deductions.period_dialog.month")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="enero">{t("deductions.months.january")}</SelectItem>
-                        <SelectItem value="febrero">{t("deductions.months.february")}</SelectItem>
-                        <SelectItem value="marzo">{t("deductions.months.march")}</SelectItem>
-                        <SelectItem value="abril">{t("deductions.months.april")}</SelectItem>
-                        <SelectItem value="mayo">{t("deductions.months.may")}</SelectItem>
-                        <SelectItem value="junio">{t("deductions.months.june")}</SelectItem>
-                        <SelectItem value="julio">{t("deductions.months.july")}</SelectItem>
-                        <SelectItem value="agosto">{t("deductions.months.august")}</SelectItem>
-                        <SelectItem value="septiembre">{t("deductions.months.september")}</SelectItem>
-                        <SelectItem value="octubre">{t("deductions.months.october")}</SelectItem>
-                        <SelectItem value="noviembre">{t("deductions.months.november")}</SelectItem>
-                        <SelectItem value="diciembre">{t("deductions.months.december")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    
-                    <Select
-                      value={expenseDate?.getFullYear()?.toString() || ""}
-                      onValueChange={(year) => {
-                        const currentMonth = expenseDate?.getMonth() || 0;
-                        const currentDay = expenseDate?.getDate() || 1;
-                        setExpenseDate(new Date(parseInt(year), currentMonth, currentDay));
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("deductions.placeholders.year")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2024">2024</SelectItem>
-                        <SelectItem value="2025">2025</SelectItem>
-                        <SelectItem value="2026">2026</SelectItem>
-                      </SelectContent>
-                    </Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("deductions.period_dialog.month")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="enero">{t("deductions.months.january")}</SelectItem>
+                            <SelectItem value="febrero">{t("deductions.months.february")}</SelectItem>
+                            <SelectItem value="marzo">{t("deductions.months.march")}</SelectItem>
+                            <SelectItem value="abril">{t("deductions.months.april")}</SelectItem>
+                            <SelectItem value="mayo">{t("deductions.months.may")}</SelectItem>
+                            <SelectItem value="junio">{t("deductions.months.june")}</SelectItem>
+                            <SelectItem value="julio">{t("deductions.months.july")}</SelectItem>
+                            <SelectItem value="agosto">{t("deductions.months.august")}</SelectItem>
+                            <SelectItem value="septiembre">{t("deductions.months.september")}</SelectItem>
+                            <SelectItem value="octubre">{t("deductions.months.october")}</SelectItem>
+                            <SelectItem value="noviembre">{t("deductions.months.november")}</SelectItem>
+                            <SelectItem value="diciembre">{t("deductions.months.december")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        
+                        <Select
+                          value={expenseDate?.getFullYear()?.toString() || ""}
+                          onValueChange={(year) => {
+                            const currentMonth = expenseDate?.getMonth() || 0;
+                            const currentDay = expenseDate?.getDate() || 1;
+                            setExpenseDate(new Date(parseInt(year), currentMonth, currentDay));
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("deductions.placeholders.year")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="2024">2024</SelectItem>
+                            <SelectItem value="2025">2025</SelectItem>
+                            <SelectItem value="2026">2026</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* Calendar */}
+                      <Calendar
+                        mode="single"
+                        selected={expenseDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setExpenseDate(date);
+                            setIsDatePickerOpen(false);
+                          }
+                        }}
+                        month={expenseDate}
+                        onMonthChange={setExpenseDate}
+                        className="p-0 pointer-events-auto"
+                      />
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                
+                {formData.user_id && expenseDate && isLoadingPeriods && (
+                  <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      {t("deductions.period_dialog.checking_period")}
+                    </p>
                   </div>
-                  
-                  {/* Calendar */}
-                  <Calendar
-                    mode="single"
-                    selected={expenseDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        setExpenseDate(date);
-                        setIsDatePickerOpen(false);
-                      }
-                    }}
-                    month={expenseDate}
-                    onMonthChange={setExpenseDate}
-                    className="p-0 pointer-events-auto"
-                  />
+                )}
+                
+                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
+                  <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
+                    <p className="text-sm text-orange-800">
+                      {t("deductions.period_dialog.no_period_found", { date: formatPrettyDate(expenseDate) })}
+                    </p>
+                    <p className="text-xs text-orange-600 mt-1">
+                      {t("deductions.period_dialog.select_period_date")}
+                    </p>
+                  </div>
+                )}
+                
+                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && (
+                  <div className="p-3 border border-green-200 bg-green-50 rounded-md">
+                    <p className="text-sm text-green-800">
+                      {(() => {
+                        const period = paymentPeriods[0]?.period;
+                        if (!period) return 'Período no disponible';
+                        
+                        const startDate = formatDateOnly(period.period_start_date);
+                        const endDate = formatDateOnly(period.period_end_date);
+                        const frequency = period.period_frequency;
+                        const periodStart = new Date(period.period_start_date);
+                        
+                        let periodLabel = '';
+                        
+                        if (frequency === 'weekly') {
+                          // Calcular número de semana del año
+                          const startOfYear = new Date(periodStart.getFullYear(), 0, 1);
+                          const weekNumber = Math.ceil(((periodStart.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
+                          periodLabel = `Period Week ${weekNumber}/${periodStart.getFullYear()}`;
+                        } else if (frequency === 'biweekly') {
+                          // Determinar si es primera o segunda quincena
+                          const day = periodStart.getDate();
+                          const monthName = periodStart.toLocaleDateString('en-US', { month: 'short' });
+                          const quinzena = day <= 15 ? 'Q1' : 'Q2';
+                          periodLabel = `Period ${monthName} ${quinzena}/${periodStart.getFullYear()}`;
+                        } else if (frequency === 'monthly') {
+                          // Mostrar nombre del mes
+                          const monthName = periodStart.toLocaleDateString('en-US', { month: 'long' });
+                          periodLabel = `Period ${monthName}/${periodStart.getFullYear()}`;
+                        } else {
+                          periodLabel = `Period ${frequency}`;
+                        }
+                        
+                        return `✓ ${periodLabel}: ${startDate} - ${endDate}`;
+                      })()}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
+                <Select 
+                  value={formData.expense_type_id} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("deductions.form.select_expense_type")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {expenseTypes.map((type) => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="amount">{t("deductions.form.amount")} <span className="text-red-500">*</span></Label>
+                <Input
+                  id="amount"
+                  type="text"
+                  inputMode="numeric"
+                  value={atmInput.displayValue}
+                  onChange={atmInput.handleInput}
+                  onKeyDown={atmInput.handleKeyDown}
+                  onPaste={atmInput.handlePaste}
+                  onFocus={atmInput.handleFocus}
+                  onClick={atmInput.handleClick}
+                  placeholder="$0.00"
+                  className="text-right text-lg"
+                  autoComplete="off"
+                  required
+                />
+                <div className="text-xs text-muted-foreground text-center">
+                  {t("deductions.period_dialog.atm_helper")}
                 </div>
-              </PopoverContent>
-            </Popover>
-            
-            {formData.user_id && expenseDate && isLoadingPeriods && (
-              <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
-                <p className="text-sm text-blue-800">
-                  {t("deductions.period_dialog.checking_period")}
-                </p>
               </div>
-            )}
-            
-            {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
-              <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
-                <p className="text-sm text-orange-800">
-                  {t("deductions.period_dialog.no_period_found", { date: formatPrettyDate(expenseDate) })}
-                </p>
-                <p className="text-xs text-orange-600 mt-1">
-                  {t("deductions.period_dialog.select_period_date")}
-                </p>
-              </div>
-            )}
-            
-            {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && (
-              <div className="p-3 border border-green-200 bg-green-50 rounded-md">
-                <p className="text-sm text-green-800">
-                  {(() => {
-                    const period = paymentPeriods[0]?.period;
-                    if (!period) return 'Período no disponible';
-                    
-                    const startDate = formatDateOnly(period.period_start_date);
-                    const endDate = formatDateOnly(period.period_end_date);
-                    const frequency = period.period_frequency;
-                    const periodStart = new Date(period.period_start_date);
-                    
-                    let periodLabel = '';
-                    
-                    if (frequency === 'weekly') {
-                      // Calcular número de semana del año
-                      const startOfYear = new Date(periodStart.getFullYear(), 0, 1);
-                      const weekNumber = Math.ceil(((periodStart.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
-                      periodLabel = `Period Week ${weekNumber}/${periodStart.getFullYear()}`;
-                    } else if (frequency === 'biweekly') {
-                      // Determinar si es primera o segunda quincena
-                      const day = periodStart.getDate();
-                      const monthName = periodStart.toLocaleDateString('en-US', { month: 'short' });
-                      const quinzena = day <= 15 ? 'Q1' : 'Q2';
-                      periodLabel = `Period ${monthName} ${quinzena}/${periodStart.getFullYear()}`;
-                    } else if (frequency === 'monthly') {
-                      // Mostrar nombre del mes
-                      const monthName = periodStart.toLocaleDateString('en-US', { month: 'long' });
-                      periodLabel = `Period ${monthName}/${periodStart.getFullYear()}`;
-                    } else {
-                      periodLabel = `Period ${frequency}`;
-                    }
-                    
-                    return `✓ ${periodLabel}: ${startDate} - ${endDate}`;
-                  })()}
-                </p>
-              </div>
-            )}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
-            <Select 
-              value={formData.expense_type_id} 
-              onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t("deductions.form.select_expense_type")} />
-              </SelectTrigger>
-              <SelectContent>
-                {expenseTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="amount">{t("deductions.form.amount")} <span className="text-red-500">*</span></Label>
-            <Input
-              id="amount"
-              type="text"
-              inputMode="numeric"
-              value={atmInput.displayValue}
-              onChange={atmInput.handleInput}
-              onKeyDown={atmInput.handleKeyDown}
-              onPaste={atmInput.handlePaste}
-              onFocus={atmInput.handleFocus}
-              onClick={atmInput.handleClick}
-              placeholder="$0.00"
-              className="text-right text-lg"
-              autoComplete="off"
-              required
-            />
-            <div className="text-xs text-muted-foreground text-center">
-              {t("deductions.period_dialog.atm_helper")}
+              <div className="space-y-2">
+                <Label htmlFor="description">{t("deductions.period_dialog.description_label")}</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder={t("deductions.period_dialog.placeholder")}
+                  rows={3}
+                  required
+                />
+              </div>
             </div>
-          </div>
+          </ScrollArea>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">{t("deductions.period_dialog.description_label")}</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder={t("deductions.period_dialog.placeholder")}
-              rows={3}
-              required
-            />
-          </div>
-
-          <div className="flex gap-2 pt-4">
+          <div className="flex gap-2 px-6 py-4 border-t bg-background">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               {t("deductions.form.cancel")}
             </Button>
