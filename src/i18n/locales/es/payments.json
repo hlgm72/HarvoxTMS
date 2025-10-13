@@ -81,7 +81,7 @@
     "period_dialog": {
       "create_title": "Crear Deducción del Período",
       "edit_title": "Editar Deducción del Período", 
-      "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado.",
+      "create_description": "Crea una deducción única en un período de pago determinado.",
       "creating": "Creando...",
       "updating": "Actualizando...",
       "create_button": "Crear Deducción del Período",
