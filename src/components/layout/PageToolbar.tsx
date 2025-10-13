@@ -33,9 +33,9 @@ export function PageToolbar({
                   {title}
                 </h1>
                 {subtitle && (
-                  <p className="text-sm md:text-base font-body text-muted-foreground mt-1 truncate">
+                  <div className="text-sm md:text-base font-body text-muted-foreground mt-1 space-y-1">
                     {subtitle}
-                  </p>
+                  </div>
                 )}
               </div>
             </div>

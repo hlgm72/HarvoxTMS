@@ -77,26 +77,91 @@ export default function Deductions() {
     queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
   };
 
+  // ✅ Generar descripción de filtros activos
+  const getFilterDescription = () => {
+    const parts: string[] = [];
+    
+    // Filtro de período
+    if (filters.periodFilter) {
+      if (filters.periodFilter.type === 'current') {
+        parts.push(t("deductions.filters.currentPeriod"));
+      } else if (filters.periodFilter.type === 'previous') {
+        parts.push(t("deductions.filters.previousPeriod"));
+      } else if (filters.periodFilter.type === 'specific' && (filters.periodFilter as any).periodId) {
+        // Mostrar el nombre del período específico si está disponible
+        parts.push(t("deductions.filters.specificPeriod"));
+      } else if (filters.periodFilter.type === 'all') {
+        parts.push(t("deductions.filters.allPeriods"));
+      }
+    }
+    
+    // Filtro de conductor
+    if (filters.driverId && filters.driverId !== 'all') {
+      const driver = drivers.find(d => d.id === filters.driverId);
+      if (driver) {
+        parts.push(`${t("deductions.filters.driver")}: ${driver.first_name} ${driver.last_name}`);
+      }
+    }
+    
+    // Filtro de tipo de gasto
+    if (filters.expenseTypeId && filters.expenseTypeId !== 'all') {
+      const expenseType = expenseTypes.find(et => et.id === filters.expenseTypeId);
+      if (expenseType) {
+        parts.push(`${t("deductions.filters.expenseType")}: ${expenseType.name}`);
+      }
+    }
+    
+    // Filtro de estado (solo para period tab)
+    if (activeTab === 'period' && filters.status && filters.status !== 'all') {
+      const statusLabels: Record<string, string> = {
+        planned: t("deductions.status_labels.planned"),
+        applied: t("deductions.status_labels.applied"),
+        deferred: t("deductions.status_labels.deferred")
+      };
+      parts.push(`${t("deductions.filters.status")}: ${statusLabels[filters.status] || filters.status}`);
+    }
+    
+    if (parts.length === 0) {
+      return t("deductions.filters.noFilters");
+    }
+    
+    return parts.join(' • ');
+  };
+
   // ✅ Generar subtitle dinámico según el tab activo
   const getSubtitle = () => {
     if (statsLoading || !stats) {
-      return t("deductions.loadingStats");
+      return <div>{t("deductions.loadingStats")}</div>;
     }
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
     
-    // Diferentes etiquetas según el tab activo
+    // Primera línea: estadísticas según el tab activo
+    let statsLine = '';
     if (activeTab === 'period') {
-      return `${activeTemplates} ${t("deductions.periodDeductions")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.totalAmount")} • ${affectedDrivers} ${t("deductions.drivers")}`;
+      statsLine = `${activeTemplates} ${t("deductions.periodDeductions")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.totalAmount")} • ${affectedDrivers} ${t("deductions.drivers")}`;
     } else if (activeTab === 'recurring') {
-      return `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
+      statsLine = `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
     } else if (activeTab === 'expense-types') {
-      return t("deductions.expenseTypesSubtitle");
+      return <div>{t("deductions.expenseTypesSubtitle")}</div>;
     } else if (activeTab === 'history') {
-      return t("deductions.historySubtitle");
+      return <div>{t("deductions.historySubtitle")}</div>;
+    } else {
+      statsLine = `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
     }
     
-    return `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
+    // Segunda línea: filtros activos
+    const filterDescription = getFilterDescription();
+    
+    return (
+      <>
+        <div>{statsLine}</div>
+        <div className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
+          <span className="font-medium">{t("deductions.filters.activeFilters")}:</span>
+          <span>{filterDescription}</span>
+        </div>
+      </>
+    );
   };
 
   return (

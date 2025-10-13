@@ -78,6 +78,17 @@
     "drivers": "drivers",
     "expenseTypesSubtitle": "Manage expense types and categories",
     "historySubtitle": "View deduction history",
+    "filters": {
+      "activeFilters": "Active filters",
+      "noFilters": "All deductions (no filters)",
+      "currentPeriod": "Current period",
+      "previousPeriod": "Previous period",
+      "specificPeriod": "Specific period",
+      "allPeriods": "All periods",
+      "driver": "Driver",
+      "expenseType": "Expense type",
+      "status": "Status"
+    },
     "newTemplate": "New Template",
     "newTemplateShort": "Template",
     "newDeduction": "New Deduction",

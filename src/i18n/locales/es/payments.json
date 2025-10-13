@@ -78,6 +78,17 @@
     "drivers": "conductores",
     "expenseTypesSubtitle": "Administrar tipos de gastos y categorías",
     "historySubtitle": "Ver historial de deducciones",
+    "filters": {
+      "activeFilters": "Filtros activos",
+      "noFilters": "Todas las deducciones (sin filtros)",
+      "currentPeriod": "Período actual",
+      "previousPeriod": "Período anterior",
+      "specificPeriod": "Período específico",
+      "allPeriods": "Todos los períodos",
+      "driver": "Conductor",
+      "expenseType": "Tipo de gasto",
+      "status": "Estado"
+    },
     "newTemplate": "Nueva Plantilla",
     "newTemplateShort": "Plantilla",
     "newDeduction": "Nueva Deducción",
