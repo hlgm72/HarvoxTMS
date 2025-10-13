@@ -129,8 +129,8 @@
       "active_templates_short": "Active",
       "inactive_templates": "Inactive Templates",
       "inactive_templates_short": "Inactive", 
-      "eventual_deductions": "Eventual Deductions",
-      "eventual_deductions_short": "Eventual",
+      "period_deductions": "Period Deductions",
+      "period_deductions_short": "Period",
       "history": "History"
     },
     "empty_states": {
