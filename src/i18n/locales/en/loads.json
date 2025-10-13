@@ -48,8 +48,8 @@
       "route_details": {
         "title": "Route Details", 
         "description": "Locations and schedules",
-        "card_description": "Configure pickup and delivery locations",
-        "card_title": "Configure pickup and delivery locations",
+        "card_description": "Route details",
+        "card_title": "Route details",
         "valid_configuration": "Valid route configuration",
         "stop_number": "Stop {{number}}",
         "pickup": "Pickup",
