@@ -26,12 +26,19 @@ interface PaymentReportsStatsFilters {
 export function usePaymentReportsStats(filters?: PaymentReportsStatsFilters) {
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
-  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
+  const { data: calculatedPeriods, isLoading: isCalculatedPeriodsLoading } = useCalculatedPeriods(userCompany?.company_id);
 
   return useQuery({
     queryKey: ['payment-reports-stats', user?.id, userCompany?.company_id, filters],
     queryFn: async (): Promise<PaymentReportsStats> => {
       if (!user?.id || !userCompany?.company_id) {
+        return { totalReports: 0, totalDrivers: 0, totalNetPayment: 0, pendingReports: 0 };
+      }
+
+      // ✅ Si estamos filtrando por 'current' o 'previous', esperar a que calculatedPeriods esté listo
+      const needsCalculatedPeriods = filters?.periodFilter?.type === 'current' || filters?.periodFilter?.type === 'previous';
+      if (needsCalculatedPeriods && !calculatedPeriods) {
+        console.log('⏳ Waiting for calculatedPeriods to load...');
         return { totalReports: 0, totalDrivers: 0, totalNetPayment: 0, pendingReports: 0 };
       }
 
@@ -147,6 +154,11 @@ export function usePaymentReportsStats(filters?: PaymentReportsStatsFilters) {
         return { totalReports: 0, totalDrivers: 0, totalNetPayment: 0, pendingReports: 0 };
       }
     },
-    enabled: !!user?.id && !!userCompany?.company_id,
+    enabled: !!user?.id && !!userCompany?.company_id && 
+             (!filters?.periodFilter || 
+              filters.periodFilter.type === 'all' ||
+              (filters.periodFilter.type === 'current' && !!calculatedPeriods?.current) ||
+              (filters.periodFilter.type === 'previous' && !!calculatedPeriods?.previous) ||
+              (filters.periodFilter.type !== 'current' && filters.periodFilter.type !== 'previous')),
   });
 }
