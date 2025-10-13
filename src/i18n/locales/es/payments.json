@@ -129,8 +129,8 @@
       "active_templates_short": "Activas",
       "inactive_templates": "Plantillas Inactivas", 
       "inactive_templates_short": "Inactivas",
-      "eventual_deductions": "Deducciones Eventuales",
-      "eventual_deductions_short": "Eventuales",
+      "period_deductions": "Deducciones del Período",
+      "period_deductions_short": "Período",
       "history": "Historial"
     },
     "empty_states": {

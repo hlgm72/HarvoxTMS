@@ -12,7 +12,7 @@ import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
 import { RecurringExpenseExclusionsDialog } from "./RecurringExpenseExclusionsDialog";
 import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
-import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, Clock, Archive, History, X, CalendarDays } from "lucide-react";
+import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, CalendarCheck, Archive, History, X, CalendarDays } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { useTranslation } from 'react-i18next';
 
@@ -537,8 +537,13 @@ export function DeductionsManager({
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="active" className="w-full">
+      <Tabs defaultValue="eventual" className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
+          <TabsTrigger value="eventual" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <CalendarCheck className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">{t("deductions.tabs.period_deductions")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.period_deductions_short")}</span>
+          </TabsTrigger>
           <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.active_templates")}</span>
@@ -548,11 +553,6 @@ export function DeductionsManager({
             <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.inactive_templates")}</span>
             <span className="sm:hidden">{t("deductions.tabs.inactive_templates_short")}</span>
-          </TabsTrigger>
-          <TabsTrigger value="eventual" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
-            <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">{t("deductions.tabs.eventual_deductions")}</span>
-            <span className="sm:hidden">{t("deductions.tabs.eventual_deductions_short")}</span>
           </TabsTrigger>
           <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <History className="h-3 w-3 sm:h-4 sm:w-4" />
