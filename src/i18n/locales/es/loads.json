@@ -289,7 +289,8 @@
       "stops_missing_city": "Ciudad", 
       "stops_missing_state": "Estado",
       "stops_missing_date": "Fecha programada",
-      "stops_missing_fields": "{{stopType}}{{number}}: Faltan {{fields}}"
+      "stops_missing_fields": "{{stopType}}{{number}}: Faltan {{fields}}",
+      "stop_missing_date": "{{stopType}}{{number}}: Falta fecha programada"
     }
   },
   "load_info": {
