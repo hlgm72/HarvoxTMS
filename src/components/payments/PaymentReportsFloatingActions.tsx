@@ -102,6 +102,15 @@ export function PaymentReportsFloatingActions({
                 </div>
 
                 <div className="space-y-4">
+                  {/* Period Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t('filters.period_label')}</label>
+                    <PeriodFilter
+                      value={filters.periodFilter}
+                      onChange={(periodFilter) => handleFilterChange('periodFilter', periodFilter)}
+                    />
+                  </div>
+
                   {/* Search Filter */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">{t('filters.search_placeholder')}</label>
@@ -153,15 +162,6 @@ export function PaymentReportsFloatingActions({
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  {/* Period Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t('filters.period_label')}</label>
-                    <PeriodFilter
-                      value={filters.periodFilter}
-                      onChange={(periodFilter) => handleFilterChange('periodFilter', periodFilter)}
-                    />
                   </div>
 
                   {/* Active Filters Display */}
