@@ -127,7 +127,7 @@ const getRelevantPeriodIds = (
         };
       }
       return { 
-        periodIds: currentPeriod ? [currentPeriod.id] : [], 
+        periodIds: currentPeriod?.company_payment_period_id ? [currentPeriod.company_payment_period_id] : [], 
         useDateFilter: false,
         startDate: currentPeriod?.period_start_date,
         endDate: currentPeriod?.period_end_date
@@ -144,7 +144,7 @@ const getRelevantPeriodIds = (
         };
       }
       return { 
-        periodIds: previousPeriod ? [previousPeriod.id] : [], 
+        periodIds: previousPeriod?.company_payment_period_id ? [previousPeriod.company_payment_period_id] : [], 
         useDateFilter: false,
         startDate: previousPeriod?.period_start_date,
         endDate: previousPeriod?.period_end_date
@@ -152,7 +152,7 @@ const getRelevantPeriodIds = (
     
     case 'next':
       return { 
-        periodIds: nextPeriod ? [nextPeriod.id] : [], 
+        periodIds: nextPeriod?.company_payment_period_id ? [nextPeriod.company_payment_period_id] : [], 
         useDateFilter: false,
         startDate: nextPeriod?.period_start_date,
         endDate: nextPeriod?.period_end_date
@@ -166,7 +166,7 @@ const getRelevantPeriodIds = (
     
     case 'all':
       return { 
-        periodIds: allPeriods ? allPeriods.map(p => p.id) : [], 
+        periodIds: allPeriods ? allPeriods.map(p => p.company_payment_period_id).filter(Boolean) : [], 
         useDateFilter: false 
       };
     

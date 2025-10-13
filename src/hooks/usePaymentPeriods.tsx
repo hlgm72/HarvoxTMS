@@ -100,6 +100,7 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
           acc.push({
             id: pData.id,
             company_id: pData.company_id,
+            company_payment_period_id: pData.company_payment_period_id,
             period_start_date: pData.period?.period_start_date,
             period_end_date: pData.period?.period_end_date,
             period_frequency: pData.period?.period_frequency,
