@@ -263,17 +263,23 @@ export const useLoads = (filters?: LoadsFilters) => {
           createdBy_25_449_inList: companyUsers.includes('087a825c-94ea-42d9-8388-5087a19d776f')
         });
         
-        // PASO 3: Query SIMPLIFICADA - cualquier carga con driver O created_by de la compañía
-        // Incluir también cargas sin driver (driver_user_id NULL) si fueron creadas por la compañía
+        // PASO 3: Query SIMPLIFICADA - traer todas las cargas creadas por usuarios de la compañía
+        // Esto incluye cargas con o sin conductor asignado
         const loadsQuery = supabase
           .from('loads')
           .select('*')
-          .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')})),created_by.in.(${companyUsers.join(',')})`)
+          .in('created_by', companyUsers)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
           .limit(500);
 
         const { data: allLoads, error: loadsError } = await loadsQuery;
+        
+        console.log('🔍 useLoads - Query ejecutada:', {
+          companyUsersCount: companyUsers.length,
+          query: 'created_by.in(companyUsers)',
+          resultsCount: allLoads?.length || 0
+        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
