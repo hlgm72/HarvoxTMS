@@ -508,17 +508,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
     // Cliente es opcional - no requiere validación
 
-    // Validar commodity requerido (Paso 1)
-    if (!values.commodity || values.commodity.trim() === '') {
-      console.log('🚨 onSubmit blocked - missing commodity');
-      form.setError("commodity", {
-        type: "manual",
-        message: t("loads:create_wizard.validation.commodity_required")
-      });
-      showError(t("loads:create_wizard.validation.validation_error"), t("loads:create_wizard.validation.commodity_required"));
-      setCurrentPhase(1);
-      return;
-    }
+    // Commodity es opcional - no requiere validación
 
     // Validar monto mayor a 0 (Paso 1)
     if (!values.total_amount || values.total_amount <= 0) {
@@ -948,7 +938,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         name="commodity"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("loads:create_wizard.form.commodity")} {t("loads:create_wizard.form.commodity_required")}</FormLabel>
+                            <FormLabel>{t("loads:create_wizard.form.commodity")}</FormLabel>
                             <FormControl>
                               <AutocompleteInput
                                 value={field.value || ''}
