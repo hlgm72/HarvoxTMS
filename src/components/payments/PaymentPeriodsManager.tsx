@@ -175,16 +175,13 @@ export function PaymentPeriodsManager() {
                       {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
                     </CardTitle>
                     <CardDescription>
-                      {getPeriodTypeLabel(period.user_periods[0]?.period_type || 'regular')} • {period.period_frequency}
+                      {period.period_frequency}
                       {summary && summary.driver_count > 0 && (
                         <> • {summary.driver_count} {t('period.driver_count', { count: summary.driver_count })}</>
                       )}
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    {period.user_periods[0]?.is_locked && (
-                      <Badge variant="outline">{t('period.status.locked')}</Badge>
-                    )}
                     <Badge variant={getStatusBadgeVariant(period.status)}>
                       {getStatusLabel(period.status)}
                     </Badge>

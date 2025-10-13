@@ -9,7 +9,14 @@ export function usePaymentPeriodById(periodId?: string) {
       
       const { data, error } = await supabase
         .from('user_payrolls')
-        .select('*')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency
+          )
+        `)
         .eq('id', periodId)
         .maybeSingle();
       

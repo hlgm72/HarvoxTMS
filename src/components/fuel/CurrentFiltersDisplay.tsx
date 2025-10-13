@@ -43,9 +43,13 @@ export function CurrentFiltersDisplay({
     
     // Período actual - mostrar período real o calculado
     if (filters.periodFilter?.periodId && periodData) {
-      // Período real de BD
-      const startDate = format(new Date(periodData.period_start_date + 'T00:00:00'), 'dd MMM');
-      const endDate = format(new Date(periodData.period_end_date + 'T00:00:00'), 'dd MMM yyyy');
+      // Período real de BD - obtener fechas del período padre
+      const startDate = periodData.period?.period_start_date 
+        ? format(new Date(periodData.period.period_start_date + 'T00:00:00'), 'dd MMM')
+        : '';
+      const endDate = periodData.period?.period_end_date
+        ? format(new Date(periodData.period.period_end_date + 'T00:00:00'), 'dd MMM yyyy')
+        : '';
       badges.push({ 
         key: 'period', 
         label: `Período: ${startDate} - ${endDate}` 

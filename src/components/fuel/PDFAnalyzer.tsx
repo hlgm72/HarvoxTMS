@@ -234,10 +234,16 @@ export function PDFAnalyzer() {
         .eq('is_active', true)
         .in('user_id', driverIds);
 
-      // Obtener períodos de pago de la empresa
+      // Obtener períodos de pago de la empresa con fechas del período
       const { data: userPeriods } = await supabase
         .from('user_payrolls')
-        .select('*')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
         .eq('company_id', companyId)
         .eq('status', 'open');
 
@@ -357,16 +363,17 @@ export function PDFAnalyzer() {
         
         // Find matching period for this driver
         let matchingPeriod = userPeriods?.find(period => {
-          const startDate = new Date(period.period_start_date);
-          const endDate = new Date(period.period_end_date);
+          if (!period.period?.period_start_date || !period.period?.period_end_date) return false;
+          const startDate = new Date(period.period.period_start_date);
+          const endDate = new Date(period.period.period_end_date);
           return periodTransactionDate >= startDate && 
                  periodTransactionDate <= endDate &&
                  period.user_id === enrichedTransaction.driver_user_id;
         });
 
-        if (matchingPeriod) {
+        if (matchingPeriod && matchingPeriod.period) {
           enrichedTransaction.payment_period_id = matchingPeriod.id;
-          enrichedTransaction.payment_period_dates = `${matchingPeriod.period_start_date} - ${matchingPeriod.period_end_date}`;
+          enrichedTransaction.payment_period_dates = `${matchingPeriod.period.period_start_date} - ${matchingPeriod.period.period_end_date}`;
           enrichedTransaction.period_mapping_status = 'found';
         } else {
           // Calcular qué período se crearía (sin crearlo)

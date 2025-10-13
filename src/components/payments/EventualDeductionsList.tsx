@@ -120,15 +120,20 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               // Para períodos reales de BD, obtener fechas del período específico
               const periodQuery = await supabase
                 .from('user_payrolls')
-                .select('period_start_date, period_end_date')
+                .select(`
+                  period:company_payment_periods!company_payment_period_id(
+                    period_start_date,
+                    period_end_date
+                  )
+                `)
                 .eq('id', periodId)
                 .maybeSingle();
               
-              if (periodQuery.data) {
-                console.log('📅 Filtrando por período específico real:', periodQuery.data);
+              if (periodQuery.data?.period) {
+                console.log('📅 Filtrando por período específico real:', periodQuery.data.period);
                 query = query
-                  .gte('expense_date', periodQuery.data.period_start_date)
-                  .lte('expense_date', periodQuery.data.period_end_date);
+                  .gte('expense_date', periodQuery.data.period.period_start_date)
+                  .lte('expense_date', periodQuery.data.period.period_end_date);
               } else {
                 console.log('❌ No se encontró el período específico en BD');
                 query = query.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -280,7 +285,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             // Obtener información del período a través de user_payrolls
             const { data: driverPeriod } = await supabase
               .from('user_payrolls')
-              .select('period_start_date, period_end_date, period_frequency, is_locked')
+              .select(`
+                period:company_payment_periods!company_payment_period_id(
+                  period_start_date,
+                  period_end_date,
+                  period_frequency
+                )
+              `)
               .eq('id', expense.payment_period_id)
               .maybeSingle();
 
@@ -396,9 +407,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                     <Calendar className="h-4 w-4" />
                     {deduction.period_data && 
                       formatDetailedPaymentPeriod(
-                        deduction.period_data.period_start_date,
-                        deduction.period_data.period_end_date,
-                        deduction.period_data.period_frequency
+                        deduction.period_data.period.period_start_date,
+                        deduction.period_data.period.period_end_date,
+                        deduction.period_data.period.period_frequency
                       )
                     }
                   </CardDescription>

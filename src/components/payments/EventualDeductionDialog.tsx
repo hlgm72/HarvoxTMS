@@ -181,13 +181,18 @@ export function EventualDeductionDialog({
         console.log('Step 2: Getting user periods for date...');
         const { data: userPeriods, error: periodsError } = await supabase
           .from('user_payrolls')
-          .select('*')
+          .select(`
+            *,
+            period:company_payment_periods!company_payment_period_id(
+              period_start_date,
+              period_end_date,
+              period_frequency
+            )
+          `)
           .eq('company_id', companyId)
           .eq('user_id', formData.user_id)
-          .lte('period_start_date', formatDateInUserTimeZone(expenseDate))
-          .gte('period_end_date', formatDateInUserTimeZone(expenseDate))
           .in('status', ['open', 'processing'])
-          .order('period_start_date', { ascending: false});
+          .order('created_at', { ascending: false});
 
         if (periodsError) {
           console.error('Error fetching user periods:', periodsError);
@@ -525,10 +530,13 @@ export function EventualDeductionDialog({
               <div className="p-3 border border-green-200 bg-green-50 rounded-md">
                 <p className="text-sm text-green-800">
                   {(() => {
-                    const startDate = formatDateOnly(paymentPeriods[0].period_start_date);
-                    const endDate = formatDateOnly(paymentPeriods[0].period_end_date);
-                    const frequency = paymentPeriods[0].period_frequency;
-                    const periodStart = new Date(paymentPeriods[0].period_start_date);
+                    const period = paymentPeriods[0]?.period;
+                    if (!period) return 'Período no disponible';
+                    
+                    const startDate = formatDateOnly(period.period_start_date);
+                    const endDate = formatDateOnly(period.period_end_date);
+                    const frequency = period.period_frequency;
+                    const periodStart = new Date(period.period_start_date);
                     
                     let periodLabel = '';
                     

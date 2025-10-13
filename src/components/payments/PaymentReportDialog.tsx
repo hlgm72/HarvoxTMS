@@ -329,8 +329,8 @@ export function PaymentReportDialog({
         email: driver.display_email
       },
       period: {
-        start_date: calculation.period_start_date,
-        end_date: calculation.period_end_date,
+        start_date: calculation.period?.period_start_date || '',
+        end_date: calculation.period?.period_end_date || '',
         gross_earnings: calculation.gross_earnings,
         fuel_expenses: calculation.fuel_expenses,
         total_deductions: calculation.total_deductions,
@@ -648,10 +648,9 @@ export function PaymentReportDialog({
                   {t('report_dialog.title')} - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
                 </DialogTitle>
                 <DialogDescription className="text-sm mt-1">
-                  {t('period.period_label')}: {formatPaymentPeriod(
-                    calculation.period_start_date,
-                    calculation.period_end_date
-                  )}
+                  {t('period.period_label')}: {calculation.period?.period_start_date && calculation.period?.period_end_date
+                    ? formatPaymentPeriod(calculation.period.period_start_date, calculation.period.period_end_date)
+                    : 'N/A'}
                 </DialogDescription>
                 <Button 
                   variant="outline" 

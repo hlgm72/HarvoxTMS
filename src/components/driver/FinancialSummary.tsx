@@ -75,22 +75,31 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
       // Get current payment period calculation
       const { data: currentCalculation, error: calcError } = await supabase
         .from('user_payrolls')
-        .select('*')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
         .eq('user_id', user.id)
-        .order('period_start_date', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (calcError) throw calcError;
 
       // Get loads stats for current period
+      const periodStartDate = currentCalculation?.period?.period_start_date || getCurrentUTC();
+      const periodEndDate = currentCalculation?.period?.period_end_date || getCurrentUTC();
+      
       const { data: loadsStats, error: loadsError } = await supabase
         .from('loads')
         .select('total_amount')
         .eq('driver_user_id', user.id)
         .eq('status', 'delivered')
-        .gte('delivery_date', currentCalculation?.period_start_date || getCurrentUTC())
-        .lte('delivery_date', currentCalculation?.period_end_date || getCurrentUTC());
+        .gte('delivery_date', periodStartDate)
+        .lte('delivery_date', periodEndDate);
 
       if (loadsError) throw loadsError;
 
@@ -106,8 +115,8 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
             fuel_expenses: currentCalculation?.fuel_expenses || 0,
             total_deductions: currentCalculation?.total_deductions || 0,
             net_payment: currentCalculation ? calculateNetPayment(currentCalculation) : 0, // 🚨 FUNCIÓN CRÍTICA
-            period_start: currentCalculation?.period_start_date || '',
-            period_end: currentCalculation?.period_end_date || '',
+            period_start: currentCalculation?.period?.period_start_date || '',
+            period_end: currentCalculation?.period?.period_end_date || '',
             status: currentCalculation?.payment_status || 'calculated'
           },
         weeklyStats: {

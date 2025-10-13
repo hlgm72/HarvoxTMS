@@ -150,13 +150,17 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
     queryFn: async () => {
       if (!periodId) return [];
       
-      // Get all user payment periods for this period (by matching dates and company)
+      // Get all user payment periods for this company payment period
       const { data: calculations, error: calcError } = await supabase
         .from('user_payrolls')
-        .select('*')
-        .eq('company_id', period?.company_id)
-        .eq('period_start_date', period?.period_start_date)
-        .eq('period_end_date', period?.period_end_date);
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
+        .eq('company_payment_period_id', periodId);
 
       if (calcError) throw calcError;
       if (!calculations || calculations.length === 0) return [];
@@ -234,23 +238,19 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">
-            {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
+            {period.period?.period_start_date && period.period?.period_end_date 
+              ? formatPaymentPeriod(period.period.period_start_date, period.period.period_end_date)
+              : 'Período sin fechas'}
           </h3>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant={getStatusBadgeVariant(period.status)}>
               {period.status}
             </Badge>
-            {period.is_locked && (
-              <Badge variant="outline">
-                <Lock className="h-3 w-3 mr-1" />
-                Bloqueado
-              </Badge>
-            )}
           </div>
         </div>
         
         <div className="flex gap-2">
-          {period.status === 'open' && !period.is_locked && (
+          {period.status === 'open' && (
             <Button onClick={handleProcessPeriod} disabled={isProcessing}>
               <Calculator className="h-4 w-4 mr-2" />
               {t('period.process_period')}
@@ -258,7 +258,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           )}
           
           {/* Botón para cerrar período - solo visible si está calculado y no bloqueado */}
-          {(period.status === 'calculated' || period.status === 'approved') && !period.is_locked && (
+          {(period.status === 'calculated' || period.status === 'approved') && (
             <Button 
               onClick={handleClosePeriod} 
               disabled={isClosingPeriod}
@@ -381,7 +381,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
         <TabsContent value="drivers" className="space-y-4">
           {/* Panel de pagos múltiples */}
-          {unpaidDrivers.length > 0 && !period.is_locked && (
+          {unpaidDrivers.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{t('period.process_payments')}</CardTitle>
@@ -453,7 +453,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {calc.payment_status !== 'paid' && !period.is_locked && (
+                    {calc.payment_status !== 'paid' && (
                       <Checkbox
                         checked={selectedDrivers.includes(calc.id)}
                         onCheckedChange={(checked) => {
@@ -541,16 +541,14 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.period_label')}</p>
                   <p className="font-semibold">
-                    {formatPaymentPeriod(period.period_start_date, period.period_end_date)}
+                    {period.period?.period_start_date && period.period?.period_end_date
+                      ? formatPaymentPeriod(period.period.period_start_date, period.period.period_end_date)
+                      : 'N/A'}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.frequency_label')}</p>
-                  <p className="font-semibold">{period.period_frequency}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('period.type_label')}</p>
-                  <p className="font-semibold">{period.period_type}</p>
+                  <p className="font-semibold">{period.period?.period_frequency || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.status_label')}</p>
