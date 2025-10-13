@@ -73,12 +73,15 @@ export function ExpenseTypesTab() {
         .select('id')
         .eq('expense_type_id', id);
       
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.error("Error checking templates:", checkError);
+        throw checkError;
+      }
       
       if (templates && templates.length > 0) {
-        throw new Error(
-          `No se puede eliminar este tipo de gasto porque está siendo usado en ${templates.length} plantilla(s) recurrente(s). Elimine primero las plantillas o desasigne este tipo de gasto de ellas.`
-        );
+        const errorMessage = `No se puede eliminar este tipo de gasto porque está siendo usado en ${templates.length} plantilla(s) recurrente(s). Elimine primero las plantillas o desasigne este tipo de gasto de ellas.`;
+        console.error("Cannot delete - templates exist:", errorMessage);
+        throw new Error(errorMessage);
       }
 
       // If no templates, proceed with deletion
@@ -87,7 +90,10 @@ export function ExpenseTypesTab() {
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error from database:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast.success(t("deductions.expenseTypes.deleteSuccess"));
@@ -98,7 +104,12 @@ export function ExpenseTypesTab() {
     },
     onError: (error: any) => {
       console.error("Error deleting expense type:", error);
-      toast.error(error.message || t("deductions.errors.deleteFailed"));
+      const errorMessage = error?.message || t("deductions.errors.deleteFailed");
+      console.log("Showing toast error:", errorMessage);
+      toast.error(errorMessage, {
+        duration: 5000,
+      });
+      setIsDeleteDialogOpen(false);
     }
   });
 
