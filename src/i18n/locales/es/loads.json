@@ -42,7 +42,7 @@
     "phases": {
       "essential_info": {
         "title": "Información Básica",
-        "description": "Detalles básicos y cliente",
+        "description": "Detalles de carga e información financiera",
         "card_description": "Ingresa los detalles fundamentales para esta carga"
       },
       "route_details": {

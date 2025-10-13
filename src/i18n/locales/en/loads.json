@@ -42,7 +42,7 @@
     "phases": {
       "essential_info": {
         "title": "Basic Information",
-        "description": "Basic details and client",
+        "description": "Load details and financial information",
         "card_description": "Enter the fundamental details for this load"
       },
       "route_details": {
