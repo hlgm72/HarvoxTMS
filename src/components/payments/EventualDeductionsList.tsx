@@ -51,20 +51,15 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   // Obtener períodos calculados
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
 
-  console.log('🔍 EventualDeductionsList - Filtros recibidos:', filters);
-
   // Obtener deducciones eventuales
   const { data: eventualDeductions = [], refetch } = useQuery({
     queryKey: ['eventual-deductions', user?.id, userCompany?.company_id, filters],
     queryFn: async () => {
       if (!user?.id || !userCompany?.company_id) {
-        console.log('❌ No hay usuario o company_id, saltando query');
         return [];
       }
 
       try {
-        console.log('🚀 Iniciando query de deducciones eventuales para company:', userCompany.company_id);
-        console.log('🔍 Filtros completos recibidos:', JSON.stringify(filters, null, 2));
         // Construir la consulta base sin joins (obtendremos datos del período por separado)
         let query = supabase
           .from('expense_instances')
@@ -152,76 +147,45 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           }
           // Si es período actual, usar períodos calculados en lugar de buscar en BD
           else if (filters.periodFilter.type === 'current') {
-            console.log('📅 Usando período calculado para current:', calculatedPeriods?.current);
-            
             if (calculatedPeriods?.current) {
               const startDate = calculatedPeriods.current.period_start_date;
               const endDate = calculatedPeriods.current.period_end_date;
               
-              console.log('📅 Filtrando por período actual calculado:', {
-                startDate,
-                endDate,
-                periodo: calculatedPeriods.current
-              });
-              
               // Incluir deducciones en el rango de fechas O sin fecha (percentage_deduction)
               query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),expense_date.is.null`);
             } else {
-              console.log('❌ No se encontró período calculado actual');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
           // Si es período anterior, usar períodos calculados
           else if (filters.periodFilter.type === 'previous') {
-            console.log('📅 Usando período calculado para previous:', calculatedPeriods?.previous);
-            
             if (calculatedPeriods?.previous) {
               const startDate = calculatedPeriods.previous.period_start_date;
               const endDate = calculatedPeriods.previous.period_end_date;
               
-              console.log('📅 Filtrando por período anterior calculado:', {
-                startDate,
-                endDate
-              });
-              
               // Incluir deducciones en el rango de fechas O sin fecha (percentage_deduction)
               query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),expense_date.is.null`);
             } else {
-              console.log('❌ No se encontró período calculado anterior');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
           // Para 'all', no aplicar filtro de período
           else if (filters.periodFilter.type === 'all') {
-            console.log('📋 Mostrando todas las deducciones (sin filtro de período)');
+            // No hacer nada, mostrar todo
           }
         } else {
-          console.log('🔍 No se aplicó filtro de período - usando período actual calculado por defecto');
           // Si no hay filtro de período, usar el período actual calculado por defecto
           if (calculatedPeriods?.current) {
             const startDate = calculatedPeriods.current.period_start_date;
             const endDate = calculatedPeriods.current.period_end_date;
             
-            console.log('📅 Aplicando período actual calculado por defecto:', {
-              startDate,
-              endDate
-            });
-            
             // Incluir deducciones en el rango de fechas O sin fecha (percentage_deduction)
             query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),expense_date.is.null`);
-          } else {
-            console.log('❌ No hay período calculado disponible por defecto');
           }
         }
 
         // Aplicar filtros de fecha si existen (solo si no se aplicó filtro de período)
         if (!filters?.periodFilter && filters?.dateRange?.from && filters?.dateRange?.to) {
-          console.log('🗓️ Aplicando filtros de fecha:', {
-            from: filters.dateRange.from,
-            to: filters.dateRange.to,
-            fromType: typeof filters.dateRange.from,
-            toType: typeof filters.dateRange.to
-          });
 
           // Validar que las fechas sean objetos Date válidos
           const fromDate = filters.dateRange.from instanceof Date 
@@ -276,11 +240,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         const { data, error } = await query;
 
         if (error) {
-          console.error('❌ Error en consulta de deducciones eventuales:', error);
           throw error;
         }
-
-        console.log('📊 Deducciones eventuales encontradas:', data?.length || 0);
         
         // Enriquecer con información de períodos y conductores
         const enrichedData = await Promise.all(
