@@ -79,9 +79,9 @@ export function ExpenseTypesTab() {
       }
       
       if (templates && templates.length > 0) {
-        const errorMessage = `No se puede eliminar este tipo de gasto porque está siendo usado en ${templates.length} plantilla(s) recurrente(s). Elimine primero las plantillas o desasigne este tipo de gasto de ellas.`;
-        console.error("Cannot delete - templates exist:", errorMessage);
-        throw new Error(errorMessage);
+        throw new Error(
+          `No se puede eliminar este tipo de gasto porque está siendo usado en ${templates.length} plantilla(s) recurrente(s). Elimine primero las plantillas o desasigne este tipo de gasto de ellas.`
+        );
       }
 
       // If no templates, proceed with deletion
@@ -92,6 +92,12 @@ export function ExpenseTypesTab() {
       
       if (error) {
         console.error("Error from database:", error);
+        // Check if it's a foreign key constraint error
+        if (error.code === '23503' || error.message?.includes('foreign key constraint')) {
+          throw new Error(
+            'No se puede eliminar este tipo de gasto porque está siendo usado en otras tablas del sistema. Elimine primero todos los registros relacionados.'
+          );
+        }
         throw error;
       }
     },
@@ -107,7 +113,7 @@ export function ExpenseTypesTab() {
       const errorMessage = error?.message || t("deductions.errors.deleteFailed");
       console.log("Showing toast error:", errorMessage);
       toast.error(errorMessage, {
-        duration: 5000,
+        duration: 6000,
       });
       setIsDeleteDialogOpen(false);
     }
