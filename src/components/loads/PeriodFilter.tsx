@@ -270,14 +270,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                         // SIEMPRE usar períodos calculados para Previous
                         const displayPrevious = calculatedPeriods?.previous;
                         
-                        if (displayPrevious) {
-                          handleOptionSelect({ 
-                            type: 'previous',
-                            periodId: displayPrevious.id,
-                            startDate: displayPrevious.period_start_date,
-                            endDate: displayPrevious.period_end_date
-                          });
-                        }
+                         if (displayPrevious) {
+                           handleOptionSelect({ 
+                             type: 'previous',
+                             periodId: displayPrevious.id,
+                             startDate: displayPrevious.period_start_date,
+                             endDate: displayPrevious.period_end_date
+                           });
+                         }
                       }}
                      disabled={!calculatedPeriods?.previous}
                     >
@@ -309,10 +309,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                        if (displayPeriod) {
                          // LÓGICA CONSISTENTE CON PAYMENT REPORTS
                          if (currentPeriod) {
-                           // Si hay período actual en BD, usar su ID
+                           // Si hay período actual en BD, usar company_payment_period_id
                            handleOptionSelect({ 
                              type: 'current',
-                             periodId: currentPeriod.id,
+                             periodId: currentPeriod.company_payment_period_id,
                              startDate: currentPeriod.period_start_date,
                              endDate: currentPeriod.period_end_date
                            });
@@ -370,27 +370,27 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     </h4>
                     
                     <div className="overflow-y-auto max-h-48 border rounded-md bg-gray-50 p-2 space-y-2">
-                      {openPeriods.map((period, index) => (
-                        <div
-                          key={period.id}
-                          className={`p-3 border rounded-md cursor-pointer transition-colors ${
-                            value.periodId === period.id 
-                              ? 'bg-blue-50 border-blue-200' 
-                              : 'bg-white hover:bg-gray-100'
-                          }`}
+                       {openPeriods.map((period, index) => (
+                         <div
+                           key={period.id}
+                           className={`p-3 border rounded-md cursor-pointer transition-colors ${
+                             value.periodId === (period.company_payment_period_id || period.id)
+                               ? 'bg-blue-50 border-blue-200' 
+                               : 'bg-white hover:bg-gray-100'
+                           }`}
                           onClick={() => {
                             const detailedLabel = formatDetailedPaymentPeriod(
                               period.period_start_date, 
                               period.period_end_date, 
                               Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
                             );
-                            handleOptionSelect({ 
-                              type: 'specific', 
-                              periodId: period.id,
-                              startDate: period.period_start_date,
-                              endDate: period.period_end_date,
-                              label: detailedLabel
-                            });
+                             handleOptionSelect({ 
+                               type: 'specific', 
+                               periodId: period.company_payment_period_id || period.id,
+                               startDate: period.period_start_date,
+                               endDate: period.period_end_date,
+                               label: detailedLabel
+                             });
                           }}
                         >
                           <div>
