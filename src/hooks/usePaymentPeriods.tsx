@@ -8,6 +8,7 @@ import { usePaymentPeriodGenerator } from './usePaymentPeriodGenerator';
 export interface PaymentPeriod {
   id: string;
   company_id: string;
+  company_payment_period_id?: string; // ID del período de compañía
   period_start_date: string;
   period_end_date: string;
   period_frequency: string;
@@ -204,6 +205,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
       return {
         id: periodData.id,
         company_id: periodData.company_id,
+        company_payment_period_id: periodData.company_payment_period_id,
         period_start_date: periodData.period?.period_start_date || '',
         period_end_date: periodData.period?.period_end_date || '',
         period_frequency: periodData.period?.period_frequency || '',
@@ -285,6 +287,7 @@ export const usePreviousPaymentPeriod = (companyId?: string) => {
       return {
         id: periodData.id,
         company_id: periodData.company_id,
+        company_payment_period_id: periodData.company_payment_period_id,
         period_start_date: periodData.period?.period_start_date || '',
         period_end_date: periodData.period?.period_end_date || '',
         period_frequency: periodData.period?.period_frequency || '',
@@ -353,6 +356,7 @@ export const useNextPaymentPeriod = (companyId?: string) => {
       return {
         id: periodData.id,
         company_id: periodData.company_id,
+        company_payment_period_id: periodData.company_payment_period_id,
         period_start_date: periodData.period?.period_start_date || '',
         period_end_date: periodData.period?.period_end_date || '',
         period_frequency: periodData.period?.period_frequency || '',

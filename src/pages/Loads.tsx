@@ -53,11 +53,11 @@ export default function Loads() {
       const displayPeriod = currentPeriod || calculatedPeriods?.current;
       
       if (displayPeriod) {
-        if (currentPeriod) {
-          // Si hay período actual en BD, usar su ID
+        if (currentPeriod?.company_payment_period_id) {
+          // Si hay período actual en BD, usar el ID del company_payment_period
           setPeriodFilter({
             type: 'current',
-            periodId: currentPeriod.id,
+            periodId: currentPeriod.company_payment_period_id,
             startDate: currentPeriod.period_start_date,
             endDate: currentPeriod.period_end_date
           });
