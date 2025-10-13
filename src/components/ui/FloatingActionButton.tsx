@@ -17,19 +17,21 @@ export function FloatingActionButton({
       onClick={onClick}
       className={cn(
         "fixed right-0 top-1/2 -translate-y-1/2 z-40",
-        "flex items-center gap-2 px-3 py-4",
+        "flex items-center justify-end gap-2",
         "bg-primary text-primary-foreground",
         "rounded-l-lg shadow-lg",
         "transition-all duration-300 ease-in-out",
-        "hover:px-4 hover:shadow-xl",
+        "w-12 hover:w-auto hover:px-4",
+        "h-12",
+        "overflow-hidden",
         "group",
         className
       )}
     >
-      <Settings className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
-      <span className="writing-mode-vertical text-sm font-semibold tracking-wider">
+      <span className="opacity-0 max-w-0 text-sm font-semibold tracking-wider whitespace-nowrap transition-all duration-300 group-hover:opacity-100 group-hover:max-w-[200px] group-hover:mr-2">
         {label}
       </span>
+      <Settings className="h-5 w-5 min-w-[20px] mr-3 transition-transform duration-300 group-hover:rotate-90" />
     </button>
   );
 }
