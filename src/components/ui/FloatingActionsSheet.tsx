@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { LucideIcon } from "lucide-react";
@@ -38,6 +38,12 @@ export function FloatingActionsSheet({
 
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="w-[400px] sm:w-[440px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{tabs.find(t => t.id === activeTab)?.label || buttonLabel}</SheetTitle>
+            <SheetDescription>
+              Manage your settings and preferences
+            </SheetDescription>
+          </SheetHeader>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
             <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}>
               {tabs.map((tab) => (
