@@ -262,6 +262,39 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
                   
+                   <Button
+                     variant={value.type === 'current' ? 'default' : 'ghost'}
+                     className="w-full justify-start"
+                     disabled={!calculatedPeriods?.current}
+                     onClick={() => {
+                       const displayPeriod = calculatedPeriods?.current;
+                       if (displayPeriod) {
+                         // SIEMPRE usar período calculado sin ID de BD
+                         handleOptionSelect({ 
+                           type: 'current',
+                           startDate: displayPeriod.period_start_date,
+                           endDate: displayPeriod.period_end_date
+                         });
+                       }
+                     }}
+                   >
+                      <Clock className="h-4 w-4 mr-2" />
+                      {(() => {
+                        const displayPeriod = calculatedPeriods?.current;
+                        if (displayPeriod) {
+                          const periodLabel = formatDetailedPaymentPeriod(
+                            displayPeriod.period_start_date, 
+                            displayPeriod.period_end_date, 
+                            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+                          );
+                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+                          const dateRange = formatPaymentPeriodBadge(displayPeriod.period_start_date, displayPeriod.period_end_date);
+                          return `Current: ${periodNumber} (${dateRange})`;
+                        }
+                        return 'Current';
+                      })()}
+                   </Button>
+
                      <Button
                      variant={value.type === 'previous' ? 'default' : 'ghost'}
                      className="w-full justify-start"
@@ -298,39 +331,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           return 'Previous';
                         })()}
                     </Button>
-
-                   <Button
-                     variant={value.type === 'current' ? 'default' : 'ghost'}
-                     className="w-full justify-start"
-                     disabled={!calculatedPeriods?.current}
-                     onClick={() => {
-                       const displayPeriod = calculatedPeriods?.current;
-                       if (displayPeriod) {
-                         // SIEMPRE usar período calculado sin ID de BD
-                         handleOptionSelect({ 
-                           type: 'current',
-                           startDate: displayPeriod.period_start_date,
-                           endDate: displayPeriod.period_end_date
-                         });
-                       }
-                     }}
-                   >
-                      <Clock className="h-4 w-4 mr-2" />
-                      {(() => {
-                        const displayPeriod = calculatedPeriods?.current;
-                        if (displayPeriod) {
-                          const periodLabel = formatDetailedPaymentPeriod(
-                            displayPeriod.period_start_date, 
-                            displayPeriod.period_end_date, 
-                            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                          );
-                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W'); // "W35/2025"
-                          const dateRange = formatPaymentPeriodBadge(displayPeriod.period_start_date, displayPeriod.period_end_date);
-                          return `Current: ${periodNumber} (${dateRange})`;
-                        }
-                        return 'Current';
-                      })()}
-                   </Button>
 
                   <Button
                     variant={value.type === 'all' ? 'default' : 'ghost'}
