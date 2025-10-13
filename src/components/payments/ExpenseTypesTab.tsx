@@ -159,9 +159,9 @@ export function ExpenseTypesTab() {
           </Button>
         </div>
       ) : (
-        <div className="border rounded-lg">
+        <div className="border rounded-lg bg-background">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead>{t("deductions.labels.name")}</TableHead>
                 <TableHead>{t("deductions.labels.category")}</TableHead>
