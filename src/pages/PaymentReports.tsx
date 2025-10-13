@@ -134,7 +134,8 @@ export default function PaymentReports() {
         return periodFilter.periodId ? [periodFilter.periodId] : [];
       
       case 'all':
-        return allPeriods ? allPeriods.map(p => p.id) : [];
+        // Para 'all', no necesitamos filtrar por IDs específicos - la query ya trae todos por company_id
+        return [];
       
       case 'custom':
         // Para filtro personalizado, usaremos las fechas en la query
@@ -182,12 +183,13 @@ export default function PaymentReports() {
       if (needsClientSideFiltering) {
         // Para períodos calculados o rangos de fechas, obtener todos y filtrar en cliente
         console.log('📊 Will filter on client side - fetching all periods');
+      } else if (filters.periodFilter.type === 'all') {
+        // Para 'all', no aplicar filtro de período - ya está filtrado por company_id
+        console.log('📊 Showing all periods - no period filter applied');
       } else if (getFilterPeriodIds.length > 0) {
         // Para períodos específicos de BD (current, previous, next, specific)
         console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
-      } else if (filters.periodFilter.type === 'all') {
-        console.log('📊 Showing all periods - no filter applied');
       } else {
         console.log('📊 No period filter applied - returning empty');
         return [];
