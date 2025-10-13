@@ -433,7 +433,7 @@ export default function PaymentReports() {
     if (filters.driverId && filters.driverId !== 'all') {
       const driver = drivers.find(d => d.user_id === filters.driverId);
       if (driver) {
-        parts.push(`${t("common:filters.driver")}: ${driver.first_name} ${driver.last_name}`);
+        parts.push(`${t("filters.driver", { ns: 'common' })}: ${driver.first_name} ${driver.last_name}`);
       }
     }
     
@@ -447,7 +447,7 @@ export default function PaymentReports() {
         negative: t('reports.status.negative_balance'),
         approved: t('reports.status.approved')
       };
-      parts.push(`${t("common:filters.status")}: ${statusLabels[filters.status] || filters.status}`);
+      parts.push(`${t("filters.status", { ns: 'common' })}: ${statusLabels[filters.status] || filters.status}`);
     }
     
     if (parts.length === 0) {
