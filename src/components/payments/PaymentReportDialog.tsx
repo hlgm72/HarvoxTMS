@@ -74,7 +74,12 @@ export function PaymentReportDialog({
       const { data, error } = await supabase
         .from('user_payrolls')
         .select(`
-          *
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency
+          )
         `)
         .eq('id', calculationId)
         .single();
