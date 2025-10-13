@@ -881,7 +881,7 @@ export function PaymentReportDialog({
                   {deductions.map((deduction) => (
                     <div key={deduction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
                       <div className="space-y-1 min-w-0 flex-1">
-                        <div className="font-medium truncate text-sm sm:text-base">{deduction.description}</div>
+                        <div className="font-medium truncate text-sm sm:text-base">{deduction.expense_types?.name || deduction.description}</div>
                         <div className="text-xs sm:text-sm text-muted-foreground">
                           {formatDateAuto(deduction.expense_date)} • {deduction.status === 'planned' ? t('report_dialog.deduction_details.status.planned') : t('report_dialog.deduction_details.status.applied')}
                         </div>
