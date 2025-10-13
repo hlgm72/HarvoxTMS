@@ -688,107 +688,118 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-full max-w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>
-            {(() => {
-              const loadNumber = currentLoadNumber?.trim();
-              
-              if (mode === 'edit') {
-                return loadNumber ? t("loads:create_wizard.title.edit_with_number", { number: loadNumber }) : t("loads:create");
-              } else if (mode === 'duplicate') {
-                return loadNumber ? t("loads:create_wizard.title.duplicate_with_number", { number: loadNumber }) : t("loads:create.duplicate");
-              } else {
-                return loadNumber ? t("loads:create_wizard.title.create_with_number", { number: loadNumber }) : t("loads:create_wizard.title.new_load");
+      <DialogContent className="w-full max-w-full sm:max-w-6xl max-h-[90vh] overflow-hidden p-0">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4 border-b">
+          <DialogHeader>
+            <DialogTitle>
+              {(() => {
+                const loadNumber = currentLoadNumber?.trim();
+                
+                if (mode === 'edit') {
+                  return loadNumber ? t("loads:create_wizard.title.edit_with_number", { number: loadNumber }) : t("loads:create");
+                } else if (mode === 'duplicate') {
+                  return loadNumber ? t("loads:create_wizard.title.duplicate_with_number", { number: loadNumber }) : t("loads:create.duplicate");
+                } else {
+                  return loadNumber ? t("loads:create_wizard.title.create_with_number", { number: loadNumber }) : t("loads:create_wizard.title.new_load");
+                }
+              })()}
+            </DialogTitle>
+            <DialogDescription>
+              {mode === 'create' 
+                ? t("loads:create_wizard.description.create")
+                : mode === 'edit'
+                ? t("loads:create_wizard.description.edit")
+                : t("loads:create_wizard.description.duplicate")
               }
-            })()}
-          </DialogTitle>
-          <DialogDescription>
-            {mode === 'create' 
-              ? t("loads:create_wizard.description.create")
-              : mode === 'edit'
-              ? t("loads:create_wizard.description.edit")
-              : t("loads:create_wizard.description.duplicate")
-            }
-          </DialogDescription>
-          
-          {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
-          {isDriverPaid && mode === 'edit' && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center gap-2 text-red-800">
-                <AlertTriangle className="h-5 w-5" />
-                <div>
-                  <h4 className="font-semibold">Conductor Ya Pagado</h4>
-                  <p className="text-sm mt-1">
-                    Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
-                    No se pueden realizar modificaciones a esta carga para preservar la integridad financiera.
-                  </p>
-                  {financialValidation?.warning_message && (
-                    <p className="text-sm mt-2 font-medium">
-                      {financialValidation.warning_message}
+            </DialogDescription>
+            
+            {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
+            {isDriverPaid && mode === 'edit' && (
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center gap-2 text-red-800">
+                  <AlertTriangle className="h-5 w-5" />
+                  <div>
+                    <h4 className="font-semibold">Conductor Ya Pagado</h4>
+                    <p className="text-sm mt-1">
+                      Este conductor ya ha sido marcado como pagado para el período de pago correspondiente. 
+                      No se pueden realizar modificaciones a esta carga para preservar la integridad financiera.
                     </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogHeader>
-
-        {/* Progress Steps */}
-        {/* Mobile compact step indicator */}
-        <div className="sm:hidden mb-4 px-2">
-          <div className="flex items-center justify-between text-sm">
-            <span>{t("loads:create_wizard.progress.step_x_of_y", { x: currentPhase, y: phases.length })}</span>
-            <div className="flex items-center gap-1">
-              {phases.map((p) => (
-                <span
-                  key={p.id}
-                  className={`h-2 w-2 rounded-full ${currentPhase === p.id ? 'bg-primary' : 'bg-muted'}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop steps */}
-        <div className="hidden sm:flex items-center justify-between mb-6 px-4 overflow-x-auto">
-          <div className="flex items-center gap-4 min-w-max py-1">
-            {phases.map((phase, index) => (
-              <div key={phase.id} className="flex items-center">
-                <div className="flex flex-col items-center">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentPhase(phase.id)}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200 hover:scale-105 ${
-                      currentPhase === phase.id 
-                        ? 'border-primary bg-primary text-primary-foreground' 
-                        : phase.completed
-                        ? 'border-green-500 bg-green-500 text-white hover:border-green-600 hover:bg-green-600'
-                        : 'border-muted bg-background text-muted-foreground hover:border-primary hover:text-primary'
-                    }`}
-                    title={t("loads:create_wizard.progress.go_to", { title: phase.title })}
-                  >
-                    {phase.completed ? (
-                      <CheckCircle className="h-4 w-4" />
-                    ) : (
-                      <span className="text-xs font-medium">{phase.id}</span>
+                    {financialValidation?.warning_message && (
+                      <p className="text-sm mt-2 font-medium">
+                        {financialValidation.warning_message}
+                      </p>
                     )}
-                  </button>
-                  <div className="text-center mt-2">
-                    <p className="text-xs font-medium">{phase.title}</p>
-                    <p className="text-xs text-muted-foreground">{phase.description}</p>
                   </div>
                 </div>
-                {index < phases.length - 1 && (
-                  <ArrowRight className="h-4 w-4 text-muted-foreground mx-4" />
-                )}
               </div>
-            ))}
-          </div>
+            )}
+          </DialogHeader>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Main Content - Horizontal Layout */}
+        <div className="flex h-[calc(90vh-12rem)]">
+          {/* Vertical Steps Sidebar */}
+          <div className="hidden md:flex flex-col w-64 border-r bg-muted/20 p-6 space-y-2">
+            {phases.map((phase, index) => (
+              <button
+                key={phase.id}
+                type="button"
+                onClick={() => setCurrentPhase(phase.id)}
+                className={`flex items-start gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
+                  currentPhase === phase.id 
+                    ? 'bg-primary text-primary-foreground shadow-md' 
+                    : 'hover:bg-muted/50'
+                }`}
+              >
+                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ${
+                  currentPhase === phase.id 
+                    ? 'border-primary-foreground bg-primary-foreground text-primary' 
+                    : phase.completed
+                    ? 'border-green-500 bg-green-500 text-white'
+                    : 'border-muted-foreground bg-background'
+                }`}>
+                  {phase.completed ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <span className="text-xs font-bold">{phase.id}</span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold ${currentPhase === phase.id ? 'text-primary-foreground' : 'text-foreground'}`}>
+                    {phase.title}
+                  </p>
+                  <p className={`text-xs mt-1 ${currentPhase === phase.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                    {phase.description}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile compact step indicator */}
+          <div className="md:hidden w-full px-6 py-4 border-b bg-muted/20">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">{t("loads:create_wizard.progress.step_x_of_y", { x: currentPhase, y: phases.length })}</span>
+              <div className="flex items-center gap-2">
+                {phases.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setCurrentPhase(p.id)}
+                    className={`h-2 w-8 rounded-full transition-all ${
+                      currentPhase === p.id ? 'bg-primary' : 'bg-muted hover:bg-muted-foreground/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">{phases[currentPhase - 1].title}</p>
+          </div>
+
+          {/* Form Content Area */}
+          <div className="flex-1 overflow-y-auto p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Phase 1: Essential Information */}
             {currentPhase === 1 && (
               <Card>
@@ -913,68 +924,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                        }}
                      />
 
-                      {/* Client Selection */}
-                      <FormField
-                        control={form.control}
-                        name="client_id"
-                        render={({ field }) => (
-                           <FormItem>
-                             <FormLabel>{t("loads:create_wizard.form.client_broker")} {t("loads:create_wizard.form.client_broker_required")}</FormLabel>
-                             <FormControl>
-                                 <ClientCombobox
-                                   clients={clients}
-                                   value={field.value}
-                                      onValueChange={(value) => {
-                                        console.log('🔍 CLIENT SELECTED - Value:', value);
-                                        field.onChange(value);
-                                        const client = clients.find(c => c.id === value);
-                                        console.log('🔍 CLIENT SELECTED - Found client:', client?.name);
-                                        setSelectedClient(client || null);
-                                        form.setValue("contact_id", "");
-                                        console.log('🔍 CLIENT SELECTED - Cleared contact_id');
-                                        // Limpiar error cuando el usuario seleccione un cliente
-                                       if (form.formState.errors.client_id) {
-                                         form.clearErrors("client_id");
-                                       }
-                                     }}
-                                   onClientSelect={(client) => setSelectedClient(client as Client)}
-                                   placeholder={t("loads:create_wizard.form.client_placeholder")}
-                                   className="w-full"
-                                   onCreateNew={() => setShowCreateClient(true)}
-                                 />
-                             </FormControl>
-                             <FormMessage />
-                           </FormItem>
-                        )}
-                      />
-
-                      {/* Contact Selection */}
-                      <FormField
-                        control={form.control}
-                        name="contact_id"
-                        render={({ field }) => (
-                           <FormItem>
-                             <FormLabel>{t("loads:create_wizard.form.client_contact")}</FormLabel>
-                             <FormControl>
-                                  <ContactCombobox
-                                    clientId={selectedClient?.id}
-                                    value={field.value}
-                                    onValueChange={(value) => {
-                                      console.log('🔍 CONTACT SELECTED - Value:', value);
-                                      field.onChange(value);
-                                    }}
-                                    placeholder={t("loads:create_wizard.form.contact_placeholder")}
-                                   disabled={!selectedClient}
-                                   className="w-full"
-                                   onCreateNew={selectedClient ? () => setShowCreateDispatcher(true) : undefined}
-                                 />
-                             </FormControl>
-                             <FormMessage />
-                           </FormItem>
-                        )}
-                      />
-
-                     {/* Commodity */}
+                      {/* Commodity */}
                       <FormField
                         control={form.control}
                         name="commodity"
@@ -1117,6 +1067,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 percentagesInitialized={percentagesInitialized}
                 onPercentagesInitialized={setPercentagesInitialized}
                 mode={mode}
+                // New props for client fields
+                form={form}
+                clients={clients}
+                selectedClient={selectedClient}
+                onClientSelect={setSelectedClient}
+                onShowCreateClient={() => setShowCreateClient(true)}
+                onShowCreateDispatcher={() => setShowCreateDispatcher(true)}
               />
             )}
 
@@ -1228,8 +1185,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 )}
               </div>
             </div>
-          </form>
-        </Form>
+              </form>
+            </Form>
+          </div>
+        </div>
 
          {/* Create Client Dialog */}
          <CreateClientDialog

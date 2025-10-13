@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
+import { UseFormReturn } from "react-hook-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Users, CheckCircle, Settings, DollarSign } from "lucide-react";
+import { User, Users, CheckCircle, Settings, DollarSign, Building2, Contact } from "lucide-react";
 import { CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { CompanyDispatcher } from "@/hooks/useCompanyDispatchers";
+import { Client } from "@/hooks/useClients";
 import { useOwnerOperator } from "@/hooks/useOwnerOperator";
 import { useTranslation } from 'react-i18next';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { ClientCombobox } from "@/components/clients/ClientCombobox";
+import { ContactCombobox } from "@/components/clients/ContactCombobox";
 
 
 interface LoadAssignmentSectionProps {
@@ -29,6 +34,13 @@ interface LoadAssignmentSectionProps {
   percentagesInitialized?: string | null;
   onPercentagesInitialized?: (driverId: string | null) => void;
   mode?: 'create' | 'edit' | 'duplicate';
+  // New props for client fields
+  form?: UseFormReturn<any>;
+  clients?: Client[];
+  selectedClient?: Client | null;
+  onClientSelect?: (client: Client | null) => void;
+  onShowCreateClient?: () => void;
+  onShowCreateDispatcher?: () => void;
 }
 
 export function LoadAssignmentSection({ 
@@ -46,7 +58,13 @@ export function LoadAssignmentSection({
   onDispatchingPercentageChange,
   percentagesInitialized,
   onPercentagesInitialized,
-  mode
+  mode,
+  form,
+  clients = [],
+  selectedClient,
+  onClientSelect,
+  onShowCreateClient,
+  onShowCreateDispatcher
 }: LoadAssignmentSectionProps) {
   const { t } = useTranslation();
   const activeDrivers = drivers.filter(driver => driver.is_active);
@@ -139,6 +157,77 @@ export function LoadAssignmentSection({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Client and Contact Fields at the Top */}
+        {form && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-6 border-b">
+            {/* Client Selection */}
+            <FormField
+              control={form.control}
+              name="client_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    {t("loads:create_wizard.form.client_broker")} {t("loads:create_wizard.form.client_broker_required")}
+                  </FormLabel>
+                  <FormControl>
+                    <ClientCombobox
+                      clients={clients}
+                      value={field.value}
+                      onValueChange={(value) => {
+                        console.log('🔍 CLIENT SELECTED - Value:', value);
+                        field.onChange(value);
+                        const client = clients.find(c => c.id === value);
+                        console.log('🔍 CLIENT SELECTED - Found client:', client?.name);
+                        onClientSelect?.(client || null);
+                        form.setValue("contact_id", "");
+                        console.log('🔍 CLIENT SELECTED - Cleared contact_id');
+                        if (form.formState.errors.client_id) {
+                          form.clearErrors("client_id");
+                        }
+                      }}
+                      onClientSelect={(client) => onClientSelect?.(client as Client)}
+                      placeholder={t("loads:create_wizard.form.client_placeholder")}
+                      className="w-full"
+                      onCreateNew={onShowCreateClient}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Contact Selection */}
+            <FormField
+              control={form.control}
+              name="contact_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center gap-2">
+                    <Contact className="h-4 w-4" />
+                    {t("loads:create_wizard.form.client_contact")}
+                  </FormLabel>
+                  <FormControl>
+                    <ContactCombobox
+                      clientId={selectedClient?.id}
+                      value={field.value}
+                      onValueChange={(value) => {
+                        console.log('🔍 CONTACT SELECTED - Value:', value);
+                        field.onChange(value);
+                      }}
+                      placeholder={t("loads:create_wizard.form.contact_placeholder")}
+                      disabled={!selectedClient}
+                      className="w-full"
+                      onCreateNew={selectedClient ? onShowCreateDispatcher : undefined}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
         {/* Driver Selection */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
@@ -363,18 +452,6 @@ export function LoadAssignmentSection({
               )}
             </div>
           )}
-        </div>
-
-        {/* Instructions */}
-        <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="text-sm font-medium mb-2">{t("loads:create_wizard.phases.assignment.important_info.title")}</h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• {t("loads:create_wizard.phases.assignment.important_info.notifications")}</li>
-            <li>• {t("loads:create_wizard.phases.assignment.important_info.portal_access")}</li>
-            <li>• {t("loads:create_wizard.phases.assignment.important_info.dispatcher_optional")}</li>
-            <li>• {t("loads:create_wizard.phases.assignment.important_info.active_only")}</li>
-            <li>• {t("loads:create_wizard.phases.assignment.important_info.changeable")}</li>
-          </ul>
         </div>
       </CardContent>
     </Card>
