@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
@@ -118,30 +117,20 @@ export function StopEditModal({
   
   if (!isOpen) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const modalContent = (
-    <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50" 
-      onClick={handleBackdropClick}
-    >
-      {/* Modal Content */}
-      <div className="relative bg-background rounded-lg border shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0">
         {/* Header - Fixed */}
-        <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 pb-4 border-b flex-shrink-0">
+        <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
           <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-primary" />
             <div>
-              <h2 className="text-lg font-semibold leading-none tracking-tight">
+              <DialogTitle>
                 {t("loads:create_wizard.phases.route_details.edit_modal.title", { number: stop.stop_number })}
-              </h2>
-              <p className="text-sm text-muted-foreground">
+              </DialogTitle>
+              <DialogDescription>
                 {t("loads:create_wizard.phases.route_details.edit_modal.description")}
-              </p>
+              </DialogDescription>
             </div>
             <Badge className={cn("text-xs ml-auto", getStopTypeColor())}>
               {getStopTypeLabel()}
@@ -174,7 +163,7 @@ export function StopEditModal({
                       {formData.scheduled_date ? formatPrettyDate(formData.scheduled_date) : t("loads:create_wizard.phases.route_details.edit_modal.select_date")}
                     </Button>
                    </PopoverTrigger>
-                   <PopoverContent className="w-auto p-0 bg-background border-border z-[10000]">
+                   <PopoverContent className="w-auto p-0 bg-background border-border">
                     <div className="space-y-3 p-4">
                       {/* Month/Year Selectors */}
                       <div className="flex gap-2">
@@ -189,7 +178,7 @@ export function StopEditModal({
                           <SelectTrigger className="w-32">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="z-[10001]">
+                          <SelectContent>
                             {Array.from({ length: 12 }, (_, i) => (
                               <SelectItem key={i} value={i.toString()}>
                                 {formatMonthName(new Date(2024, i, 1))}
@@ -244,7 +233,7 @@ export function StopEditModal({
                   <SelectTrigger>
                     <SelectValue placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")} />
                   </SelectTrigger>
-                  <SelectContent className="z-[10000]">
+                  <SelectContent>
                     {TIME_OPTIONS.map(time => (
                       <SelectItem key={time} value={time}>{time}</SelectItem>
                     ))}
@@ -265,7 +254,7 @@ export function StopEditModal({
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="z-[10000]">
+                <SelectContent>
                   <SelectItem value="pickup">{t("loads:create_wizard.phases.route_details.edit_modal.pickup_label")}</SelectItem>
                   <SelectItem value="delivery">{t("loads:create_wizard.phases.route_details.edit_modal.delivery_label")}</SelectItem>
                 </SelectContent>
@@ -395,9 +384,7 @@ export function StopEditModal({
             {t("loads:create_wizard.phases.route_details.edit_modal.save_changes")}
           </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-
-  return createPortal(modalContent, document.body);
 }
