@@ -4175,6 +4175,10 @@ export type Database = {
         Args: { period_id_param: string }
         Returns: Json
       }
+      get_period_description: {
+        Args: { expense_type_name: string; period_id: string }
+        Returns: string
+      }
       get_period_drivers_summary: {
         Args: { company_payment_period_id_param: string }
         Returns: {
@@ -4497,6 +4501,10 @@ export type Database = {
       }
       recalculate_payment_period_totals: {
         Args: { period_id: string }
+        Returns: undefined
+      }
+      recalculate_period_percentage_deductions: {
+        Args: { target_period_id: string; target_user_id: string }
         Returns: undefined
       }
       refresh_user_period_deductions: {
