@@ -437,12 +437,6 @@ export const useCreateLoad = () => {
       queryClient.refetchQueries({ queryKey: ['loads'] });
       console.log('✅ Queries invalidadas');
       
-      // Show success message
-      showSuccess(
-        isEdit ? 'Carga actualizada exitosamente' : 'Carga creada exitosamente'
-      );
-      console.log('✅ Mensaje de éxito mostrado');
-      
       console.log('🎉 ========== ON SUCCESS COMPLETADO ==========');
     },
     onError: (error: Error, variables) => {
