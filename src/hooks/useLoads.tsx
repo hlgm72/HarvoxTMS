@@ -264,10 +264,11 @@ export const useLoads = (filters?: LoadsFilters) => {
         });
         
         // PASO 3: Query SIMPLIFICADA - cualquier carga con driver O created_by de la compañía
+        // Incluir también cargas sin driver (driver_user_id NULL) si fueron creadas por la compañía
         const loadsQuery = supabase
           .from('loads')
           .select('*')
-          .or(`driver_user_id.in.(${companyUsers.join(',')}),created_by.in.(${companyUsers.join(',')})`)
+          .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')})),created_by.in.(${companyUsers.join(',')})`)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
           .limit(500);
