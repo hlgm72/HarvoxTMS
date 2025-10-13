@@ -257,14 +257,19 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriods
         );
         
-        // PASO 3: Obtener todas las cargas de la compañía (filtrado por período se hace en cliente)
+        console.log('🔍 useLoads - Period result:', {
+          periodResult,
+          companyUsers
+        });
+        
+        // PASO 3: Query SIMPLIFICADA - cualquier carga con driver O created_by de la compañía
         const loadsQuery = supabase
           .from('loads')
           .select('*')
-          .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
+          .or(`driver_user_id.in.(${companyUsers.join(',')}),created_by.in.(${companyUsers.join(',')})`)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
-          .limit(500); // Límite generoso para incluir todas las cargas relevantes
+          .limit(500);
 
         const { data: allLoads, error: loadsError } = await loadsQuery;
 
@@ -272,6 +277,12 @@ export const useLoads = (filters?: LoadsFilters) => {
           console.error('Error obteniendo cargas:', loadsError);
           throw new Error('Error de conexión obteniendo cargas');
         }
+        
+        console.log('✅ useLoads - Cargas de BD:', {
+          total: allLoads?.length || 0,
+          withoutDriver: allLoads?.filter(l => !l.driver_user_id).length || 0,
+          load25_449: allLoads?.find(l => l.load_number === '25-449') ? 'ENCONTRADA' : 'NO ENCONTRADA'
+        });
 
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
