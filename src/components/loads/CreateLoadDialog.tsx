@@ -833,7 +833,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Circle className="h-5 w-5 text-primary" />
+                    <ClipboardList className="h-5 w-5 text-primary" />
                     {t("loads:create_wizard.phases.essential_info.title")}
                   </CardTitle>
                   <CardDescription>
