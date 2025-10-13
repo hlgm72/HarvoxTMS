@@ -12,8 +12,11 @@ import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActio
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatCurrency } from '@/lib/dateFormatting';
+import { formatCurrency, formatDetailedPaymentPeriod, formatPaymentPeriodBadge } from '@/lib/dateFormatting';
 import { useConsolidatedDrivers } from "@/hooks/useConsolidatedDrivers";
+import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
+import { useCompanyCache } from "@/hooks/useCompanyCache";
+import { useCompanyFinancialData } from "@/hooks/useSecureCompanyData";
 
 export default function Deductions() {
   const { t } = useTranslation('payments');
@@ -50,6 +53,11 @@ export default function Deductions() {
     last_name: d.last_name
   }));
 
+  // Get calculated periods and company data for filter labels
+  const { userCompany } = useCompanyCache();
+  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
+  const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
+
   // Estado de configuración de vista
   const [viewConfig, setViewConfig] = useState({
     density: 'normal',
@@ -77,7 +85,7 @@ export default function Deductions() {
     queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
   };
 
-  // ✅ Generar descripción de filtros activos
+  // ✅ Generar descripción de filtros activos con formato detallado
   const getFilterDescription = () => {
     const parts: string[] = [];
     
@@ -89,9 +97,35 @@ export default function Deductions() {
       if (pf.label) {
         parts.push(pf.label);
       } else if (pf.type === 'current') {
-        parts.push(t("deductions.filters.currentPeriod"));
+        // Usar el mismo formato que PeriodFilter para "Current"
+        const displayCurrentPeriod = calculatedPeriods?.current;
+        if (displayCurrentPeriod) {
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayCurrentPeriod.period_start_date, 
+            displayCurrentPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
+          parts.push(`Current: ${periodNumber} (${dateRange})`);
+        } else {
+          parts.push(t("deductions.filters.currentPeriod"));
+        }
       } else if (pf.type === 'previous') {
-        parts.push(t("deductions.filters.previousPeriod"));
+        // Usar el mismo formato que PeriodFilter para "Previous"
+        const displayPreviousPeriod = calculatedPeriods?.previous;
+        if (displayPreviousPeriod) {
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayPreviousPeriod.period_start_date, 
+            displayPreviousPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+          parts.push(`Previous: ${periodNumber} (${dateRange})`);
+        } else {
+          parts.push(t("deductions.filters.previousPeriod"));
+        }
       } else if (pf.type === 'specific' && pf.periodId) {
         parts.push(t("deductions.filters.specificPeriod"));
       } else if (pf.type === 'all') {
