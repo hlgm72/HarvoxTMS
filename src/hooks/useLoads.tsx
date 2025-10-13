@@ -252,6 +252,15 @@ export const useLoads = (filters?: LoadsFilters) => {
       if (companyUsers.length === 0) {
         return [];
       }
+      
+      // Obtener configuración de la empresa para saber qué fecha usar
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('load_assignment_criteria')
+        .eq('id', userCompany.company_id)
+        .single();
+      
+      const loadAssignmentCriteria = companyData?.load_assignment_criteria || 'delivery_date';
 
       try {
         // PASO 2: Obtener period_ids relevantes usando la misma lógica que PaymentReports
@@ -316,14 +325,10 @@ export const useLoads = (filters?: LoadsFilters) => {
         
         if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
           loads = loads.filter(load => {
-            if (!load.pickup_date && !load.delivery_date) return false;
-            const pickupInRange = load.pickup_date && 
-              load.pickup_date >= periodResult.startDate && 
-              load.pickup_date <= periodResult.endDate;
-            const deliveryInRange = load.delivery_date && 
-              load.delivery_date >= periodResult.startDate && 
-              load.delivery_date <= periodResult.endDate;
-            return pickupInRange || deliveryInRange;
+            // Usar el criterio de la empresa para determinar qué fecha filtrar
+            const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
+            if (!relevantDate) return false;
+            return relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
           });
         } else if (periodResult.periodIds.length > 0) {
           loads = loads.filter(load => {
@@ -335,13 +340,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             
             // Cargas sin período pero con fechas en el rango
             if (!load.payment_period_id && periodResult.startDate && periodResult.endDate) {
-              const pickupInRange = load.pickup_date && 
-                load.pickup_date >= periodResult.startDate && 
-                load.pickup_date <= periodResult.endDate;
-              const deliveryInRange = load.delivery_date && 
-                load.delivery_date >= periodResult.startDate && 
-                load.delivery_date <= periodResult.endDate;
-              const included = pickupInRange || deliveryInRange;
+              const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
+              const included = relevantDate && relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
               console.log(`${included ? '✅' : '❌'} Load ${load.load_number} - sin período, fecha en rango: ${included}`);
               return included;
             }

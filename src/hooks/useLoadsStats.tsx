@@ -57,6 +57,19 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
       try {
         // console.log('🔍 useLoadsStats - Input periodFilter:', periodFilter);
         
+        // Obtener configuración de la empresa para saber qué fecha usar
+        const { data: companyData, error: companyError } = await supabase
+          .from('companies')
+          .select('load_assignment_criteria')
+          .eq('id', userCompany.company_id)
+          .single();
+        
+        if (companyError) {
+          console.error('Error obteniendo configuración de empresa:', companyError);
+        }
+        
+        const loadAssignmentCriteria = companyData?.load_assignment_criteria || 'delivery_date';
+        
         let targetPeriodId: string | string[] | null = null;
 
         // Determinar el período objetivo basado en el filtro
@@ -162,10 +175,12 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
 
         // Aplicar filtro según el tipo de período
         if (targetPeriodId === 'date-filter' && periodFilter?.startDate && periodFilter?.endDate) {
-          // Para períodos calculados, usar filtro de fechas
+          // Para períodos calculados, usar filtro de fechas basado en configuración de empresa
+          const dateField = loadAssignmentCriteria === 'pickup_date' ? 'pickup_date' : 'delivery_date';
           loadsQuery = loadsQuery
-            .or(`and(pickup_date.gte.${periodFilter.startDate},pickup_date.lte.${periodFilter.endDate}),and(delivery_date.gte.${periodFilter.startDate},delivery_date.lte.${periodFilter.endDate})`);
-          // console.log('📅 Applied date filter for calculated period:', periodFilter.startDate, 'to', periodFilter.endDate);
+            .gte(dateField, periodFilter.startDate)
+            .lte(dateField, periodFilter.endDate);
+          // console.log(`📅 Applied ${dateField} filter:`, periodFilter.startDate, 'to', periodFilter.endDate);
         } else if (targetPeriodId !== 'all' && targetPeriodId !== 'date-filter') {
           // Para períodos de BD, usar payment_period_id (array o single)
           if (Array.isArray(targetPeriodId)) {
