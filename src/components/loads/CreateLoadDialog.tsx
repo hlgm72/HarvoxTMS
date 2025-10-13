@@ -369,35 +369,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       errors.push(t("loads:create_wizard.validation.stops_last_delivery"));
     }
 
-    // Validate each stop has required fields
+    // Solo validar fechas como campos requeridos - los campos de dirección son opcionales
     stops.forEach((stop, index) => {
       const stopNumber = index + 1;
-      const fieldsErrors: string[] = [];
       
-      if (!stop.company_name?.trim()) {
-        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_company"));
-      }
-      if (!stop.address?.trim()) {
-        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_address"));
-      }
-      if (!stop.city?.trim()) {
-        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_city"));
-      }
-      if (!stop.state?.trim()) {
-        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_state"));
-      }
-
       // Validación obligatoria de fecha para todas las paradas
       if (!stop.scheduled_date) {
-        fieldsErrors.push(t("loads:create_wizard.validation.stops_missing_date"));
-      }
-
-      if (fieldsErrors.length > 0) {
         const stopType = stop.stop_type === 'pickup' ? 'P' : 'D';
-        errors.push(t("loads:create_wizard.validation.stops_missing_fields", { 
+        errors.push(t("loads:create_wizard.validation.stop_missing_date", { 
           stopType, 
-          number: stopNumber, 
-          fields: fieldsErrors.join(', ') 
+          number: stopNumber
         }));
       }
     });
