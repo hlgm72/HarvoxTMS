@@ -119,12 +119,13 @@ export function StopEditModal({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 z-[9999] bg-black/50" onClick={onClose} />
       
       {/* Modal Content */}
-      <div className="relative z-[10000] bg-background rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center pointer-events-none">
+        <div className="relative bg-background rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col pointer-events-auto">
         {/* Header - Fixed */}
         <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 pb-4 border-b flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -389,8 +390,9 @@ export function StopEditModal({
             {t("loads:create_wizard.phases.route_details.edit_modal.save_changes")}
           </Button>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 
   return createPortal(modalContent, document.body);
