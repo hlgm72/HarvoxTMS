@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
@@ -117,13 +118,13 @@ export function StopEditModal({
   
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50" />
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       
       {/* Modal Content */}
-      <div className="relative z-[101] bg-white rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative z-[10000] bg-background rounded-lg border shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 pb-0">
           <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-primary" />
@@ -389,4 +390,6 @@ export function StopEditModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
