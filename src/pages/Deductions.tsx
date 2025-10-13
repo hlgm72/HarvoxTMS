@@ -83,14 +83,18 @@ export default function Deductions() {
     
     // Filtro de período
     if (filters.periodFilter) {
-      if (filters.periodFilter.type === 'current') {
+      const pf = filters.periodFilter as any;
+      
+      // Si hay un label, usarlo directamente (para this_month, this_quarter, this_year, etc.)
+      if (pf.label) {
+        parts.push(pf.label);
+      } else if (pf.type === 'current') {
         parts.push(t("deductions.filters.currentPeriod"));
-      } else if (filters.periodFilter.type === 'previous') {
+      } else if (pf.type === 'previous') {
         parts.push(t("deductions.filters.previousPeriod"));
-      } else if (filters.periodFilter.type === 'specific' && (filters.periodFilter as any).periodId) {
-        // Mostrar el nombre del período específico si está disponible
+      } else if (pf.type === 'specific' && pf.periodId) {
         parts.push(t("deductions.filters.specificPeriod"));
-      } else if (filters.periodFilter.type === 'all') {
+      } else if (pf.type === 'all') {
         parts.push(t("deductions.filters.allPeriods"));
       }
     }
