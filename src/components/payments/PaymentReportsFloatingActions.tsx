@@ -1,11 +1,9 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { ExpandableFloatingActions } from "@/components/ui/ExpandableFloatingActions";
+import { FloatingActionsSheet } from "@/components/ui/FloatingActionsSheet";
 import { 
   Filter, 
   FilterX, 
@@ -17,7 +15,6 @@ import {
   Clock
 } from "lucide-react";
 import { formatCurrency } from '@/lib/dateFormatting';
-import { cn } from "@/lib/utils";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 
 export interface PaymentFiltersType {
@@ -46,8 +43,6 @@ export function PaymentReportsFloatingActions({
   stats
 }: PaymentReportsFloatingActionsProps) {
   const { t } = useTranslation(['payments', 'common']);
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'stats'>('filters');
 
   const statusOptions = [
     { value: "all", label: t('filters.status_options.all') },
@@ -80,62 +75,21 @@ export function PaymentReportsFloatingActions({
                           filters.status !== 'all' ||
                           filters.periodFilter.type !== 'current';
 
-  const openSheet = (tab: 'filters' | 'export' | 'stats') => {
-    setActiveTab(tab);
-    setIsOpen(true);
-  };
+  const activeFiltersCount = [
+    filters.search !== '',
+    filters.driverId !== 'all',
+    filters.status !== 'all',
+    filters.periodFilter.type !== 'current'
+  ].filter(Boolean).length;
 
-  // Define floating actions
-  const floatingActions = [
+  // Define tabs
+  const tabs = [
     {
+      id: 'filters',
+      label: t('floating_actions.filters', 'Filtros'),
       icon: Filter,
-      label: hasActiveFilters ? t('floating_actions.filters', 'Filtros') : t('floating_actions.filters', 'Filtros'),
-      onClick: () => openSheet('filters'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive',
-      className: hasActiveFilters ? '!bg-blue-500 !hover:bg-blue-600 !text-white !border-blue-500' : ''
-    },
-    {
-      icon: Download,
-      label: t('floating_actions.export', 'Exportar'),
-      onClick: () => openSheet('export'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    },
-    {
-      icon: BarChart3,
-      label: t('floating_actions.stats', 'Estadísticas'),
-      onClick: () => openSheet('stats'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    }
-  ];
-
-  return (
-    <>
-      {/* Floating Buttons */}
-      <ExpandableFloatingActions
-        actions={floatingActions}
-        mainLabel={t('floating_actions.main_label', 'Acciones')}
-        position="bottom-right"
-      />
-
-      {/* Sheet Modal */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-[400px] sm:w-[440px]">
-          <SheetHeader>
-            <SheetTitle>
-              {activeTab === 'filters' && t('floating_actions.filters_title', 'Filtrar Reportes')}
-              {activeTab === 'export' && t('floating_actions.export_title', 'Exportar Datos')}
-              {activeTab === 'stats' && t('floating_actions.stats_title', 'Estadísticas')}
-            </SheetTitle>
-            <SheetDescription>
-              {activeTab === 'filters' && t('floating_actions.filters_description', 'Aplica filtros para encontrar reportes específicos')}
-              {activeTab === 'export' && t('floating_actions.export_description', 'Exporta los datos de reportes en diferentes formatos')}
-              {activeTab === 'stats' && t('floating_actions.stats_description', 'Ve estadísticas detalladas de los reportes de pago')}
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="mt-6">
-            {/* Filters Content */}
-            {activeTab === 'filters' && (
+      badge: activeFiltersCount > 0 ? activeFiltersCount : undefined,
+      content: (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium">{t('floating_actions.applied_filters', 'Filtros Aplicados')}</h3>
@@ -244,10 +198,13 @@ export function PaymentReportsFloatingActions({
                   )}
                 </div>
               </div>
-            )}
-
-            {/* Export Content */}
-            {activeTab === 'export' && (
+      )
+    },
+    {
+      id: 'export',
+      label: t('floating_actions.export', 'Exportar'),
+      icon: Download,
+      content: (
               <div className="space-y-6">
                 <div className="space-y-4">
                   <Button className="w-full justify-start" variant="outline">
@@ -264,10 +221,13 @@ export function PaymentReportsFloatingActions({
                   </Button>
                 </div>
               </div>
-            )}
-
-            {/* Stats Content */}
-            {activeTab === 'stats' && stats && (
+      )
+    },
+    {
+      id: 'stats',
+      label: t('floating_actions.stats', 'Estadísticas'),
+      icon: BarChart3,
+      content: stats ? (
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 border rounded-lg space-y-2">
@@ -303,10 +263,19 @@ export function PaymentReportsFloatingActions({
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
+      ) : (
+        <div className="text-sm text-muted-foreground">
+          {t('floating_actions.no_stats', 'No hay estadísticas disponibles')}
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <FloatingActionsSheet
+      tabs={tabs}
+      buttonLabel={t('floating_actions.main_label', 'ACCIONES')}
+      defaultTab="filters"
+    />
   );
 }
