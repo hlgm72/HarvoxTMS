@@ -72,6 +72,7 @@ interface PaymentReportData {
     total_amount: number;
   }>;
   deductions?: Array<{
+    name: string;
     description: string;
     amount: number;
     expense_date: string;
@@ -751,7 +752,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (data.deductions && data.deductions.length > 0) {
     data.deductions.forEach(deduction => {
-      addText(deduction.description, margin + 2, currentY, {
+      addText(deduction.name || deduction.description, margin + 2, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });

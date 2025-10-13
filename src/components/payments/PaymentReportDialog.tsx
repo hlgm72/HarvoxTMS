@@ -408,6 +408,7 @@ export function PaymentReportDialog({
         price_per_gallon: expense.price_per_gallon || 0
       })),
       deductions: deductions.map(deduction => ({
+        name: deduction.expense_types?.name || deduction.description,
         description: deduction.description,
         amount: deduction.amount,
         expense_date: deduction.expense_date
