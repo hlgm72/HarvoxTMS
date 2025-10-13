@@ -24,8 +24,6 @@ export const useCalculatedPeriods = (companyId?: string) => {
   return useQuery({
     queryKey: ['calculated-periods', user?.id, companyId],
     queryFn: async () => {
-      console.log('🔄 useCalculatedPeriods - Starting calculation for:', { userId: user?.id, companyId });
-      
       if (!user) throw new Error('User not authenticated');
 
       // Obtener la compañía del usuario si no se especifica
@@ -39,8 +37,6 @@ export const useCalculatedPeriods = (companyId?: string) => {
           .eq('is_active', true)
           .limit(1)
           .single();
-
-        console.log('🏢 useCalculatedPeriods - Company lookup:', { userCompanyRole, companyError });
 
         if (companyError || !userCompanyRole) {
           return { current: null, previous: null, next: null };
@@ -56,8 +52,6 @@ export const useCalculatedPeriods = (companyId?: string) => {
         .eq('id', targetCompanyId)
         .single();
 
-      console.log('⚙️ useCalculatedPeriods - Company config:', { companyData, companyError });
-
       if (companyError || !companyData) {
         return { current: null, previous: null, next: null };
       }
@@ -67,14 +61,10 @@ export const useCalculatedPeriods = (companyId?: string) => {
         payment_cycle_start_day: companyData.payment_cycle_start_day || 1
       };
 
-      console.log('📊 useCalculatedPeriods - Using config:', companyConfig);
-
       // Calcular los tres períodos
       const currentCalc = calculateCurrentPeriod(companyConfig);
       const previousCalc = calculatePreviousPeriod(companyConfig);
       const nextCalc = calculateNextPeriod(companyConfig);
-
-      console.log('📅 useCalculatedPeriods - Calculated periods:', { currentCalc, previousCalc, nextCalc });
 
       const current: CalculatedPeriod = {
         id: 'calculated-current',
@@ -108,8 +98,6 @@ export const useCalculatedPeriods = (companyId?: string) => {
         period_type: 'regular',
         is_calculated: true
       };
-
-      console.log('✅ useCalculatedPeriods - Final periods:', { current, previous, next });
 
       return { current, previous, next };
     },

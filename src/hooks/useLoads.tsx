@@ -272,12 +272,6 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriods
         );
         
-        console.log('🔍 useLoads - Period result:', {
-          periodResult,
-          companyUsers,
-          createdBy_25_449_inList: companyUsers.includes('087a825c-94ea-42d9-8388-5087a19d776f')
-        });
-        
         // PASO 3: Query SIMPLIFICADA - traer todas las cargas creadas por usuarios de la compañía
         // Esto incluye cargas con o sin conductor asignado
         const loadsQuery = supabase
@@ -289,39 +283,14 @@ export const useLoads = (filters?: LoadsFilters) => {
           .limit(500);
 
         const { data: allLoads, error: loadsError } = await loadsQuery;
-        
-        console.log('🔍 useLoads - Query ejecutada:', {
-          companyUsersCount: companyUsers.length,
-          query: 'created_by.in(companyUsers)',
-          resultsCount: allLoads?.length || 0
-        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
           throw new Error('Error de conexión obteniendo cargas');
         }
-        
-        console.log('✅ useLoads - Cargas de BD:', {
-          total: allLoads?.length || 0,
-          withoutDriver: allLoads?.filter(l => !l.driver_user_id).length || 0,
-          load25_449: allLoads?.find(l => l.load_number === '25-449') ? 'ENCONTRADA' : 'NO ENCONTRADA',
-          sampleLoads: allLoads?.slice(0, 3).map(l => ({
-            number: l.load_number,
-            driver: l.driver_user_id,
-            created_by: l.created_by,
-            payment_period_id: l.payment_period_id
-          }))
-        });
 
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
-        
-        console.log('🔍 useLoads - Filtrado de período:', {
-          totalLoads: loads.length,
-          periodResult,
-          loadsWithPeriod: loads.filter(l => l.payment_period_id).length,
-          loadsWithoutDriver: loads.filter(l => !l.driver_user_id).length
-        });
         
         if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
           loads = loads.filter(load => {
@@ -334,29 +303,20 @@ export const useLoads = (filters?: LoadsFilters) => {
           loads = loads.filter(load => {
             // Cargas con período asignado
             if (load.payment_period_id && periodResult.periodIds.includes(load.payment_period_id)) {
-              console.log(`✅ Load ${load.load_number} incluida - payment_period_id match`);
               return true;
             }
             
             // Cargas sin período pero con fechas en el rango
             if (!load.payment_period_id && periodResult.startDate && periodResult.endDate) {
               const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
-              const included = relevantDate && relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
-              console.log(`${included ? '✅' : '❌'} Load ${load.load_number} - sin período, fecha en rango: ${included}`);
-              return included;
+              return relevantDate && relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
             }
             
-            console.log(`❌ Load ${load.load_number} excluida - payment_period_id: ${load.payment_period_id}`);
             return false;
           });
         } else if (filters?.periodFilter?.type !== 'all') {
           return [];
         }
-        
-        console.log('🎯 useLoads - Resultado del filtrado:', {
-          loadsAfterFilter: loads.length,
-          loadNumbers: loads.map(l => l.load_number)
-        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
@@ -577,8 +537,6 @@ export const useLoads = (filters?: LoadsFilters) => {
             .filter(h => h.load_id === load.id)
             .filter(h => h.eta_provided) // Solo considerar registros con ETA
             .sort((a, b) => new Date(b.changed_at).getTime() - new Date(a.changed_at).getTime())[0];
-
-          console.log(`📊 Load ${load.load_number} - Status: ${load.status}, Latest ETA:`, latestStatusHistory?.eta_provided);
 
           return {
             ...load,
