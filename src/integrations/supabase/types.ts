@@ -596,54 +596,6 @@ export type Database = {
           },
         ]
       }
-      company_payment_periods_backup_20250211: {
-        Row: {
-          company_id: string | null
-          created_at: string | null
-          id: string | null
-          is_locked: boolean | null
-          locked_at: string | null
-          locked_by: string | null
-          payment_date: string | null
-          period_end_date: string | null
-          period_frequency: string | null
-          period_start_date: string | null
-          period_type: string | null
-          status: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          company_id?: string | null
-          created_at?: string | null
-          id?: string | null
-          is_locked?: boolean | null
-          locked_at?: string | null
-          locked_by?: string | null
-          payment_date?: string | null
-          period_end_date?: string | null
-          period_frequency?: string | null
-          period_start_date?: string | null
-          period_type?: string | null
-          status?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          company_id?: string | null
-          created_at?: string | null
-          id?: string | null
-          is_locked?: boolean | null
-          locked_at?: string | null
-          locked_by?: string | null
-          payment_date?: string | null
-          period_end_date?: string | null
-          period_frequency?: string | null
-          period_start_date?: string | null
-          period_type?: string | null
-          status?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       company_sensitive_data_access_log: {
         Row: {
           access_type: string
