@@ -78,7 +78,7 @@
     "newDeduction": "Nueva Deducción",
     "newDeductionShort": "Deducción",
     "create": "Crear Deducción",
-    "eventual": {
+    "period_dialog": {
       "create_title": "Crear Deducción del Período",
       "edit_title": "Editar Deducción del Período", 
       "create_description": "Crea una deducción única para un conductor específico en un período de pago determinado.",

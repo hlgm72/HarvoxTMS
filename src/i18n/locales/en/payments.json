@@ -78,7 +78,7 @@
     "newDeduction": "New Deduction",
     "newDeductionShort": "Deduction",
     "create": "Create Deduction",
-    "eventual": {
+    "period_dialog": {
       "create_title": "Create Period Deduction",
       "edit_title": "Edit Period Deduction",
       "create_description": "Create a one-time deduction for a specific driver in a given payment period.",

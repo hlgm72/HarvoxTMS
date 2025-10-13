@@ -334,13 +334,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
       if (error) throw error;
 
-      showSuccess(t("deductions.notifications.success"), t("deductions.eventual.success_deleted"));
+      showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_deleted"));
 
       refetch();
       setDeletingExpense(null);
     } catch (error: any) {
       console.error('Error deleting expense:', error);
-      showError(t("deductions.notifications.error"), error.message || t("deductions.eventual.error_delete"));
+      showError(t("deductions.notifications.error"), error.message || t("deductions.period_dialog.error_delete"));
     }
   };
 
@@ -380,10 +380,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       <div className="text-center py-8">
         <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
         <h3 className="text-lg font-medium text-muted-foreground mb-2">
-          {t("deductions.eventual.no_records_title", "No hay deducciones eventuales")}
+          {t("deductions.period_dialog.no_records_title", "No hay deducciones del período")}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {t("deductions.eventual.no_records_description", "Las deducciones eventuales que crees aparecerán aquí")}
+          {t("deductions.period_dialog.no_records_description", "Las deducciones del período que crees aparecerán aquí")}
         </p>
       </div>
     );
@@ -478,9 +478,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       <AlertDialog open={!!deletingExpense} onOpenChange={() => setDeletingExpense(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deductions.eventual.delete_title")}</AlertDialogTitle>
+            <AlertDialogTitle>{t("deductions.period_dialog.delete_title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("deductions.eventual.delete_description")}
+              {t("deductions.period_dialog.delete_description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

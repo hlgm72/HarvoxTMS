@@ -256,7 +256,7 @@ export function EventualDeductionDialog({
           .eq('id', editingDeduction.id);
 
         if (error) throw error;
-        showSuccess(t("deductions.notifications.success"), t("deductions.eventual.success_updated"));
+        showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_updated"));
       } else {
         // Create new deduction
         const { error } = await supabase
@@ -276,14 +276,14 @@ export function EventualDeductionDialog({
           });
 
         if (error) throw error;
-        showSuccess(t("deductions.notifications.success"), t("deductions.eventual.success_created"));
+        showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_created"));
       }
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error('Error creating eventual deduction:', error);
-      showError(t("deductions.notifications.error"), error.message || t("deductions.eventual.error_create"));
+      showError(t("deductions.notifications.error"), error.message || t("deductions.period_dialog.error_create"));
     } finally {
       setIsLoading(false);
     }
@@ -332,10 +332,10 @@ export function EventualDeductionDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
         <DialogTitle>
-          {editingDeduction ? t('eventual_dialog.edit_title') : t('eventual_dialog.create_title')}
+          {editingDeduction ? t('deductions.period_dialog.edit_title') : t('deductions.period_dialog.create_title')}
         </DialogTitle>
         <DialogDescription>
-          {editingDeduction ? t('eventual_dialog.edit_description') : t('eventual_dialog.create_description')}
+          {editingDeduction ? t('deductions.period_dialog.edit_description') : t('deductions.period_dialog.create_description')}
         </DialogDescription>
 
         {/* ⭐ ADVERTENCIA DE CONDUCTOR PAGADO */}
@@ -420,7 +420,7 @@ export function EventualDeductionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>{t("deductions.eventual.expense_date_required")}</Label>
+            <Label>{t("deductions.period_dialog.expense_date_required")}</Label>
             <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -452,7 +452,7 @@ export function EventualDeductionDialog({
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={t("deductions.eventual.month")} />
+                        <SelectValue placeholder={t("deductions.period_dialog.month")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="enero">{t("deductions.months.january")}</SelectItem>
@@ -510,7 +510,7 @@ export function EventualDeductionDialog({
             {formData.user_id && expenseDate && isLoadingPeriods && (
               <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-800">
-                  {t("deductions.eventual.checking_period")}
+                  {t("deductions.period_dialog.checking_period")}
                 </p>
               </div>
             )}
@@ -518,10 +518,10 @@ export function EventualDeductionDialog({
             {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
               <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
                 <p className="text-sm text-orange-800">
-                  {t("deductions.eventual.no_period_found", { date: formatPrettyDate(expenseDate) })}
+                  {t("deductions.period_dialog.no_period_found", { date: formatPrettyDate(expenseDate) })}
                 </p>
                 <p className="text-xs text-orange-600 mt-1">
-                  {t("deductions.eventual.select_period_date")}
+                  {t("deductions.period_dialog.select_period_date")}
                 </p>
               </div>
             )}
@@ -603,17 +603,17 @@ export function EventualDeductionDialog({
               required
             />
             <div className="text-xs text-muted-foreground text-center">
-              {t("deductions.eventual.atm_helper")}
+              {t("deductions.period_dialog.atm_helper")}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">{t("deductions.eventual.description_label")}</Label>
+            <Label htmlFor="description">{t("deductions.period_dialog.description_label")}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder={t("deductions.eventual.placeholder")}
+              placeholder={t("deductions.period_dialog.placeholder")}
               rows={3}
               required
             />
@@ -634,8 +634,8 @@ export function EventualDeductionDialog({
               className="flex-1"
             >
               {isLoading 
-                ? (editingDeduction ? t("deductions.eventual.updating") : t("deductions.eventual.creating")) 
-                : (editingDeduction ? t("deductions.eventual.update_button") : t("deductions.eventual.create_button"))
+                ? (editingDeduction ? t("deductions.period_dialog.updating") : t("deductions.period_dialog.creating")) 
+                : (editingDeduction ? t("deductions.period_dialog.update_button") : t("deductions.period_dialog.create_button"))
               }
             </Button>
           </div>
