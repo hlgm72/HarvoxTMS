@@ -555,6 +555,47 @@ export type Database = {
           },
         ]
       }
+      company_payment_periods: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          period_end_date: string
+          period_frequency: string
+          period_start_date: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end_date: string
+          period_frequency: string
+          period_start_date: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          period_end_date?: string
+          period_frequency?: string
+          period_start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_payment_periods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_payment_periods_backup_20250211: {
         Row: {
           company_id: string | null
@@ -1100,17 +1141,17 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "expense_instances_cpp_fk"
+            columns: ["payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "expense_instances_expense_type_id_fkey"
             columns: ["expense_type_id"]
             isOneToOne: false
             referencedRelation: "expense_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "expense_instances_payment_period_id_fkey"
-            columns: ["payment_period_id"]
-            isOneToOne: false
-            referencedRelation: "user_payment_periods"
             referencedColumns: ["id"]
           },
           {
@@ -1375,10 +1416,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fuel_expenses_payment_period_id_fkey"
+            foreignKeyName: "fuel_expenses_cpp_fk"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "user_payment_periods"
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
           {
@@ -1887,7 +1928,6 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string
-          customer_name: string | null
           delivery_date: string | null
           dispatching_percentage: number | null
           driver_user_id: string | null
@@ -1912,7 +1952,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
-          customer_name?: string | null
           delivery_date?: string | null
           dispatching_percentage?: number | null
           driver_user_id?: string | null
@@ -1937,7 +1976,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
-          customer_name?: string | null
           delivery_date?: string | null
           dispatching_percentage?: number | null
           driver_user_id?: string | null
@@ -1964,10 +2002,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "loads_payment_period_id_fkey"
+            foreignKeyName: "loads_cpp_fk"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "user_payment_periods"
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
         ]
@@ -2353,10 +2391,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "other_income_payment_period_id_fkey"
+            foreignKeyName: "other_income_cpp_fk"
             columns: ["payment_period_id"]
             isOneToOne: false
-            referencedRelation: "user_payment_periods"
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
         ]
@@ -3111,12 +3149,13 @@ export type Database = {
         }
         Relationships: []
       }
-      user_payment_periods: {
+      user_payrolls: {
         Row: {
           balance_alert_message: string | null
           calculated_at: string | null
           calculated_by: string | null
           company_id: string
+          company_payment_period_id: string
           created_at: string
           fuel_expenses: number
           gross_earnings: number
@@ -3149,6 +3188,7 @@ export type Database = {
           calculated_at?: string | null
           calculated_by?: string | null
           company_id: string
+          company_payment_period_id: string
           created_at?: string
           fuel_expenses?: number
           gross_earnings?: number
@@ -3181,6 +3221,7 @@ export type Database = {
           calculated_at?: string | null
           calculated_by?: string | null
           company_id?: string
+          company_payment_period_id?: string
           created_at?: string
           fuel_expenses?: number
           gross_earnings?: number
@@ -3214,6 +3255,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_user_payrolls_cpp"
+            columns: ["company_payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
             referencedColumns: ["id"]
           },
         ]
@@ -3535,6 +3583,14 @@ export type Database = {
       create_client_with_contacts: {
         Args: { client_data: Json; contacts_data?: Json }
         Returns: Json
+      }
+      create_company_payment_period_if_needed: {
+        Args: {
+          created_by_user_id: string
+          target_company_id: string
+          target_date: string
+        }
+        Returns: string
       }
       create_default_percentage_templates: {
         Args: { driver_user_id_param: string }
@@ -4164,14 +4220,6 @@ export type Database = {
       }
       is_financial_data_protected: {
         Args: { target_period_id: string; target_user_id: string }
-        Returns: boolean
-      }
-      is_payment_period_empty: {
-        Args: { period_id: string }
-        Returns: boolean
-      }
-      is_payment_period_locked: {
-        Args: { period_id: string }
         Returns: boolean
       }
       is_period_locked: {
