@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, DollarSign, Calendar, Package, User, Building, Clock, FileText, Truck, ArrowRight, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Package, User, Building, Clock, FileText, Truck, ArrowRight, CheckCircle } from "lucide-react";
 import { formatCurrency, formatDateOnly, formatDateTime, formatPaymentPeriod, formatNumber } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 

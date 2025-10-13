@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Eye, Edit, MapPin, DollarSign, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Eye, Edit, MapPin, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatCurrency, formatDateTimeAuto, formatNumber } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
@@ -377,19 +377,24 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                       {load.pickup_city} → {load.delivery_city}
                     </span>
                     <span className="flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" />
                       <span>
                         {formatCurrency(load.total_amount)}
-                         <span className="text-xs text-muted-foreground ml-1">
-                           ({[
+                         {(() => {
+                           const percentages = [
                              load.leasing_percentage && load.leasing_percentage > 0 ? 
                                `${t('percentages.leasing_short')}${load.leasing_percentage}%-${formatCurrency((load.total_amount || 0) * (load.leasing_percentage || 0) / 100)}` : null,
                              load.factoring_percentage && load.factoring_percentage > 0 ? 
                                `${t('percentages.factoring_short')}${load.factoring_percentage}%-${formatCurrency((load.total_amount || 0) * (load.factoring_percentage || 0) / 100)}` : null,
                              load.dispatching_percentage && load.dispatching_percentage > 0 ? 
                                `${t('percentages.dispatching_short')}${load.dispatching_percentage}%-${formatCurrency((load.total_amount || 0) * (load.dispatching_percentage || 0) / 100)}` : null
-                           ].filter(Boolean).join(', ')})
-                         </span>
+                           ].filter(Boolean);
+                           
+                           return percentages.length > 0 ? (
+                             <span className="text-xs text-muted-foreground ml-1">
+                               ({percentages.join(', ')})
+                             </span>
+                           ) : null;
+                         })()}
                       </span>
                     </span>
                   </div>
