@@ -16,7 +16,7 @@ import { PaymentReportDialog } from "@/components/payments/PaymentReportDialog";
 import { MarkDriverPaidDialog } from "@/components/payments/MarkDriverPaidDialog";
 import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
-import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
+import { PaymentReportsFloatingActions, PaymentFiltersType } from "@/components/payments/PaymentReportsFloatingActions";
 import { useCurrentPaymentPeriod, usePaymentPeriods, usePreviousPaymentPeriod, useNextPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
@@ -38,14 +38,6 @@ export default function PaymentReports() {
   const { data: nextPeriod } = useNextPaymentPeriod();
   const { data: allPeriods } = usePaymentPeriods();
   
-  // Tipo de filtros para Payment Reports (mantener compatibilidad)
-  interface PaymentFiltersType {
-    search: string;
-    driverId: string;
-    status: string;
-    periodFilter: { type: string; periodId?: string; startDate?: string; endDate?: string; label?: string };
-  }
-
   const [filters, setFilters] = useState<PaymentFiltersType>({
     search: '',
     driverId: 'all',
@@ -646,28 +638,19 @@ export default function PaymentReports() {
         </Card>
       </div>
 
-      {/* Floating Actions - Sistema Universal */}
-      <UniversalFloatingActions
-        contextKey="payments"
+      {/* Floating Actions Button */}
+      <PaymentReportsFloatingActions
         filters={filters}
-        onFiltersChange={(newFilters: any) => {
-          setFilters(newFilters as PaymentFiltersType);
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters);
         }}
-        additionalData={{
-          drivers: drivers.map(d => ({
-            user_id: d.user_id,  // ← Corregido: era d.id
-            first_name: d.first_name,
-            last_name: d.last_name
-          })),
-          stats: {
-            totalReports,
-            totalEarnings,
-            totalDrivers,
-            pendingReports
-          }
+        drivers={drivers}
+        stats={{
+          totalReports,
+          totalEarnings,
+          totalDrivers,
+          pendingReports
         }}
-        onExportHandler={handleExport}
-        exportLoading={exportLoading}
       />
 
       <PaymentReportDialog
