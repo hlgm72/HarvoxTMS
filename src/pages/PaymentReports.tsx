@@ -612,7 +612,7 @@ export default function PaymentReports() {
                           className="mr-2"
                         />
                         
-                        {calculation.payment_status !== 'paid' && calculation.calculated_at && (
+                        {calculation.payment_status !== 'paid' && (
                           <Button
                             variant="default"
                             size="sm"
