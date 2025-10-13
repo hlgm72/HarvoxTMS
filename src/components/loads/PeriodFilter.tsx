@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, CalendarDays, ChevronDown, Clock, Loader2 } from 'lucide-react';
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
+import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
 import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { format, parseISO, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -38,7 +39,8 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   
   // Pasar el companyId a todos los hooks de períodos
-  const { data: allPeriods = [] } = usePaymentPeriods();
+  const { data: groupedPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
+  const allPeriods = groupedPeriods; // Usar períodos agrupados por company_payment_period_id
   const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
   const { data: previousPeriod } = usePreviousPaymentPeriod(userCompany?.company_id);
   const { data: nextPeriod } = useNextPaymentPeriod(userCompany?.company_id);
@@ -137,7 +139,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       case 'all':
         return t('periods.all');
       case 'specific':
-        const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
+        const selectedPeriod = allPeriods.find(p => p.company_payment_period_id === value.periodId);
         return selectedPeriod 
           ? formatDetailedPaymentPeriod(
               selectedPeriod.period_start_date, 
@@ -208,14 +210,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     const isCalculatedPeriod = value.periodId?.startsWith('calculated-');
     
     if (!isCalculatedPeriod && value.type === 'specific' && value.periodId) {
-      const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
+      const selectedPeriod = allPeriods.find(p => p.company_payment_period_id === value.periodId);
       
       // Si el período específico ya no existe (fue eliminado), cambiar a "current"
       if (!selectedPeriod && !isLoading && allPeriods.length > 0) {
         handleOptionSelect({ type: 'current' });
       }
     } else if (!isCalculatedPeriod && value.type === 'previous' && value.periodId) {
-      const selectedPeriod = allPeriods.find(p => p.id === value.periodId);
+      const selectedPeriod = allPeriods.find(p => p.company_payment_period_id === value.periodId);
       
       // Si el período anterior ya no existe (fue eliminado), cambiar a "current"
       if (!selectedPeriod && !isLoading && allPeriods.length > 0) {
@@ -349,7 +351,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <CalendarDays className="h-4 w-4 mr-2" />
                     {t('periods.all')}
                     <Badge variant="secondary" className="ml-auto text-xs">
-                      {new Set(allPeriods.map(p => p.company_payment_period_id)).size}
+                      {allPeriods.length}
                     </Badge>
                   </Button>
                 </div>
