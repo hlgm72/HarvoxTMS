@@ -91,7 +91,7 @@ export function StopListItem({
       parts.push(stop.zip_code);
     }
     
-    return parts.join(', ') || t("loads:create_wizard.phases.route_details.address_not_provided");
+    return parts.join(', ');
   };
 
   return (
@@ -136,12 +136,14 @@ export function StopListItem({
         )}
 
         {/* Address */}
-        <div className="flex items-start gap-2">
-          <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-          <div className="text-muted-foreground">
-            {formatAddress()}
+        {formatAddress() && (
+          <div className="flex items-start gap-2">
+            <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="text-muted-foreground">
+              {formatAddress()}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Reference Number */}
         {stop.reference_number && (
