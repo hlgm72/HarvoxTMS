@@ -1813,8 +1813,8 @@ export type Database = {
           actual_date: string | null
           actual_datetime: string | null
           actual_time: string | null
-          address: string
-          city: string
+          address: string | null
+          city: string | null
           company_name: string | null
           completion_datetime: string | null
           contact_name: string | null
@@ -1834,7 +1834,7 @@ export type Database = {
           scheduled_datetime: string | null
           scheduled_time: string | null
           special_instructions: string | null
-          state: string
+          state: string | null
           status_updated_at: string | null
           status_updated_by: string | null
           stop_number: number
@@ -1847,8 +1847,8 @@ export type Database = {
           actual_date?: string | null
           actual_datetime?: string | null
           actual_time?: string | null
-          address: string
-          city: string
+          address?: string | null
+          city?: string | null
           company_name?: string | null
           completion_datetime?: string | null
           contact_name?: string | null
@@ -1868,7 +1868,7 @@ export type Database = {
           scheduled_datetime?: string | null
           scheduled_time?: string | null
           special_instructions?: string | null
-          state: string
+          state?: string | null
           status_updated_at?: string | null
           status_updated_by?: string | null
           stop_number: number
@@ -1881,8 +1881,8 @@ export type Database = {
           actual_date?: string | null
           actual_datetime?: string | null
           actual_time?: string | null
-          address?: string
-          city?: string
+          address?: string | null
+          city?: string | null
           company_name?: string | null
           completion_datetime?: string | null
           contact_name?: string | null
@@ -1902,7 +1902,7 @@ export type Database = {
           scheduled_datetime?: string | null
           scheduled_time?: string | null
           special_instructions?: string | null
-          state?: string
+          state?: string | null
           status_updated_at?: string | null
           status_updated_by?: string | null
           stop_number?: number
