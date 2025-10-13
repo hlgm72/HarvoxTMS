@@ -102,8 +102,8 @@
         "date_error": "Error in selected date"
       },
       "assignment": {
-        "title": "Assignment",
-        "description": "Driver and dispatcher",
+        "title": "Assignments",
+        "description": "Client, Driver and Dispatcher",
         "card_description": "Assign Client, Driver and Dispatcher",
         "card_title": "Assignments",
         "driver_section": {
