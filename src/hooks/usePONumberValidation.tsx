@@ -46,7 +46,6 @@ export const usePONumberValidation = (
         return;
       }
 
-      console.log('🔍 usePONumberValidation - Starting validation for PO:', debouncedPONumber);
       setValidationResult(prev => ({ ...prev, isLoading: true }));
 
       try {
@@ -75,11 +74,8 @@ export const usePONumberValidation = (
           return;
         }
 
-        console.log('🔍 usePONumberValidation - Query result:', existingLoads);
-
         if (existingLoads && existingLoads.length > 0) {
           const duplicateLoad = existingLoads[0];
-          console.log('❌ usePONumberValidation - PO number already exists:', duplicateLoad);
           setValidationResult({
             isValid: false,
             isLoading: false,
@@ -90,7 +86,6 @@ export const usePONumberValidation = (
             }
           });
         } else {
-          console.log('✅ usePONumberValidation - PO number is available');
           setValidationResult({
             isValid: true,
             isLoading: false,

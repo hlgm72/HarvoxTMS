@@ -117,7 +117,6 @@ export const useLoadData = (loadId?: string) => {
           }))
         };
 
-        console.log('✅ useLoadData - Load data fetched successfully:', loadWithStops);
         setLoadData(loadWithStops);
 
       } catch (err) {

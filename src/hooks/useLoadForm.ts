@@ -48,10 +48,6 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
   // Populate form when initial data is available
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && initialData) {
-      console.log(`🔄 useLoadForm - Populating form with data for ${mode} mode:`, initialData);
-      console.log(`🚨🚨🚨 useLoadForm - CLIENT_ID from initialData:`, initialData.client_id);
-      console.log(`🚨🚨🚨 useLoadForm - CLIENT_CONTACT_ID from initialData:`, initialData.client_contact_id);
-      
       form.reset({
         client_id: initialData.client_id || "",
         contact_id: initialData.client_contact_id || "",
@@ -66,9 +62,6 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
         dispatching_percentage: mode === 'duplicate' ? undefined : (initialData.dispatching_percentage ?? undefined),
         leasing_percentage: mode === 'duplicate' ? undefined : (initialData.leasing_percentage ?? undefined),
       });
-
-      console.log(`🚨🚨🚨 useLoadForm - Form reset with client_id:`, initialData.client_id || "");
-      console.log(`🚨🚨🚨 useLoadForm - Form reset with contact_id:`, initialData.client_contact_id || "");
 
       setIsFormReady(true);
     } else {

@@ -187,19 +187,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     [financialValidation]
   );
 
-  // Log solo cuando cambien los valores importantes para evitar spam
-  useEffect(() => {
-    if (currentDriverId || currentPeriodId) {
-      console.log('🔒 CreateLoadDialog - Financial validation updated:', {
-        driverId: currentDriverId,
-        periodId: currentPeriodId,
-        isDriverPaid,
-        canModify,
-        validation: financialValidation
-      });
-    }
-  }, [currentDriverId, currentPeriodId, isDriverPaid, canModify, financialValidation]);
-
   // Fetch company data when selectedCompany changes
   useEffect(() => {
     if (selectedCompany?.id) {
@@ -299,10 +286,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
       // Set stops (for both edit and duplicate modes)
       if (activeLoadData.stops && activeLoadData.stops.length > 0) {
-        console.log('📍 CreateLoadDialog - Setting stops from load data:', activeLoadData.stops);
         setLoadStops(activeLoadData.stops);
-      } else {
-        console.warn('⚠️ CreateLoadDialog - No stops found in load data:', activeLoadData);
       }
     }
   }, [mode, activeLoadData, isFormReady, clients.length, drivers.length, dispatchers.length]);

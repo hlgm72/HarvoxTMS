@@ -28,8 +28,6 @@ export function useFinancialDataValidation(periodId: string | null, driverId?: s
           warning_message: 'No hay período seleccionado'
         };
       }
-
-      console.log('🔒 Validating financial data access for period:', periodId, 'user:', driverId);
       
       // ⭐ USAR FUNCIÓN MEJORADA que considera el usuario individual
       const { data, error } = await supabase.rpc('can_modify_financial_data_with_user_check', {
@@ -42,7 +40,6 @@ export function useFinancialDataValidation(periodId: string | null, driverId?: s
         throw error;
       }
 
-      console.log('✅ Financial data validation result:', data);
       return data as unknown as FinancialDataValidation;
     },
     enabled: !!periodId,
