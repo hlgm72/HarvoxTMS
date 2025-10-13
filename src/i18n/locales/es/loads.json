@@ -54,15 +54,15 @@
         "stop_number": "Parada {{number}}",
         "pickup": "Recogida",
         "delivery": "Entrega", 
-        "incomplete_address": "Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
+        "incomplete_address": "Falta Fecha programada",
         "stop_prefix": {
           "pickup": "P{{number}}:",
           "delivery": "D{{number}}:"
         },
-        "missing_fields": "Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
+        "missing_fields": "Falta Fecha programada",
         "incomplete_stop_message": {
-          "pickup": "P{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
-          "delivery": "D{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada"
+          "pickup": "P{{number}}: Falta Fecha programada",
+          "delivery": "D{{number}}: Falta Fecha programada"
         },
         "add_intermediate_stop": "Agregar Parada Intermedia",
         "instructions": {
@@ -795,7 +795,7 @@
     "stops_missing_city": "Ciudad", 
     "stops_missing_state": "Estado",
     "stops_missing_date": "Fecha programada",
-    "stops_missing_fields": "{{stopType}}{{number}}: Faltan Empresa, Dirección, Ciudad, Estado, Fecha programada",
+    "stops_missing_fields": "{{stopType}}{{number}}: Falta Fecha programada",
     "missing_docs": "Documentos Faltantes",
     "pending_doc": "Documento Pendiente",
     "missing_required_single": "Documento requerido faltante: {{docs}}",

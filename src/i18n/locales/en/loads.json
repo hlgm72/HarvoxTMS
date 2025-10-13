@@ -54,15 +54,15 @@
         "stop_number": "Stop {{number}}",
         "pickup": "Pickup",
         "delivery": "Delivery",
-        "incomplete_address": "Missing Company, Address, City, State, Scheduled Date",
+        "incomplete_address": "Missing Scheduled Date",
         "stop_prefix": {
           "pickup": "P{{number}}:",
           "delivery": "D{{number}}:"
         },
-        "missing_fields": "Missing Company, Address, City, State, Scheduled Date",
+        "missing_fields": "Missing Scheduled Date",
         "incomplete_stop_message": {
-          "pickup": "P{{number}}: Missing Company, Address, City, State, Scheduled Date",
-          "delivery": "D{{number}}: Missing Company, Address, City, State, Scheduled Date"
+          "pickup": "P{{number}}: Missing Scheduled Date",
+          "delivery": "D{{number}}: Missing Scheduled Date"
         },
         "add_intermediate_stop": "Add Intermediate Stop",
         "instructions": {
@@ -795,7 +795,7 @@
     "stops_missing_city": "City",
     "stops_missing_state": "State",
     "stops_missing_date": "Scheduled Date",
-    "stops_missing_fields": "{{stopType}}{{number}}: Missing Company, Address, City, State, Scheduled Date",
+    "stops_missing_fields": "{{stopType}}{{number}}: Missing Scheduled Date",
     "missing_docs": "Missing Docs",
     "pending_doc": "Pending Doc",
     "missing_required_single": "Missing required document: {{docs}}",
