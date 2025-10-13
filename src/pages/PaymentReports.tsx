@@ -400,15 +400,9 @@ export default function PaymentReports() {
       if (pf.label) {
         parts.push(pf.label);
       } else if (pf.type === 'current') {
-        // Usar el mismo formato que PeriodFilter para "Current"
+        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.startDate/endDate
         const displayCurrentPeriod = calculatedPeriods?.current;
         if (displayCurrentPeriod) {
-          console.log('🔍 PaymentReports - Current Period:', {
-            period_start_date: displayCurrentPeriod.period_start_date,
-            period_end_date: displayCurrentPeriod.period_end_date,
-            frequency: Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          });
-          
           const periodLabel = formatDetailedPaymentPeriod(
             displayCurrentPeriod.period_start_date, 
             displayCurrentPeriod.period_end_date, 
@@ -416,19 +410,12 @@ export default function PaymentReports() {
           );
           const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
           const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
-          
-          console.log('🔍 PaymentReports - Formatted:', {
-            periodLabel,
-            periodNumber,
-            dateRange
-          });
-          
           parts.push(`Current: ${periodNumber} (${dateRange})`);
         } else {
           parts.push(t("common:periods.current"));
         }
       } else if (pf.type === 'previous') {
-        // Usar el mismo formato que PeriodFilter para "Previous"
+        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.startDate/endDate
         const displayPreviousPeriod = calculatedPeriods?.previous;
         if (displayPreviousPeriod) {
           const periodLabel = formatDetailedPaymentPeriod(
