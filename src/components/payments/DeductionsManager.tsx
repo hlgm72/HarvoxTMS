@@ -538,21 +538,16 @@ export function DeductionsManager({
   return (
     <div className="space-y-6">
       <Tabs defaultValue="eventual" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-1">
+        <TabsList className="grid w-full grid-cols-3 h-auto gap-1">
           <TabsTrigger value="eventual" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <CalendarCheck className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.period_deductions")}</span>
             <span className="sm:hidden">{t("deductions.tabs.period_deductions_short")}</span>
           </TabsTrigger>
-          <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="recurring" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">{t("deductions.tabs.active_templates")}</span>
-            <span className="sm:hidden">{t("deductions.tabs.active_templates_short")}</span>
-          </TabsTrigger>
-          <TabsTrigger value="inactive" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
-            <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">{t("deductions.tabs.inactive_templates")}</span>
-            <span className="sm:hidden">{t("deductions.tabs.inactive_templates_short")}</span>
+            <span className="hidden sm:inline">{t("deductions.tabs.recurring_deductions")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.recurring_deductions_short")}</span>
           </TabsTrigger>
           <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <History className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -561,66 +556,83 @@ export function DeductionsManager({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="active" className="space-y-4 mt-6 md:mt-8">
-          {templates.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 text-center">
-                <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No hay plantillas activas</p>
-                <Button 
-                  onClick={() => setIsCreateDialogOpen(true)}
-                  className="mt-4"
-                >
-                  {t("deductions.empty_states.create_first_template")}
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              <TemplateGroup 
-                title={t("deductions.groups.driver_deductions")}
-                templates={groupedActiveTemplates.drivers} 
-                isInactive={false} 
-              />
-              <TemplateGroup 
-                title={t("deductions.groups.dispatcher_deductions")}
-                templates={groupedActiveTemplates.dispatchers} 
-                isInactive={false} 
-              />
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="inactive" className="space-y-4 mt-6 md:mt-8">
-          {inactiveTemplates.length === 0 ? (
-            <Card>
-              <CardContent className="p-6 text-center">
-                <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">{t("deductions.empty_states.no_inactive_templates")}</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              <TemplateGroup 
-                title={t("deductions.groups.driver_deductions")}
-                templates={groupedInactiveTemplates.drivers} 
-                isInactive={true} 
-              />
-              <TemplateGroup 
-                title={t("deductions.groups.dispatcher_deductions")}
-                templates={groupedInactiveTemplates.dispatchers} 
-                isInactive={true} 
-              />
-            </div>
-          )}
-        </TabsContent>
-
         <TabsContent value="eventual" className="space-y-4 mt-6 md:mt-8">
           <EventualDeductionsList 
             onRefresh={() => setRefreshTrigger(prev => prev + 1)}
             filters={filters}
             viewConfig={viewConfig}
           />
+        </TabsContent>
+
+        <TabsContent value="recurring" className="space-y-4 mt-6 md:mt-8">
+          <Tabs defaultValue="active" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
+              <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+                <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">{t("deductions.tabs.active_templates")}</span>
+                <span className="sm:hidden">{t("deductions.tabs.active_templates_short")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="inactive" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+                <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">{t("deductions.tabs.inactive_templates")}</span>
+                <span className="sm:hidden">{t("deductions.tabs.inactive_templates_short")}</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="active" className="space-y-4 mt-6 md:mt-8">
+              {templates.length === 0 ? (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No hay plantillas activas</p>
+                    <Button 
+                      onClick={() => setIsCreateDialogOpen(true)}
+                      className="mt-4"
+                    >
+                      {t("deductions.empty_states.create_first_template")}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-6">
+                  <TemplateGroup 
+                    title={t("deductions.groups.driver_deductions")}
+                    templates={groupedActiveTemplates.drivers} 
+                    isInactive={false} 
+                  />
+                  <TemplateGroup 
+                    title={t("deductions.groups.dispatcher_deductions")}
+                    templates={groupedActiveTemplates.dispatchers} 
+                    isInactive={false} 
+                  />
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="inactive" className="space-y-4 mt-6 md:mt-8">
+              {inactiveTemplates.length === 0 ? (
+                <Card>
+                  <CardContent className="p-6 text-center">
+                    <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">{t("deductions.empty_states.no_inactive_templates")}</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-6">
+                  <TemplateGroup 
+                    title={t("deductions.groups.driver_deductions")}
+                    templates={groupedInactiveTemplates.drivers} 
+                    isInactive={true} 
+                  />
+                  <TemplateGroup 
+                    title={t("deductions.groups.dispatcher_deductions")}
+                    templates={groupedInactiveTemplates.dispatchers} 
+                    isInactive={true} 
+                  />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         <TabsContent value="history" className="space-y-4 mt-6 md:mt-8">

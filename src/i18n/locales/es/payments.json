@@ -131,6 +131,8 @@
       "inactive_templates_short": "Inactivas",
       "period_deductions": "Deducciones del Período",
       "period_deductions_short": "Período",
+      "recurring_deductions": "Deducciones Recurrentes",
+      "recurring_deductions_short": "Recurrentes",
       "history": "Historial"
     },
     "empty_states": {
