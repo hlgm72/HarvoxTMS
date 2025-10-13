@@ -164,7 +164,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 periodo: calculatedPeriods.current
               });
               
-            query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),and(expense_date.is.null,expense_types.category.eq.percentage_deduction)`);
+              // Incluir deducciones en el rango de fechas O sin fecha (percentage_deduction)
+              query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),expense_date.is.null`);
             } else {
               console.log('❌ No se encontró período calculado actual');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -183,7 +184,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 endDate
               });
               
-              query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),and(expense_date.is.null,expense_types.category.eq.percentage_deduction)`);
+              // Incluir deducciones en el rango de fechas O sin fecha (percentage_deduction)
+              query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),expense_date.is.null`);
             } else {
               console.log('❌ No se encontró período calculado anterior');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -205,7 +207,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               endDate
             });
             
-            query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),and(expense_date.is.null,expense_types.category.eq.percentage_deduction)`);
+            // Incluir deducciones en el rango de fechas O sin fecha (percentage_deduction)
+            query = query.or(`and(expense_date.gte.${startDate},expense_date.lte.${endDate}),expense_date.is.null`);
           } else {
             console.log('❌ No hay período calculado disponible por defecto');
           }
