@@ -422,6 +422,7 @@ export const useCreateLoad = () => {
       // Standard cache invalidations
       console.log('🔄 Invalidando queries...');
       queryClient.invalidateQueries({ queryKey: ['loads'] });
+      queryClient.invalidateQueries({ queryKey: ['load-stops'] });
       queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
       queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
@@ -434,7 +435,7 @@ export const useCreateLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
       
       // Refetch inmediato para sincronización rápida
-      queryClient.refetchQueries({ queryKey: ['loads'] });
+      await queryClient.refetchQueries({ queryKey: ['loads'] });
       console.log('✅ Queries invalidadas');
       
       console.log('🎉 ========== ON SUCCESS COMPLETADO ==========');
