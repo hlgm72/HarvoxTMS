@@ -161,7 +161,8 @@
       "planned": "Planificado",
       "applied": "Aplicado",
       "deferred": "Diferido", 
-      "critical": "Crítico"
+      "critical": "Crítico",
+      "automatic": "Automática"
     },
     "labels": {
       "period": "Período:",

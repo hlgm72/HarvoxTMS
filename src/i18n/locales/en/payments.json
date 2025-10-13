@@ -161,7 +161,8 @@
       "planned": "Planned",
       "applied": "Applied", 
       "deferred": "Deferred",
-      "critical": "Critical"
+      "critical": "Critical",
+      "automatic": "Automatic"
     },
     "labels": {
       "period": "Period:",

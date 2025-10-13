@@ -384,7 +384,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   {isAutomaticDeduction(deduction) && (
                     <Badge variant="secondary" className="flex items-center gap-1">
                       <Lock className="h-3 w-3" />
-                      Automática
+                      {t("deductions.status_labels.automatic")}
                     </Badge>
                   )}
                   {deduction.is_critical && (
