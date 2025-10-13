@@ -108,15 +108,14 @@ export default function PaymentReports() {
 
   // Actualizar filtro de período cuando se carga el período actual
   useEffect(() => {
+    // ✅ Para 'current', NO guardar fechas - solo tipo
+    // El filtro en BD usará currentPeriod.id automáticamente
     if (currentPeriod && filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
       setFilters(prev => ({
         ...prev,
         periodFilter: {
-          type: 'current',
-          periodId: currentPeriod.id,
-          startDate: currentPeriod.period_start_date,
-          endDate: currentPeriod.period_end_date,
-          label: `${t('period.current')} (${formatPaymentPeriod(currentPeriod.period_start_date, currentPeriod.period_end_date)})`
+          type: 'current'
+          // NO incluir periodId, startDate, endDate, ni label para que siempre use el cálculo dinámico
         }
       }));
     }
@@ -210,17 +209,15 @@ export default function PaymentReports() {
       
       console.log('✅ PaymentReports Query Result:', data?.length, 'calculations found');
       
-      // Filtrar en cliente si es necesario (períodos calculados o con fechas)
+      // Filtrar en cliente si es necesario (solo para períodos calculados o rangos personalizados)
       let filteredData = data || [];
       
+      // ✅ Solo filtrar en cliente si es un período calculado (no existe en BD) o rango personalizado
       if ((filters.periodFilter.periodId?.startsWith('calculated-') || 
            filters.periodFilter.type === 'custom' ||
            filters.periodFilter.type === 'this_month' ||
            filters.periodFilter.type === 'this_quarter' ||
-           filters.periodFilter.type === 'this_year' ||
-           filters.periodFilter.type === 'previous' ||
-           filters.periodFilter.type === 'current' ||
-           filters.periodFilter.type === 'next') &&
+           filters.periodFilter.type === 'this_year') &&
           filters.periodFilter.startDate && 
           filters.periodFilter.endDate) {
         console.log('🔍 Filtering on client side with dates:', filters.periodFilter.startDate, filters.periodFilter.endDate);
