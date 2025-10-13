@@ -47,6 +47,7 @@ import { UserProfileProvider } from "./contexts/UserProfileContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { OnboardingProvider } from "./components/onboarding";
 import { useLanguageSync } from "./hooks/useLanguageSync";
+import { Toaster } from "sonner";
 import './i18n/config';
 
 const queryClient = new QueryClient();
@@ -383,6 +384,7 @@ const App = () => {
         <UserProfileProvider>
           <NotificationProvider>
             <AppContent />
+            <Toaster position="top-right" richColors />
           </NotificationProvider>
         </UserProfileProvider>
       </AuthProvider>

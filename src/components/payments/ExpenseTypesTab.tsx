@@ -109,27 +109,11 @@ export function ExpenseTypesTab() {
       setSelectedExpenseType(null);
     },
     onError: (error: any) => {
-      console.error("=== DELETE ERROR HANDLER TRIGGERED ===");
-      console.error("Error object:", error);
-      console.error("Error message:", error?.message);
-      
-      let errorMessage = "No se pudo eliminar el tipo de gasto.";
-      
-      if (error?.message) {
-        errorMessage = error.message;
-      }
-      
-      console.log("=== ATTEMPTING TO SHOW TOAST ===");
-      console.log("Error message to display:", errorMessage);
-      
-      // Try showing the toast
+      console.error("Error deleting expense type:", error);
+      const errorMessage = error?.message || t("deductions.errors.deleteFailed");
       toast.error(errorMessage, {
-        duration: 8000,
-        position: "top-center",
+        duration: 6000,
       });
-      
-      console.log("=== TOAST CALLED ===");
-      
       setIsDeleteDialogOpen(false);
     }
   });
