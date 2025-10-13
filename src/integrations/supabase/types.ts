@@ -3286,7 +3286,71 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      driver_period_calculations: {
+        Row: {
+          calculated_by: string | null
+          company_payment_period_id: string | null
+          created_at: string | null
+          driver_user_id: string | null
+          fuel_expenses: number | null
+          gross_earnings: number | null
+          has_negative_balance: boolean | null
+          id: string | null
+          net_payment: number | null
+          other_income: number | null
+          payment_method: string | null
+          payment_notes: string | null
+          payment_reference: string | null
+          payment_status: string | null
+          total_deductions: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          calculated_by?: string | null
+          company_payment_period_id?: string | null
+          created_at?: string | null
+          driver_user_id?: string | null
+          fuel_expenses?: number | null
+          gross_earnings?: number | null
+          has_negative_balance?: boolean | null
+          id?: string | null
+          net_payment?: number | null
+          other_income?: number | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          total_deductions?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          calculated_by?: string | null
+          company_payment_period_id?: string | null
+          created_at?: string | null
+          driver_user_id?: string | null
+          fuel_expenses?: number | null
+          gross_earnings?: number | null
+          has_negative_balance?: boolean | null
+          id?: string | null
+          net_payment?: number | null
+          other_income?: number | null
+          payment_method?: string | null
+          payment_notes?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          total_deductions?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_user_payrolls_cpp"
+            columns: ["company_payment_period_id"]
+            isOneToOne: false
+            referencedRelation: "company_payment_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       apply_automatic_deductions: {
