@@ -61,14 +61,14 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       }
 
       try {
-        // Construir la consulta base sin joins (obtendremos datos del período por separado)
+        // ✅ Construir la consulta base - ahora incluye TODAS las deducciones del período
+        // (eventuales + generadas desde plantillas recurrentes)
         let query = supabase
           .from('expense_instances')
           .select(`
             *,
             expense_types(name, category)
-          `)
-          .is('recurring_template_id', null); // Solo gastos eventuales (sin plantilla)
+          `);
 
         // Aplicar filtros de estado
         if (filters?.status && filters.status !== 'all') {
@@ -337,7 +337,11 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   };
 
   const isAutomaticDeduction = (expense: any) => {
-    return expense.expense_types?.category === 'percentage_deduction';
+    // Es automática si:
+    // 1. Es una deducción de porcentaje (Factoring, Dispatching, Leasing)
+    // 2. Fue generada desde una plantilla recurrente
+    return expense.expense_types?.category === 'percentage_deduction' || 
+           expense.recurring_template_id !== null;
   };
 
   if (eventualDeductions.length === 0) {
@@ -481,6 +485,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 <div className="pt-1">
                   <span className="text-sm text-muted-foreground">{t("deductions.labels.description")}</span>
                   <span className="text-sm ml-1">{deduction.description}</span>
+                </div>
+              )}
+              
+              {deduction.notes && (
+                <div className="pt-1">
+                  <span className="text-sm text-muted-foreground">{t("deductions.labels.notes")}</span>
+                  <span className="text-sm ml-1">{deduction.notes}</span>
                 </div>
               )}
             </CardContent>

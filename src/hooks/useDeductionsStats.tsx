@@ -67,11 +67,11 @@ async function calculatePeriodDeductionsStats(
   calculatedPeriods: any
 ): Promise<DeductionsStats> {
   try {
-    // Construir query base
+    // ✅ Construir query base - ahora incluye TODAS las deducciones del período
+    // (eventuales + generadas desde plantillas recurrentes)
     let query = supabase
       .from('expense_instances')
-      .select('id, user_id, amount, expense_date, payment_period_id')
-      .is('recurring_template_id', null); // Solo gastos eventuales
+      .select('id, user_id, amount, expense_date, payment_period_id');
 
     // Aplicar filtro de conductor
     if (filters.driverId && filters.driverId !== 'all') {
