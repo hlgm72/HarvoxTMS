@@ -118,13 +118,19 @@ export function StopEditModal({
   
   if (!isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50" 
+      onClick={handleBackdropClick}
+    >
       {/* Modal Content */}
-      <div className="relative z-10 bg-background rounded-lg border shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+      <div className="relative bg-background rounded-lg border shadow-lg max-w-2xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* Header - Fixed */}
         <div className="flex flex-col space-y-1.5 text-center sm:text-left p-6 pb-4 border-b flex-shrink-0">
           <div className="flex items-center gap-3">
