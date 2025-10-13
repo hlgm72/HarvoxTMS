@@ -340,7 +340,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <Calendar className="h-4 w-4 mr-2" />
                     {(() => {
                       const now = new Date();
-                      return `${formatMonthName(now)} ${now.getFullYear()}`;
+                      return `This Month (${formatMonthName(now)} ${now.getFullYear()})`;
                     })()}
                   </Button>
 
