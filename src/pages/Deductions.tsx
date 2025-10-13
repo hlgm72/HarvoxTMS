@@ -87,8 +87,8 @@ export default function Deductions() {
             </Button>
             <Button variant="outline" onClick={() => setIsEventualDialogOpen(true)} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("deductions.eventualDeduction")}</span>
-              <span className="sm:hidden">{t("deductions.eventualShort")}</span>
+              <span className="hidden sm:inline">{t("deductions.periodDeduction")}</span>
+              <span className="sm:hidden">{t("deductions.periodShort")}</span>
             </Button>
           </div>
         }
