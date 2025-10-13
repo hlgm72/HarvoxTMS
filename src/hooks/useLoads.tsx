@@ -259,7 +259,8 @@ export const useLoads = (filters?: LoadsFilters) => {
         
         console.log('🔍 useLoads - Period result:', {
           periodResult,
-          companyUsers
+          companyUsers,
+          createdBy_25_449_inList: companyUsers.includes('087a825c-94ea-42d9-8388-5087a19d776f')
         });
         
         // PASO 3: Query SIMPLIFICADA - cualquier carga con driver O created_by de la compañía
@@ -281,7 +282,13 @@ export const useLoads = (filters?: LoadsFilters) => {
         console.log('✅ useLoads - Cargas de BD:', {
           total: allLoads?.length || 0,
           withoutDriver: allLoads?.filter(l => !l.driver_user_id).length || 0,
-          load25_449: allLoads?.find(l => l.load_number === '25-449') ? 'ENCONTRADA' : 'NO ENCONTRADA'
+          load25_449: allLoads?.find(l => l.load_number === '25-449') ? 'ENCONTRADA' : 'NO ENCONTRADA',
+          sampleLoads: allLoads?.slice(0, 3).map(l => ({
+            number: l.load_number,
+            driver: l.driver_user_id,
+            created_by: l.created_by,
+            payment_period_id: l.payment_period_id
+          }))
         });
 
         // PASO 4: Filtrar cargas por período en el cliente

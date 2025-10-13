@@ -46,7 +46,10 @@ export const useCompanyCache = () => {
         .eq('is_active', true);
         
       if (error) throw error;
-      return data?.map(u => u.user_id) || [];
+      
+      // Eliminar duplicados ya que un usuario puede tener múltiples roles
+      const uniqueUserIds = [...new Set(data?.map(u => u.user_id) || [])];
+      return uniqueUserIds;
     },
     enabled: !!userCompanyQuery.data?.company_id,
     staleTime: 300000, // 5 minutos
