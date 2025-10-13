@@ -62,13 +62,23 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
         companyId = userCompanyRole.company_id;
       }
 
-      // Construir query base para períodos - ahora trabaja directamente con user_payrolls
-      // Agruparemos manualmente después
+      // Construir query base para períodos - JOIN con company_payment_periods
       let query = supabase
         .from('user_payrolls')
-        .select('id, company_id, period_start_date, period_end_date, period_frequency, status, period_type, is_locked, user_id')
+        .select(`
+          id,
+          company_id,
+          status,
+          user_id,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency,
+            is_locked
+          )
+        `)
         .eq('company_id', companyId)
-        .order('period_start_date', { ascending: false });
+        .order('created_at', { ascending: false });
 
       // Aplicar filtros adicionales
       if (filters?.status) {

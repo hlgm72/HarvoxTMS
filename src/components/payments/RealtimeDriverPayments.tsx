@@ -87,9 +87,15 @@ export function RealtimeDriverPayments() {
       // Get latest user payment periods for the company
       const { data: periods, error } = await supabase
         .from('user_payrolls')
-        .select('*')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date
+          )
+        `)
         .eq('company_id', userRole.company_id)
-        .order('period_start_date', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;

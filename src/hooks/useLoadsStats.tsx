@@ -88,10 +88,14 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           
           const { data: currentPeriods, error: periodError } = await supabase
             .from('user_payrolls')
-            .select('id')
+            .select(`
+              id,
+              period:company_payment_periods!company_payment_period_id(
+                period_start_date,
+                period_end_date
+              )
+            `)
             .eq('company_id', userCompany.company_id)
-            .lte('period_start_date', today)
-            .gte('period_end_date', today)
             .eq('status', 'open');
 
           if (periodError) {
@@ -99,7 +103,14 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
             throw new Error('Error consultando períodos actuales');
           }
 
-          targetPeriodId = currentPeriods && currentPeriods.length > 0 ? currentPeriods.map(p => p.id) : [];
+          // Filter in client for date range
+          const filteredPeriods = (currentPeriods || []).filter((p: any) => {
+            const startDate = p.period?.period_start_date;
+            const endDate = p.period?.period_end_date;
+            return startDate && endDate && today >= startDate && today <= endDate;
+          });
+
+          targetPeriodId = filteredPeriods && filteredPeriods.length > 0 ? filteredPeriods.map((p: any) => p.id) : [];
           // console.log('📅 Current period found:', targetPeriodId);
         } else if (periodFilter?.type === 'all') {
           // Para 'all', no filtrar por período específico

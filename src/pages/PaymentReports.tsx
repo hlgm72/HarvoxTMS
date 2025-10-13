@@ -155,24 +155,23 @@ export default function PaymentReports() {
       let query = supabase
         .from('user_payrolls')
         .select(`
-          *
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency,
+            is_locked
+          )
         `)
         .order('created_at', { ascending: false });
 
-      // ✅ CORREGIDO: Manejar períodos calculados vs reales de BD
+      // ✅ CORREGIDO: Filtrar por company_payment_period_id cuando sea posible
+      // No podemos filtrar directamente por campos del JOIN, así que filtramos por IDs o en cliente
       if (filters.periodFilter.periodId?.startsWith('calculated-')) {
-        // Para períodos calculados, usar filtros de fecha
-        if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
-          console.log('📊 Adding date range filter for calculated period:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
-          query = query
-            .gte('period_start_date', filters.periodFilter.startDate)
-            .lte('period_end_date', filters.periodFilter.endDate);
-        } else {
-          console.log('❌ No date range available for calculated period');
-          return [];
-        }
+        // Para períodos calculados, filtrar en cliente después
+        console.log('📊 Calculated period detected - will filter on client side');
       } else if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
-        // Para períodos reales de BD, usar payment_period_id directamente
+        // Para períodos reales de BD, usar ID directamente
         console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
         query = query.in('id', getFilterPeriodIds);
       } else if (
@@ -183,11 +182,8 @@ export default function PaymentReports() {
         filters.periodFilter.startDate && 
         filters.periodFilter.endDate
       ) {
-        // Para filtros con fechas específicas (cuando no hay períodos reales en BD)
-        console.log('📊 Adding date range filter:', filters.periodFilter.startDate, 'to', filters.periodFilter.endDate);
-        query = query
-          .gte('period_start_date', filters.periodFilter.startDate)
-          .lte('period_end_date', filters.periodFilter.endDate);
+        // Para filtros con fechas específicas, filtrar en cliente después
+        console.log('📊 Date range filter - will filter on client side');
       } else if (filters.periodFilter.type === 'all') {
         console.log('📊 Showing all periods - no filter applied');
         // No agregar filtro para mostrar todos
@@ -206,8 +202,31 @@ export default function PaymentReports() {
       
       console.log('✅ PaymentReports Query Result:', data?.length, 'calculations found');
       
+      // Filtrar en cliente si es necesario (períodos calculados o con fechas)
+      let filteredData = data || [];
+      
+      if ((filters.periodFilter.periodId?.startsWith('calculated-') || 
+           filters.periodFilter.type === 'custom' ||
+           filters.periodFilter.type === 'previous' ||
+           filters.periodFilter.type === 'current' ||
+           filters.periodFilter.type === 'next') &&
+          filters.periodFilter.startDate && 
+          filters.periodFilter.endDate) {
+        console.log('🔍 Filtering on client side with dates:', filters.periodFilter.startDate, filters.periodFilter.endDate);
+        filteredData = filteredData.filter((calc: any) => {
+          const periodStart = calc.period?.period_start_date;
+          const periodEnd = calc.period?.period_end_date;
+          if (!periodStart || !periodEnd) return false;
+          
+          // Verificar si el período se solapa con el rango solicitado
+          return periodStart <= filters.periodFilter.endDate! && 
+                 periodEnd >= filters.periodFilter.startDate!;
+        });
+        console.log('✅ Filtered to', filteredData.length, 'calculations');
+      }
+      
       // Ordenar por fecha de inicio del período (más reciente primero) usando formateo seguro
-      const sortedData = (data || []).sort((a, b) => {
+      const sortedData = filteredData.sort((a, b) => {
         const aData = a as any;
         const bData = b as any;
         const dateA = formatDateSafe(aData.period?.period_start_date, 'yyyy-MM-dd');
