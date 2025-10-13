@@ -482,7 +482,18 @@ export const useLoads = (filters?: LoadsFilters) => {
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', dispatcherIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
-            ? supabase.from('user_payrolls').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
+            ? supabase
+                .from('user_payrolls')
+                .select(`
+                  id,
+                  status,
+                  period:company_payment_periods!company_payment_period_id(
+                    period_start_date,
+                    period_end_date,
+                    period_frequency
+                  )
+                `)
+                .in('id', periodIds)
              : Promise.resolve({ data: [] })
         ]);
 
@@ -591,9 +602,9 @@ export const useLoads = (filters?: LoadsFilters) => {
             internal_dispatcher_name: dispatcher ? `${dispatcher.first_name} ${dispatcher.last_name}` : null,
             pickup_city: pickupCityDisplay,
             delivery_city: deliveryCityDisplay,
-            period_start_date: period?.period_start_date || null,
-            period_end_date: period?.period_end_date || null,
-            period_frequency: period?.period_frequency || null,
+            period_start_date: (period as any)?.period?.period_start_date || null,
+            period_end_date: (period as any)?.period?.period_end_date || null,
+            period_frequency: (period as any)?.period?.period_frequency || null,
             period_status: period?.status || null,
             stops: processedStops,
             documents: loadDocuments, // Add documents to the load object
