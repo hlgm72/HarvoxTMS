@@ -34,7 +34,7 @@ export interface Load {
   weight_lbs: number | null;
   status: string;
   notes: string | null;
-  customer_name: string | null;
+  customer_name?: string | null;
   created_at: string;
   updated_at: string;
   client_id: string | null;
@@ -482,7 +482,7 @@ export const useLoads = (filters?: LoadsFilters) => {
             ? supabase.from('profiles').select('user_id, first_name, last_name').in('user_id', dispatcherIds)
             : Promise.resolve({ data: [] }),
           periodIds.length > 0 
-            ? supabase.from('user_payment_periods').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
+            ? supabase.from('user_payrolls').select('id, period_start_date, period_end_date, period_frequency, status').in('id', periodIds)
              : Promise.resolve({ data: [] })
         ]);
 

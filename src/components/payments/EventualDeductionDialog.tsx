@@ -180,7 +180,7 @@ export function EventualDeductionDialog({
         // Obtenemos los períodos de usuario para el conductor en la fecha del gasto
         console.log('Step 2: Getting user periods for date...');
         const { data: userPeriods, error: periodsError } = await supabase
-          .from('user_payment_periods')
+          .from('user_payrolls')
           .select('*')
           .eq('company_id', companyId)
           .eq('user_id', formData.user_id)

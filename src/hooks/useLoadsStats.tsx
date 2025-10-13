@@ -87,7 +87,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           // console.log('📅 Getting current period for today:', today);
           
           const { data: currentPeriods, error: periodError } = await supabase
-            .from('user_payment_periods')
+            .from('user_payrolls')
             .select('id')
             .eq('company_id', userCompany.company_id)
             .lte('period_start_date', today)

@@ -46,7 +46,7 @@ export const usePaymentPeriodsForExclusion = (userId: string, templateId: string
 
       // Obtener períodos abiertos de la empresa para este usuario
       const { data: periods, error: periodsError } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('id, period_start_date, period_end_date, status, is_locked')
         .eq('company_id', companyId)
         .eq('user_id', userId)

@@ -72,15 +72,9 @@ export function PaymentReportDialog({
       if (!calculationId) return null;
       
       const { data, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select(`
-          *,
-          company_payment_periods!inner(
-            period_start_date,
-            period_end_date,
-            company_id,
-            payment_date
-          )
+          *
         `)
         .eq('id', calculationId)
         .single();
@@ -191,7 +185,6 @@ export function PaymentReportDialog({
           delivery_date,
           total_amount,
           client_id,
-          customer_name,
           dispatching_percentage,
           factoring_percentage,
           leasing_percentage,
@@ -379,11 +372,9 @@ export function PaymentReportDialog({
         if (clientData) {
           if (clientData.alias && clientData.alias.trim()) {
             clientName = clientData.alias;
-          } else if (clientData.name && clientData.name.trim()) {
+        } else if (clientData.name && clientData.name.trim()) {
             clientName = clientData.name;
           }
-        } else if (load.customer_name && load.customer_name.trim()) {
-          clientName = load.customer_name;
         }
         
         return {
@@ -810,8 +801,6 @@ export function PaymentReportDialog({
                                 } else if (clientData.name && clientData.name.trim()) {
                                   clientName = clientData.name;
                                 }
-                              } else if (load.customer_name && load.customer_name.trim()) {
-                                clientName = load.customer_name;
                               }
                               
                               return clientName;

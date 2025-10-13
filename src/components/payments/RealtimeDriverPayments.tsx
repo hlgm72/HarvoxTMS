@@ -53,7 +53,7 @@ export function RealtimeDriverPayments() {
           {
             event: 'UPDATE',
             schema: 'public',
-            table: 'user_payment_periods',
+            table: 'user_payrolls',
             // Only listen for payment status changes
             filter: `payment_status=neq.calculated`
           },
@@ -86,7 +86,7 @@ export function RealtimeDriverPayments() {
     try {
       // Get latest user payment periods for the company
       const { data: periods, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('company_id', userRole.company_id)
         .order('period_start_date', { ascending: false })

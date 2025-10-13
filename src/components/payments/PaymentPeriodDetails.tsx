@@ -133,7 +133,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       }
 
       const { data, error } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('id', periodId)
         .maybeSingle();
@@ -152,7 +152,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
       
       // Get all user payment periods for this period (by matching dates and company)
       const { data: calculations, error: calcError } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('company_id', period?.company_id)
         .eq('period_start_date', period?.period_start_date)

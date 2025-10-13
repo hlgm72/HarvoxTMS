@@ -65,13 +65,12 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       try {
         console.log('🚀 Iniciando query de deducciones eventuales para company:', userCompany.company_id);
         console.log('🔍 Filtros completos recibidos:', JSON.stringify(filters, null, 2));
-        // Construir la consulta base con joins para obtener información del período
+        // Construir la consulta base sin joins (obtendremos datos del período por separado)
         let query = supabase
           .from('expense_instances')
           .select(`
             *,
-            expense_types(name, category),
-            user_payment_periods!inner(period_start_date, period_end_date, period_frequency)
+            expense_types(name, category)
           `)
           .is('recurring_template_id', null); // Solo gastos eventuales (sin plantilla)
 
@@ -120,7 +119,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             } else {
               // Para períodos reales de BD, obtener fechas del período específico
               const periodQuery = await supabase
-                .from('user_payment_periods')
+                .from('user_payrolls')
                 .select('period_start_date, period_end_date')
                 .eq('id', periodId)
                 .maybeSingle();
@@ -278,17 +277,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         // Enriquecer con información de períodos y conductores
         const enrichedData = await Promise.all(
           (data || []).map(async (expense) => {
-            // Obtener información del período a través de user_payment_periods
+            // Obtener información del período a través de user_payrolls
             const { data: driverPeriod } = await supabase
-              .from('user_payment_periods')
-              .select(`
-                company_payment_periods(
-                  period_start_date, 
-                  period_end_date, 
-                  period_frequency, 
-                  is_locked
-                )
-              `)
+              .from('user_payrolls')
+              .select('period_start_date, period_end_date, period_frequency, is_locked')
               .eq('id', expense.payment_period_id)
               .maybeSingle();
 
@@ -301,7 +293,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
             return {
               ...expense,
-              company_payment_periods: driverPeriod?.company_payment_periods,
+              period_data: driverPeriod, // Agregar datos del período aquí
               profiles: profile
             };
           })
@@ -402,11 +394,11 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {deduction.user_payment_periods && 
+                    {deduction.period_data && 
                       formatDetailedPaymentPeriod(
-                        deduction.user_payment_periods.period_start_date,
-                        deduction.user_payment_periods.period_end_date,
-                        deduction.user_payment_periods.period_frequency
+                        deduction.period_data.period_start_date,
+                        deduction.period_data.period_end_date,
+                        deduction.period_data.period_frequency
                       )
                     }
                   </CardDescription>

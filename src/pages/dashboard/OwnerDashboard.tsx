@@ -211,9 +211,9 @@ export default function OwnerDashboard() {
         totalIncome = loadsData?.reduce((sum, load) => sum + (load.total_amount || 0), 0) || 0;
       }
 
-      // Get pending payments count (usando user_payment_periods)
+      // Get pending payments count (usando user_payrolls)
       const { count: pendingPayments } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*', { count: 'exact', head: true })
         .eq('company_id', userRole.company_id)
         .eq('status', 'open');

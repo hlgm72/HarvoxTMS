@@ -236,7 +236,7 @@ export function PDFAnalyzer() {
 
       // Obtener períodos de pago de la empresa
       const { data: userPeriods } = await supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select('*')
         .eq('company_id', companyId)
         .eq('status', 'open');

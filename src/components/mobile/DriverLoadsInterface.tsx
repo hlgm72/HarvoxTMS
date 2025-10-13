@@ -67,7 +67,6 @@ export const DriverLoadsInterface = () => {
           status,
           pickup_date,
           delivery_date,
-          customer_name,
           total_amount,
           stops:load_stops (
             id,

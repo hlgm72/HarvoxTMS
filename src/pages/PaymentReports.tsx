@@ -153,16 +153,9 @@ export default function PaymentReports() {
       console.log('🔍 Obteniendo datos de cálculos sin verificación automática de integridad...');
       
       let query = supabase
-        .from('user_payment_periods')
+        .from('user_payrolls')
         .select(`
-          *,
-          company_payment_periods!inner(
-            id,
-            period_start_date,
-            period_end_date,
-            company_id,
-            payment_date
-          )
+          *
         `)
         .order('created_at', { ascending: false });
 

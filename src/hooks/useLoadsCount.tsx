@@ -39,7 +39,7 @@ export const useLoadsCount = () => {
         const today = getTodayInUserTimeZone();
         
         const { data: currentPeriods, error: periodError } = await supabase
-          .from('user_payment_periods')
+          .from('user_payrolls')
           .select('id')
           .eq('company_id', userCompany.company_id)
           .lte('period_start_date', today)
