@@ -3470,6 +3470,10 @@ export type Database = {
           | { payment_day: string; period_end_date: string }
         Returns: string
       }
+      calculate_user_payment_period_with_validation: {
+        Args: { calculation_id: string }
+        Returns: Json
+      }
       can_access_company_data: {
         Args: { company_id_param?: string }
         Returns: boolean
