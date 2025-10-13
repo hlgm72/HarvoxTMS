@@ -127,12 +127,14 @@
     "tabs": {
       "active_templates": "Active Templates",
       "active_templates_short": "Active",
-      "inactive_templates": "Inactive Templates",
-      "inactive_templates_short": "Inactive", 
+      "inactive_templates": "Inactive Templates", 
+      "inactive_templates_short": "Inactive",
       "period_deductions": "Period Deductions",
       "period_deductions_short": "Period",
       "recurring_deductions": "Recurring Deductions",
       "recurring_deductions_short": "Recurring",
+      "expense_types": "Expense Types",
+      "expense_types_short": "Types",
       "history": "History"
     },
     "empty_states": {
@@ -158,7 +160,10 @@
       "effective_from": "Effective From",
       "effective_until": "Effective Until",
       "applied_role": "Applied Role",
-      "user": "User"
+      "user": "User",
+      "name": "Name",
+      "category": "Category",
+      "actions": "Actions"
     },
     "tooltips": {
       "manage_exclusions": "Manage Period Exclusions",
@@ -177,8 +182,29 @@
       "coming_soon": "Coming soon: History of deduction template modifications"
     },
     "groups": {
-      "driver_deductions": "Driver Deductions", 
+      "driver_deductions": "Driver Deductions",
       "dispatcher_deductions": "Dispatcher Deductions"
+    },
+    "expenseTypes": {
+      "title": "Expense Types",
+      "description": "Configure available expense and deduction types for your company",
+      "new": "New Type",
+      "newType": "New Expense Type",
+      "editType": "Edit Expense Type",
+      "deleteTitle": "Delete expense type?",
+      "deleteConfirm": "Are you sure you want to delete expense type \"{{name}}\"? This action cannot be undone.",
+      "createSuccess": "Expense type created successfully",
+      "updateSuccess": "Expense type updated successfully",
+      "deleteSuccess": "Expense type deleted successfully",
+      "noTypes": "No expense types configured",
+      "createFirst": "Create First Type"
+    },
+    "categories": {
+      "operational": "Operational",
+      "administrative": "Administrative",
+      "percentage": "Percentage Deduction",
+      "fuel": "Fuel",
+      "other": "Other"
     },
     "form": {
       "driver": "Driver",

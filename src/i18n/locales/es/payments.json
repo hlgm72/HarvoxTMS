@@ -133,6 +133,8 @@
       "period_deductions_short": "Período",
       "recurring_deductions": "Deducciones Recurrentes",
       "recurring_deductions_short": "Recurrentes",
+      "expense_types": "Tipos de Gastos",
+      "expense_types_short": "Tipos",
       "history": "Historial"
     },
     "empty_states": {
@@ -158,14 +160,24 @@
       "effective_from": "Vigente Desde",
       "effective_until": "Vigente Hasta",
       "applied_role": "Rol Aplicado",
-      "user": "Usuario"
+      "user": "Usuario",
+      "name": "Nombre",
+      "category": "Categoría",
+      "actions": "Acciones"
     },
-    "tooltips": {
-      "manage_exclusions": "Gestionar Exclusiones de Períodos",
-      "edit_template": "Editar Plantilla",
-      "delete_template": "Eliminar Plantilla",
-      "reactivate_template": "Reactivar Plantilla",
-      "permanently_delete": "Eliminar Permanentemente"
+    "actions": {
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "create": "Crear",
+      "update": "Actualizar",
+      "delete": "Eliminar",
+      "saving": "Guardando..."
+    },
+    "errors": {
+      "noCompany": "No se encontró la empresa del usuario",
+      "saveFailed": "Error al guardar",
+      "deleteFailed": "Error al eliminar",
+      "nameRequired": "El nombre es requerido"
     },
     "buttons": {
       "manage_exclusions": "Gestionar Exclusiones",
@@ -180,60 +192,26 @@
       "driver_deductions": "Descuentos a Conductores",
       "dispatcher_deductions": "Descuentos a Despachadores"
     },
-    "form": {
-      "driver": "Conductor",
-      "dispatcher": "Despachador", 
-      "not_specified": "No especificado",
-      "select_driver": "Seleccionar conductor...",
-      "select_dispatcher": "Seleccionar despachador...",
-      "search_driver": "Buscar conductor...",
-      "search_dispatcher": "Buscar despachador...",
-      "no_drivers_found": "No se encontraron conductores.",
-      "no_dispatchers_found": "No se encontraron despachadores.",
-      "expense_type": "Tipo de Gasto",
-      "select_expense_type": "Seleccionar tipo de gasto",
-      "amount": "Monto ($)",
-      "frequency": "Frecuencia",
-      "select_frequency": "Seleccionar frecuencia",
-      "select_user_type": "Seleccionar tipo de usuario",
-      "user_type": "Tipo de Usuario",
-      "weekly": "Semanal",
-      "biweekly": "Quincenal", 
-      "monthly": "Mensual",
-      "indefinite": "Indefinido",
-      "notes_optional": "Notas (Opcional)",
-      "cancel": "Cancelar",
-      "inactive_template_exists": "Ya existe una plantilla inactiva para este conductor y tipo de gasto:",
-      "type_label": "Tipo:",
-      "amount_label": "Monto:",
-      "frequency_label": "Frecuencia:",
-      "reactivate_template": "Reactivar Plantilla Existente",
-      "select_date": "Seleccionar fecha",
-      "month_week": "Semana del Mes",
-      "select_week": "Seleccionar semana",
-      "first_week": "Primera semana",
-      "second_week": "Segunda semana", 
-      "third_week": "Tercera semana",
-      "fourth_week": "Cuarta semana",
-      "creating": "Creando",
-      "updating": "Actualizando",
-      "create": "Crear",
-      "update": "Actualizar",
-      "deduction": "Deducción"
+    "expenseTypes": {
+      "title": "Tipos de Gastos",
+      "description": "Configura los tipos de gastos y deducciones disponibles para tu empresa",
+      "new": "Nuevo Tipo",
+      "newType": "Nuevo Tipo de Gasto",
+      "editType": "Editar Tipo de Gasto",
+      "deleteTitle": "¿Eliminar tipo de gasto?",
+      "deleteConfirm": "¿Estás seguro de eliminar el tipo de gasto \"{{name}}\"? Esta acción no se puede deshacer.",
+      "createSuccess": "Tipo de gasto creado exitosamente",
+      "updateSuccess": "Tipo de gasto actualizado exitosamente",
+      "deleteSuccess": "Tipo de gasto eliminado exitosamente",
+      "noTypes": "No tienes tipos de gastos configurados",
+      "createFirst": "Crear Primer Tipo"
     },
-    "months": {
-      "january": "Enero",
-      "february": "Febrero",
-      "march": "Marzo", 
-      "april": "Abril",
-      "may": "Mayo",
-      "june": "Junio",
-      "july": "Julio",
-      "august": "Agosto",
-      "september": "Septiembre",
-      "october": "Octubre",
-      "november": "Noviembre",
-      "december": "Diciembre"
+    "categories": {
+      "operational": "Operacional",
+      "administrative": "Administrativo",
+      "percentage": "Deducción por Porcentaje",
+      "fuel": "Combustible",
+      "other": "Otro"
     },
     "placeholders": {
       "year": "Año",
@@ -241,7 +219,8 @@
       "reference_number": "Número de referencia (opcional)",
       "additional_info": "Información adicional...",
       "payment_method": "Seleccionar método de pago",
-      "payment_info": "Información adicional sobre el pago..."
+      "payment_info": "Información adicional sobre el pago...",
+      "expenseTypeName": "Ej: Seguro de vehículo, Multa, etc."
     },
     "frequency": {
       "weekly": "Semanal",

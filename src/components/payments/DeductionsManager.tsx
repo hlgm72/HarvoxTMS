@@ -11,8 +11,9 @@ import { ExpenseTemplateDialog } from "./ExpenseTemplateDialog";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { EventualDeductionsList } from "./EventualDeductionsList";
 import { RecurringExpenseExclusionsDialog } from "./RecurringExpenseExclusionsDialog";
+import { ExpenseTypesTab } from "./ExpenseTypesTab";
 import { formatDateOnly, formatCurrency } from '@/lib/dateFormatting';
-import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, CalendarCheck, Archive, History, X, CalendarDays } from "lucide-react";
+import { DollarSign, Edit, Trash2, RotateCcw, AlertTriangle, Repeat, CalendarCheck, Archive, History, X, CalendarDays, Tags } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { useTranslation } from 'react-i18next';
 
@@ -551,6 +552,11 @@ export function DeductionsManager({
             <span className="hidden sm:inline">{t("deductions.tabs.recurring_deductions")}</span>
             <span className="sm:hidden">{t("deductions.tabs.recurring_deductions_short")}</span>
           </TabsTrigger>
+          <TabsTrigger value="expense-types" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <Tags className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">{t("deductions.tabs.expense_types")}</span>
+            <span className="sm:hidden">{t("deductions.tabs.expense_types_short")}</span>
+          </TabsTrigger>
           <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <History className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.history")}</span>
@@ -635,6 +641,10 @@ export function DeductionsManager({
               )}
             </TabsContent>
           </Tabs>
+        </TabsContent>
+
+        <TabsContent value="expense-types" className="space-y-4 mt-6 md:mt-8">
+          <ExpenseTypesTab />
         </TabsContent>
 
         <TabsContent value="history" className="space-y-4 mt-6 md:mt-8">
