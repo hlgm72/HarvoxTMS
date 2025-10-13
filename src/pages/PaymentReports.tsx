@@ -184,9 +184,9 @@ export default function PaymentReports() {
         // Para períodos calculados, filtrar en cliente después
         console.log('📊 Calculated period detected - will filter on client side');
       } else if (filters.periodFilter.type !== 'custom' && getFilterPeriodIds.length > 0) {
-        // Para períodos reales de BD, usar ID directamente
+        // Para períodos reales de BD, usar company_payment_period_id directamente
         console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
-        query = query.in('id', getFilterPeriodIds);
+        query = query.in('company_payment_period_id', getFilterPeriodIds);
       } else if (
         (filters.periodFilter.type === 'custom' || 
          filters.periodFilter.type === 'previous' || 
