@@ -252,11 +252,11 @@ export function PaymentReportDialog({
 
   // Obtener deducciones del período
   const { data: deductions = [] } = useQuery({
-    queryKey: ['period-deductions', calculationId],
+    queryKey: ['period-deductions', calculation?.company_payment_period_id, calculation?.user_id],
     queryFn: async () => {
-      if (!calculationId) return [];
+      if (!calculation?.company_payment_period_id || !calculation?.user_id) return [];
       
-      console.log('🔍 Querying deductions for calculationId:', calculationId);
+      console.log('🔍 Querying deductions for period:', calculation.company_payment_period_id, 'user:', calculation.user_id);
       
       const { data, error } = await supabase
         .from('expense_instances')
@@ -266,12 +266,15 @@ export function PaymentReportDialog({
           description,
           expense_date,
           status,
+          payment_period_id,
+          user_id,
           expense_types(
             name,
             category
           )
         `)
-        .eq('payment_period_id', calculationId)
+        .eq('payment_period_id', calculation.company_payment_period_id)
+        .eq('user_id', calculation.user_id)
         .in('status', ['applied', 'planned'])
         .order('expense_date', { ascending: true });
 
@@ -305,7 +308,7 @@ export function PaymentReportDialog({
       
       return data || [];
     },
-    enabled: !!calculationId
+    enabled: !!calculation?.company_payment_period_id && !!calculation?.user_id
   });
 
   // 🚨 FUNCIÓN CRÍTICA - NO MODIFICAR SIN AUTORIZACIÓN
