@@ -11,20 +11,53 @@ import { EventualDeductionDialog } from "@/components/payments/EventualDeduction
 import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
-import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency } from '@/lib/dateFormatting';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Deductions() {
   const { t } = useTranslation('payments');
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("period");
   const { data: stats, isLoading: statsLoading } = useDeductionsStats();
   const { data: expenseTypes = [] } = useExpenseTypes();
-  const { drivers = [] } = useCompanyDrivers();
+  
+  // Fetch company drivers
+  const { data: drivers = [] } = useQuery({
+    queryKey: ['company-drivers', userRole?.company_id],
+    queryFn: async () => {
+      if (!userRole?.company_id) return [];
+
+      const { data, error } = await supabase
+        .from('user_company_roles')
+        .select(`
+          user_id,
+          driver_profiles!inner (
+            first_name,
+            last_name
+          )
+        `)
+        .eq('company_id', userRole.company_id)
+        .eq('role', 'driver')
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching drivers:', error);
+        return [];
+      }
+
+      return (data || []).map((d: any) => ({
+        id: d.user_id,
+        first_name: d.driver_profiles?.first_name || '',
+        last_name: d.driver_profiles?.last_name || ''
+      }));
+    },
+    enabled: !!userRole?.company_id
+  });
 
   // Estado de filtros - adaptado para sistema universal
   const [filters, setFilters] = useState({

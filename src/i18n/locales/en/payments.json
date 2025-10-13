@@ -206,6 +206,20 @@
       "fuel": "Fuel",
       "other": "Other"
     },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete",
+      "saving": "Saving..."
+    },
+    "errors": {
+      "noCompany": "User company not found",
+      "saveFailed": "Failed to save",
+      "deleteFailed": "Failed to delete",
+      "nameRequired": "Name is required"
+    },
     "form": {
       "driver": "Driver",
       "dispatcher": "Dispatcher",
@@ -267,7 +281,8 @@
       "reference_number": "Reference number (optional)",
       "additional_info": "Additional information...",
       "payment_method": "Select payment method",
-      "payment_info": "Additional information about payment..."
+      "payment_info": "Additional information about payment...",
+      "expenseTypeName": "E.g: Vehicle insurance, Fine, etc."
     },
     "frequency": {
       "weekly": "Weekly",
