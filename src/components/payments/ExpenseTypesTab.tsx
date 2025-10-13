@@ -67,6 +67,21 @@ export function ExpenseTypesTab() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      // First check if there are any templates using this expense type
+      const { data: templates, error: checkError } = await supabase
+        .from('expense_recurring_templates')
+        .select('id')
+        .eq('expense_type_id', id);
+      
+      if (checkError) throw checkError;
+      
+      if (templates && templates.length > 0) {
+        throw new Error(
+          `No se puede eliminar este tipo de gasto porque está siendo usado en ${templates.length} plantilla(s) recurrente(s). Elimine primero las plantillas o desasigne este tipo de gasto de ellas.`
+        );
+      }
+
+      // If no templates, proceed with deletion
       const { error } = await supabase
         .from('expense_types')
         .delete()
