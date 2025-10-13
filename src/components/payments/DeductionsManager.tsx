@@ -541,7 +541,7 @@ export function DeductionsManager({
   return (
     <div className="space-y-6">
       <Tabs defaultValue="period" onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-auto gap-1">
+        <TabsList className="grid w-full grid-cols-4 h-auto gap-1">
           <TabsTrigger value="period" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
             <CalendarCheck className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.period_deductions")}</span>
