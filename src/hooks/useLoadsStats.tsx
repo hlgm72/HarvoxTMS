@@ -112,6 +112,19 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
 
           targetPeriodId = filteredPeriods && filteredPeriods.length > 0 ? filteredPeriods.map((p: any) => p.id) : [];
           // console.log('📅 Current period found:', targetPeriodId);
+        } else if (periodFilter?.type === 'previous' || periodFilter?.type === 'this_month' || periodFilter?.type === 'last_month' || periodFilter?.type === 'this_quarter' || periodFilter?.type === 'last_quarter' || periodFilter?.type === 'this_year' || periodFilter?.type === 'last_year') {
+          // Para filtros basados en fechas, usar date-filter
+          if (periodFilter.startDate && periodFilter.endDate) {
+            targetPeriodId = 'date-filter';
+            // console.log('📅 Using date filter:', periodFilter.startDate, 'to', periodFilter.endDate);
+          } else {
+            return {
+              totalActive: 0,
+              totalInTransit: 0,
+              pendingAssignment: 0,
+              totalAmount: 0
+            };
+          }
         } else if (periodFilter?.type === 'all') {
           // Para 'all', no filtrar por período específico
           targetPeriodId = 'all';
