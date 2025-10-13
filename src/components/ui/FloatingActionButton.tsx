@@ -28,8 +28,8 @@ export function FloatingActionButton({
         className
       )}
     >
-      <Settings className="h-5 w-5 min-w-[20px] transition-all duration-1000 ease-in-out group-hover:rotate-90" />
-      <span className="max-w-0 overflow-hidden opacity-0 text-sm font-semibold tracking-wider whitespace-nowrap transition-all duration-1000 ease-in-out group-hover:max-w-xs group-hover:opacity-100 group-hover:ml-3 group-hover:mr-4">
+      <Settings className="h-5 w-5 min-w-[20px] transition-transform duration-1000 ease-in-out group-hover:rotate-90 group-hover:ml-4" />
+      <span className="opacity-0 w-0 text-sm font-semibold tracking-wider whitespace-nowrap transition-all duration-1000 ease-in-out group-hover:opacity-100 group-hover:w-auto group-hover:ml-2 group-hover:mr-4">
         {label}
       </span>
     </button>
