@@ -57,19 +57,17 @@ export const useNavigationMaps = (options: NavigationMapsOptions = {}) => {
       
       // For mobile, try to open native app
       if (isIOS || isAndroid) {
-        // Create a hidden iframe to test if native app opens
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = mapUrl;
-        document.body.appendChild(iframe);
+        // Try to open native app directly without iframe to avoid CORB errors
+        const appWindow = window.open(mapUrl, '_blank', 'noopener,noreferrer');
         
         // Fallback to web after short delay if native app doesn't open
         setTimeout(() => {
-          document.body.removeChild(iframe);
-          // Fallback to Google Maps web
-          const webUrl = `https://maps.google.com/maps?q=${encodedAddress}&t=m`;
-          window.open(webUrl, '_blank', 'noopener,noreferrer');
-        }, 2000);
+          // Only open fallback if the native app didn't open
+          if (appWindow && appWindow.closed) {
+            const webUrl = `https://maps.google.com/maps?q=${encodedAddress}&t=m`;
+            window.open(webUrl, '_blank', 'noopener,noreferrer');
+          }
+        }, 1000);
       } else {
         // Desktop - open web maps directly
         link.click();
