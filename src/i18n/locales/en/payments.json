@@ -202,9 +202,19 @@
     "categories": {
       "operational": "Operational",
       "administrative": "Administrative",
-      "percentage": "Percentage Deduction",
+      "percentage_deduction": "Percentage Deduction",
       "fuel": "Fuel",
-      "other": "Other"
+      "other": "Other",
+      "advance": "Advance",
+      "equipment": "Equipment",
+      "insurance": "Insurance",
+      "technology": "Technology",
+      "maintenance": "Maintenance",
+      "regulatory": "Regulatory",
+      "communication": "Communication",
+      "transportation": "Transportation",
+      "training": "Training",
+      "vehicle": "Vehicle"
     },
     "actions": {
       "cancel": "Cancel",

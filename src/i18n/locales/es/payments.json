@@ -209,9 +209,19 @@
     "categories": {
       "operational": "Operacional",
       "administrative": "Administrativo",
-      "percentage": "Deducción por Porcentaje",
+      "percentage_deduction": "Deducción por Porcentaje",
       "fuel": "Combustible",
-      "other": "Otro"
+      "other": "Otro",
+      "advance": "Anticipo",
+      "equipment": "Equipo",
+      "insurance": "Seguro",
+      "technology": "Tecnología",
+      "maintenance": "Mantenimiento",
+      "regulatory": "Regulatorio",
+      "communication": "Comunicación",
+      "transportation": "Transporte",
+      "training": "Capacitación",
+      "vehicle": "Vehículo"
     },
     "placeholders": {
       "year": "Año",

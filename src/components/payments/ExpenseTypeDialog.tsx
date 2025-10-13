@@ -164,8 +164,18 @@ export function ExpenseTypeDialog({
                 <SelectContent>
                   <SelectItem value="operational">{t("deductions.categories.operational")}</SelectItem>
                   <SelectItem value="administrative">{t("deductions.categories.administrative")}</SelectItem>
-                  <SelectItem value="percentage_deduction">{t("deductions.categories.percentage")}</SelectItem>
+                  <SelectItem value="percentage_deduction">{t("deductions.categories.percentage_deduction")}</SelectItem>
                   <SelectItem value="fuel">{t("deductions.categories.fuel")}</SelectItem>
+                  <SelectItem value="advance">{t("deductions.categories.advance")}</SelectItem>
+                  <SelectItem value="equipment">{t("deductions.categories.equipment")}</SelectItem>
+                  <SelectItem value="insurance">{t("deductions.categories.insurance")}</SelectItem>
+                  <SelectItem value="technology">{t("deductions.categories.technology")}</SelectItem>
+                  <SelectItem value="maintenance">{t("deductions.categories.maintenance")}</SelectItem>
+                  <SelectItem value="regulatory">{t("deductions.categories.regulatory")}</SelectItem>
+                  <SelectItem value="communication">{t("deductions.categories.communication")}</SelectItem>
+                  <SelectItem value="transportation">{t("deductions.categories.transportation")}</SelectItem>
+                  <SelectItem value="training">{t("deductions.categories.training")}</SelectItem>
+                  <SelectItem value="vehicle">{t("deductions.categories.vehicle")}</SelectItem>
                   <SelectItem value="other">{t("deductions.categories.other")}</SelectItem>
                 </SelectContent>
               </Select>
