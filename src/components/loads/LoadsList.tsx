@@ -173,9 +173,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
     }
   } : undefined;
   
-  console.log('📋 LOADS LIST - Filtro recibido:', periodFilter);
-  console.log('📋 LOADS LIST - Filtro convertido:', loadsFilters);
-  
   const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
   const deleteLoadMutation = useDeleteLoad();
   const updateStatusMutation = useUpdateLoadStatusWithValidation();

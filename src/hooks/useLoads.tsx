@@ -94,11 +94,6 @@ const getRelevantPeriodIds = (
   const isCalculatedPeriod = periodFilter.periodId?.startsWith('calculated-');
   
   if (isCalculatedPeriod && periodFilter.startDate && periodFilter.endDate) {
-    console.log('🎯 Período calculado detectado - usando filtro de fechas:', {
-      type: periodFilter.type,
-      startDate: periodFilter.startDate,
-      endDate: periodFilter.endDate
-    });
     return {
       periodIds: [],
       useDateFilter: true,
@@ -116,12 +111,6 @@ const getRelevantPeriodIds = (
         const periodExistsInDB = periodFilter.periodId && allPeriods.some(p => p.id === periodFilter.periodId);
         
         if (!periodExistsInDB) {
-          console.log('⚠️ Período no existe en BD - usando filtro de fechas:', {
-            periodId: periodFilter.periodId,
-            startDate: periodFilter.startDate,
-            endDate: periodFilter.endDate,
-            allPeriodsCount: allPeriods.length
-          });
           return {
             periodIds: [],
             useDateFilter: true,
@@ -147,10 +136,6 @@ const getRelevantPeriodIds = (
     case 'previous':
       // Si hay fechas específicas en el filtro (período calculado), usarlas
       if (periodFilter.startDate && periodFilter.endDate) {
-        console.log('🎯 Previous con fechas calculadas - usando filtro de fechas:', {
-          startDate: periodFilter.startDate,
-          endDate: periodFilter.endDate
-        });
         return {
           periodIds: [],
           useDateFilter: true,
@@ -219,9 +204,7 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   // Memoizar el queryKey para evitar re-renders innecesarios y deduplicar queries
   const queryKey = useMemo(() => {
-    const key = ['loads', user?.id, JSON.stringify(filters?.periodFilter)];
-    console.log('🔑 useLoads - QueryKey:', key);
-    return key;
+    return ['loads', user?.id, JSON.stringify(filters?.periodFilter)];
   }, [user?.id, filters?.periodFilter]);
 
   // console.log('🎯 useLoads hook - Estado antes del query:', {
@@ -247,10 +230,7 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
-      console.log('📥 useLoads - Query ejecutándose con filtros:', filters?.periodFilter);
-      
       if (!user?.id || cacheLoading || !userCompany) {
-        console.log('⏳ useLoads - Usuario/empresa no disponible:', { user: !!user, cacheLoading, userCompany: !!userCompany });
         return [];
       }
 
@@ -264,7 +244,6 @@ export const useLoads = (filters?: LoadsFilters) => {
 
       // Obtener IDs de usuarios de la compañía (conductores)
       if (companyUsers.length === 0) {
-        console.log('⚠️ No hay usuarios en la compañía');
         return [];
       }
 
@@ -278,18 +257,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriods
         );
         
-        console.log('🎯 USE LOADS - Filtro de período completo:', {
-          periodFilter: filters?.periodFilter,
-          periodResult,
-          currentPeriodId: currentPeriod?.id,
-          previousPeriodId: previousPeriod?.id,
-          nextPeriodId: nextPeriod?.id,
-          allPeriodsCount: allPeriods.length
-        });
-        
         // PASO 3: Obtener todas las cargas de la compañía (filtrado por período se hace en cliente)
-        console.log('🔍 DEBUG - companyUsers:', companyUsers);
-        
         const loadsQuery = supabase
           .from('loads')
           .select('*')
@@ -309,10 +277,6 @@ export const useLoads = (filters?: LoadsFilters) => {
         let loads = allLoads || [];
         
         if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
-          console.log('📅 Filtrando por fechas en cliente:', {
-            startDate: periodResult.startDate,
-            endDate: periodResult.endDate
-          });
           loads = loads.filter(load => {
             if (!load.pickup_date && !load.delivery_date) return false;
             const pickupInRange = load.pickup_date && 
@@ -324,12 +288,6 @@ export const useLoads = (filters?: LoadsFilters) => {
             return pickupInRange || deliveryInRange;
           });
         } else if (periodResult.periodIds.length > 0) {
-          console.log('✅ Filtrando por período en cliente:', {
-            periodIds: periodResult.periodIds,
-            startDate: periodResult.startDate,
-            endDate: periodResult.endDate
-          });
-          
           loads = loads.filter(load => {
             // Cargas con período asignado
             if (load.payment_period_id && periodResult.periodIds.includes(load.payment_period_id)) {
@@ -350,15 +308,8 @@ export const useLoads = (filters?: LoadsFilters) => {
             return false;
           });
         } else if (filters?.periodFilter?.type !== 'all') {
-          console.log('❌ No hay período específico - devolviendo lista vacía para:', filters?.periodFilter?.type);
           return [];
         }
-        
-        console.log('📦 Cargas obtenidas de la DB:', {
-          totalCargas: loads?.length || 0,
-          periodIds: loads?.map(l => ({ loadNumber: l.load_number, periodId: l.payment_period_id, driverId: l.driver_user_id, createdBy: l.created_by })) || [],
-          fullLoads: loads
-        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);

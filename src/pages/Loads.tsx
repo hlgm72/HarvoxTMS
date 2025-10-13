@@ -75,7 +75,6 @@ export default function Loads() {
 
   // ✅ SINCRONIZACIÓN CRÍTICA: Mantener ambos estados alineados
   useEffect(() => {
-    console.log('🔄 LOADS PAGE - Sincronizando periodFilter:', periodFilter);
     setFilters(prev => ({
       ...prev,
       periodFilter: periodFilter
@@ -87,13 +86,6 @@ export default function Loads() {
   
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
-  
-  console.log('🚛 Loads - Conductores cargados:', {
-    drivers,
-    driversCount: drivers?.length || 0
-  });
-
-  // console.log('🎯 Loads component - periodFilter state:', periodFilter);
 
   const getPeriodDescription = () => {
     // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
