@@ -20,25 +20,10 @@ export const useRecalculateUserPeriod = () => {
 
       let targetCalculationId: string | null = null;
 
-      // If we have a paymentPeriodId, find the calculation directly
+      // If we have a paymentPeriodId, use it directly as the calculation ID
       if (params.paymentPeriodId) {
-        console.log('🔍 DIAGNÓSTICO: Buscando cálculo con paymentPeriodId:', params.paymentPeriodId);
-        const { data: calculation, error: calcError } = await supabase
-          .from('user_payrolls')
-          .select('id')
-          .eq('user_id', params.userId)
-          .eq('company_payment_period_id', params.paymentPeriodId)
-          .single();
-
-        console.log('🔍 DIAGNÓSTICO: Resultado búsqueda por paymentPeriodId:', { calculation, calcError });
-
-        if (calcError && calcError.code !== 'PGRST116') {
-          console.error('❌ Error finding calculation:', calcError);
-          throw new Error(`Error buscando cálculo: ${calcError.message}`);
-        }
-
-        targetCalculationId = calculation?.id || null;
-        console.log('🔍 DIAGNÓSTICO: targetCalculationId desde paymentPeriodId:', targetCalculationId);
+        console.log('🔍 DIAGNÓSTICO: Usando paymentPeriodId directamente como calculation ID:', params.paymentPeriodId);
+        targetCalculationId = params.paymentPeriodId;
       }
 
       // If we have a loadId but no paymentPeriodId, find it from the load
