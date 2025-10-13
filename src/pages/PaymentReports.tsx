@@ -167,7 +167,8 @@ export default function PaymentReports() {
             period_frequency
           )
         `)
-        .order('created_at', { ascending: false });
+        .eq('company_id', userCompany.company_id)
+        .order('created_at', { ascending: false});
 
       // ✅ CORREGIDO: Determinar si necesitamos filtrar en BD o en cliente
       const needsClientSideFiltering = 
@@ -236,7 +237,7 @@ export default function PaymentReports() {
       
       return sortedData;
     },
-    enabled: !!user && (
+    enabled: !!user && !!userCompany?.company_id && (
       filters.periodFilter.type === 'all' || 
       getFilterPeriodIds.length > 0 || 
       Boolean(filters.periodFilter.startDate && filters.periodFilter.endDate)
