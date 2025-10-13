@@ -41,7 +41,7 @@
     },
     "phases": {
       "essential_info": {
-        "title": "Información Esencial",
+        "title": "Información Básica",
         "description": "Detalles básicos y cliente",
         "card_description": "Ingresa los detalles fundamentales para esta carga"
       },
@@ -104,7 +104,7 @@
       "assignment": {
         "title": "Asignación",
         "description": "Conductor y dispatcher",
-        "card_description": "Asigna personal para manejar esta carga",
+        "card_description": "Asignaciones",
         "card_title": "Asigna personal para manejar esta carga",
         "driver_section": {
           "title": "Conductor (Requerido)",
