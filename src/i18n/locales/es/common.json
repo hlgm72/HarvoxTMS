@@ -142,6 +142,19 @@
     "sync": "Sincronizar",
     "export": "Exportar"
   },
+  "periods": {
+    "current": "Actual",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "all": "Todos los períodos",
+    "specific": "Período específico"
+  },
+  "filters": {
+    "activeFilters": "Filtros activos",
+    "noFilters": "Todos los registros (sin filtros)",
+    "driver": "Conductor",
+    "status": "Estado"
+  },
   "status": {
     "free": "Gratis",
     "included": "Incluido",

@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { FileText, Plus, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
+import { FileText, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
-import { formatPaymentPeriod, formatDateAuto, formatCurrency, formatDateSafe } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateAuto, formatCurrency, formatDateSafe, formatDetailedPaymentPeriod, formatPaymentPeriodBadge } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
@@ -22,6 +22,9 @@ import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
 import { FinancialLockWarning, FinancialLockIndicator } from "@/components/payments/FinancialLockWarning";
 import { formatPeriodLabel } from "@/utils/periodUtils";
+import { usePaymentReportsStats } from "@/hooks/usePaymentReportsStats";
+import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
+import { useCompanyFinancialData } from "@/hooks/useSecureCompanyData";
 
 export default function PaymentReports() {
   const { t } = useTranslation(['payments', 'common']);
@@ -58,6 +61,17 @@ export default function PaymentReports() {
   
   // Estados de carga para export
   const [exportLoading, setExportLoading] = useState(false);
+
+  // Obtener períodos calculados y datos de compañía para formateo de filtros
+  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
+  const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
+
+  // Hook de estadísticas con filtros aplicados
+  const { data: stats, isLoading: statsLoading } = usePaymentReportsStats({
+    driverId: filters.driverId,
+    status: filters.status,
+    periodFilter: filters.periodFilter
+  });
 
   // Handler para exportar datos
   const handleExport = async (format: string) => {
@@ -376,18 +390,113 @@ export default function PaymentReports() {
     refetch();
   };
 
+  // ✅ Generar descripción de filtros activos
+  const getFilterDescription = () => {
+    const parts: string[] = [];
+    
+    // Filtro de período
+    if (filters.periodFilter) {
+      const pf = filters.periodFilter as any;
+      
+      // Si hay un label, usarlo directamente (para this_month, this_quarter, this_year, etc.)
+      if (pf.label) {
+        parts.push(pf.label);
+      } else if (pf.type === 'current') {
+        // Usar el mismo formato que PeriodFilter para "Current"
+        const displayCurrentPeriod = calculatedPeriods?.current;
+        if (displayCurrentPeriod) {
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayCurrentPeriod.period_start_date, 
+            displayCurrentPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
+          parts.push(`Current: ${periodNumber} (${dateRange})`);
+        } else {
+          parts.push(t("common:periods.current"));
+        }
+      } else if (pf.type === 'previous') {
+        // Usar el mismo formato que PeriodFilter para "Previous"
+        const displayPreviousPeriod = calculatedPeriods?.previous;
+        if (displayPreviousPeriod) {
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayPreviousPeriod.period_start_date, 
+            displayPreviousPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+          parts.push(`Previous: ${periodNumber} (${dateRange})`);
+        } else {
+          parts.push(t("common:periods.previous"));
+        }
+      } else if (pf.type === 'specific' && pf.periodId) {
+        parts.push(t("common:periods.specific"));
+      } else if (pf.type === 'all') {
+        parts.push(t("common:periods.all"));
+      }
+    }
+    
+    // Filtro de conductor
+    if (filters.driverId && filters.driverId !== 'all') {
+      const driver = drivers.find(d => d.user_id === filters.driverId);
+      if (driver) {
+        parts.push(`${t("common:filters.driver")}: ${driver.first_name} ${driver.last_name}`);
+      }
+    }
+    
+    // Filtro de estado
+    if (filters.status && filters.status !== 'all') {
+      const statusLabels: Record<string, string> = {
+        pending: t('reports.status.pending'),
+        calculated: t('reports.status.calculated'),
+        paid: t('reports.status.paid'),
+        failed: t('reports.status.failed'),
+        negative: t('reports.status.negative_balance'),
+        approved: t('reports.status.approved')
+      };
+      parts.push(`${t("common:filters.status")}: ${statusLabels[filters.status] || filters.status}`);
+    }
+    
+    if (parts.length === 0) {
+      return t("common:filters.noFilters");
+    }
+    
+    return parts.join(' • ');
+  };
+
+  // ✅ Generar subtitle dinámico con estadísticas y filtros
+  const getSubtitle = () => {
+    if (statsLoading || !stats) {
+      return <div>{t("reports.loading")}</div>;
+    }
+
+    const { totalReports, totalDrivers, totalNetPayment, pendingReports } = stats;
+    
+    // Primera línea: estadísticas
+    const statsLine = `${totalReports} ${t("reports.stats.total_reports")} • ${totalDrivers} ${t("reports.stats.drivers")} • ${formatCurrency(totalNetPayment)} ${t("reports.stats.total_net_payment")} • ${pendingReports} ${t("reports.stats.pending")}`;
+    
+    // Segunda línea: filtros activos
+    const filterDescription = getFilterDescription();
+    
+    return (
+      <>
+        <div>{statsLine}</div>
+        <div className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
+          <span className="font-medium">{t("common:filters.activeFilters")}:</span>
+          <span>{filterDescription}</span>
+        </div>
+      </>
+    );
+  };
+
   return (
     <>
       <PageToolbar 
         icon={FileText}
         title={t('reports.title')}
-        subtitle={t('reports.subtitle')}
-        actions={
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            {t('reports.generate_bulk')}
-          </Button>
-        }
+        subtitle={getSubtitle()}
       />
 
         <div className="p-2 md:p-4 space-y-6">
