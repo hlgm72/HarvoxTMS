@@ -524,7 +524,7 @@
       }
     },
     "fuel_details": {
-      "date": "Fecha",
+      "date": "Fecha de Pago",
       "station": "Estación",
       "location": "Ubicación",
       "gallons": "Galones",
