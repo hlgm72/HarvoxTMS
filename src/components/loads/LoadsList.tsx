@@ -140,7 +140,6 @@ const statusColors = {
 const getStatusLabel = (status: string, t: any) => {
   // Clean the status and use proper translations
   const cleanStatus = status.trim();
-  console.log('🔍 LoadsList getStatusLabel:', { originalStatus: status, cleanStatus, translationResult: t(`common:status.${cleanStatus}`) });
   
   // Use translation system consistently
   return t(`common:status.${cleanStatus}`) || cleanStatus;

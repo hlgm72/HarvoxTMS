@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLogger, business } from '@/lib/logger';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -32,7 +31,6 @@ interface PeriodFilterProps {
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
   const { t, i18n } = useTranslation(['loads', 'common']);
   const [open, setOpen] = useState(false);
-  const log = useLogger('PeriodFilter');
   
   // Importar el useCompanyCache para obtener el company_id
   const { userCompany } = useCompanyCache();
@@ -185,21 +183,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   };
 
   const handleOptionSelect = (option: PeriodFilterValue) => {
-    // Log solo en desarrollo - no irá a Sentry en producción
-    log.debug('Period filter selection', { 
-      type: option.type, 
-      periodId: option.periodId,
-      label: option.label 
-    });
-    
-    // Debug logs removed
-    
-    // Log de negocio para analytics (desarrollo solamente)
-    business.payment('period_filter_changed', {
-      filterType: option.type,
-      periodId: option.periodId
-    });
-    
     onChange(option);
     setOpen(false);
   };
