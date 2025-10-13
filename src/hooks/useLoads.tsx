@@ -261,7 +261,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         const loadsQuery = supabase
           .from('loads')
           .select('*')
-          .or(`driver_user_id.in.(${companyUsers.join(',')}),driver_user_id.is.null.and.created_by.in.(${companyUsers.join(',')})`)
+          .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
           .limit(500); // Límite generoso para incluir todas las cargas relevantes
