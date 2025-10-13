@@ -6,13 +6,13 @@ import { z } from 'zod';
 import { LoadData } from './useLoadData';
 
 const loadFormSchema = z.object({
-  client_id: z.string().min(1, "Selecciona un cliente"),
+  client_id: z.string().optional(),
   contact_id: z.string().optional(),
   load_number: z.string().min(1, "El número de carga es requerido"),
   po_number: z.string().optional(),
   total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
   pu_number: z.string().optional(),
-  commodity: z.string().min(1, "Especifica el commodity"),
+  commodity: z.string().optional(),
   weight_lbs: z.number().optional(),
   customer_name: z.string().optional(),
   notes: z.string().optional(),
