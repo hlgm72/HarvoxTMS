@@ -333,6 +333,18 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     </Button>
 
                   <Button
+                    variant={value.type === 'this_month' ? 'default' : 'ghost'}
+                    className="w-full justify-start"
+                    onClick={() => handleDateRangeSelect('this_month')}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    {(() => {
+                      const now = new Date();
+                      return `${formatMonthName(now)} ${now.getFullYear()}`;
+                    })()}
+                  </Button>
+
+                  <Button
                     variant={value.type === 'all' ? 'default' : 'ghost'}
                     className="w-full justify-start"
                     onClick={() => handleOptionSelect({ type: 'all' })}
