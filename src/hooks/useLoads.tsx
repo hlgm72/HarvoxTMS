@@ -276,6 +276,13 @@ export const useLoads = (filters?: LoadsFilters) => {
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
         
+        console.log('🔍 useLoads - Filtrado de período:', {
+          totalLoads: loads.length,
+          periodResult,
+          loadsWithPeriod: loads.filter(l => l.payment_period_id).length,
+          loadsWithoutDriver: loads.filter(l => !l.driver_user_id).length
+        });
+        
         if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
           loads = loads.filter(load => {
             if (!load.pickup_date && !load.delivery_date) return false;
@@ -291,6 +298,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           loads = loads.filter(load => {
             // Cargas con período asignado
             if (load.payment_period_id && periodResult.periodIds.includes(load.payment_period_id)) {
+              console.log(`✅ Load ${load.load_number} incluida - payment_period_id match`);
               return true;
             }
             
@@ -302,14 +310,22 @@ export const useLoads = (filters?: LoadsFilters) => {
               const deliveryInRange = load.delivery_date && 
                 load.delivery_date >= periodResult.startDate && 
                 load.delivery_date <= periodResult.endDate;
-              return pickupInRange || deliveryInRange;
+              const included = pickupInRange || deliveryInRange;
+              console.log(`${included ? '✅' : '❌'} Load ${load.load_number} - sin período, fecha en rango: ${included}`);
+              return included;
             }
             
+            console.log(`❌ Load ${load.load_number} excluida - payment_period_id: ${load.payment_period_id}`);
             return false;
           });
         } else if (filters?.periodFilter?.type !== 'all') {
           return [];
         }
+        
+        console.log('🎯 useLoads - Resultado del filtrado:', {
+          loadsAfterFilter: loads.length,
+          loadNumbers: loads.map(l => l.load_number)
+        });
 
         if (loadsError) {
           console.error('Error obteniendo cargas:', loadsError);
