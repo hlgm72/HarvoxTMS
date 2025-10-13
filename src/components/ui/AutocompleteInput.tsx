@@ -90,15 +90,11 @@ export function AutocompleteInput({
         className={className}
       />
       
-      {isOpen && (commodities.length > 0 || isLoading) && (
+      {isOpen && commodities.length > 0 && (
         <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-hidden">
           <Command className="border-0">
             <CommandList>
-              {isLoading ? (
-                <div className="p-2 text-sm text-muted-foreground text-center">
-                  Buscando commodities...
-                </div>
-              ) : commodities.length === 0 ? (
+              {commodities.length === 0 ? (
                 <CommandEmpty>
                   <div className="p-2 text-sm text-muted-foreground text-center">
                     No se encontraron commodities
