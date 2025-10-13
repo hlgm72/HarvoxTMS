@@ -48,7 +48,7 @@
       "route_details": {
         "title": "Detalles de Ruta", 
         "description": "Ubicaciones y horarios",
-        "card_description": "Detalles de ruta",
+        "card_description": "Configura las ubicaciones de recogida y entrega",
         "card_title": "Detalles de ruta",
         "valid_configuration": "Configuración válida de ruta",
         "stop_number": "Parada {{number}}",
