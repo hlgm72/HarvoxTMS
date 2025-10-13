@@ -2,8 +2,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function RecentActivity() {
-  console.log('📊 RecentActivity rendering with simplified implementation');
-  
   return (
     <Card className="h-[400px]">
       <CardHeader>

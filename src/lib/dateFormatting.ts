@@ -80,13 +80,6 @@ export const formatDetailedPaymentPeriod = (
       // ✅ USAR FUNCIÓN UNIFICADA para calcular semana
       const weekNumber = calculateWeekNumberFromString(startDate);
       
-      console.log('🔍 formatDetailedPaymentPeriod - Week calculation:', { 
-        weekNumber, 
-        year,
-        startDate,
-        dateObj: dateObj.toLocaleDateString()
-      });
-      
       periodLabel = `Week ${weekNumber}/${year}`;
     } else {
       return dateRange;
