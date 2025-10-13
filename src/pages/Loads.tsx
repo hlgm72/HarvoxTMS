@@ -50,28 +50,19 @@ export default function Loads() {
   useEffect(() => {
     // Solo inicializar si el periodo actual aún no tiene datos
     if (periodFilter.type === 'current' && !periodFilter.periodId && !periodFilter.startDate) {
-      const displayPeriod = currentPeriod || calculatedPeriods?.current;
+      // SIEMPRE usar período calculado para la inicialización
+      const displayPeriod = calculatedPeriods?.current;
       
       if (displayPeriod) {
-        if (currentPeriod?.company_payment_period_id) {
-          // Si hay período actual en BD, usar el ID del company_payment_period
-          setPeriodFilter({
-            type: 'current',
-            periodId: currentPeriod.company_payment_period_id,
-            startDate: currentPeriod.period_start_date,
-            endDate: currentPeriod.period_end_date
-          });
-        } else {
-          // Si solo hay período calculado, usar fechas sin ID
-          setPeriodFilter({
-            type: 'current',
-            startDate: displayPeriod.period_start_date,
-            endDate: displayPeriod.period_end_date
-          });
-        }
+        // Usar solo fechas calculadas, sin ID de BD
+        setPeriodFilter({
+          type: 'current',
+          startDate: displayPeriod.period_start_date,
+          endDate: displayPeriod.period_end_date
+        });
       }
     }
-  }, [currentPeriod, calculatedPeriods, periodFilter.type, periodFilter.periodId, periodFilter.startDate]);
+  }, [calculatedPeriods, periodFilter.type, periodFilter.periodId, periodFilter.startDate]);
 
   // ✅ SINCRONIZACIÓN CRÍTICA: Mantener ambos estados alineados
   useEffect(() => {
