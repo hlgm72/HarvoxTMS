@@ -5,7 +5,7 @@ import { Plus, Package, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
 import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
-import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
+import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
@@ -202,31 +202,24 @@ export default function Loads() {
       </div>
 
       {/* Floating Actions */}
-      <UniversalFloatingActions
-        contextKey="loads"
-        filters={filters}
+      <LoadsFloatingActions
+        filters={{
+          status: filters.status,
+          driver: filters.driverId,
+          broker: filters.brokerId,
+          dateRange: { from: undefined, to: undefined }
+        }}
+        periodFilter={periodFilter}
         onFiltersChange={(newFilters) => {
-          setFilters(newFilters);
-          // Sincronizar periodFilter separado para compatibilidad
-          if (newFilters.periodFilter) {
-            setPeriodFilter(newFilters.periodFilter);
-          }
+          setFilters(prev => ({
+            ...prev,
+            status: newFilters.status,
+            driverId: newFilters.driver,
+            brokerId: newFilters.broker
+          }));
         }}
-        additionalData={{
-          stats: loadsStats ? {
-            totalLoads: loadsStats.totalActive || 0,
-            totalRevenue: loadsStats.totalAmount || 0,
-            activeDrivers: loadsStats.pendingAssignment || 0
-          } : undefined,
-          drivers: drivers?.map(driver => ({
-            user_id: driver.user_id,
-            first_name: driver.label.split(' ')[0] || '',
-            last_name: driver.label.split(' ').slice(1).join(' ') || ''
-          })) || []
-        }}
-        onExportHandler={async (format) => {
-          console.log(`Exportando loads como ${format}`);
-          // TODO: Implementar export
+        onPeriodFilterChange={(newPeriodFilter) => {
+          setPeriodFilter(newPeriodFilter);
         }}
       />
     </>
