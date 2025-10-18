@@ -179,6 +179,11 @@ export function EventualDeductionDialog({
 
         // Obtenemos los períodos de usuario para el conductor en la fecha del gasto
         console.log('Step 2: Getting user periods for date...');
+        
+        // Convertir expenseDate a formato YYYY-MM-DD para la comparación
+        const expenseDateStr = expenseDate.toISOString().split('T')[0];
+        console.log('Expense date for filtering:', expenseDateStr);
+        
         const { data: userPeriods, error: periodsError } = await supabase
           .from('user_payrolls')
           .select(`
@@ -193,6 +198,23 @@ export function EventualDeductionDialog({
           .eq('user_id', formData.user_id)
           .in('status', ['open', 'processing'])
           .order('created_at', { ascending: false});
+        
+        if (periodsError) {
+          console.error('Error fetching user periods:', periodsError);
+          return [];
+        }
+        
+        // Filtrar manualmente los períodos que contienen la fecha del gasto
+        const filteredPeriods = (userPeriods || []).filter(period => {
+          if (!period.period) return false;
+          const startDate = period.period.period_start_date;
+          const endDate = period.period.period_end_date;
+          return expenseDateStr >= startDate && expenseDateStr <= endDate;
+        });
+        
+        console.log('User periods found:', userPeriods?.length || 0, 'Filtered:', filteredPeriods.length);
+        
+        return filteredPeriods;
 
         if (periodsError) {
           console.error('Error fetching user periods:', periodsError);
