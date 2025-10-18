@@ -4,23 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, Filter, X, User, Clock, Car, Fuel } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
-import { formatShortDate, formatMediumDate } from '@/lib/dateFormatting';
+import { CalendarIcon, Filter, X, User, Clock, Car } from 'lucide-react';
+import { formatShortDate } from '@/lib/dateFormatting';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
+import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 export interface FuelFiltersType {
+  periodId: string;
   driverId: string;
   status: string;
   vehicleId: string;
-  dateRange: {
-    from?: Date;
-    to?: Date;
-  };
 }
 
 interface FuelFiltersProps {
@@ -32,6 +28,9 @@ interface FuelFiltersProps {
 export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelFiltersProps) {
   const { drivers = [] } = useCompanyDrivers();
   const { geotabVehicles: vehicles = [] } = useGeotabVehicles();
+  const { user } = useAuth();
+  const companyId = user?.user_metadata?.company_id;
+  const { data: paymentPeriods = [] } = useCompanyPaymentPeriods(companyId);
   const { t } = useTranslation(['fuel', 'common']);
 
   const handleFilterChange = (key: keyof FuelFiltersType, value: any) => {
@@ -43,19 +42,19 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
 
   const clearFilters = () => {
     onFiltersChange({
+      periodId: 'all',
       driverId: 'all',
       status: 'all',
-      vehicleId: 'all',
-      dateRange: { from: undefined, to: undefined }
+      vehicleId: 'all'
     });
   };
 
   const getActiveFiltersCount = () => {
     let count = 0;
+    if (filters.periodId !== 'all') count++;
     if (filters.driverId !== 'all') count++;
     if (filters.status !== 'all') count++;
     if (filters.vehicleId !== 'all') count++;
-    if (filters.dateRange.from || filters.dateRange.to) count++;
     return count;
   };
 
@@ -63,6 +62,27 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
 
   return compact ? (
     <div className="space-y-4">
+      {/* Payment Period */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">{t('fuel:filters.payment_period')}</label>
+        <Select
+          value={filters.periodId}
+          onValueChange={(value) => handleFilterChange('periodId', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('fuel:filters.select_period')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('fuel:filters.all_periods')}</SelectItem>
+            {paymentPeriods.map((period) => (
+              <SelectItem key={period.company_payment_period_id} value={period.company_payment_period_id}>
+                {formatShortDate(new Date(period.period_start_date))} - {formatShortDate(new Date(period.period_end_date))}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Conductor */}
       <div>
         <label className="text-sm font-medium mb-2 block">{t('fuel:filters.driver')}</label>
@@ -128,55 +148,6 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
           </SelectContent>
         </Select>
       </div>
-
-      {/* Rango de Fechas */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">{t('fuel:filters.date_range')}</label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !filters.dateRange.from && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.dateRange.from ? (
-                filters.dateRange.to ? (
-                  <>
-                    {formatShortDate(filters.dateRange.from)} -{" "}
-                    {formatShortDate(filters.dateRange.to)}
-                  </>
-                ) : (
-                  formatMediumDate(filters.dateRange.from)
-                )
-              ) : (
-                <span>{t('fuel:filters.select_range')}</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={filters.dateRange.from}
-              selected={{
-                from: filters.dateRange.from,
-                to: filters.dateRange.to,
-              }}
-              onSelect={(range) => {
-                handleFilterChange('dateRange', {
-                  from: range?.from,
-                  to: range?.to,
-                });
-              }}
-              numberOfMonths={1}
-              className="p-3 pointer-events-auto"
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
     </div>
   ) : (
     <Card>
@@ -201,6 +172,30 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Payment Period */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center gap-1">
+              <CalendarIcon className="h-4 w-4" />
+              {t('fuel:filters.payment_period')}
+            </label>
+            <Select
+              value={filters.periodId}
+              onValueChange={(value) => handleFilterChange('periodId', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t('fuel:filters.select_period')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('fuel:filters.all_periods')}</SelectItem>
+                {paymentPeriods.map((period) => (
+                  <SelectItem key={period.company_payment_period_id} value={period.company_payment_period_id}>
+                    {formatShortDate(new Date(period.period_start_date))} - {formatShortDate(new Date(period.period_end_date))}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Conductor */}
           <div className="space-y-2">
             <label className="text-sm font-medium flex items-center gap-1">
@@ -278,63 +273,29 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
               </SelectContent>
             </Select>
           </div>
-
-          {/* Rango de Fechas */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-1">
-              <CalendarIcon className="h-4 w-4" />
-              {t('fuel:filters.date_range')}
-            </label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !filters.dateRange.from && !filters.dateRange.to && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {filters.dateRange.from ? (
-                    filters.dateRange.to ? (
-                      <>
-                        {formatShortDate(filters.dateRange.from)} -{" "}
-                        {formatShortDate(filters.dateRange.to)}
-                      </>
-                    ) : (
-                      formatMediumDate(filters.dateRange.from)
-                    )
-                  ) : (
-                    t('fuel:filters.select_dates')
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={filters.dateRange.from}
-                  selected={{
-                    from: filters.dateRange.from,
-                    to: filters.dateRange.to,
-                  }}
-                  onSelect={(range) => {
-                    handleFilterChange('dateRange', {
-                      from: range?.from,
-                      to: range?.to,
-                    });
-                  }}
-                  numberOfMonths={2}
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
         </div>
 
         {/* Filtros Activos */}
         {activeFiltersCount > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t">
+            {filters.periodId !== 'all' && (
+              <Badge variant="outline" className="gap-1">
+                <CalendarIcon className="h-3 w-3" />
+                {t('fuel:filters.payment_period')}: {
+                  (() => {
+                    const period = paymentPeriods.find(p => p.company_payment_period_id === filters.periodId);
+                    return period ? `${formatShortDate(new Date(period.period_start_date))} - ${formatShortDate(new Date(period.period_end_date))}` : t('fuel:filters.unknown');
+                  })()
+                }
+                <button
+                  onClick={() => handleFilterChange('periodId', 'all')}
+                  className="ml-1 hover:bg-muted rounded-sm"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+
             {filters.driverId !== 'all' && (
               <Badge variant="outline" className="gap-1">
                 <User className="h-3 w-3" />
@@ -367,20 +328,6 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
                 {t('fuel:filters.vehicle')}: {vehicles.find(v => v.id === filters.vehicleId)?.name || t('fuel:filters.unknown')}
                 <button
                   onClick={() => handleFilterChange('vehicleId', 'all')}
-                  className="ml-1 hover:bg-muted rounded-sm"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            )}
-
-            {(filters.dateRange.from || filters.dateRange.to) && (
-              <Badge variant="outline" className="gap-1">
-                <CalendarIcon className="h-3 w-3" />
-                {t('fuel:filters.date_range')}: {filters.dateRange.from && formatShortDate(filters.dateRange.from)}
-                {filters.dateRange.to && ` - ${formatShortDate(filters.dateRange.to)}`}
-                <button
-                  onClick={() => handleFilterChange('dateRange', { from: undefined, to: undefined })}
                   className="ml-1 hover:bg-muted rounded-sm"
                 >
                   <X className="h-3 w-3" />

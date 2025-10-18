@@ -283,10 +283,10 @@ export default function FuelManagement() {
       {activeTab === 'expenses' && (
         <FuelFloatingActions
           filters={{
+            periodId: 'all',
             driverId: filters.driverId,
             status: filters.status,
-            vehicleId: filters.vehicleId,
-            dateRange: { from: undefined, to: undefined }
+            vehicleId: filters.vehicleId
           }}
           onFiltersChange={(newFilters) => {
             setFilters(prev => ({

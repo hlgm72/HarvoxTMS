@@ -19,16 +19,16 @@ export function FuelFiltersSheet({ filters, onFiltersChange, children }: FuelFil
     if (filters.driverId && filters.driverId !== 'all') count++;
     if (filters.status && filters.status !== 'all') count++;
     if (filters.vehicleId && filters.vehicleId !== 'all') count++;
-    if (filters.dateRange.from || filters.dateRange.to) count++;
+    if (filters.periodId && filters.periodId !== 'all') count++;
     return count;
   };
 
   const clearAllFilters = () => {
     onFiltersChange({
+      periodId: 'all',
       driverId: 'all',
       status: 'all',
-      vehicleId: 'all',
-      dateRange: { from: undefined, to: undefined }
+      vehicleId: 'all'
     });
   };
 
