@@ -81,17 +81,17 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
   const tabs: FloatingActionTab[] = [
     {
       id: 'filters',
-      label: t('floating_actions.filters.title'),
+      label: t('fuel:floating_actions.filters.title'),
       icon: Filter,
       badge: hasActiveFilters ? '●' : undefined,
       content: (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium">{t('floating_actions.filters.applied_filters')}</h3>
+                  <h3 className="text-sm font-medium">{t('fuel:floating_actions.filters.applied_filters')}</h3>
                   {hasActiveFilters && (
                     <Button variant="outline" size="sm" onClick={clearAllFilters}>
                       <X className="h-3 w-3 mr-1" />
-                      {t('floating_actions.filters.clear')}
+                      {t('fuel:floating_actions.filters.clear')}
                     </Button>
                   )}
                 </div>
