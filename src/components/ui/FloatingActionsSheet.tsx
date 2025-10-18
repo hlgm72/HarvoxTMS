@@ -45,7 +45,7 @@ export function FloatingActionsSheet({
             </SheetDescription>
           </SheetHeader>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}>
+            <TabsList className="grid grid-cols-2 w-full h-auto gap-1">
               {tabs.map((tab) => (
                 <TabsTrigger 
                   key={tab.id} 
