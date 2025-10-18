@@ -438,75 +438,20 @@ export function EventualDeductionDialog({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <div className="p-4 space-y-4">
-                      {/* Selectores de mes y año */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <Select
-                          value={expenseDate ? formatMonthName(expenseDate) : ""}
-                          onValueChange={(monthName) => {
-                            const monthIndex = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                                              'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
-                                              .indexOf(monthName.toLowerCase());
-                            if (monthIndex !== -1) {
-                              const currentYear = expenseDate?.getFullYear() || new Date().getFullYear();
-                              const currentDay = expenseDate?.getDate() || 1;
-                              setExpenseDate(new Date(currentYear, monthIndex, currentDay));
-                            }
-                          }}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder={t("deductions.period_dialog.month")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="enero">{t("deductions.months.january")}</SelectItem>
-                            <SelectItem value="febrero">{t("deductions.months.february")}</SelectItem>
-                            <SelectItem value="marzo">{t("deductions.months.march")}</SelectItem>
-                            <SelectItem value="abril">{t("deductions.months.april")}</SelectItem>
-                            <SelectItem value="mayo">{t("deductions.months.may")}</SelectItem>
-                            <SelectItem value="junio">{t("deductions.months.june")}</SelectItem>
-                            <SelectItem value="julio">{t("deductions.months.july")}</SelectItem>
-                            <SelectItem value="agosto">{t("deductions.months.august")}</SelectItem>
-                            <SelectItem value="septiembre">{t("deductions.months.september")}</SelectItem>
-                            <SelectItem value="octubre">{t("deductions.months.october")}</SelectItem>
-                            <SelectItem value="noviembre">{t("deductions.months.november")}</SelectItem>
-                            <SelectItem value="diciembre">{t("deductions.months.december")}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        
-                        <Select
-                          value={expenseDate?.getFullYear()?.toString() || ""}
-                          onValueChange={(year) => {
-                            const currentMonth = expenseDate?.getMonth() || 0;
-                            const currentDay = expenseDate?.getDate() || 1;
-                            setExpenseDate(new Date(parseInt(year), currentMonth, currentDay));
-                          }}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder={t("deductions.placeholders.year")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="2024">2024</SelectItem>
-                            <SelectItem value="2025">2025</SelectItem>
-                            <SelectItem value="2026">2026</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Calendar */}
-                      <Calendar
-                        mode="single"
-                        selected={expenseDate}
-                        onSelect={(date) => {
-                          if (date) {
-                            setExpenseDate(date);
-                            setIsDatePickerOpen(false);
-                          }
-                        }}
-                        month={expenseDate}
-                        onMonthChange={setExpenseDate}
-                        className="p-0 pointer-events-auto"
-                      />
-                    </div>
+                    <Calendar
+                      mode="single"
+                      selected={expenseDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setExpenseDate(date);
+                          setIsDatePickerOpen(false);
+                        }
+                      }}
+                      month={expenseDate}
+                      onMonthChange={setExpenseDate}
+                      captionLayout="dropdown-buttons"
+                      className="p-3 pointer-events-auto"
+                    />
                   </PopoverContent>
                 </Popover>
                 
