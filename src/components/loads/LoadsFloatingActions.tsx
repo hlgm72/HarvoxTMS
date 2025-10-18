@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { FloatingActionsSheet, FloatingActionTab } from "@/components/ui/FloatingActionsSheet";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
@@ -8,7 +8,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { ExpandableFloatingActions } from "@/components/ui/ExpandableFloatingActions";
 import { useDriversList } from "@/hooks/useDriversList";
 import { 
   Filter, 
@@ -18,13 +17,10 @@ import {
   Settings, 
   BarChart3,
   FileText,
-  FileSpreadsheet,
-  Plus,
-  Clock,
-  CalendarDays
+  FileSpreadsheet
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from "date-fns";
-import { formatShortDate, formatMediumDate, formatCurrency, formatDateInUserTimeZone, formatMonthName } from '@/lib/dateFormatting';
+import { formatCurrency, formatDateInUserTimeZone, formatMonthName, formatShortDate, formatMediumDate } from '@/lib/dateFormatting';
 import { cn } from "@/lib/utils";
 
 
@@ -48,8 +44,6 @@ interface LoadsFloatingActionsProps {
 
 export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, onPeriodFilterChange }: LoadsFloatingActionsProps) {
   const { t } = useTranslation(['loads', 'common']);
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats'>('filters');
   
   const statusOptions = [
     { value: "all", label: t('floating_actions.filters.options.status.all') },
@@ -120,11 +114,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
     pending: 44
   };
 
-  const openSheet = (tab: 'filters' | 'export' | 'view' | 'stats') => {
-    setActiveTab(tab);
-    setIsOpen(true);
-  };
-
   const getPeriodLabel = (type?: string) => {
     switch (type) {
       case 'current': return t('periods.current');
@@ -143,65 +132,14 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
     }
   };
 
-  // Definir las acciones para el componente expandible
-  const floatingActions = [
+  // Define tabs for FloatingActionsSheet
+  const tabs: FloatingActionTab[] = [
     {
+      id: 'filters',
+      label: t('floating_actions.filters.title'),
       icon: Filter,
-      label: hasActiveFilters ? t('floating_actions.filters.filters_active') : t('floating_actions.filters.filters'),
-      onClick: () => openSheet('filters'),
-      variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
-      className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
-    },
-    {
-      icon: Download,
-      label: t('floating_actions.export.export'),
-      onClick: () => openSheet('export'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    },
-    {
-      icon: Settings,
-      label: t('floating_actions.view.view'),
-      onClick: () => openSheet('view'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    },
-    {
-      icon: BarChart3,
-      label: t('floating_actions.stats.statistics'),
-      onClick: () => openSheet('stats'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    }
-  ];
-
-  return (
-    <>
-      {/* Botones Flotantes Expandibles */}
-      <ExpandableFloatingActions
-        actions={floatingActions}
-        mainLabel={t('floating_actions.title')}
-        position="bottom-right"
-      />
-
-      {/* Sheet Modal */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-[400px] sm:w-[440px]">
-          <SheetHeader>
-            <SheetTitle>
-              {activeTab === 'filters' && t('floating_actions.filters.title')}
-              {activeTab === 'export' && t('floating_actions.export.title')}
-              {activeTab === 'view' && t('floating_actions.view.title')}
-              {activeTab === 'stats' && t('floating_actions.stats.title')}
-            </SheetTitle>
-            <SheetDescription>
-              {activeTab === 'filters' && t('floating_actions.filters.description')}
-              {activeTab === 'export' && t('floating_actions.export.description')}
-              {activeTab === 'view' && t('floating_actions.view.description')}
-              {activeTab === 'stats' && t('floating_actions.stats.description')}
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="mt-6">
-            {/* Filters Content */}
-            {activeTab === 'filters' && (
+      badge: hasActiveFilters ? '●' : undefined,
+      content: (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium">{t('floating_actions.filters.applied_filters')}</h3>
@@ -342,9 +280,8 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                           newFilter.label = dateRange.label;
                         }
                         
-                        // Close the sheet after selection and trigger change
+                        // Trigger change
                         onPeriodFilterChange?.(newFilter);
-                        setIsOpen(false);
                       }}
                     >
                       <SelectTrigger>
@@ -414,10 +351,13 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Export Content */}
-            {activeTab === 'export' && (
+      )
+    },
+    {
+      id: 'export',
+      label: t('floating_actions.export.title'),
+      icon: Download,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.export.title')}</h3>
@@ -453,10 +393,13 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* View Content */}
-            {activeTab === 'view' && (
+      )
+    },
+    {
+      id: 'view',
+      label: t('floating_actions.view.title'),
+      icon: Settings,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.title')}</h3>
@@ -534,10 +477,13 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Stats Content */}
-            {activeTab === 'stats' && (
+      )
+    },
+    {
+      id: 'stats',
+      label: t('floating_actions.stats.title'),
+      icon: BarChart3,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.title')}</h3>
@@ -597,10 +543,15 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
+      )
+    }
+  ];
+
+  return (
+    <FloatingActionsSheet 
+      tabs={tabs}
+      buttonLabel={t('floating_actions.title')}
+      defaultTab="filters"
+    />
   );
 }
