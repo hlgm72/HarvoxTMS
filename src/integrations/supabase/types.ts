@@ -4240,6 +4240,10 @@ export type Database = {
         Args: { target_period_id: string; target_user_id: string }
         Returns: boolean
       }
+      is_payment_period_empty: {
+        Args: { period_id: string }
+        Returns: boolean
+      }
       is_period_locked: {
         Args: { period_id: string }
         Returns: boolean
