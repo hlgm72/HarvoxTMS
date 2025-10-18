@@ -151,7 +151,6 @@
   },
   "filters": {
     "activeFilters": "Filtros activos",
-    "active_filters": "Filtros Activos",
     "noFilters": "Todos los registros (sin filtros)",
     "driver": "Conductor",
     "status": "Estado",

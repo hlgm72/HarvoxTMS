@@ -156,7 +156,6 @@
   },
   "filters": {
     "activeFilters": "Active filters",
-    "active_filters": "Active Filters",
     "noFilters": "All records (no filters)",
     "driver": "Driver",
     "status": "Status",
