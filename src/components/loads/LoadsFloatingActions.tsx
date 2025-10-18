@@ -550,7 +550,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
   return (
     <FloatingActionsSheet 
       tabs={tabs}
-      buttonLabel={t('floating_actions.title')}
+      buttonLabel="Actions"
       defaultTab="filters"
     />
   );
