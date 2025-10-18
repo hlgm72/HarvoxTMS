@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Fuel, CreditCard, FileText, RefreshCw } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
@@ -8,22 +9,27 @@ import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
 import { FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { PeriodFilterValue } from '@/components/loads/PeriodFilter';
-import { CurrentFiltersDisplay } from '@/components/fuel/CurrentFiltersDisplay';
-import { CONTEXT_CONFIGS } from '@/components/ui/filterConfigs';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { FuelExpenseDialog } from '@/components/fuel/FuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { FleetOneSync } from '@/components/fuel/FleetOneSync';
-import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatCurrency, formatPaymentPeriodBadge, formatDetailedPaymentPeriod } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { useConsolidatedDrivers } from '@/hooks/useConsolidatedDrivers';
 import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
 import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
+import { useFuelStats } from '@/hooks/useFuelStats';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
+import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 
 export default function FuelManagement() {
   const { t } = useTranslation(['fuel', 'common']);
+  
+  // Obtener compañía y datos financieros
+  const { userCompany } = useCompanyCache();
+  const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   
   // Obtener datos necesarios para filtros
   const { drivers = [], loading: driversLoading } = useConsolidatedDrivers();
@@ -193,6 +199,114 @@ export default function FuelManagement() {
 
   console.log('🔍 Query filters aplicados:', queryFilters);
 
+  // Obtener estadísticas con los filtros aplicados
+  const { data: stats, isLoading: statsLoading } = useFuelStats(queryFilters);
+
+  // ✅ Generar descripción de filtros activos
+  const getFilterDescription = () => {
+    const parts: string[] = [];
+    
+    // Filtro de período
+    if (filters.periodFilter) {
+      const pf = filters.periodFilter as any;
+      
+      // ✅ PRIMERO verificar current/previous para SIEMPRE usar cálculo dinámico
+      if (pf.type === 'current') {
+        // ✅ SIEMPRE usar período calculado dinámico
+        const displayCurrentPeriod = calculatedPeriods?.current;
+        if (displayCurrentPeriod) {
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayCurrentPeriod.period_start_date, 
+            displayCurrentPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
+          parts.push(`Current: ${periodNumber} (${dateRange})`);
+        } else {
+          parts.push(t("common:periods.current"));
+        }
+      } else if (pf.type === 'previous') {
+        // ✅ SIEMPRE usar período calculado dinámico
+        const displayPreviousPeriod = calculatedPeriods?.previous;
+        if (displayPreviousPeriod) {
+          const periodLabel = formatDetailedPaymentPeriod(
+            displayPreviousPeriod.period_start_date, 
+            displayPreviousPeriod.period_end_date, 
+            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
+          );
+          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
+          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
+          parts.push(`Previous: ${periodNumber} (${dateRange})`);
+        } else {
+          parts.push(t("common:periods.previous"));
+        }
+      } else if (pf.type === 'all') {
+        parts.push(t("common:periods.all"));
+      } else if (pf.label) {
+        parts.push(pf.label);
+      } else if (pf.type === 'specific' && pf.periodId) {
+        parts.push(t("common:periods.specific"));
+      }
+    }
+    
+    // Filtro de conductor
+    if (filters.driverId && filters.driverId !== 'all') {
+      const driver = drivers.find(d => d.user_id === filters.driverId);
+      parts.push(`${t("common:filters.driver")}: ${driver ? `${driver.first_name} ${driver.last_name}` : t("fuel:filters.selected")}`);
+    }
+    
+    // Filtro de vehículo
+    if (filters.vehicleId && filters.vehicleId !== 'all') {
+      const vehicle = vehicles.find(v => v.id === filters.vehicleId);
+      parts.push(`${t("common:filters.vehicle")}: ${vehicle ? vehicle.plate_number : t("fuel:filters.selected")}`);
+    }
+    
+    // Filtro de estado
+    if (filters.status && filters.status !== 'all') {
+      const statusLabels: Record<string, string> = {
+        pending: t('fuel:filters.pending'),
+        approved: t('fuel:filters.approved'),
+        verified: t('fuel:filters.verified')
+      };
+      parts.push(`${t("common:filters.status")}: ${statusLabels[filters.status] || filters.status}`);
+    }
+    
+    if (parts.length === 0) {
+      return t("common:filters.noFilters");
+    }
+    
+    return parts.join(' • ');
+  };
+
+  // ✅ Generar subtitle dinámico con estadísticas y filtros
+  const getSubtitle = () => {
+    // ✅ Esperar a que calculatedPeriods esté cargado para Current/Previous
+    const needsCalculatedPeriods = filters.periodFilter?.type === 'current' || filters.periodFilter?.type === 'previous';
+    
+    if (statsLoading || !stats || (needsCalculatedPeriods && !calculatedPeriods)) {
+      return <div>{t("fuel:page.loading")}</div>;
+    }
+
+    const { totalExpenses, totalAmount, totalGallons, pending } = stats;
+    
+    // Primera línea: estadísticas
+    const statsLine = `${totalExpenses || 0} ${t("fuel:stats.transactions")} • ${formatCurrency(totalAmount || 0)} ${t("fuel:stats.total")} • ${totalGallons?.toFixed(1) || '0.0'} gal • ${pending || 0} ${t("fuel:stats.pending")}`;
+    
+    // Segunda línea: filtros activos
+    const filterDescription = getFilterDescription();
+    
+    return (
+      <>
+        <div>{statsLine}</div>
+        <div className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
+          <span className="font-medium">{t("common:filters.active_filters")}</span>
+          <span>{filterDescription}</span>
+        </div>
+      </>
+    );
+  };
+
   const handleEdit = (expenseId: string) => {
     setEditExpenseId(expenseId);
   };
@@ -201,20 +315,12 @@ export default function FuelManagement() {
     setViewExpenseId(expenseId);
   };
 
-  // Configuración de filtros para el componente ActiveFiltersDisplay
-  const fuelFilterConfig = CONTEXT_CONFIGS.fuel.filterConfig;
-  
-  const handleClearFilters = () => {
-    const clearedFilters = fuelFilterConfig.clearFilters();
-    setFilters(clearedFilters);
-  };
-
   return (
     <>
       {/* Header */}
       <PageToolbar
         title={t('fuel:page.title')}
-        subtitle={t('fuel:page.subtitle')}
+        subtitle={getSubtitle()}
         icon={Fuel}
         actions={
           <Button onClick={() => setCreateDialogOpen(true)} size="sm">
@@ -254,14 +360,6 @@ export default function FuelManagement() {
           <TabsContent value="expenses" className="space-y-6 mt-6">
             {/* Estadísticas */}
             <FuelStatsCards filters={queryFilters} />
-
-            {/* Criterios de Filtrado Aplicados */}
-            <CurrentFiltersDisplay
-              filters={filters}
-              drivers={drivers}
-              vehicles={vehicles}
-              onClearFilters={handleClearFilters}
-            />
 
             {/* Lista de Gastos */}
             <FuelExpensesList 
