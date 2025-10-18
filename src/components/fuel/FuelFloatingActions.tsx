@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { FloatingActionsSheet, FloatingActionTab } from '@/components/ui/FloatingActionsSheet';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Filter, X, Download, Settings, BarChart3, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Filter, X, Download, Settings, BarChart3 } from 'lucide-react';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
-import { useFleetNotifications } from '@/components/notifications';
-import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 
 interface FuelFloatingActionsProps {
@@ -17,10 +12,6 @@ interface FuelFloatingActionsProps {
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
   const { t } = useTranslation(['common', 'fuel']);
-  const [syncLoading, setSyncLoading] = useState(false);
-  const [syncDateFrom, setSyncDateFrom] = useState('');
-  const [syncDateTo, setSyncDateTo] = useState('');
-  const { showSuccess, showError } = useFleetNotifications();
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -40,41 +31,6 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
       status: 'all',
       vehicleId: 'all'
     });
-  };
-
-  const handleFleetOneSync = async () => {
-    setSyncLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('fleetone-sync', {
-        body: {
-          action: 'sync_transactions',
-          dateFrom: syncDateFrom || undefined,
-          dateTo: syncDateTo || undefined
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.success) {
-        showSuccess(
-          "Sincronización Exitosa",
-          `Se sincronizaron ${data.synced} transacciones. ${data.skipped} ya existían.`
-        );
-        
-        // Refrescar la página para mostrar las nuevas transacciones
-        window.location.reload();
-      } else {
-        throw new Error(data?.error || 'Error en la sincronización');
-      }
-    } catch (error: any) {
-      console.error('Error syncing FleetOne transactions:', error);
-      showError(
-        "Error de Sincronización",
-        error.message || 'No se pudieron sincronizar las transacciones de FleetOne'
-      );
-    } finally {
-      setSyncLoading(false);
-    }
   };
 
   // Define tabs for FloatingActionsSheet
@@ -101,62 +57,6 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                   onFiltersChange={onFiltersChange}
                   compact
                 />
-              </div>
-      )
-    },
-    {
-      id: 'sync',
-      label: t('floating_actions.sync.title'),
-      icon: RefreshCw,
-      content: (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-sm font-medium mb-3">{t('floating_actions.sync.title')}</h3>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    {t('floating_actions.sync.description')}
-                  </p>
-                  
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="dateFrom" className="text-xs">{t('floating_actions.sync.date_from')}</Label>
-                      <Input
-                        id="dateFrom"
-                        type="date"
-                        value={syncDateFrom}
-                        onChange={(e) => setSyncDateFrom(e.target.value)}
-                        className="text-xs"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="dateTo" className="text-xs">{t('floating_actions.sync.date_to')}</Label>
-                      <Input
-                        id="dateTo"
-                        type="date"
-                        value={syncDateTo}
-                        onChange={(e) => setSyncDateTo(e.target.value)}
-                        className="text-xs"
-                      />
-                    </div>
-                    
-                    <div className="space-y-3 pt-2">
-                      <Button 
-                        onClick={handleFleetOneSync}
-                        disabled={syncLoading}
-                        className="w-full"
-                      >
-                        <RefreshCw className={cn("h-4 w-4 mr-2", syncLoading && "animate-spin")} />
-                        {syncLoading ? t('floating_actions.sync.syncing') : t('floating_actions.sync.sync_transactions')}
-                      </Button>
-                      
-                      <div className="text-xs text-muted-foreground space-y-1">
-                        <p>• {t('floating_actions.sync.sync_notes.default_period')}</p>
-                        <p>• {t('floating_actions.sync.sync_notes.duplicates_skipped')}</p>
-                        <p>• {t('floating_actions.sync.sync_notes.only_assigned')}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
       )
     },

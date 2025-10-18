@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Fuel, CreditCard, FileText } from 'lucide-react';
+import { Plus, Fuel, CreditCard, FileText, RefreshCw } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
@@ -14,6 +14,7 @@ import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
 import { FuelExpenseDialog } from '@/components/fuel/FuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
+import { FleetOneSync } from '@/components/fuel/FleetOneSync';
 import { formatDateInUserTimeZone } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
@@ -215,7 +216,7 @@ export default function FuelManagement() {
       <div className="p-2 md:p-4 space-y-4 md:space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-auto gap-1">
+          <TabsList className="grid w-full grid-cols-4 h-auto gap-1">
             <TabsTrigger value="expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.expenses_full')}</span>
@@ -225,6 +226,11 @@ export default function FuelManagement() {
               <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.fuel_cards_full')}</span>
               <span className="sm:hidden">{t('fuel:page.tabs.cards')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="sync" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">FleetOne Sync</span>
+              <span className="sm:hidden">Sync</span>
             </TabsTrigger>
             <TabsTrigger value="analyzer" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -256,6 +262,11 @@ export default function FuelManagement() {
           <TabsContent value="cards" className="mt-6">
             {/* Gestión de Tarjetas de Combustible */}
             <DriverCardsManager />
+          </TabsContent>
+
+          <TabsContent value="sync" className="mt-6">
+            {/* FleetOne Sync */}
+            <FleetOneSync />
           </TabsContent>
 
           <TabsContent value="analyzer" className="mt-6">
