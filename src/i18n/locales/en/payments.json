@@ -98,6 +98,7 @@
       "create_title": "Create Period Deduction",
       "edit_title": "Edit Period Deduction",
       "create_description": "Create a one-time deduction in a given payment period.",
+      "edit_description": "Edit this one-time deduction for the payment period.",
       "creating": "Creating...",
       "updating": "Updating...",
       "create_button": "Create Period Deduction", 

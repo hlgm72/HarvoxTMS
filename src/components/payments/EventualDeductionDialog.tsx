@@ -362,11 +362,11 @@ export function EventualDeductionDialog({
   const isFormValid = 
     formData.user_id &&
     expenseDate &&
-    (editingDeduction || paymentPeriods.length > 0) &&
     formData.expense_type_id && 
     formData.amount && 
     parseFloat(formData.amount) > 0 &&
-    formData.description.trim().length > 0;
+    formData.description.trim().length > 0 &&
+    (editingDeduction || (!editingDeduction && paymentPeriods.length > 0));
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

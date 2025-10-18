@@ -98,6 +98,7 @@
       "create_title": "Crear Deducción del Período",
       "edit_title": "Editar Deducción del Período", 
       "create_description": "Crea una deducción única en un período de pago determinado.",
+      "edit_description": "Edita esta deducción única del período de pago.",
       "creating": "Creando...",
       "updating": "Actualizando...",
       "create_button": "Crear Deducción del Período",
