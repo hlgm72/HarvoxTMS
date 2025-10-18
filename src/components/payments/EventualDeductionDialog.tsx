@@ -303,6 +303,20 @@ export function EventualDeductionDialog({
           });
 
         if (error) throw error;
+
+        // Recalculate user payroll after adding deduction
+        const userPayrollId = paymentPeriods[0]?.id;
+        if (userPayrollId) {
+          const { error: calcError } = await supabase.rpc(
+            'calculate_user_payment_period_with_validation',
+            { calculation_id: userPayrollId }
+          );
+          
+          if (calcError) {
+            console.error('Error recalculating payroll:', calcError);
+          }
+        }
+
         showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_created"));
       }
 
