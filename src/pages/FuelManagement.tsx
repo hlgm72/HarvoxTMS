@@ -5,8 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Fuel, CreditCard, FileText } from 'lucide-react';
 import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
-import { UniversalFloatingActions } from '@/components/ui/UniversalFloatingActions';
-import { FuelFilters, FuelFiltersType } from '@/components/fuel/FuelFilters';
+import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
+import { FuelFiltersType } from '@/components/fuel/FuelFilters';
 import { CurrentFiltersDisplay } from '@/components/fuel/CurrentFiltersDisplay';
 import { CONTEXT_CONFIGS } from '@/components/ui/filterConfigs';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
@@ -281,26 +281,21 @@ export default function FuelManagement() {
 
       {/* Floating Actions - Solo para tab de gastos */}
       {activeTab === 'expenses' && (
-        <UniversalFloatingActions
-          contextKey="fuel"
-          filters={filters}
-          onFiltersChange={(newFilters: any) => {
-            setFilters(newFilters);
+        <FuelFloatingActions
+          filters={{
+            driverId: filters.driverId,
+            status: filters.status,
+            vehicleId: filters.vehicleId,
+            dateRange: { from: undefined, to: undefined }
           }}
-          additionalData={{
-            // Pasar datos de conductores y vehículos para los filtros
-            drivers: drivers,
-            vehicles: vehicles,
-            stats: {
-              totalTransactions: 0, // TODO: obtener de hook de stats
-              totalAmount: 0,       // TODO: obtener de hook de stats
-              driversCount: drivers.length
-            }
+          onFiltersChange={(newFilters) => {
+            setFilters(prev => ({
+              ...prev,
+              driverId: newFilters.driverId,
+              status: newFilters.status,
+              vehicleId: newFilters.vehicleId
+            }));
           }}
-          onSyncHandler={handleFleetOneSync}
-          onExportHandler={handleExport}
-          syncLoading={syncLoading}
-          exportLoading={exportLoading}
         />
       )}
     </>

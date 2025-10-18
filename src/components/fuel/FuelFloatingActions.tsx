@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { FloatingActionsSheet, FloatingActionTab } from '@/components/ui/FloatingActionsSheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ExpandableFloatingActions } from '@/components/ui/ExpandableFloatingActions';
-import { Filter, X, Download, Settings, BarChart3, RefreshCw, Plus } from 'lucide-react';
+import { Filter, X, Download, Settings, BarChart3, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
 import { useFleetNotifications } from '@/components/notifications';
@@ -19,8 +17,6 @@ interface FuelFloatingActionsProps {
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
   const { t } = useTranslation(['common', 'fuel']);
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'filters' | 'export' | 'view' | 'stats' | 'sync'>('filters');
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncDateFrom, setSyncDateFrom] = useState('');
   const [syncDateTo, setSyncDateTo] = useState('');
@@ -45,11 +41,6 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
   };
 
   const hasActiveFilters = getActiveFiltersCount() > 0;
-
-  const openSheet = (tab: 'filters' | 'export' | 'view' | 'stats' | 'sync') => {
-    setActiveTab(tab);
-    setIsOpen(true);
-  };
 
   const handleFleetOneSync = async () => {
     setSyncLoading(true);
@@ -86,73 +77,14 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     }
   };
 
-  // Definir las acciones para el componente expandible
-  const floatingActions = [
+  // Define tabs for FloatingActionsSheet
+  const tabs: FloatingActionTab[] = [
     {
+      id: 'filters',
+      label: t('floating_actions.filters.title'),
       icon: Filter,
-      label: hasActiveFilters ? t('floating_actions.filters.filters_active') : t('floating_actions.filters.filters'),
-      onClick: () => openSheet('filters'),
-      variant: (hasActiveFilters ? 'default' : 'secondary') as 'default' | 'secondary' | 'outline' | 'destructive',
-      className: hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : ''
-    },
-    {
-      icon: RefreshCw,
-      label: t('floating_actions.sync.sync'),
-      onClick: () => openSheet('sync'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    },
-    {
-      icon: Download,
-      label: t('floating_actions.export.export'),
-      onClick: () => openSheet('export'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    },
-    {
-      icon: Settings,
-      label: t('floating_actions.view.view'),
-      onClick: () => openSheet('view'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    },
-    {
-      icon: BarChart3,
-      label: t('floating_actions.stats.statistics'),
-      onClick: () => openSheet('stats'),
-      variant: 'secondary' as 'default' | 'secondary' | 'outline' | 'destructive'
-    }
-  ];
-
-  return (
-    <>
-      {/* Botones Flotantes Expandibles */}
-      <ExpandableFloatingActions
-        actions={floatingActions}
-        mainLabel={t('floating_actions.title')}
-        position="bottom-right"
-      />
-
-      {/* Sheet Modal */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="w-[400px] sm:w-[440px]">
-          <SheetHeader>
-            <SheetTitle>
-              {activeTab === 'filters' && t('floating_actions.filters.title')}
-              {activeTab === 'sync' && t('floating_actions.sync.title')}
-              {activeTab === 'export' && t('floating_actions.export.title')}
-              {activeTab === 'view' && t('floating_actions.view.title')}
-              {activeTab === 'stats' && t('floating_actions.stats.title')}
-            </SheetTitle>
-            <SheetDescription>
-              {activeTab === 'filters' && t('floating_actions.filters.description')}
-              {activeTab === 'sync' && t('floating_actions.sync.description')}
-              {activeTab === 'export' && t('floating_actions.export.description')}
-              {activeTab === 'view' && t('floating_actions.view.description')}
-              {activeTab === 'stats' && t('floating_actions.stats.description')}
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="mt-6">
-            {/* Filters Content */}
-            {activeTab === 'filters' && (
+      badge: hasActiveFilters ? '●' : undefined,
+      content: (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium">{t('floating_actions.filters.applied_filters')}</h3>
@@ -170,10 +102,13 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                   compact
                 />
               </div>
-            )}
-
-            {/* FleetOne Sync Content */}
-            {activeTab === 'sync' && (
+      )
+    },
+    {
+      id: 'sync',
+      label: t('floating_actions.sync.title'),
+      icon: RefreshCw,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.sync.title')}</h3>
@@ -223,10 +158,13 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Export Content */}
-            {activeTab === 'export' && (
+      )
+    },
+    {
+      id: 'export',
+      label: t('floating_actions.export.title'),
+      icon: Download,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.export.title')}</h3>
@@ -242,30 +180,41 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* View Content */}
-            {activeTab === 'view' && (
+      )
+    },
+    {
+      id: 'view',
+      label: t('floating_actions.view.title'),
+      icon: Settings,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.view.title')}</h3>
                   <p className="text-sm text-muted-foreground">{t('fuel:floating_actions.view_options')}</p>
                 </div>
               </div>
-            )}
-
-            {/* Stats Content */}
-            {activeTab === 'stats' && (
+      )
+    },
+    {
+      id: 'stats',
+      label: t('floating_actions.stats.title'),
+      icon: BarChart3,
+      content: (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-3">{t('floating_actions.stats.title')}</h3>
                   <p className="text-sm text-muted-foreground">{t('fuel:floating_actions.stats_options')}</p>
                 </div>
               </div>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
+      )
+    }
+  ];
+
+  return (
+    <FloatingActionsSheet 
+      tabs={tabs}
+      buttonLabel={t('floating_actions.title')}
+      defaultTab="filters"
+    />
   );
 }
