@@ -385,7 +385,6 @@ export function EventualDeductionDialog({
     formData.expense_type_id && 
     formData.amount && 
     parseFloat(formData.amount) > 0 &&
-    formData.description.trim().length > 0 &&
     (editingDeduction || (!editingDeduction && paymentPeriods.length > 0));
 
   return (
