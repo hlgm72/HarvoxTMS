@@ -289,7 +289,7 @@ export function EventualDeductionDialog({
         const { error } = await supabase
           .from('expense_instances')
           .insert({
-            payment_period_id: paymentPeriods[0]?.id,
+            payment_period_id: paymentPeriods[0]?.company_payment_period_id,
             user_id: formData.user_id,
             expense_type_id: formData.expense_type_id,
             amount: parseFloat(formData.amount),
