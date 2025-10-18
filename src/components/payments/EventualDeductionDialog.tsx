@@ -263,6 +263,11 @@ export function EventualDeductionDialog({
         throw new Error('La fecha del gasto es requerida');
       }
 
+      // Verificar que hay un período válido (solo para crear, no para editar)
+      if (!editingDeduction && (!paymentPeriods || paymentPeriods.length === 0)) {
+        throw new Error('No se encontró un período de pago válido para la fecha seleccionada. Por favor, selecciona una fecha dentro de un período abierto.');
+      }
+
       if (editingDeduction) {
         // Update existing deduction
         const { error } = await supabase
@@ -511,9 +516,10 @@ export function EventualDeductionDialog({
                         let periodLabel = '';
                         
                         if (frequency === 'weekly') {
-                          // Calcular número de semana del año
-                          const startOfYear = new Date(periodStart.getFullYear(), 0, 1);
-                          const weekNumber = Math.ceil(((periodStart.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
+                          // Calcular número de semana ISO del año
+                          const oneJan = new Date(periodStart.getFullYear(), 0, 1);
+                          const numberOfDays = Math.floor((periodStart.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
+                          const weekNumber = Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
                           periodLabel = `Period Week ${weekNumber}/${periodStart.getFullYear()}`;
                         } else if (frequency === 'biweekly') {
                           // Determinar si es primera o segunda quincena
