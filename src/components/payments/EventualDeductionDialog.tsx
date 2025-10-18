@@ -624,7 +624,6 @@ export function EventualDeductionDialog({
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder={t("deductions.period_dialog.placeholder")}
                   rows={3}
-                  required
                 />
               </div>
             </div>
