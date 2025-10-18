@@ -56,8 +56,7 @@ import { UserActionButton } from "@/components/users/UserActionButton";
 import { getRoleLabel, getRoleConfig } from "@/lib/roleUtils";
 import { deleteTestUser } from "@/utils/deleteTestUser";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { GenericFloatingActions, StandardActionConfig, FloatingActionSheet } from "@/components/ui/GenericFloatingActions";
-import { UserFiltersSheet } from "@/components/users/UserFiltersSheet";
+import { UsersFloatingActions } from "@/components/users/UsersFloatingActions";
 import { PendingInvitationsSection } from "@/components/invitations/PendingInvitationsSection";
 import { formatDateAuto, getCurrentUTC, formatDateSafe } from '@/lib/dateFormatting';
 import { UserDetailsContent } from "@/components/users/UserDetailsContent";
@@ -1259,63 +1258,14 @@ export default function Users() {
         }}
       />
 
-      <GenericFloatingActions
-        standardActions={[
-          { type: 'filters' },
-          { type: 'export' },
-          { type: 'view' },
-          { type: 'stats' }
-        ]}
-        sheets={[
-          {
-            key: 'filters',
-            content: (
-              <UserFiltersSheet
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                roleFilter={roleFilter}
-                setRoleFilter={setRoleFilter}
-                statusFilter={statusFilter}
-                setStatusFilter={setStatusFilter}
-              />
-            )
-          },
-          {
-            key: 'export',
-            content: (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {t('export.description', { ns: 'users' })}
-                </p>
-                {/* Aquí irían las opciones de exportación */}
-              </div>
-            )
-          },
-          {
-            key: 'view',
-            content: (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {t('view.description', { ns: 'users' })}
-                </p>
-                {/* Aquí irían las opciones de vista */}
-              </div>
-            )
-          },
-          {
-            key: 'stats',
-            content: (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {t('stats.description', { ns: 'users' })}
-                </p>
-                {/* Aquí irían las estadísticas */}
-              </div>
-            )
-          }
-        ]}
-        position="bottom-right"
-        namespace="users"
+      <UsersFloatingActions
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        roleFilter={roleFilter}
+        setRoleFilter={setRoleFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        stats={stats}
       />
     </div>
   );
