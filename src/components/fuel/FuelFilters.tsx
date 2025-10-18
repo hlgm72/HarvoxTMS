@@ -4,16 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, Filter, X, User, Clock, Car } from 'lucide-react';
-import { formatShortDate } from '@/lib/dateFormatting';
+import { Filter, X, User, Clock, Car } from 'lucide-react';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
-import { useCompanyPaymentPeriods } from '@/hooks/useCompanyPaymentPeriods';
-import { useAuth } from '@/hooks/useAuth';
+import { PeriodFilter, PeriodFilterValue } from '@/components/loads/PeriodFilter';
 import { cn } from '@/lib/utils';
 
 export interface FuelFiltersType {
-  periodId: string;
+  periodFilter: PeriodFilterValue;
   driverId: string;
   status: string;
   vehicleId: string;
@@ -28,9 +26,6 @@ interface FuelFiltersProps {
 export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelFiltersProps) {
   const { drivers = [] } = useCompanyDrivers();
   const { geotabVehicles: vehicles = [] } = useGeotabVehicles();
-  const { user } = useAuth();
-  const companyId = user?.user_metadata?.company_id;
-  const { data: paymentPeriods = [] } = useCompanyPaymentPeriods(companyId);
   const { t } = useTranslation(['fuel', 'common']);
 
   const handleFilterChange = (key: keyof FuelFiltersType, value: any) => {
@@ -42,7 +37,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
 
   const clearFilters = () => {
     onFiltersChange({
-      periodId: 'all',
+      periodFilter: { type: 'current' },
       driverId: 'all',
       status: 'all',
       vehicleId: 'all'
@@ -51,7 +46,7 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (filters.periodId !== 'all') count++;
+    if (filters.periodFilter.type !== 'current') count++;
     if (filters.driverId !== 'all') count++;
     if (filters.status !== 'all') count++;
     if (filters.vehicleId !== 'all') count++;
@@ -65,22 +60,10 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
       {/* Payment Period */}
       <div>
         <label className="text-sm font-medium mb-2 block">{t('fuel:filters.payment_period')}</label>
-        <Select
-          value={filters.periodId}
-          onValueChange={(value) => handleFilterChange('periodId', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t('fuel:filters.select_period')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('fuel:filters.all_periods')}</SelectItem>
-            {paymentPeriods.map((period) => (
-              <SelectItem key={period.company_payment_period_id} value={period.company_payment_period_id}>
-                {formatShortDate(new Date(period.period_start_date))} - {formatShortDate(new Date(period.period_end_date))}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <PeriodFilter
+          value={filters.periodFilter}
+          onChange={(periodFilter) => handleFilterChange('periodFilter', periodFilter)}
+        />
       </div>
 
       {/* Conductor */}
@@ -174,26 +157,11 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Payment Period */}
           <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-1">
-              <CalendarIcon className="h-4 w-4" />
-              {t('fuel:filters.payment_period')}
-            </label>
-            <Select
-              value={filters.periodId}
-              onValueChange={(value) => handleFilterChange('periodId', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('fuel:filters.select_period')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('fuel:filters.all_periods')}</SelectItem>
-                {paymentPeriods.map((period) => (
-                  <SelectItem key={period.company_payment_period_id} value={period.company_payment_period_id}>
-                    {formatShortDate(new Date(period.period_start_date))} - {formatShortDate(new Date(period.period_end_date))}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <label className="text-sm font-medium">{t('fuel:filters.payment_period')}</label>
+            <PeriodFilter
+              value={filters.periodFilter}
+              onChange={(periodFilter) => handleFilterChange('periodFilter', periodFilter)}
+            />
           </div>
 
           {/* Conductor */}
@@ -278,17 +246,12 @@ export function FuelFilters({ filters, onFiltersChange, compact = false }: FuelF
         {/* Filtros Activos */}
         {activeFiltersCount > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t">
-            {filters.periodId !== 'all' && (
+            {filters.periodFilter.type !== 'current' && (
               <Badge variant="outline" className="gap-1">
-                <CalendarIcon className="h-3 w-3" />
-                {t('fuel:filters.payment_period')}: {
-                  (() => {
-                    const period = paymentPeriods.find(p => p.company_payment_period_id === filters.periodId);
-                    return period ? `${formatShortDate(new Date(period.period_start_date))} - ${formatShortDate(new Date(period.period_end_date))}` : t('fuel:filters.unknown');
-                  })()
-                }
+                <Clock className="h-3 w-3" />
+                {t('fuel:filters.payment_period')}: {filters.periodFilter.label || filters.periodFilter.type}
                 <button
-                  onClick={() => handleFilterChange('periodId', 'all')}
+                  onClick={() => handleFilterChange('periodFilter', { type: 'current' })}
                   className="ml-1 hover:bg-muted rounded-sm"
                 >
                   <X className="h-3 w-3" />

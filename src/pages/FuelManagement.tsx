@@ -7,6 +7,7 @@ import { PageToolbar } from '@/components/layout/PageToolbar';
 import { FuelStatsCards } from '@/components/fuel/FuelStatsCards';
 import { FuelFloatingActions } from '@/components/fuel/FuelFloatingActions';
 import { FuelFiltersType } from '@/components/fuel/FuelFilters';
+import { PeriodFilterValue } from '@/components/loads/PeriodFilter';
 import { CurrentFiltersDisplay } from '@/components/fuel/CurrentFiltersDisplay';
 import { CONTEXT_CONFIGS } from '@/components/ui/filterConfigs';
 import { FuelExpensesList } from '@/components/fuel/FuelExpensesList';
@@ -39,16 +40,19 @@ export default function FuelManagement() {
   const { data: calculatedPeriods } = useCalculatedPeriods();
 
   // Estado de filtros con período actual por defecto
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    search: string;
+    driverId: string;
+    status: string;
+    vehicleId: string;
+    periodFilter: PeriodFilterValue;
+  }>({
     search: '',
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
     periodFilter: { 
-      type: 'current' as 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom', 
-      periodId: undefined as string | undefined,
-      startDate: undefined as string | undefined,
-      endDate: undefined as string | undefined
+      type: 'current'
     }
   });
 
@@ -283,7 +287,7 @@ export default function FuelManagement() {
       {activeTab === 'expenses' && (
         <FuelFloatingActions
           filters={{
-            periodId: 'all',
+            periodFilter: filters.periodFilter,
             driverId: filters.driverId,
             status: filters.status,
             vehicleId: filters.vehicleId
@@ -291,6 +295,7 @@ export default function FuelManagement() {
           onFiltersChange={(newFilters) => {
             setFilters(prev => ({
               ...prev,
+              periodFilter: newFilters.periodFilter,
               driverId: newFilters.driverId,
               status: newFilters.status,
               vehicleId: newFilters.vehicleId

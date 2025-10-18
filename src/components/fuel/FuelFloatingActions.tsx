@@ -27,20 +27,20 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     if (filters.driverId && filters.driverId !== 'all') count++;
     if (filters.status && filters.status !== 'all') count++;
     if (filters.vehicleId && filters.vehicleId !== 'all') count++;
-    if (filters.periodId && filters.periodId !== 'all') count++;
+    if (filters.periodFilter.type !== 'current') count++;
     return count;
   };
 
+  const hasActiveFilters = getActiveFiltersCount() > 0;
+
   const clearAllFilters = () => {
     onFiltersChange({
-      periodId: 'all',
+      periodFilter: { type: 'current' },
       driverId: 'all',
       status: 'all',
       vehicleId: 'all'
     });
   };
-
-  const hasActiveFilters = getActiveFiltersCount() > 0;
 
   const handleFleetOneSync = async () => {
     setSyncLoading(true);
