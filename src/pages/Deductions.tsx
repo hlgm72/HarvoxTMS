@@ -8,7 +8,7 @@ import { DeductionsManager } from "@/components/payments/DeductionsManager";
 import { ExpenseTemplateDialog } from "@/components/payments/ExpenseTemplateDialog";
 import { EventualDeductionDialog } from "@/components/payments/EventualDeductionDialog";
 
-import { UniversalFloatingActions } from "@/components/ui/UniversalFloatingActions";
+import { DeductionsFloatingActions, DeductionsFiltersType } from "@/components/payments/DeductionsFloatingActions";
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,13 +26,13 @@ export default function Deductions() {
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("period");
   
-  // Estado de filtros - adaptado para sistema universal
-  const [filters, setFilters] = useState({
+  // Estado de filtros
+  const [filters, setFilters] = useState<DeductionsFiltersType>({
     search: '',
     status: "all",
     driverId: "all",
     expenseTypeId: "all",
-    periodFilter: { type: 'current' as const }
+    periodFilter: { type: 'current' }
   });
 
   // ✅ Pasar tab activo y filtros al hook de estadísticas
@@ -255,32 +255,18 @@ export default function Deductions() {
         onSuccess={handleEventualSuccess}
       />
 
-      <UniversalFloatingActions
-        contextKey="deductions"
+      <DeductionsFloatingActions
         filters={filters}
-        onFiltersChange={(newFilters: any) => {
+        onFiltersChange={(newFilters) => {
           setFilters(newFilters);
         }}
-        additionalData={{
-          drivers: drivers.map(d => ({
-            user_id: d.id,
-            first_name: d.first_name,
-            last_name: d.last_name
-          })),
-          expenseTypes: expenseTypes.map(et => ({
-            id: et.id,
-            name: et.name
-          })),
-          stats: stats ? {
-            totalDeductions: stats.activeTemplates || 0,
-            totalAmount: stats.totalMonthlyAmount || 0,
-            pendingCount: stats.affectedDrivers || 0
-          } : undefined
-        }}
-        onExportHandler={async (format) => {
-          console.log(`Exportando deductions como ${format}`);
-          // TODO: Implementar export
-        }}
+        drivers={drivers}
+        expenseTypes={expenseTypes}
+        stats={stats ? {
+          totalDeductions: stats.activeTemplates || 0,
+          totalAmount: stats.totalMonthlyAmount || 0,
+          pendingCount: stats.affectedDrivers || 0
+        } : undefined}
       />
     </>
   );
