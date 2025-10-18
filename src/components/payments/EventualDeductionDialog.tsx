@@ -283,6 +283,23 @@ export function EventualDeductionDialog({
           .eq('id', editingDeduction.id);
 
         if (error) throw error;
+
+        // Recalculate user payroll after editing deduction
+        const userPayrollId = paymentPeriods[0]?.id;
+        if (userPayrollId) {
+          console.log('🔄 Recalculating payroll after EDIT for user_payroll:', userPayrollId);
+          const { error: calcError } = await supabase.rpc(
+            'calculate_user_payment_period_with_validation',
+            { calculation_id: userPayrollId }
+          );
+          
+          if (calcError) {
+            console.error('❌ Error recalculating payroll after edit:', calcError);
+          } else {
+            console.log('✅ Payroll recalculated successfully after edit');
+          }
+        }
+
         showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_updated"));
       } else {
         // Create new deduction
@@ -307,13 +324,16 @@ export function EventualDeductionDialog({
         // Recalculate user payroll after adding deduction
         const userPayrollId = paymentPeriods[0]?.id;
         if (userPayrollId) {
+          console.log('🔄 Recalculating payroll after CREATE for user_payroll:', userPayrollId);
           const { error: calcError } = await supabase.rpc(
             'calculate_user_payment_period_with_validation',
             { calculation_id: userPayrollId }
           );
           
           if (calcError) {
-            console.error('Error recalculating payroll:', calcError);
+            console.error('❌ Error recalculating payroll after create:', calcError);
+          } else {
+            console.log('✅ Payroll recalculated successfully after create');
           }
         }
 
