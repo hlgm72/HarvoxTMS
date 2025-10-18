@@ -61,7 +61,12 @@
   },
   "floating_actions": {
     "view_options": "View options coming soon.",
-    "stats_options": "Statistics coming soon."
+    "stats_options": "Statistics coming soon.",
+    "filters": {
+      "title": "Filters",
+      "applied_filters": "Applied Filters",
+      "clear": "Clear All"
+    }
   },
   "expenses_list": {
     "title_full": "Fuel Expenses ({{count}})",

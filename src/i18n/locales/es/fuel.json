@@ -61,7 +61,12 @@
   },
   "floating_actions": {
     "view_options": "Opciones de vista próximamente.",
-    "stats_options": "Estadísticas próximamente."
+    "stats_options": "Estadísticas próximamente.",
+    "filters": {
+      "title": "Filtros",
+      "applied_filters": "Filtros Aplicados",
+      "clear": "Limpiar Todo"
+    }
   },
   "expenses_list": {
     "title_full": "Gastos de Combustible ({{count}})",
