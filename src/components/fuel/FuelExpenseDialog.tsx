@@ -459,7 +459,8 @@ export function FuelExpenseDialog({
         if (currentPeriodId !== firstUserPeriodId) {
           form.setValue('payment_period_id', firstUserPeriodId);
         }
-        setPredictedPeriod(null);
+        // Solo actualizar si realmente cambió
+        setPredictedPeriod(prev => prev !== null ? null : prev);
       } else {
         // Si no hay período, limpiar la selección y calcular el período que se crearía
         const currentPeriodId = form.getValues('payment_period_id');
@@ -470,7 +471,13 @@ export function FuelExpenseDialog({
         // Calcular las fechas del período que se generaría
         if (userCompany?.company_id) {
           const periodDates = calculatePeriodDates(transactionDate, userCompany);
-          setPredictedPeriod(periodDates);
+          // Solo actualizar si cambió el valor
+          setPredictedPeriod(prev => {
+            if (!prev && !periodDates) return prev;
+            if (!prev || !periodDates) return periodDates;
+            if (prev.start === periodDates.start && prev.end === periodDates.end) return prev;
+            return periodDates;
+          });
         }
       }
     }
