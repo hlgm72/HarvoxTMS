@@ -19,7 +19,6 @@ export function PaymentFiltersSheet({ filters, onFiltersChange, drivers, childre
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (filters.search) count++;
     if (filters.driverId && filters.driverId !== 'all') count++;
     if (filters.status && filters.status !== 'all') count++;
     if (filters.periodFilter && filters.periodFilter.type !== 'current') count++;
@@ -28,7 +27,6 @@ export function PaymentFiltersSheet({ filters, onFiltersChange, drivers, childre
 
   const clearAllFilters = () => {
     onFiltersChange({
-      search: '',
       driverId: 'all',
       status: 'all',
       periodFilter: { type: 'current' }

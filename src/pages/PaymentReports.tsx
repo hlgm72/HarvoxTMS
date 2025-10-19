@@ -39,7 +39,6 @@ export default function PaymentReports() {
   const { data: allPeriods } = usePaymentPeriods();
   
   const [filters, setFilters] = useState<PaymentFiltersType>({
-    search: '',
     driverId: 'all',
     status: 'all',
     periodFilter: { type: 'current' }
@@ -266,12 +265,6 @@ export default function PaymentReports() {
 
   // Filtrar cálculos según los filtros aplicados (excepto período que ya se filtra en la query)
   const filteredCalculations = paymentCalculations.filter(calc => {
-    const driver = drivers.find(d => d.user_id === calc.user_id);
-    const driverName = `${driver?.first_name || ''} ${driver?.last_name || ''}`.toLowerCase();
-    
-    // Filtro de búsqueda
-    const matchesSearch = !filters.search || driverName.includes(filters.search.toLowerCase());
-    
     // Filtro de conductor
     const matchesDriver = filters.driverId === "all" || calc.user_id === filters.driverId;
     
@@ -300,7 +293,7 @@ export default function PaymentReports() {
       }
     }
     
-    return matchesSearch && matchesDriver && matchesStatus;
+    return matchesDriver && matchesStatus;
   });
 
   // Estadísticas del dashboard

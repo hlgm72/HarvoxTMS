@@ -9,7 +9,6 @@ import { PeriodFilter, PeriodFilterValue } from '@/components/loads/PeriodFilter
 import { useTranslation } from 'react-i18next';
 
 export interface PaymentFiltersType {
-  search: string;
   driverId: string;
   status: string;
   periodFilter: PeriodFilterValue;
@@ -43,7 +42,6 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
 
   const clearFilters = () => {
     onFiltersChange({
-      search: '',
       driverId: 'all',
       status: 'all',
       periodFilter: { type: 'current' }
@@ -52,7 +50,6 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (filters.search) count++;
     if (filters.driverId && filters.driverId !== 'all') count++;
     if (filters.status && filters.status !== 'all') count++;
     if (filters.periodFilter && filters.periodFilter.type !== 'current') count++;
@@ -64,17 +61,6 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
   if (compact) {
     return (
       <div className="space-y-4">
-        {/* Búsqueda */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('filters.search_placeholder')}
-            value={filters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
         {/* Filtros de selección */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select value={filters.driverId} onValueChange={(value) => handleFilterChange('driverId', value)}>
@@ -154,17 +140,6 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Búsqueda */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('filters.search_placeholder')}
-            value={filters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
         {/* Filtros principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -214,15 +189,6 @@ export function PaymentFilters({ filters, onFiltersChange, drivers, compact = fa
         {activeCount > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t">
             <span className="text-sm text-muted-foreground">{t('filters.active_filters')}</span>
-            {filters.search && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                {t('filters.active_badges.search')} {filters.search}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => handleFilterChange('search', '')}
-                />
-              </Badge>
-            )}
             {filters.driverId && filters.driverId !== 'all' && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 {t('filters.active_badges.driver')} {(() => {
