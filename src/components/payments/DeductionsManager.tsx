@@ -338,6 +338,15 @@ export function DeductionsManager({
   // Mutation para eliminar definitivamente plantilla
   const permanentlyDeleteTemplateMutation = useMutation({
     mutationFn: async (templateId: string) => {
+      // Primero eliminar todas las expense_instances que referencian este template
+      const { error: expenseError } = await supabase
+        .from('expense_instances')
+        .delete()
+        .eq('recurring_template_id', templateId);
+      
+      if (expenseError) throw expenseError;
+      
+      // Luego eliminar el template
       const { error } = await supabase
         .from('expense_recurring_templates')
         .delete()
