@@ -61,8 +61,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       }
 
       try {
-        // ✅ Construir la consulta base - ahora incluye TODAS las deducciones del período
-        // (eventuales + generadas desde plantillas recurrentes)
+        // ✅ OPTIMIZACIÓN: Consulta principal de deducciones
         let query = supabase
           .from('expense_instances')
           .select(`
@@ -205,40 +204,53 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           throw error;
         }
         
-        // Enriquecer con información de períodos y conductores
-        const enrichedData = await Promise.all(
-          (data || []).map(async (expense) => {
-            // Solo obtener información del período si existe payment_period_id
-            let driverPeriod = null;
-            if (expense.payment_period_id) {
-              const { data } = await supabase
+        // ✅ OPTIMIZACIÓN: Obtener todos los user_ids y payment_period_ids únicos
+        const userIds = [...new Set((data || []).map(d => d.user_id).filter(Boolean))];
+        const payrollIds = [...new Set((data || []).map(d => d.payment_period_id).filter(Boolean))];
+        
+        // ✅ Solo 2 consultas adicionales en total (en lugar de 2N)
+        const [profilesData, payrollsData] = await Promise.all([
+          // Obtener todos los profiles de una vez
+          userIds.length > 0
+            ? supabase
+                .from('profiles')
+                .select('user_id, first_name, last_name')
+                .in('user_id', userIds)
+                .then(res => res.data || [])
+            : Promise.resolve([]),
+          
+          // Obtener todos los períodos de una vez
+          payrollIds.length > 0
+            ? supabase
                 .from('user_payrolls')
                 .select(`
+                  id,
                   period:company_payment_periods!company_payment_period_id(
                     period_start_date,
                     period_end_date,
                     period_frequency
                   )
                 `)
-                .eq('id', expense.payment_period_id)
-                .maybeSingle();
-              driverPeriod = data;
-            }
-
-            // Obtener información del conductor
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('first_name, last_name')
-              .eq('user_id', expense.user_id)
-              .maybeSingle();
-
-            return {
-              ...expense,
-              period_data: driverPeriod, // Agregar datos del período aquí
-              profiles: profile
-            };
-          })
-        );
+                .in('id', payrollIds)
+                .then(res => res.data || [])
+            : Promise.resolve([])
+        ]);
+        
+        // Crear mapas para acceso rápido con tipos explícitos
+        const profilesMap = new Map<string, any>();
+        profilesData.forEach(p => profilesMap.set(p.user_id, p));
+        
+        const payrollsMap = new Map<string, any>();
+        payrollsData.forEach(p => payrollsMap.set(p.id, p));
+        
+        // ✅ Enriquecer los datos usando los mapas (operación O(n) en lugar de O(n²))
+        const enrichedData = (data || []).map((expense: any) => ({
+          ...expense,
+          profiles: profilesMap.get(expense.user_id) || null,
+          period_data: expense.payment_period_id 
+            ? payrollsMap.get(expense.payment_period_id) || null
+            : null
+        }));
 
         return enrichedData;
       } catch (error) {
