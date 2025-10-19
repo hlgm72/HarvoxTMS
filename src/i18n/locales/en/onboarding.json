@@ -1,6 +1,6 @@
 {
   "welcome": {
-    "title": "Welcome to FleetNest TMS!",
+    "title": "Welcome to Harvox TMS!",
     "subtitle": "Let's get you started with your fleet management journey",
     "roleTitle": {
       "driver": "Driver Dashboard",
@@ -203,10 +203,10 @@
       "title": "Setup Complete!",
       "subtitle": "Your account is now configured and ready to use",
       "message": {
-        "driver": "Welcome to FleetNest! You're all set to start managing your trips and vehicle inspections.",
-        "company_owner": "Welcome to FleetNest! Your fleet management system is ready to help you optimize operations.",
-        "owner": "Welcome to FleetNest! Your comprehensive fleet management platform is fully configured.",
-        "default": "Welcome to FleetNest! Your account is configured and ready to use."
+        "driver": "Welcome to Harvox TMS! You're all set to start managing your trips and vehicle inspections.",
+        "company_owner": "Welcome to Harvox TMS! Your fleet management system is ready to help you optimize operations.",
+        "owner": "Welcome to Harvox TMS! Your comprehensive fleet management platform is fully configured.",
+        "default": "Welcome to Harvox TMS! Your account is configured and ready to use."
       },
       "action": "Get Started"
     },

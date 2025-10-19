@@ -53,18 +53,18 @@ export const usePWA = (): PWAHook => {
       setIsInstallable(false);
       setDeferredPrompt(null);
       
-      showSuccess("¡FleetNest instalado!", "La aplicación se ha instalado correctamente en tu dispositivo.");
+      showSuccess("¡Harvox TMS instalado!", "La aplicación se ha instalado correctamente en tu dispositivo.");
     };
 
     // Online/offline status
     const handleOnline = () => {
       setIsOnline(true);
-      showSuccess("Conexión restaurada", "FleetNest está nuevamente en línea.");
+      showSuccess("Conexión restaurada", "Harvox TMS está nuevamente en línea.");
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      showError("Sin conexión", "FleetNest funcionará en modo offline con datos guardados.");
+      showError("Sin conexión", "Harvox TMS funcionará en modo offline con datos guardados.");
     };
 
     // Add event listeners
@@ -90,7 +90,7 @@ export const usePWA = (): PWAHook => {
                   showNotification(
                     'info',
                     "🚀 Nueva versión disponible",
-                    "FleetNest se ha actualizado. Haz clic en 'Actualizar' para usar la nueva versión.",
+                    "Harvox TMS se ha actualizado. Haz clic en 'Actualizar' para usar la nueva versión.",
                     {
                       persistent: true,
                       showAction: true,

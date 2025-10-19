@@ -63,7 +63,7 @@ export const PWAInstallBanner: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground mb-2">
-                ¡Instala FleetNest!
+                ¡Instala Harvox TMS!
               </p>
               <div className="text-xs text-muted-foreground space-y-1">
                 {isAndroid && (
@@ -104,7 +104,7 @@ export const PWAInstallBanner: React.FC = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground">
-                ¡Instala FleetNest!
+                ¡Instala Harvox TMS!
               </p>
               <p className="text-xs text-muted-foreground">
                 Accede rápidamente desde tu pantalla de inicio

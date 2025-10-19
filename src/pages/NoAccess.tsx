@@ -38,7 +38,7 @@ export default function NoAccess() {
             </h4>
             <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
               <li>• Contacta al administrador de tu empresa</li>
-              <li>• Solicita una invitación a FleetNest</li>
+              <li>• Solicita una invitación a Harvox TMS</li>
               <li>• Una vez invitado, podrás acceder al dashboard</li>
             </ul>
           </div>
@@ -46,7 +46,7 @@ export default function NoAccess() {
           <div className="space-y-3">
             <div className="flex items-center space-x-3 text-sm text-muted-foreground">
               <Mail className="h-4 w-4" />
-              <span>soporte@fleetnest.com</span>
+              <span>soporte@harvoxtms.com</span>
             </div>
             <div className="flex items-center space-x-3 text-sm text-muted-foreground">
               <Phone className="h-4 w-4" />

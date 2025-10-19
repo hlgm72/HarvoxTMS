@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-const fleetNestLogo = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png';
+const harvoxLogo = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png';
 
 export default function Landing() {
   const { t } = useTranslation(['landing', 'common']);
@@ -65,8 +65,8 @@ export default function Landing() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
-                src={fleetNestLogo} 
-                alt="FleetNest Logo" 
+                src={harvoxLogo} 
+                alt="Harvox TMS Logo"
                 className="h-10 w-10 object-contain"
               />
               <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary">{t('common:app.name')}</span>
@@ -248,8 +248,8 @@ export default function Landing() {
             <div className="md:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
                 <img 
-                  src={fleetNestLogo} 
-                  alt="FleetNest Logo" 
+                  src={harvoxLogo} 
+                  alt="Harvox TMS Logo"
                   className="h-10 w-10 object-contain"
                 />
                 <span className="text-2xl font-bold text-primary">{t('common:app.name')}</span>

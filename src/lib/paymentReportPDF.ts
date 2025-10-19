@@ -1016,26 +1016,26 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     // Contenedor del pie de página con mismo estilo que la cabecera
     addRoundedBox(margin - 5, footerY - 7, pageWidth - margin*2 + 10, footerHeight, colors.lightGray, 2, colors.border);
     
-    // Logo y textos de FleetNest TMS (izquierda)
-    // Logo de la app FleetNest TMS
+    // Logo y textos de Harvox TMS (izquierda)
+    // Logo de la app Harvox TMS
     const logoSize = 8; // Tamaño pequeño para el pie de página
     let logoWidth = 0;
     
     try {
-      // URL del logo de FleetNest TMS (puedes cambiar esta URL por la del logo real de la app)
-      const fleetNestLogoUrl = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png'; // Logo real de FleetNest TMS
-      const logoData = await loadImageFromUrl(fleetNestLogoUrl);
+      // URL del logo de Harvox TMS (puedes cambiar esta URL por la del logo real de la app)
+      const harvoxLogoUrl = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png'; // Logo real de Harvox TMS
+      const logoData = await loadImageFromUrl(harvoxLogoUrl);
       if (logoData) {
         doc.addImage(logoData, 'PNG', margin, footerY - 5, logoSize, logoSize);
         logoWidth = logoSize + 2;
       }
     } catch (error) {
-      console.error('Error loading FleetNest TMS logo in footer:', error);
+      console.error('Error loading Harvox TMS logo in footer:', error);
     }
     
-    // Si no hay logo, usar iniciales "FN" para FleetNest
+    // Si no hay logo, usar iniciales "HT" para Harvox TMS
     if (logoWidth === 0) {
-      addText('FN', margin, footerY - 1, {
+      addText('HT', margin, footerY - 1, {
         fontSize: 10,
         fontStyle: 'bold',
         color: colors.primary
@@ -1043,7 +1043,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       logoWidth = 12;
     }
     
-    addText('Powered by FleetNest TMS', margin + logoWidth, footerY - 2, {
+    addText('Powered by Harvox TMS', margin + logoWidth, footerY - 2, {
       fontSize: 8,
       color: '#003366' // Color de fuente #003366
     });

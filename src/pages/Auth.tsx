@@ -12,7 +12,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { createTextHandlers } from '@/lib/textUtils';
-const fleetNestLogo = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png';
+const harvoxLogo = '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png';
 
 export default function Auth() {
   const { t, i18n } = useTranslation(['auth', 'common']);
@@ -629,8 +629,8 @@ export default function Auth() {
           <div className="flex items-center space-x-4 mb-8">
             <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
               <img 
-                src={fleetNestLogo}
-                alt="FleetNest Logo" 
+                src={harvoxLogo}
+                alt="Harvox TMS Logo"
                 className="h-16 w-16 object-contain"
               />
               <span className="text-3xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>
@@ -702,8 +702,8 @@ export default function Auth() {
             <div className="flex justify-center mb-6 lg:hidden">
               <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-primary shadow-glow">
                 <img 
-                  src={fleetNestLogo}
-                  alt="FleetNest Logo" 
+                  src={harvoxLogo}
+                  alt="Harvox TMS Logo"
                   className="h-12 w-12 object-contain"
                 />
                 <span className="text-xl font-heading font-bold text-white drop-shadow-lg">{t('common:app.name')}</span>

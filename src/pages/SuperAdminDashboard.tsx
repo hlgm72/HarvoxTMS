@@ -1086,7 +1086,7 @@ export default function SuperAdminDashboard() {
                       Company Details: {companyToView?.name}
                     </DialogTitle>
                     <DialogDescription>
-                      Complete information about this company in the FleetNest system.
+                      Complete information about this company in the Harvox TMS system.
                     </DialogDescription>
                   </DialogHeader>
                   

@@ -69,7 +69,7 @@ try {
   title.textContent = 'Error de inicialización';
   
   const description = document.createElement('p');
-  description.textContent = 'No se pudo cargar FleetNest. Por favor, intenta:';
+  description.textContent = 'No se pudo cargar Harvox TMS. Por favor, intenta:';
   
   const stepsList = document.createElement('ul');
   stepsList.style.cssText = 'margin: 15px 0;';

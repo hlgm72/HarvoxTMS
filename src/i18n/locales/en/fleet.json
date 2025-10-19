@@ -30,7 +30,7 @@
     "dispatch_panel": "Dispatch Panel",
     "recent_loads": "Recent Loads",
     "command_map": "Real-Time Command Map",
-    "command_center": "FleetNest Command Center"
+    "command_center": "Harvox TMS Command Center"
   },
   "vehicle": {
     "truck_number": "Truck Number",
@@ -188,7 +188,7 @@
     "recent_locations": "Recent Locations"
   },
   "driver_interface": {
-    "title": "FleetNest Driver",
+    "title": "Harvox TMS Driver",
     "driver": "Driver:",
     "active": "Active",
     "inactive": "Inactive",

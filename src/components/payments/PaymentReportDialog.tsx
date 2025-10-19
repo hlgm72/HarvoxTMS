@@ -531,7 +531,7 @@ export function PaymentReportDialog({
             <div style="background: #002652; padding: 30px; text-align: center;">
               <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
                 <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png" 
-                     alt="FleetNest Logo" 
+                     alt="Harvox TMS Logo" 
                      style="width: 40px; height: 40px; object-fit: contain;">
                 <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">${translations.header.title}</h1>
               </div>
@@ -578,7 +578,7 @@ export function PaymentReportDialog({
               
               <p style="color: #4b5563; line-height: 1.6;">
                 ${translations.content.closing}<br>
-                <strong>${company?.name || 'FleetNest TMS'}</strong>
+                <strong>${company?.name || 'Harvox TMS'}</strong>
               </p>
             </div>
             

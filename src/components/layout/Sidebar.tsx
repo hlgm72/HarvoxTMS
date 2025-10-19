@@ -754,7 +754,7 @@ export function AppSidebar() {
           <div className="relative group">
             <img 
               src="/lovable-uploads/a5a7d46d-7f62-4a44-9ac6-0b8e2b1d0a71.png" 
-              alt="FleetNest Logo" 
+              alt="Harvox TMS Logo" 
               className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} object-contain transition-all duration-300 group-hover:scale-110`}
             />
           </div>
@@ -764,7 +764,7 @@ export function AppSidebar() {
               {/* Brand Section */}
               <div className="space-y-1">
                 <h2 className="font-bold text-xl text-white tracking-tight leading-none bg-gradient-to-r from-white to-white/90 bg-clip-text">
-                  FleetNest
+                  Harvox TMS
                   {isSuperAdmin && <span className="text-blue-300 ml-2 text-sm font-medium">Admin</span>}
                 </h2>
                 <p className="text-sm text-white/70 font-medium tracking-wide">

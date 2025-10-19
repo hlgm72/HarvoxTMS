@@ -165,7 +165,7 @@ export default function Setup() {
           </div>
           <CardTitle className="text-2xl">Setup Inicial</CardTitle>
           <CardDescription>
-            Crear cuenta de Superadmin para FleetNest
+            Crear cuenta de Superadmin para Harvox TMS
           </CardDescription>
         </CardHeader>
         
@@ -178,7 +178,7 @@ export default function Setup() {
                 type="email"
                 value={formData.email}
                 {...emailHandlers}
-                placeholder="admin@fleetnest.com"
+                placeholder="admin@harvoxtms.com"
                 required
                 disabled={loading}
               />

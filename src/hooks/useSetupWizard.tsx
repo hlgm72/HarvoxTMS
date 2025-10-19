@@ -13,7 +13,7 @@ export function useSetupWizard() {
 
     try {
       // Verificar si ya completó el setup usando localStorage
-      const setupKey = `fleetnest_setup_${user.id}_${currentRole}`;
+      const setupKey = `harvoxtms_setup_${user.id}_${currentRole}`;
       const completed = localStorage.getItem(setupKey);
       
       // También verificar si completó el onboarding - USAR MISMA CLAVE que useOnboarding
@@ -76,7 +76,7 @@ export function useSetupWizard() {
     if (!user || !currentRole) return;
 
     try {
-      const setupKey = `fleetnest_setup_${user.id}_${currentRole}`;
+      const setupKey = `harvoxtms_setup_${user.id}_${currentRole}`;
       localStorage.setItem(setupKey, JSON.stringify({
         completed: true,
         completed_at: new Date().toISOString()
@@ -92,7 +92,7 @@ export function useSetupWizard() {
     if (!user || !currentRole) return;
 
     try {
-      const setupKey = `fleetnest_setup_${user.id}_${currentRole}`;
+      const setupKey = `harvoxtms_setup_${user.id}_${currentRole}`;
       localStorage.removeItem(setupKey);
       setShouldShowSetup(true);
     } catch (error) {

@@ -114,7 +114,7 @@
     },
     "messages": {
       "company_created_success": "Company created successfully!",
-      "company_created_desc": "has been added to the FleetNest system",
+      "company_created_desc": "has been added to the Harvox TMS system",
       "company_creation_error": "Error creating company",
       "company_creation_error_desc": "An error occurred while creating the company. Please try again."
     },
@@ -166,7 +166,7 @@
       "system_health": "System Health"
     },
     "header": {
-      "control_center": "FleetNest Control Center",
+      "control_center": "Harvox TMS Control Center",
       "global_admin": "Global administration system",
       "system_administrator": "System Administrator",
       "system_status": "System Status: Operational",
@@ -175,7 +175,7 @@
     },
     "dialogs": {
       "create_company": "Create New Company",
-      "create_company_desc": "Add a new transportation company to the FleetNest system",
+      "create_company_desc": "Add a new transportation company to the Harvox TMS system",
       "company_email": "Company Email",
       "owner_title_label": "Owner Title",
       "plan_type_label": "Plan Type",
