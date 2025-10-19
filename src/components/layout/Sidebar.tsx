@@ -642,12 +642,7 @@ export function AppSidebar() {
                           <NavLink
                             to={item.url}
                             end
-                            onClick={(e) => {
-                              console.log('Tooltip clicked for:', item.title);
-                              handleNavClick();
-                            }}
-                            onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
-                            onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
+                            onClick={handleNavClick}
                             className={`font-body group/nav-item relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
                               active 
                                 ? "bg-white/20 text-white shadow-lg" 

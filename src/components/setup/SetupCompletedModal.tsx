@@ -12,7 +12,6 @@ interface SetupCompletedModalProps {
 
 export function SetupCompletedModal({ isOpen, onClose, userRole }: SetupCompletedModalProps) {
   const { t } = useTranslation('onboarding');
-  console.log('🎯 SetupCompletedModal render - isOpen:', isOpen);
   
   const getMessage = () => {
     return t(`setup.completion.message.${userRole}`) || t('setup.completion.message.default');
