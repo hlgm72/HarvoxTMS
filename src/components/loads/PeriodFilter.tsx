@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Calendar, CalendarDays, ChevronDown, Clock, Loader2 } from 'lucide-react';
 import { usePaymentPeriods, useCurrentPaymentPeriod, usePreviousPaymentPeriod, useNextPaymentPeriod } from '@/hooks/usePaymentPeriods';
@@ -359,9 +358,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                   >
                     <CalendarDays className="h-4 w-4 mr-2" />
                     {t('periods.all')}
-                    <Badge variant="secondary" className="ml-auto text-xs">
-                      {allPeriods.length}
-                    </Badge>
                   </Button>
                 </div>
               </div>
