@@ -4613,6 +4613,10 @@ export type Database = {
           user_email: string
         }[]
       }
+      verify_recurring_instances_integrity: {
+        Args: { template_id_param?: string }
+        Returns: Json
+      }
     }
     Enums: {
       document_type:
