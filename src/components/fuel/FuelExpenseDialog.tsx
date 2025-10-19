@@ -653,6 +653,7 @@ export function FuelExpenseDialog({
                               fromYear={2020}
                               toYear={2030}
                               initialFocus
+                              className="p-1"
                             />
                           </div>
                         </PopoverContent>
