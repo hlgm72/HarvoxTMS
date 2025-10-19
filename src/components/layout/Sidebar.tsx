@@ -637,7 +637,7 @@ export function AppSidebar() {
               return (
                  <div key={item.title}>
                     {collapsed ? (
-                      <Tooltip>
+                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => {
@@ -646,22 +646,21 @@ export function AppSidebar() {
                             }}
                             onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
                             onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
-                            className={`font-body group relative flex items-center gap-3 transition-all duration-200 w-full py-2 justify-center ${
+                            className={`font-body group relative flex items-center justify-center transition-all duration-200 w-full py-3 ${
                               active 
-                                ? "bg-white/20 text-white shadow-lg border-l-2 border-white" 
+                                ? "bg-white/20 text-white shadow-lg" 
                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                             }`}
                          >
                            <IconComponent 
-                             className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
+                             className={`h-5 w-5 flex-shrink-0 transition-all duration-200 ${
                                active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
-                             }`} 
-                             style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
+                             }`}
                            />
                            
                            {/* Active indicator */}
                            {active && (
-                             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-white"></div>
+                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
                            )}
                          </button>
                         </TooltipTrigger>
