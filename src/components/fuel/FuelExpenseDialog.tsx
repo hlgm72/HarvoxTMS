@@ -714,10 +714,17 @@ export function FuelExpenseDialog({
                       <FormControl>
                         <Input 
                           type="number" 
-                          step="0.001" 
+                          step="0.01" 
                           placeholder={t('fuel:create_dialog.placeholders.gallons')} 
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value) || 0;
+                            field.onChange(Number(value.toFixed(2)));
+                          }}
+                          onBlur={(e) => {
+                            const value = parseFloat(e.target.value) || 0;
+                            e.target.value = value.toFixed(2);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
