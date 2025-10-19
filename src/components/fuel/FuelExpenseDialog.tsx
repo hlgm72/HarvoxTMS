@@ -614,6 +614,8 @@ export function FuelExpenseDialog({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
+                              onClear={() => field.onChange(undefined)}
+                              onToday={() => field.onChange(new Date())}
                               fromYear={2020}
                               toYear={2030}
                               initialFocus

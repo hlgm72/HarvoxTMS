@@ -92,6 +92,8 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
                 mode="single"
                 selected={startDate}
                 onSelect={setStartDate}
+                onClear={() => setStartDate(undefined)}
+                onToday={() => setStartDate(new Date())}
                 initialFocus
               />
             </PopoverContent>
@@ -119,6 +121,8 @@ export function CreateSpecialPeriodDialog({ onClose, onSuccess }: CreateSpecialP
                 mode="single"
                 selected={endDate}
                 onSelect={setEndDate}
+                onClear={() => setEndDate(undefined)}
+                onToday={() => setEndDate(new Date())}
                 initialFocus
               />
             </PopoverContent>

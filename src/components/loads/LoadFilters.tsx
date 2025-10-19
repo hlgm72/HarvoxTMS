@@ -172,6 +172,8 @@ export function LoadFilters({ filters, onFiltersChange }: LoadFiltersProps) {
                   defaultMonth={filters.dateRange.from}
                   selected={filters.dateRange}
                   onSelect={(range) => handleFilterChange("dateRange", range || { from: undefined, to: undefined })}
+                  onClear={() => handleFilterChange("dateRange", { from: undefined, to: undefined })}
+                  onToday={() => handleFilterChange("dateRange", { from: new Date(), to: new Date() })}
                   numberOfMonths={2}
                   className="pointer-events-auto"
                 />
