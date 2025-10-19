@@ -113,45 +113,87 @@ export default function Loads() {
   };
 
   const getPeriodDateRange = () => {
-    // console.log('📅 getPeriodDateRange - periodFilter:', periodFilter);
     if (!periodFilter) return '';
     
     if (periodFilter.startDate && periodFilter.endDate) {
-      // console.log('📅 Dates found:', periodFilter.startDate, periodFilter.endDate);
       const formatted = formatPaymentPeriodCompact(periodFilter.startDate, periodFilter.endDate);
-      // console.log('📅 Formatted range:', formatted);
       return formatted;
     }
     
-    // console.log('📅 No dates available');
     return '';
   };
 
-
-  const periodDateRange = getPeriodDateRange();
-  const periodDescription = getPeriodDescription();
-  
-  // Crear el subtitle dinámico con las estadísticas
-  const getSubtitle = () => {
-    // console.log('🎯 getSubtitle called - statsLoading:', statsLoading, 'loadsStats:', loadsStats);
+  // Generar descripción de filtros activos
+  const getFilterDescription = () => {
+    const parts: string[] = [];
     
-    if (statsLoading || !loadsStats) {
-      const loadingText = `${t('subtitle.loading')}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
-      // console.log('📝 Showing loading text:', loadingText);
-      return loadingText;
+    // Filtro de período con fechas
+    if (periodFilter) {
+      const dateRange = getPeriodDateRange();
+      const description = getPeriodDescription();
+      if (dateRange) {
+        parts.push(`${description}: ${dateRange}`);
+      } else {
+        parts.push(description);
+      }
     }
     
+    // Filtro de conductor
+    if (filters.driverId && filters.driverId !== 'all') {
+      const driver = drivers?.find(d => d.user_id === filters.driverId);
+      parts.push(`${t('filters.driver')}: ${driver ? driver.label : t('filters.selected')}`);
+    }
+    
+    // Filtro de broker
+    if (filters.brokerId && filters.brokerId !== 'all') {
+      parts.push(`${t('filters.broker')}: ${filters.brokerId}`);
+    }
+    
+    // Filtro de estado
+    if (filters.status && filters.status !== 'all') {
+      const statusLabels: Record<string, string> = {
+        pending: t('filters.pending'),
+        in_transit: t('filters.in_transit'),
+        delivered: t('filters.delivered'),
+        completed: t('filters.completed')
+      };
+      parts.push(`${t('filters.status')}: ${statusLabels[filters.status] || filters.status}`);
+    }
+    
+    if (parts.length === 0) {
+      return t('filters.no_filters');
+    }
+    
+    return parts.join(' • ');
+  };
+  
+  // Crear el subtitle dinámico con las estadísticas y filtros
+  const getSubtitle = () => {
+    const needsCalculatedPeriods = periodFilter?.type === 'current' || periodFilter?.type === 'previous';
+    
+    if (statsLoading || !loadsStats || (needsCalculatedPeriods && !calculatedPeriods)) {
+      return <div>{t('subtitle.loading')}</div>;
+    }
+    
+    // Primera línea: estadísticas
     const stats = [
       `${loadsStats.totalActive} ${t('subtitle.active_loads')}`,
       `${formatCurrency(loadsStats.totalAmount)} ${t('subtitle.in_transit')}`,
       `${loadsStats.pendingAssignment} ${t('subtitle.pending_assignment')}`
     ].join(' • ');
     
-    const finalSubtitle = `${stats}${periodDateRange ? ` • ${periodDescription}: ${periodDateRange}` : ''}`;
-    // console.log('📝 Final subtitle:', finalSubtitle);
-    // console.log('📊 Stats used:', loadsStats);
+    // Segunda línea: filtros activos
+    const filterDescription = getFilterDescription();
     
-    return finalSubtitle;
+    return (
+      <>
+        <div>{stats}</div>
+        <div className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
+          <span className="font-medium">{t('filters.active_filters')}</span>
+          <span>{filterDescription}</span>
+        </div>
+      </>
+    );
   };
   
   // console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });

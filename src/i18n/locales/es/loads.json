@@ -753,7 +753,14 @@
     },
     "period_label": "Período",
     "clear": "Limpiar Filtros",
-    "apply": "Aplicar Filtros"
+    "apply": "Aplicar Filtros",
+    "pending": "Pendiente",
+    "in_transit": "En tránsito",
+    "delivered": "Entregado",
+    "completed": "Completado",
+    "selected": "Seleccionado",
+    "no_filters": "Sin filtros activos",
+    "active_filters": "Filtros activos:"
   },
   "empty_state": {
     "title": "Comienza tu gestión de cargas",

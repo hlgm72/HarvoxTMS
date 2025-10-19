@@ -753,7 +753,14 @@
     },
     "period_label": "Period",
     "clear": "Clear Filters",
-    "apply": "Apply Filters"
+    "apply": "Apply Filters",
+    "pending": "Pending",
+    "in_transit": "In Transit",
+    "delivered": "Delivered",
+    "completed": "Completed",
+    "selected": "Selected",
+    "no_filters": "No active filters",
+    "active_filters": "Active filters:"
   },
   "empty_state": {
     "title": "Start your load management",
