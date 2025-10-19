@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipPortal } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -663,13 +663,15 @@ export function AppSidebar() {
                              )}
                            </button>
                           </TooltipTrigger>
-                         <TooltipContent 
-                           side="right" 
-                           className="bg-slate-900 text-white border-slate-700 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
-                           sideOffset={16}
-                         >
-                           {item.title}
-                         </TooltipContent>
+                         <TooltipPortal>
+                           <TooltipContent 
+                             side="right" 
+                             className="bg-slate-900 text-white border-slate-700 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
+                             sideOffset={16}
+                           >
+                             {item.title}
+                           </TooltipContent>
+                         </TooltipPortal>
                        </Tooltip>
                    ) : (
                          <NavLink 
