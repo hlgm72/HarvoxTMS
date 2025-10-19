@@ -256,7 +256,8 @@ export function FuelExpenseDialog({
         form.setValue('card_last_five', selectedCard.card_number_last_five);
       }
     }
-  }, [selectedDriverCardId, driverCards, isEditMode, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDriverCardId, driverCards, isEditMode]);
 
   // Función para calcular las fechas del período basado en la fecha de transacción
   const calculatePeriodDates = (transactionDate: Date, company: any) => {
@@ -401,7 +402,8 @@ export function FuelExpenseDialog({
         grossAmountATM.setValue(roundedGross);
       }
     }
-  }, [gallons, pricePerGallon, isEditMode, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gallons, pricePerGallon, isEditMode]);
 
   // Auto-calculate total amount (gross - discounts + fees) - only for create mode
   React.useEffect(() => {
@@ -420,7 +422,8 @@ export function FuelExpenseDialog({
         }
       }
     }
-  }, [grossAmount, discountAmount, fees, isEditMode, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grossAmount, discountAmount, fees, isEditMode]);
 
   // Auto-calculate total for edit mode (simple calculation)
   React.useEffect(() => {
@@ -433,7 +436,8 @@ export function FuelExpenseDialog({
         form.setValue('total_amount', roundedTotal);
       }
     }
-  }, [gallons, pricePerGallon, isEditMode, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gallons, pricePerGallon, isEditMode]);
 
   // Auto-select payment period based on transaction date (solo buscar, no crear)
   const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
@@ -470,7 +474,8 @@ export function FuelExpenseDialog({
         }
       }
     }
-  }, [transactionDate, paymentPeriods, userCompany, isEditMode, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactionDate, paymentPeriods, userCompany, isEditMode]);
 
   if (isEditMode && !expenseId) return null;
 
