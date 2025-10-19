@@ -603,7 +603,17 @@ export function FuelExpenseDialog({
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent 
+                          className="w-auto p-0" 
+                          align="start"
+                          onInteractOutside={(e) => {
+                            // Prevenir que el popover se cierre al interactuar con los dropdowns
+                            const target = e.target as HTMLElement;
+                            if (target.tagName === 'SELECT' || target.closest('select')) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
                           <Calendar
                             mode="single"
                             captionLayout="dropdown"

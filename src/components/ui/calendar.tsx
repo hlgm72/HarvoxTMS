@@ -82,11 +82,12 @@ function Calendar({
           IconRight: ({ ..._props }) => <ChevronDown className="h-4 w-4" />,
           Dropdown: ({ value, onChange, children, ...props }: DropdownProps) => {
             const options = React.Children.toArray(children) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[];
-            const selected = options.find((child) => child.props.value === value);
             
-            const handleChange = (value: string) => {
+            const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+              e.preventDefault();
+              e.stopPropagation();
               const changeEvent = {
-                target: { value },
+                target: { value: e.target.value },
               } as React.ChangeEvent<HTMLSelectElement>;
               onChange?.(changeEvent);
             };
@@ -94,8 +95,11 @@ function Calendar({
             return (
               <select
                 value={value}
-                onChange={(e) => handleChange(e.target.value)}
-                className="text-sm bg-background border border-input rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-primary font-medium"
+                onChange={handleChange}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                className="text-sm bg-background border border-input rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-primary font-medium cursor-pointer"
+                style={{ pointerEvents: 'auto' }}
               >
                 {options.map((option, id: number) => (
                   <option
