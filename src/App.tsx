@@ -214,7 +214,9 @@ function AppContent() {
           path="/clients" 
           element={
             <ProtectedRoute>
-              <Clients />
+              <Layout>
+                <Clients />
+              </Layout>
             </ProtectedRoute>
           } 
         />
