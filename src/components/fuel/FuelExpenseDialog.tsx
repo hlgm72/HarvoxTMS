@@ -603,11 +603,14 @@ export function FuelExpenseDialog({
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start" style={{ pointerEvents: 'auto' }}>
+                        <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
+                            captionLayout="dropdown"
                             selected={field.value}
                             onSelect={field.onChange}
+                            fromYear={2020}
+                            toYear={2030}
                             initialFocus
                           />
                         </PopoverContent>

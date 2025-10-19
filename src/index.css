@@ -400,4 +400,9 @@ All colors MUST be HSL.
     top: auto !important;
     bottom: auto !important;
   }
+
+  /* Hide the hidden caption element from react-day-picker */
+  .rdp-vhidden {
+    @apply hidden;
+  }
 }

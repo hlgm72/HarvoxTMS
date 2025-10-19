@@ -6,6 +6,8 @@ import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTranslation } from "react-i18next";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
@@ -78,39 +80,40 @@ function Calendar({
         components={{
           IconLeft: ({ ..._props }) => <ChevronUp className="h-4 w-4" />,
           IconRight: ({ ..._props }) => <ChevronDown className="h-4 w-4" />,
-          Dropdown: (dropdownProps: DropdownProps) => {
-            const { value, onChange, children } = dropdownProps;
+          Dropdown: ({ value, onChange, children, ...props }: DropdownProps) => {
+            const options = React.Children.toArray(children) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[];
+            const selected = options.find((child) => child.props.value === value);
             
-            const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-              if (onChange) {
-                onChange(e as React.ChangeEvent<HTMLSelectElement>);
-              }
+            const handleChange = (value: string) => {
+              const changeEvent = {
+                target: { value },
+              } as React.ChangeEvent<HTMLSelectElement>;
+              onChange?.(changeEvent);
             };
-
-            if (dropdownProps.name === 'years') {
-              return (
-                <input
-                  type="number"
-                  min={fromYear}
-                  max={toYear}
-                  value={value}
-                  onChange={handleChange}
-                  style={{ pointerEvents: 'auto' }}
-                  className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center relative z-[100]"
-                />
-              );
-            }
             
-            // Dropdown de meses
             return (
-              <select
-                value={value}
-                onChange={handleChange}
-                style={{ pointerEvents: 'auto' }}
-                className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium relative z-[100]"
+              <Select
+                value={value?.toString()}
+                onValueChange={(value) => {
+                  handleChange(value);
+                }}
               >
-                {children}
-              </select>
+                <SelectTrigger className="pr-1.5 focus:ring-0 bg-background">
+                  <SelectValue>{selected?.props?.children}</SelectValue>
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <ScrollArea className="h-80">
+                    {options.map((option, id: number) => (
+                      <SelectItem
+                        key={`${option.props.value}-${id}`}
+                        value={option.props.value?.toString() ?? ""}
+                      >
+                        {option.props.children}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
+                </SelectContent>
+              </Select>
             );
           },
         }}
