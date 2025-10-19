@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -635,41 +635,46 @@ export function AppSidebar() {
               const IconComponent = item.icon;
               
               return (
-                 <div key={item.title}>
-                    {collapsed ? (
-                        <Tooltip>
-                        <TooltipTrigger asChild>
-                          <NavLink
-                            to={item.url}
-                            end
-                            onClick={handleNavClick}
-                            className={`font-body group/nav-item relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
-                              active 
-                                ? "bg-white/20 text-white shadow-lg" 
-                                : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
-                            }`}
-                         >
-                           <IconComponent 
-                             className={`h-4 w-4 flex-shrink-0 transition-all duration-200 ${
-                               active ? "text-white drop-shadow-sm" : "text-white/70 group-hover/nav-item:text-white"
-                             }`}
-                           />
-                           
-                           {/* Active indicator */}
-                           {active && (
-                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
-                           )}
-                         </NavLink>
-                         </TooltipTrigger>
+                  <div key={item.title}>
+                     {collapsed ? (
+                         <Tooltip delayDuration={0}>
+                         <TooltipTrigger asChild>
+                           <div>
+                             <NavLink
+                               to={item.url}
+                               end
+                               onClick={handleNavClick}
+                               className={`font-body group/nav-item relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
+                                 active 
+                                   ? "bg-white/20 text-white shadow-lg" 
+                                   : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                               }`}
+                            >
+                              <IconComponent 
+                                className={`h-4 w-4 flex-shrink-0 transition-all duration-200 ${
+                                  active ? "text-white drop-shadow-sm" : "text-white/70 group-hover/nav-item:text-white"
+                                }`}
+                              />
+                              
+                              {/* Active indicator */}
+                              {active && (
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+                              )}
+                            </NavLink>
+                           </div>
+                          </TooltipTrigger>
                          <TooltipContent 
                            side="right" 
                            className="bg-slate-900 text-white border-slate-700 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
                            sideOffset={16}
                            avoidCollisions={false}
+                           collisionPadding={8}
                          >
-                           {item.title}
+                           <div className="relative z-[100001]">
+                             {item.title}
+                           </div>
                          </TooltipContent>
-                      </Tooltip>
+                       </Tooltip>
                    ) : (
                          <NavLink 
                            to={item.url} 
@@ -729,7 +734,6 @@ export function AppSidebar() {
   };
 
   return (
-    <TooltipProvider delayDuration={200} skipDelayDuration={0}>
       <Sidebar
         className="mr-0"
         collapsible="icon"
@@ -738,8 +742,7 @@ export function AppSidebar() {
         style={{ 
           backgroundColor: 'hsl(var(--sidebar-background))',
           width: collapsed ? '56px' : 'var(--sidebar-width)',
-          marginRight: '0px',
-          overflow: 'visible'
+          marginRight: '0px'
         } as any}
       >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4' : 'px-6 py-6'}`} style={{ 
@@ -896,6 +899,5 @@ export function AppSidebar() {
         </div>
       </SidebarContent>
     </Sidebar>
-    </TooltipProvider>
   );
 }
