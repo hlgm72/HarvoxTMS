@@ -30,15 +30,15 @@ export const EmailFooter = () => (
         </Text>
         
         <Section style={linksSection}>
-          <Link href="https://harvox.app/terms" style={footerLink}>
+          <Link href="https://harvoxtms.com/terms" style={footerLink}>
             Términos de Servicio
           </Link>
           <Text style={linkDivider}>•</Text>
-          <Link href="https://harvox.app/privacy" style={footerLink}>
+          <Link href="https://harvoxtms.com/privacy" style={footerLink}>
             Política de Privacidad
           </Link>
           <Text style={linkDivider}>•</Text>
-          <Link href="https://harvox.app/support" style={footerLink}>
+          <Link href="https://harvoxtms.com/support" style={footerLink}>
             Soporte
           </Link>
         </Section>

@@ -126,7 +126,7 @@ const handler = async (req: Request): Promise<Response> => {
     const companyEmail = company.email;
     
     // Always use verified Harvox TMS email as sender for deliverability
-    const senderEmail = "noreply@harvox.app";
+    const senderEmail = "noreply@harvoxtms.com";
 
     // Get documents information
     const { data: documents, error: docsError } = await supabase

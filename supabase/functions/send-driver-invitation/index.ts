@@ -410,7 +410,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('📧 Attempting to send email with Resend...');
     console.log('Email configuration:', {
       to: email,
-      from: "Harvox TMS <no-reply@harvox.app>",
+      from: "Harvox TMS <no-reply@harvoxtms.com>",
       subject: `Invitación para unirte como conductor en ${companyName}`,
       invitationUrl: invitationUrl,
       resendKeyConfigured: !!resendApiKey,
@@ -430,7 +430,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
 
       emailResponse = await resend.emails.send({
-        from: "Harvox TMS <no-reply@harvox.app>",
+        from: "Harvox TMS <no-reply@harvoxtms.com>",
         to: [email],
         subject: `¡Bienvenido al equipo de ${companyName}!`,
         html: emailHtml,
