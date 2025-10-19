@@ -58,41 +58,37 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
   };
   
   return (
-    <div className="flex justify-center items-center gap-2 py-2">
-      <div className="flex items-center gap-1">
-        <span className="text-sm font-medium min-w-[100px] text-center">
+    <div className="flex justify-center items-center gap-2 py-2 pointer-events-auto">
+      <div className="flex items-center gap-1 pointer-events-auto">
+        <span className="text-sm font-medium min-w-[100px] text-center pointer-events-none">
           {months[currentMonth]}
         </span>
-        <div className="flex flex-col">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-4 w-6 p-0"
+        <div className="flex flex-col pointer-events-auto">
+          <button
+            type="button"
+            className="h-4 w-6 p-0 hover:bg-accent rounded flex items-center justify-center pointer-events-auto"
             onClick={handlePreviousMonth}
           >
             <ChevronUp className="h-3 w-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-4 w-6 p-0"
+          </button>
+          <button
+            type="button"
+            className="h-4 w-6 p-0 hover:bg-accent rounded flex items-center justify-center pointer-events-auto"
             onClick={handleNextMonth}
           >
             <ChevronDown className="h-3 w-3" />
-          </Button>
+          </button>
         </div>
       </div>
       
-      <div className="flex items-center gap-1">
-        <span className="text-sm font-medium min-w-[60px] text-center">
+      <div className="flex items-center gap-1 pointer-events-auto">
+        <span className="text-sm font-medium min-w-[60px] text-center pointer-events-none">
           {currentYear}
         </span>
-        <div className="flex flex-col">
-          <Button
+        <div className="flex flex-col pointer-events-auto">
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
-            className="h-4 w-6 p-0"
+            className="h-4 w-6 p-0 hover:bg-accent rounded flex items-center justify-center pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handlePreviousYear}
             onMouseDown={(e) => {
               e.preventDefault();
@@ -101,12 +97,10 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
             disabled={currentYear <= fromYear}
           >
             <ChevronUp className="h-3 w-3" />
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="ghost"
-            size="sm"
-            className="h-4 w-6 p-0"
+            className="h-4 w-6 p-0 hover:bg-accent rounded flex items-center justify-center pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNextYear}
             onMouseDown={(e) => {
               e.preventDefault();
@@ -115,7 +109,7 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
             disabled={currentYear >= toYear}
           >
             <ChevronDown className="h-3 w-3" />
-          </Button>
+          </button>
         </div>
       </div>
     </div>
@@ -137,12 +131,12 @@ function Calendar({
   const locale = i18n.language === 'es' ? es : undefined;
   
   return (
-    <div className="relative">
+    <div className="relative pointer-events-auto">
       <DayPicker
         weekStartsOn={1}
         showOutsideDays={showOutsideDays}
         locale={locale}
-        className={cn("p-3", className)}
+        className={cn("p-3 pointer-events-auto", className)}
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
           month: "space-y-4",

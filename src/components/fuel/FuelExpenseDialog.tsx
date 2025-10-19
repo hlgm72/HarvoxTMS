@@ -595,15 +595,17 @@ export function FuelExpenseDialog({
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            fromYear={2020}
-                            toYear={2030}
-                            initialFocus
-                          />
+                        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+                          <div className="pointer-events-auto">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              fromYear={2020}
+                              toYear={2030}
+                              initialFocus
+                            />
+                          </div>
                         </PopoverContent>
                       </Popover>
                       <FormMessage />
