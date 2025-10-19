@@ -785,7 +785,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="py-2 px-0 overflow-y-auto" style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className={`overflow-y-auto ${collapsed ? 'p-0' : 'py-2 px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
             <>
