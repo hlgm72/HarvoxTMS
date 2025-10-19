@@ -511,6 +511,7 @@
   },
   "mark_paid_dialog": {
     "title": "Mark as Paid",
+    "description": "Confirm the payment made to this driver. Enter the details of the payment method used.",
     "payment_method": "Payment Method",
     "payment_method_required": "Payment Method *",
     "payment_method_placeholder": "Select payment method",

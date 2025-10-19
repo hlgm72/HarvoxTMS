@@ -99,7 +99,7 @@ export function MarkDriverPaidDialog({
             {t("mark_paid_dialog.title")}
           </DialogTitle>
           <DialogDescription>
-            Confirmar el pago realizado a este conductor. Ingresa los detalles del método de pago utilizado.
+            {t("mark_paid_dialog.description")}
           </DialogDescription>
         </DialogHeader>
 

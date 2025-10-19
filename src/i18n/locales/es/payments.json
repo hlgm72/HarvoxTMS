@@ -446,6 +446,7 @@
   },
   "mark_paid_dialog": {
     "title": "Marcar como Pagado",
+    "description": "Confirmar el pago realizado a este conductor. Ingresa los detalles del método de pago utilizado.",
     "payment_method": "Método de Pago",
     "payment_method_required": "Método de Pago *",
     "payment_method_placeholder": "Seleccionar método de pago",
