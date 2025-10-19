@@ -4137,6 +4137,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_week_of_month: {
+        Args: { check_date: string }
+        Returns: number
+      }
       handle_load_stops: {
         Args: { load_id: string; operation_type: string; stops_data: Json[] }
         Returns: Json[]
