@@ -64,20 +64,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
         drivers_with_negative_balance: 0,
       };
 
-      // 🚨 RECÁLCULO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
-      // FORZAR recálculo completo para asegurar datos correctos después del revert
-      console.log('🔄 Forzando recálculo completo de la empresa:', periodResult.company_id);
-      const { data: integrityResult, error: integrityError } = await supabase
-        .rpc('verify_and_recalculate_company_payments', {
-          target_company_id: periodResult.company_id
-        });
-
-      if (integrityError) {
-        console.error('❌ Error en recálculo automático:', integrityError);
-        // Continuar con los datos disponibles aunque haya error en la verificación
-      } else {
-        console.log('✅ Recálculo completado:', integrityResult);
-      }
+      // Los recálculos ahora se manejan automáticamente en las funciones RPC
       
       // Obtener todos los user_payrolls para todos los usuarios de esta empresa
       const { data: allUserPeriods, error } = await supabase
@@ -186,17 +173,8 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
     queryFn: async (): Promise<PaymentPeriodSummary[]> => {
       if (!companyId) throw new Error('Company ID is required');
       
-      // 🚨 RECÁLCULO AUTOMÁTICO CRÍTICO - NO MODIFICAR SIN AUTORIZACIÓN
-      // Verificar y recalcular automáticamente la integridad de todos los cálculos de la empresa
-      const { data: integrityResult, error: integrityError } = await supabase
-        .rpc('verify_and_recalculate_company_payments', {
-          target_company_id: companyId
-        });
-
-      if (integrityError) {
-        console.warn('Error verificando integridad de cálculos:', integrityError);
-        // Continuar con los datos disponibles aunque haya error en la verificación
-      }
+      // Los recálculos ahora se manejan automáticamente en las funciones RPC
+      console.log('📊 Obteniendo todos los períodos de la empresa:', companyId);
       
       // Obtener todos los cálculos de la empresa
       const { data: allCalculations, error: calcError } = await supabase

@@ -55,33 +55,33 @@ export function MarkDriverPaidDialog({
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc('mark_driver_as_paid', {
-        calculation_id: calculationId,
-        payment_method_used: formData.paymentMethod,
-        payment_ref: formData.paymentReference || null,
-        notes: formData.notes || null
-      });
+      // Actualizar directamente usando user_payrolls
+      const { error } = await supabase
+        .from('user_payrolls')
+        .update({
+          payment_status: 'paid',
+          payment_method: formData.paymentMethod,
+          payment_reference: formData.paymentReference || null,
+          payment_notes: formData.notes || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', calculationId);
 
       if (error) throw error;
 
-      const result = data as { success?: boolean; message?: string };
-      if (result?.success) {
-        showSuccess(
-          t("mark_paid_dialog.notifications.success_title"), 
-          t("mark_paid_dialog.notifications.success_message", { driverName })
-        );
-        onOpenChange(false);
-        onSuccess?.();
-        
-        // Reset form
-        setFormData({
-          paymentMethod: "",
-          paymentReference: "",
-          notes: ""
-        });
-      } else {
-        showError(result?.message || t("mark_paid_dialog.notifications.error_default"));
-      }
+      showSuccess(
+        t("mark_paid_dialog.notifications.success_title"),
+        t("mark_paid_dialog.notifications.success_message", { driverName })
+      );
+      onOpenChange(false);
+      onSuccess?.();
+      
+      // Reset form
+      setFormData({
+        paymentMethod: "",
+        paymentReference: "",
+        notes: ""
+      });
     } catch (error: any) {
       console.error('Error marking driver as paid:', error);
       showError(error.message || t("mark_paid_dialog.notifications.error_unexpected"));
