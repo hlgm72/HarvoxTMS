@@ -39,13 +39,21 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
     goToMonth(newDate);
   };
   
-  const handlePreviousYear = () => {
+  const handlePreviousYear = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🔼 Año anterior clickeado', { currentYear, fromYear });
     const newDate = new Date(currentYear - 1, currentMonth, 1);
+    console.log('📅 Nueva fecha:', newDate);
     goToMonth(newDate);
   };
   
-  const handleNextYear = () => {
+  const handleNextYear = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🔽 Año siguiente clickeado', { currentYear, toYear });
     const newDate = new Date(currentYear + 1, currentMonth, 1);
+    console.log('📅 Nueva fecha:', newDate);
     goToMonth(newDate);
   };
   
@@ -81,19 +89,29 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
         </span>
         <div className="flex flex-col">
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             className="h-4 w-6 p-0"
             onClick={handlePreviousYear}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
             disabled={currentYear <= fromYear}
           >
             <ChevronUp className="h-3 w-3" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             className="h-4 w-6 p-0"
             onClick={handleNextYear}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
             disabled={currentYear >= toYear}
           >
             <ChevronDown className="h-3 w-3" />
