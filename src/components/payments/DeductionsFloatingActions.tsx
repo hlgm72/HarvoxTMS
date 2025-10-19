@@ -18,7 +18,6 @@ import { formatCurrency } from '@/lib/dateFormatting';
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 
 export interface DeductionsFiltersType {
-  search: string;
   driverId: string;
   status: string;
   expenseTypeId: string;
@@ -62,7 +61,6 @@ export function DeductionsFloatingActions({
 
   const clearFilters = () => {
     onFiltersChange({
-      search: '',
       driverId: 'all',
       status: 'all',
       expenseTypeId: 'all',
@@ -70,14 +68,12 @@ export function DeductionsFloatingActions({
     });
   };
 
-  const hasActiveFilters = filters.search !== '' || 
-                          filters.driverId !== 'all' || 
+  const hasActiveFilters = filters.driverId !== 'all' || 
                           filters.status !== 'all' ||
                           filters.expenseTypeId !== 'all' ||
                           filters.periodFilter.type !== 'current';
 
   const activeFiltersCount = [
-    filters.search !== '',
     filters.driverId !== 'all',
     filters.status !== 'all',
     filters.expenseTypeId !== 'all',
@@ -110,18 +106,6 @@ export function DeductionsFloatingActions({
                     <PeriodFilter
                       value={filters.periodFilter}
                       onChange={(periodFilter) => handleFilterChange('periodFilter', periodFilter)}
-                    />
-                  </div>
-
-                  {/* Search Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t('filters.search_placeholder')}</label>
-                    <input
-                      type="text"
-                      placeholder={t('filters.search_placeholder')}
-                      value={filters.search}
-                      onChange={(e) => handleFilterChange('search', e.target.value)}
-                      className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     />
                   </div>
 
@@ -193,11 +177,6 @@ export function DeductionsFloatingActions({
                       <Separator />
                       <h4 className="text-sm font-medium">{t('filters.active_filters')}</h4>
                       <div className="flex flex-wrap gap-2">
-                        {filters.search && (
-                          <Badge variant="secondary">
-                            {t('filters.active_badges.search')} {filters.search}
-                          </Badge>
-                        )}
                         {filters.driverId !== 'all' && (
                           <Badge variant="secondary">
                             {t('filters.active_badges.driver')} {(() => {

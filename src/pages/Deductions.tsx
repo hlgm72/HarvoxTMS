@@ -28,7 +28,6 @@ export default function Deductions() {
   
   // Estado de filtros
   const [filters, setFilters] = useState<DeductionsFiltersType>({
-    search: '',
     status: "all",
     driverId: "all",
     expenseTypeId: "all",
