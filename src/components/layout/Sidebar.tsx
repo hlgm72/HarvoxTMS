@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -527,6 +527,7 @@ export function AppSidebar() {
     _forceUpdate
   } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const { companies, selectedCompany, setSelectedCompany, loading } = useUserCompanies();
   const { driversCount } = useDriversCount();
@@ -639,40 +640,35 @@ export function AppSidebar() {
                      {collapsed ? (
                          <Tooltip delayDuration={0}>
                          <TooltipTrigger asChild>
-                           <div>
-                             <NavLink
-                               to={item.url}
-                               end
-                               onClick={handleNavClick}
-                               className={`font-body group/nav-item relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
-                                 active 
-                                   ? "bg-white/20 text-white shadow-lg" 
-                                   : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                           <button
+                             onClick={() => {
+                               navigate(item.url);
+                               handleNavClick();
+                             }}
+                             className={`font-body group/nav-item relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
+                               active 
+                                 ? "bg-white/20 text-white shadow-lg" 
+                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
+                             }`}
+                           >
+                             <IconComponent 
+                               className={`h-4 w-4 flex-shrink-0 transition-all duration-200 ${
+                                 active ? "text-white drop-shadow-sm" : "text-white/70 group-hover/nav-item:text-white"
                                }`}
-                            >
-                              <IconComponent 
-                                className={`h-4 w-4 flex-shrink-0 transition-all duration-200 ${
-                                  active ? "text-white drop-shadow-sm" : "text-white/70 group-hover/nav-item:text-white"
-                                }`}
-                              />
-                              
-                              {/* Active indicator */}
-                              {active && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
-                              )}
-                            </NavLink>
-                           </div>
+                             />
+                             
+                             {/* Active indicator */}
+                             {active && (
+                               <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
+                             )}
+                           </button>
                           </TooltipTrigger>
                          <TooltipContent 
                            side="right" 
                            className="bg-slate-900 text-white border-slate-700 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
                            sideOffset={16}
-                           avoidCollisions={false}
-                           collisionPadding={8}
                          >
-                           <div className="relative z-[100001]">
-                             {item.title}
-                           </div>
+                           {item.title}
                          </TooltipContent>
                        </Tooltip>
                    ) : (
