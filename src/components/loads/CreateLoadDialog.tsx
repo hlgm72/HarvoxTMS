@@ -119,6 +119,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         load_number: '', // Clear load number
         po_number: '',   // Clear PO number
         id: undefined,   // Clear ID to create new load
+        payment_period_id: undefined, // Clear payment period to avoid inheriting paid period restrictions
       };
     }
     return null;
