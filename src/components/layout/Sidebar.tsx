@@ -646,14 +646,14 @@ export function AppSidebar() {
                             }}
                             onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
                             onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
-                            className={`font-body group relative flex items-center justify-center transition-all duration-200 w-full py-3 ${
+                            className={`font-body group relative flex items-center justify-center transition-all duration-200 w-full py-2 ${
                               active 
                                 ? "bg-white/20 text-white shadow-lg" 
                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
                             }`}
                          >
                            <IconComponent 
-                             className={`h-5 w-5 flex-shrink-0 transition-all duration-200 ${
+                             className={`h-4 w-4 flex-shrink-0 transition-all duration-200 ${
                                active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
                              }`}
                            />
@@ -790,7 +790,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={`py-2 px-0`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className="py-2 px-0 overflow-y-auto" style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
             <>
