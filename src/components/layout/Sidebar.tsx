@@ -755,7 +755,7 @@ export function AppSidebar() {
             <img 
               src="/lovable-uploads/a5a7d46d-7f62-4a44-9ac6-0b8e2b1d0a71.png" 
               alt="Harvox TMS Logo" 
-              className={`${collapsed ? 'w-14 h-14' : 'w-20 h-20'} object-contain transition-all duration-300 group-hover:scale-110`}
+              className={`${collapsed ? 'w-10 h-10' : 'w-14 h-14'} object-contain transition-all duration-300 group-hover:scale-110`}
             />
           </div>
           
@@ -784,14 +784,6 @@ export function AppSidebar() {
                       <p className="text-xs text-blue-200/80">{t('admin:navigation.global_access')}</p>
                     </div>
                   </div>
-                </div>
-              )}
-              
-              {/* Status Indicator */}
-              {!isSuperAdmin && (
-                <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="font-medium">{t('company.sidebar.status.system_online')}</span>
                 </div>
               )}
             </div>
