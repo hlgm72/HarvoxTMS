@@ -156,7 +156,7 @@
       "select_type": "Seleccionar tipo",
       "select_card": "Seleccionar tarjeta",
       "card_example": "**** 1234",
-      "gallons_amount": "0.000",
+      "gallons_amount": "0.00",
       "money_amount": "$0.00",
       "invoice_example": "INV-123456",
       "station_example": "Shell, Pilot, Loves...",
