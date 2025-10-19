@@ -746,10 +746,10 @@ export function AppSidebar() {
           marginRight: '0px'
         } as any}
       >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4' : 'px-6 py-6'}`} style={{ 
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4 px-0' : 'px-6 py-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
-        <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center' : 'gap-4'}`}>
+        <div className={`flex items-center justify-center transition-all duration-300 ${collapsed ? 'w-full' : 'gap-4 justify-start'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
             <img 
@@ -791,7 +791,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={`py-2 ${collapsed ? '' : 'px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className={`py-2 px-0`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
             <>
