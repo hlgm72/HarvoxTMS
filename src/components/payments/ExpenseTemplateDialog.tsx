@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { useFleetNotifications } from "@/components/notifications";
 import { useATMInput } from "@/hooks/useATMInput";
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
+import { useExpenseTemplateACID } from "@/hooks/useExpenseTemplateACID";
 
 interface ExpenseTemplateDialogProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export function ExpenseTemplateDialog({
   const { user } = useAuth();
   const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
+  const expenseTemplateMutation = useExpenseTemplateACID();
   const [isLoading, setIsLoading] = useState(false);
   const [inactiveTemplate, setInactiveTemplate] = useState<any>(null);
   const [driverSearchOpen, setDriverSearchOpen] = useState(false);
@@ -265,23 +267,28 @@ export function ExpenseTemplateDialog({
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('expense_recurring_templates')
-        .update({
-          is_active: true,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', inactiveTemplate.id);
-
-      if (error) throw error;
-
-      showSuccess(t("deductions.notifications.success"), t("deductions.template.success_reactivated"));
+      // Usar el hook ACID para reactivar
+      await expenseTemplateMutation.mutateAsync({
+        templateData: {
+          user_id: inactiveTemplate.user_id,
+          expense_type_id: inactiveTemplate.expense_type_id,
+          amount: inactiveTemplate.amount,
+          frequency: inactiveTemplate.frequency,
+          start_date: inactiveTemplate.start_date,
+          end_date: inactiveTemplate.end_date,
+          month_week: inactiveTemplate.month_week,
+          notes: inactiveTemplate.notes,
+          applied_to_role: inactiveTemplate.applied_to_role,
+          is_active: true
+        },
+        templateId: inactiveTemplate.id
+      });
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error('Error reactivating template:', error);
-      showError("Error", error.message || "No se pudo reactivar la plantilla");
+      // El hook ya muestra el error
     } finally {
       setIsLoading(false);
     }
@@ -302,33 +309,20 @@ export function ExpenseTemplateDialog({
         end_date: effectiveUntil ? `${effectiveUntil.getFullYear()}-${String(effectiveUntil.getMonth() + 1).padStart(2, '0')}-${String(effectiveUntil.getDate()).padStart(2, '0')}` : null,
         notes: formData.notes || null,
         applied_to_role: selectedRole,
-        updated_at: new Date().toISOString()
+        is_active: true
       };
 
-      if (mode === 'create') {
-        const { error } = await supabase
-          .from('expense_recurring_templates')
-          .insert(templateData);
-
-        if (error) throw error;
-
-        showSuccess(t("deductions.notifications.success"), t("deductions.template.success_created"));
-      } else {
-        const { error } = await supabase
-          .from('expense_recurring_templates')
-          .update(templateData)
-          .eq('id', template.id);
-
-        if (error) throw error;
-
-        showSuccess(t("deductions.notifications.success"), t("deductions.template.success_updated"));
-      }
+      // Usar el hook ACID en lugar de operaciones directas
+      await expenseTemplateMutation.mutateAsync({
+        templateData,
+        templateId: mode === 'edit' ? template.id : undefined
+      });
 
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error(`Error ${mode === 'create' ? 'creating' : 'updating'} expense template:`, error);
-      showError("Error", error.message || `No se pudo ${mode === 'create' ? 'crear' : 'actualizar'} la plantilla de deducción`);
+      // El hook ya muestra el error
     } finally {
       setIsLoading(false);
     }
