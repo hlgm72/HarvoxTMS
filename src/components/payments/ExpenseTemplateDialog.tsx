@@ -278,7 +278,8 @@ export function ExpenseTemplateDialog({
           end_date: inactiveTemplate.end_date,
           month_week: inactiveTemplate.month_week,
           notes: inactiveTemplate.notes,
-          applied_to_role: inactiveTemplate.applied_to_role
+          applied_to_role: inactiveTemplate.applied_to_role,
+          is_active: true
         },
         templateId: inactiveTemplate.id
       });
@@ -307,7 +308,8 @@ export function ExpenseTemplateDialog({
         start_date: effectiveFrom ? `${effectiveFrom.getFullYear()}-${String(effectiveFrom.getMonth() + 1).padStart(2, '0')}-${String(effectiveFrom.getDate()).padStart(2, '0')}` : null,
         end_date: effectiveUntil ? `${effectiveUntil.getFullYear()}-${String(effectiveUntil.getMonth() + 1).padStart(2, '0')}-${String(effectiveUntil.getDate()).padStart(2, '0')}` : null,
         notes: formData.notes || null,
-        applied_to_role: selectedRole
+        applied_to_role: selectedRole,
+        is_active: true
       };
 
       // Usar el hook ACID en lugar de operaciones directas
