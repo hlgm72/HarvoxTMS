@@ -3252,18 +3252,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      apply_automatic_deductions: {
-        Args: {
-          dispatching_percentage?: number
-          driver_user_id: string
-          factoring_percentage?: number
-          leasing_percentage?: number
-          load_pickup_date?: string
-          load_total_amount: number
-          payment_period_id: string
-        }
-        Returns: Json
-      }
       approve_fuel_expenses_for_paid_drivers: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -3334,10 +3322,6 @@ export type Database = {
               driver_user_id_param: string
             }
           | { period_calculation_id: string }
-        Returns: Json
-      }
-      calculate_driver_payment_period_with_validation: {
-        Args: { calculation_id: string }
         Returns: Json
       }
       calculate_driver_period_totals: {
@@ -3843,10 +3827,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
-      generate_load_percentage_deductions: {
-        Args: { load_id_param?: string; period_calculation_id?: string }
-        Returns: Json
-      }
       generate_load_percentage_deductions_v2: {
         Args: { period_calculation_id: string }
         Returns: Json
@@ -4329,15 +4309,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      mark_driver_as_paid: {
-        Args: {
-          calculation_id: string
-          notes?: string
-          payment_method_used?: string
-          payment_ref?: string
-        }
-        Returns: Json
-      }
       mark_driver_as_paid_with_validation: {
         Args: {
           calculation_id: string
@@ -4418,10 +4389,6 @@ export type Database = {
       }
       recalculate_driver_period_totals: {
         Args: { period_calc_id: string }
-        Returns: Json
-      }
-      recalculate_payment_period_totals: {
-        Args: { target_period_id: string }
         Returns: Json
       }
       recalculate_period_percentage_deductions: {
@@ -4638,10 +4605,6 @@ export type Database = {
           is_valid: boolean
           user_email: string
         }[]
-      }
-      verify_and_recalculate_company_payments: {
-        Args: { target_company_id: string }
-        Returns: Json
       }
     }
     Enums: {
