@@ -14,6 +14,7 @@ import { DollarSign, CreditCard, Building, Check, CalendarIcon } from "lucide-re
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface MarkDriverPaidDialogProps {
   open: boolean;
@@ -34,6 +35,7 @@ export function MarkDriverPaidDialog({
 }: MarkDriverPaidDialogProps) {
   const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -86,6 +88,14 @@ export function MarkDriverPaidDialog({
         t("mark_paid_dialog.notifications.success_title"),
         t("mark_paid_dialog.notifications.success_message", { driverName })
       );
+      
+      // Invalidar queries específicas en lugar de refetch general
+      await queryClient.invalidateQueries({ 
+        queryKey: ['payment-calculations-reports']
+      });
+      await queryClient.invalidateQueries({ 
+        queryKey: ['payment-reports-stats']
+      });
       
       // Reset form
       setFormData({

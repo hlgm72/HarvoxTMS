@@ -370,7 +370,7 @@ export default function PaymentReports() {
   };
 
   const handlePaymentSuccess = () => {
-    refetch();
+    // El modal ya maneja la invalidación de queries, no necesitamos refetch adicional
   };
 
   // ✅ Generar descripción de filtros activos
