@@ -529,7 +529,8 @@ export function FuelExpenseDialog({
                 {t('fuel:create_dialog.sections.basic_info')}
               </h3>
               
-              <div className="grid grid-cols-2 gap-4">
+              {/* Primera línea: Driver, Driver Card, Card Last Five */}
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="driver_user_id"
@@ -558,31 +559,58 @@ export function FuelExpenseDialog({
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="fuel_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('fuel:create_dialog.fields.fuel_type')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                {!isEditMode && (
+                  <FormField
+                    control={form.control}
+                    name="driver_card_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('fuel:create_dialog.fields.driver_card')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_card')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {driverCards.map((card) => (
+                              <SelectItem key={card.id} value={card.id}>
+                                {card.card_provider.toUpperCase()} - ****{card.card_number_last_five}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {!isEditMode && (
+                  <FormField
+                    control={form.control}
+                    name="card_last_five"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('fuel:create_dialog.fields.card_last_five')}</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_fuel_type')} />
-                          </SelectTrigger>
+                          <Input 
+                            placeholder={t('fuel:create_dialog.placeholders.card_example')} 
+                            maxLength={5} 
+                            readOnly
+                            className="bg-muted"
+                            {...field} 
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="diesel">{t('fuel:create_dialog.fuel_types.diesel')}</SelectItem>
-                          <SelectItem value="gasoline">{t('fuel:create_dialog.fuel_types.gasoline')}</SelectItem>
-                          <SelectItem value="def">{t('fuel:create_dialog.fuel_types.def')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Segunda línea: Transaction Date, Invoice Number, Fuel Type */}
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="transaction_date"
@@ -628,26 +656,38 @@ export function FuelExpenseDialog({
                   )}
                 />
 
+                {!isEditMode && (
+                  <FormField
+                    control={form.control}
+                    name="invoice_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('fuel:create_dialog.fields.invoice_number')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('fuel:create_dialog.placeholders.invoice_example')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <FormField
                   control={form.control}
-                  name="payment_period_id"
+                  name="fuel_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('fuel:create_dialog.fields.payment_period')}</FormLabel>
+                      <FormLabel>{t('fuel:create_dialog.fields.fuel_type')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_period')} />
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_fuel_type')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                           {paymentPeriods.map((period) => (
-                             period.user_periods.map((userPeriod) => (
-                               <SelectItem key={userPeriod.id} value={userPeriod.id}>
-                                 {formatDateAuto(period.period_start_date)} - {formatDateAuto(period.period_end_date)}
-                               </SelectItem>
-                             ))
-                           ))}
+                          <SelectItem value="diesel">{t('fuel:create_dialog.fuel_types.diesel')}</SelectItem>
+                          <SelectItem value="gasoline">{t('fuel:create_dialog.fuel_types.gasoline')}</SelectItem>
+                          <SelectItem value="def">{t('fuel:create_dialog.fuel_types.def')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -871,76 +911,6 @@ export function FuelExpenseDialog({
               />
             </div>
 
-            {/* Campos adicionales solo para creación */}
-            {!isEditMode && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">
-                  {t('fuel:create_dialog.sections.payment_info')}
-                </h3>
-                
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="invoice_number"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('fuel:create_dialog.fields.invoice_number')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('fuel:create_dialog.placeholders.invoice_example')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="driver_card_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('fuel:create_dialog.fields.driver_card')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_card')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {driverCards.map((card) => (
-                              <SelectItem key={card.id} value={card.id}>
-                                {card.card_provider.toUpperCase()} - ****{card.card_number_last_five}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="card_last_five"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('fuel:create_dialog.fields.card_last_five')}</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder={t('fuel:create_dialog.placeholders.card_example')} 
-                            maxLength={5} 
-                            readOnly
-                            className="bg-muted"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-              </div>
-            )}
 
             {/* Información Adicional */}
             <div className="space-y-4">
