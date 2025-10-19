@@ -162,9 +162,9 @@ const handler = async (req: Request): Promise<Response> => {
       );
 
       const emailResponse = await resend.emails.send({
-        from: "FleetNest TMS <noreply@fleetnest.app>",
+        from: "Harvox TMS <noreply@harvox.app>",
         to: [email],
-        subject: `Invitación para unirte a ${companyName} - FleetNest`,
+        subject: `Invitación para unirte a ${companyName} - Harvox TMS`,
         html: emailHtml,
       });
 

@@ -30,15 +30,15 @@ export const EmailFooter = () => (
         </Text>
         
         <Section style={linksSection}>
-          <Link href="https://fleetnest.app/terms" style={footerLink}>
+          <Link href="https://harvox.app/terms" style={footerLink}>
             Términos de Servicio
           </Link>
           <Text style={linkDivider}>•</Text>
-          <Link href="https://fleetnest.app/privacy" style={footerLink}>
+          <Link href="https://harvox.app/privacy" style={footerLink}>
             Política de Privacidad
           </Link>
           <Text style={linkDivider}>•</Text>
-          <Link href="https://fleetnest.app/support" style={footerLink}>
+          <Link href="https://harvox.app/support" style={footerLink}>
             Soporte
           </Link>
         </Section>

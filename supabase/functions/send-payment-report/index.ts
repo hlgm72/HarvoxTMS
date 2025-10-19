@@ -39,7 +39,7 @@ serve(async (req) => {
     })
     
     const emailOptions: any = {
-      from: "FleetNest TMS <noreply@fleetnest.app>",
+      from: "Harvox TMS <noreply@harvox.app>",
       to: [to],
       subject,
       html

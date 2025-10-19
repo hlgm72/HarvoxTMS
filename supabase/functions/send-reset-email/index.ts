@@ -82,11 +82,11 @@ const handler = async (req: Request): Promise<Response> => {
     // Email templates based on language
     const templates = {
       es: {
-        subject: "Restablecer contraseña - FleetNest",
+        subject: "Restablecer contraseña - Harvox TMS",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #2563eb; margin: 0;">FleetNest</h1>
+              <h1 style="color: #2563eb; margin: 0;">Harvox TMS</h1>
               <p style="color: #6b7280; margin: 5px 0;">Gestión de Flotas Inteligente</p>
             </div>
             
@@ -94,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
               <h2 style="color: #1f2937; margin-top: 0;">Restablecer tu contraseña</h2>
               
               <p style="color: #4b5563; line-height: 1.6;">
-                Recibimos una solicitud para restablecer la contraseña de tu cuenta de FleetNest.
+                Recibimos una solicitud para restablecer la contraseña de tu cuenta de Harvox TMS.
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
@@ -121,18 +121,18 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div style="text-align: center; margin-top: 30px;">
               <p style="color: #9ca3af; font-size: 12px;">
-                © 2025 FleetNest. Gestión de flotas de transporte.
+                © 2025 Harvox TMS. Gestión de flotas de transporte.
               </p>
             </div>
           </div>
         `
       },
       en: {
-        subject: "Reset Password - FleetNest",
+        subject: "Reset Password - Harvox TMS",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #2563eb; margin: 0;">FleetNest</h1>
+              <h1 style="color: #2563eb; margin: 0;">Harvox TMS</h1>
               <p style="color: #6b7280; margin: 5px 0;">Intelligent Fleet Management</p>
             </div>
             
@@ -140,7 +140,7 @@ const handler = async (req: Request): Promise<Response> => {
               <h2 style="color: #1f2937; margin-top: 0;">Reset your password</h2>
               
               <p style="color: #4b5563; line-height: 1.6;">
-                We received a request to reset the password for your FleetNest account.
+                We received a request to reset the password for your Harvox TMS account.
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
@@ -167,7 +167,7 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div style="text-align: center; margin-top: 30px;">
               <p style="color: #9ca3af; font-size: 12px;">
-                © 2025 FleetNest. Transportation fleet management.
+                © 2025 Harvox TMS. Transportation fleet management.
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ const handler = async (req: Request): Promise<Response> => {
     const template = templates[lang as keyof typeof templates] || templates.es;
 
     const emailResponse = await resend.emails.send({
-      from: "FleetNest TMS <noreply@fleetnest.app>",
+      from: "Harvox TMS <noreply@harvox.app>",
       to: [email],
       subject: template.subject,
       html: template.html,

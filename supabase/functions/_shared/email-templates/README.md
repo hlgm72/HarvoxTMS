@@ -1,4 +1,4 @@
-# 📧 FleetNest Email Templates
+# 📧 Harvox TMS Email Templates
 
 Sistema moderno de templates de email usando React Email para invitaciones profesionales y elegantes.
 
@@ -12,7 +12,7 @@ Sistema moderno de templates de email usando React Email para invitaciones profe
 - **Sombras sutiles**: Efectos visuales elegantes
 
 ### Branding Consistente
-- Logo FleetNest en el header
+- Logo Harvox TMS en el header
 - Colores corporativos (#667eea, #764ba2)
 - Footer informativo con enlaces legales
 - Identidad visual cohesiva
@@ -75,7 +75,7 @@ const emailHtml = await renderAsync(
   React.createElement(CompanyOwnerInvite, {
     recipientName: "Juan Pérez",
     companyName: "Transportes ABC",
-    invitationUrl: "https://app.fleetnest.com/invitation/xyz"
+    invitationUrl: "https://app.harvox.com/invitation/xyz"
   })
 );
 ```
@@ -83,9 +83,9 @@ const emailHtml = await renderAsync(
 ### Envío con Resend
 ```typescript
 const emailResponse = await resend.emails.send({
-  from: "FleetNest TMS <noreply@fleetnest.app>",
+  from: "Harvox TMS <noreply@harvox.app>",
   to: [email],
-  subject: `Invitación para administrar ${companyName} - FleetNest`,
+  subject: `Invitación para administrar ${companyName} - Harvox TMS`,
   html: emailHtml,
 });
 ```

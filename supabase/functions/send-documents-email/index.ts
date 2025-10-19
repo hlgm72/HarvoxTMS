@@ -121,12 +121,12 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Error al consultar información de la empresa: ${companyError.message}`);
     }
 
-    const companyName = company.name || "FleetNest";
-    const senderName = `${companyName} (via FleetNest)`;
+    const companyName = company.name || "Harvox TMS";
+    const senderName = `${companyName} (via Harvox TMS)`;
     const companyEmail = company.email;
     
-    // Always use verified FleetNest email as sender for deliverability
-    const senderEmail = "noreply@fleetnest.app";
+    // Always use verified Harvox TMS email as sender for deliverability
+    const senderEmail = "noreply@harvox.app";
 
     // Get documents information
     const { data: documents, error: docsError } = await supabase
@@ -293,7 +293,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="color: #999; font-size: 14px; margin: 0;">
-              This email was sent by <strong>${companyName}</strong> through FleetNest TMS.
+              This email was sent by <strong>${companyName}</strong> through Harvox TMS.
             </p>
           </div>
         </div>
@@ -302,7 +302,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Enviando email a: ${recipientList.join(', ')}`);
     
-    // Always use FleetNest verified email for guaranteed delivery
+    // Always use Harvox TMS verified email for guaranteed delivery
     console.log(`Enviando email desde: ${senderName} <${senderEmail}>`);
     
     const emailData: any = {
