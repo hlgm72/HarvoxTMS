@@ -170,20 +170,22 @@ function Calendar({
         {...props}
       />
       {showFooterButtons && (
-        <div className="flex justify-between items-center px-3 pb-3 pt-0">
+        <div className="flex justify-between items-center px-3 pb-3 pt-0 pointer-events-auto">
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={onClear}
-            className="text-primary hover:text-primary hover:bg-primary/10"
+            className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto"
           >
             {t('common:clear', 'Clear')}
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={onToday}
-            className="text-primary hover:text-primary hover:bg-primary/10"
+            className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto"
           >
             {t('common:today', 'Today')}
           </Button>
