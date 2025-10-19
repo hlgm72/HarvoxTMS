@@ -1,7 +1,7 @@
 {
   "privacy_policy": {
     "title": "Política de Privacidad",
-    "subtitle": "Esta política de privacidad describe cómo FleetNest recopila, utiliza y protege su información personal.",
+    "subtitle": "Esta política de privacidad describe cómo Harvox TMS recopila, utiliza y protege su información personal.",
     "last_updated": "Última actualización: 24 de julio de 2024",
     "back_to_login": "Volver al Login",
     "back_to_home": "Volver al Inicio",
@@ -9,7 +9,7 @@
       "introduction": {
         "title": "1. Introducción",
         "content": [
-          "FleetNest (\"nosotros,\" \"nuestro\" o \"nos\") está comprometido con la protección de su privacidad. Esta Política de Privacidad explica cómo recopilamos, utilizamos, divulgamos y protegemos su información cuando utiliza nuestros servicios de gestión de flotas.",
+          "Harvox TMS (\"nosotros,\" \"nuestro\" o \"nos\") está comprometido con la protección de su privacidad. Esta Política de Privacidad explica cómo recopilamos, utilizamos, divulgamos y protegemos su información cuando utiliza nuestros servicios de gestión de flotas.",
           "Al utilizar nuestros servicios, usted consiente la recopilación y uso de información de acuerdo con esta política."
         ]
       },
@@ -137,8 +137,8 @@
         "title": "11. Información de Contacto",
         "content": [
           "Si tiene preguntas sobre esta Política de Privacidad o nuestras prácticas de datos, contáctenos en:",
-          "Email: privacy@fleetnest.app",
-          "Dirección: Departamento de Privacidad de FleetNest",
+          "Email: privacy@harvox.app",
+          "Dirección: Departamento de Privacidad de Harvox TMS",
           "Teléfono: +1 (555) 123-4567"
         ]
       }
@@ -146,7 +146,7 @@
   },
   "terms_of_service": {
     "title": "Términos de Servicio",
-    "subtitle": "Estos términos y condiciones rigen el uso de FleetNest y sus servicios.",
+    "subtitle": "Estos términos y condiciones rigen el uso de Harvox TMS y sus servicios.",
     "last_updated": "Última actualización: 24 de julio de 2024",
     "back_to_login": "Volver al Login",
     "back_to_home": "Volver al Inicio",
@@ -154,14 +154,14 @@
       "acceptance": {
         "title": "1. Aceptación de los Términos",
         "content": [
-          "Al acceder y utilizar FleetNest (\"el Servicio\"), usted acepta estar sujeto a estos Términos de Servicio (\"Términos\"). Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestro servicio.",
-          "Estos Términos constituyen un acuerdo legal vinculante entre usted y FleetNest. El uso continuado del Servicio constituye su aceptación de cualquier modificación a estos Términos."
+          "Al acceder y utilizar Harvox TMS (\"el Servicio\"), usted acepta estar sujeto a estos Términos de Servicio (\"Términos\"). Si no está de acuerdo con alguna parte de estos términos, no debe utilizar nuestro servicio.",
+          "Estos Términos constituyen un acuerdo legal vinculante entre usted y Harvox TMS. El uso continuado del Servicio constituye su aceptación de cualquier modificación a estos Términos."
         ]
       },
       "service_description": {
         "title": "2. Descripción del Servicio",
         "content": [
-          "FleetNest es una plataforma de gestión de flotas que proporciona:",
+          "Harvox TMS es una plataforma de gestión de flotas que proporciona:",
           "• Seguimiento en tiempo real de vehículos",
           "• Gestión de conductores y empleados",
           "• Reportes y análisis de operaciones",
@@ -231,14 +231,14 @@
       "intellectual_property": {
         "title": "7. Propiedad Intelectual",
         "content": [
-          "FleetNest y todo su contenido, características y funcionalidad son propiedad de FleetNest y están protegidos por derechos de autor, marcas comerciales y otras leyes de propiedad intelectual.",
+          "Harvox TMS y todo su contenido, características y funcionalidad son propiedad de Harvox TMS y están protegidos por derechos de autor, marcas comerciales y otras leyes de propiedad intelectual.",
           "Se le otorga una licencia limitada, no exclusiva y revocable para utilizar el Servicio de acuerdo con estos Términos."
         ]
       },
       "limitation_liability": {
         "title": "8. Limitación de Responsabilidad",
         "content": [
-          "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, FLEETNEST NO SERÁ RESPONSABLE POR DAÑOS INDIRECTOS, INCIDENTALES, ESPECIALES, CONSECUENCIALES O PUNITIVOS.",
+          "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, HARVOX TMS NO SERÁ RESPONSABLE POR DAÑOS INDIRECTOS, INCIDENTALES, ESPECIALES, CONSECUENCIALES O PUNITIVOS.",
           "Nuestra responsabilidad total no excederá el monto pagado por usted en los 12 meses anteriores al evento que dio origen a la reclamación."
         ]
       },
@@ -267,7 +267,7 @@
       "governing_law": {
         "title": "12. Ley Aplicable",
         "content": [
-          "Estos Términos se rigen por las leyes del país donde FleetNest tiene su sede principal, sin consideración a conflictos de principios legales.",
+          "Estos Términos se rigen por las leyes del país donde Harvox TMS tiene su sede principal, sin consideración a conflictos de principios legales.",
           "Cualquier disputa será resuelta mediante arbitraje vinculante de acuerdo con las reglas de arbitraje comercial aplicables."
         ]
       },
@@ -275,8 +275,8 @@
         "title": "13. Información de Contacto",
         "content": [
           "Si tiene preguntas sobre estos Términos de Servicio, puede contactarnos en:",
-          "Email: legal@fleetnest.app",
-          "Dirección: FleetNest Legal Department",
+          "Email: legal@harvox.app",
+          "Dirección: Harvox TMS Legal Department",
           "Teléfono: +1 (555) 123-4567"
         ]
       }

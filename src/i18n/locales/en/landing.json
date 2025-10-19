@@ -4,7 +4,7 @@
     "title": "Manage Your",
     "title_highlight": "Transportation",
     "title_end": "Fleet with Intelligence",
-    "subtitle": "FleetNest helps you optimize operations, reduce costs, and maintain regulatory compliance with our all-in-one platform for transportation companies.",
+    "subtitle": "Harvox TMS helps you optimize operations, reduce costs, and maintain regulatory compliance with our all-in-one platform for transportation companies.",
     "features": {
       "no_credit_card": "No credit card required",
       "quick_setup": "5-minute setup",
@@ -42,8 +42,8 @@
     }
   },
   "benefits": {
-    "title": "Why Choose FleetNest?",
-    "subtitle": "Over 500 transportation companies trust FleetNest to optimize their operations and increase profitability.",
+    "title": "Why Choose Harvox TMS?",
+    "subtitle": "Over 500 transportation companies trust Harvox TMS to optimize their operations and increase profitability.",
     "items": [
       "Reduce operating costs up to 25%",
       "Improve route efficiency",
@@ -61,7 +61,7 @@
   },
   "cta": {
     "title": "Ready to Optimize Your Fleet?",
-    "subtitle": "Join hundreds of companies already saving time and money with FleetNest"
+    "subtitle": "Join hundreds of companies already saving time and money with Harvox TMS"
   },
   "footer": {
     "description": "The leading platform for transportation fleet management. Optimize, control, and grow your business with our professional tools.",
@@ -87,7 +87,7 @@
     },
     "contact": {
       "phone": "(555) 123-4567",
-      "email": "info@fleetnest.com"
+      "email": "info@harvox.com"
     }
   }
 }

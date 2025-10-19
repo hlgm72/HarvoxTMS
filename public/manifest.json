@@ -1,6 +1,6 @@
 {
-  "name": "FleetNest - Sistema TMS",
-  "short_name": "FleetNest",
+  "name": "Harvox TMS",
+  "short_name": "Harvox TMS",
   "description": "Sistema TMS profesional para compañías de transporte",
   "start_url": "/",
   "display": "standalone",

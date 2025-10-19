@@ -32,12 +32,12 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
         <div style={logoSection}>
           <Img
             src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png"
-            alt="FleetNest TMS Logo"
+            alt="Harvox TMS Logo"
             width="40"
             height="40"
             style={logoStyle}
           />
-          <Text style={brandName}>FleetNest TMS</Text>
+          <Text style={brandName}>Harvox TMS</Text>
         </div>
         
         <div style={gradientLine}></div>

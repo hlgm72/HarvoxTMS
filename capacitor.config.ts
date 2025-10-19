@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.d3745a060e2f4f6390d54194e6da686a',
-  appName: 'fleetnest-tms',
+  appName: 'harvox-tms',
   webDir: 'dist',
   server: {
     url: 'https://d3745a06-0e2f-4f63-90d5-4194e6da686a.lovableproject.com?forceHideBadge=true',

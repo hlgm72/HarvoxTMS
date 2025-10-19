@@ -51,7 +51,7 @@ export default function Preview() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center space-x-2">
             <Truck className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">FleetNest</span>
+            <span className="text-2xl font-bold text-primary">Harvox TMS</span>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm">
@@ -77,7 +77,7 @@ export default function Preview() {
               con Inteligencia
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              FleetNest te ayuda a optimizar operaciones, reducir costos y mantener el cumplimiento regulatorio con nuestra plataforma todo-en-uno para empresas de transporte.
+              Harvox TMS te ayuda a optimizar operaciones, reducir costos y mantener el cumplimiento regulatorio con nuestra plataforma todo-en-uno para empresas de transporte.
             </p>
           </div>
 
@@ -182,7 +182,7 @@ export default function Preview() {
             ¿Listo para Optimizar tu Flota?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Únete a cientos de empresas que ya están ahorrando tiempo y dinero con FleetNest
+            Únete a cientos de empresas que ya están ahorrando tiempo y dinero con Harvox TMS
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="text-lg px-8">
@@ -201,10 +201,10 @@ export default function Preview() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Truck className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">FleetNest</span>
+              <span className="text-2xl font-bold text-primary">Harvox TMS</span>
             </div>
             <div className="text-muted-foreground text-center md:text-right">
-              <p>© 2024 FleetNest. Todos los derechos reservados.</p>
+              <p>© 2024 Harvox TMS. Todos los derechos reservados.</p>
               <p className="text-sm mt-1">
                 La plataforma líder para gestión de flotas de transporte.
               </p>

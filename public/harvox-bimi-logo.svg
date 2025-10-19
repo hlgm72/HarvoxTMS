@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <title>FleetNest Logo</title>
-  <desc>FleetNest TMS - Professional fleet management platform</desc>
+  <title>Harvox TMS Logo</title>
+  <desc>Harvox TMS - Professional fleet management platform</desc>
   
   <!-- Shield background with orange border -->
   <path d="M100 10 C140 10 180 30 180 50 C180 80 180 120 160 160 C140 180 120 190 100 190 C80 190 60 180 40 160 C20 120 20 80 20 50 C20 30 60 10 100 10 Z" 

@@ -17,12 +17,12 @@ export const EmailFooter = () => (
         <Section style={logoTitleSection}>
           <Img 
             src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png"
-            alt="FleetNest Logo"
+            alt="Harvox TMS Logo"
             width="24"
             height="24"
             style={logoStyle}
           />
-          <span style={footerTitle}>FleetNest TMS</span>
+          <span style={footerTitle}>Harvox TMS</span>
         </Section>
         <Text style={footerDescription}>
           Plataforma profesional de gestión de flotas que conecta transportistas, 
@@ -44,7 +44,7 @@ export const EmailFooter = () => (
         </Section>
         
         <Text style={copyrightText}>
-          © 2024 FleetNest TMS. Todos los derechos reservados.
+          © 2024 Harvox TMS. Todos los derechos reservados.
         </Text>
         
         <Text style={disclaimerText}>

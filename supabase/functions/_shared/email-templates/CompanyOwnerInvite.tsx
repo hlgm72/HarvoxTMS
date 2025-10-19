@@ -14,9 +14,9 @@ export const CompanyOwnerInvite = ({
   invitationUrl
 }: CompanyOwnerInviteProps) => (
   <InvitationBase
-    previewText={`Invitación para administrar ${companyName} en FleetNest`}
+    previewText={`Invitación para administrar ${companyName} en Harvox TMS`}
     title="Invitación de Propietario"
-    subtitle="Gestiona tu empresa en FleetNest"
+    subtitle="Gestiona tu empresa en Harvox TMS"
     recipientName={recipientName}
     companyName={companyName}
     role="Propietario de Empresa"

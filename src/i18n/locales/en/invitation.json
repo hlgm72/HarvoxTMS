@@ -1,6 +1,6 @@
 {
   "welcome": {
-    "title": "Welcome to FleetNest!",
+    "title": "Welcome to Harvox TMS!",
     "subtitle": {
       "driver": "You've been invited to join as a driver for {{companyName}}",
       "manager": "You've been invited to manage {{companyName}}"

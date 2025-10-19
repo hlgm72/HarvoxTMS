@@ -18,7 +18,7 @@ export const AppLogo: React.FC<AppLogoProps> = ({
   return (
     <img 
       src="/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png"
-      alt="FleetNest Logo"
+      alt="Harvox TMS Logo"
       width={width}
       height={height}
       className={className}

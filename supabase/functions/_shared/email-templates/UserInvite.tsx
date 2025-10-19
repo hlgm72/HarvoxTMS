@@ -36,7 +36,7 @@ export const UserInvite = ({
     
     <Section style={platformBenefitsSection}>
       <Text style={benefitsTitle}>
-        🌟 Acceso a la plataforma FleetNest:
+        🌟 Acceso a la plataforma Harvox TMS:
       </Text>
       
       <Section style={benefitsList}>
