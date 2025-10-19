@@ -3,25 +3,21 @@ import { useTranslation } from "react-i18next";
 import { FloatingActionsSheet, FloatingActionTab } from "@/components/ui/FloatingActionsSheet";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useDriversList } from "@/hooks/useDriversList";
+import { PeriodFilter } from "@/components/loads/PeriodFilter";
 import { 
   Filter, 
   FilterX, 
-  CalendarIcon, 
   Download, 
   Settings, 
   BarChart3,
   FileText,
   FileSpreadsheet
 } from "lucide-react";
-import { format, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from "date-fns";
-import { formatCurrency, formatDateInUserTimeZone, formatMonthName, formatShortDate, formatMediumDate } from '@/lib/dateFormatting';
-import { cn } from "@/lib/utils";
+import { formatCurrency } from '@/lib/dateFormatting';
 
 
 interface LoadsFloatingActionsProps {
@@ -97,13 +93,14 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       broker: "all",
       dateRange: { from: undefined, to: undefined }
     });
+    // Reset period filter to current
+    onPeriodFilterChange?.({ type: 'current' });
   };
 
   const hasActiveFilters = filters.status !== "all" || 
                           filters.driver !== "all" || 
-                          filters.broker !== "all" || 
-                          filters.dateRange.from || 
-                          filters.dateRange.to;
+                          filters.broker !== "all" ||
+                          periodFilter?.type !== 'current';
 
   const mockStats = {
     totalLoads: 156,
@@ -112,24 +109,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
     inTransit: 23,
     completed: 89,
     pending: 44
-  };
-
-  const getPeriodLabel = (type?: string) => {
-    switch (type) {
-      case 'current': return t('periods.current');
-      case 'previous': return t('periods.previous');
-      case 'next': return t('periods.next');
-      case 'all': return t('periods.all');
-      case 'this_month': return t('periods.this_month');
-      case 'last_month': return t('periods.last_month');
-      case 'this_quarter': return t('periods.this_quarter');
-      case 'last_quarter': return t('periods.last_quarter');
-      case 'this_year': return t('periods.this_year');
-      case 'last_year': return t('periods.last_year');
-      case 'specific': return t('periods.specific');
-      case 'custom': return t('periods.custom');
-      default: return t('periods.current');
-    }
   };
 
   // Define tabs for FloatingActionsSheet
@@ -152,6 +131,15 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                 </div>
 
                 <div className="space-y-4">
+                  {/* Period Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t('floating_actions.filters.period')}</label>
+                    <PeriodFilter
+                      value={periodFilter || { type: 'current' }}
+                      onChange={(newFilter) => onPeriodFilterChange?.(newFilter)}
+                    />
+                  </div>
+
                   {/* Status Filter */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">{t('floating_actions.filters.status')}</label>
@@ -212,142 +200,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  {/* Period Filter - Complete Dropdown */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t('floating_actions.filters.period')}</label>
-                    <Select 
-                      value={periodFilter?.type || 'current'} 
-                      onValueChange={(value) => {
-                        // Create a proper PeriodFilterValue using the same logic as PeriodFilter
-                        const newFilter: any = { type: value };
-                        
-                        // Use the same date calculation logic as PeriodFilter
-                        const getDateRangeForType = (type: string) => {
-                          const now = new Date();
-                          
-                          switch (type) {
-                            case 'this_month':
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfMonth(now)),
-                                endDate: formatDateInUserTimeZone(endOfMonth(now)),
-                                label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
-                              };
-                            case 'last_month':
-                              const lastMonth = subMonths(now, 1);
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
-                                endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
-                                label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
-                              };
-                            case 'this_quarter':
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfQuarter(now)),
-                                endDate: formatDateInUserTimeZone(endOfQuarter(now)),
-                                label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
-                              };
-                            case 'last_quarter':
-                              const lastQuarter = subQuarters(now, 1);
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
-                                endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
-                                label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
-                              };
-                            case 'this_year':
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfYear(now)),
-                                endDate: formatDateInUserTimeZone(endOfYear(now)),
-                                label: `${t('periods.this_year')} (${now.getFullYear()})`
-                              };
-                            case 'last_year':
-                              const lastYear = subYears(now, 1);
-                              return {
-                                startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
-                                endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
-                                label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
-                              };
-                            default:
-                              return null;
-                          }
-                        };
-                        
-                        // Calculate dates for date-based periods
-                        const dateRange = getDateRangeForType(value);
-                        if (dateRange) {
-                          newFilter.startDate = dateRange.startDate;
-                          newFilter.endDate = dateRange.endDate;
-                          newFilter.label = dateRange.label;
-                        }
-                        
-                        // Trigger change
-                        onPeriodFilterChange?.(newFilter);
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('floating_actions.filters.placeholders.period')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="current">{t('periods.current')}</SelectItem>
-                        <SelectItem value="previous">{t('periods.previous')}</SelectItem>
-                        <SelectItem value="next">{t('periods.next')}</SelectItem>
-                        <SelectItem value="all">{t('periods.all')}</SelectItem>
-                        <SelectItem value="this_month">{t('periods.this_month')}</SelectItem>
-                        <SelectItem value="last_month">{t('periods.last_month')}</SelectItem>
-                        <SelectItem value="this_quarter">{t('periods.this_quarter')}</SelectItem>
-                        <SelectItem value="last_quarter">{t('periods.last_quarter')}</SelectItem>
-                        <SelectItem value="this_year">{t('periods.this_year')}</SelectItem>
-                        <SelectItem value="last_year">{t('periods.last_year')}</SelectItem>
-                        <SelectItem value="specific">{t('periods.specific')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {periodFilter?.type && periodFilter.type !== 'current' && (
-                      <div className="text-xs text-muted-foreground">
-                        {getPeriodLabel(periodFilter.type)}
-                        {periodFilter.label && ` - ${periodFilter.label}`}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Date Range Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t('floating_actions.filters.date_range')}</label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !filters.dateRange.from && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {filters.dateRange.from ? (
-                            filters.dateRange.to ? (
-                              <>
-                                {formatShortDate(filters.dateRange.from)} -{" "}
-                                {formatShortDate(filters.dateRange.to)}
-                              </>
-                            ) : (
-                              formatMediumDate(filters.dateRange.from)
-                            )
-                          ) : (
-                            t('floating_actions.filters.placeholders.date_range')
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          initialFocus
-                          mode="range"
-                          defaultMonth={filters.dateRange.from}
-                          selected={filters.dateRange}
-                          onSelect={(range) => handleFilterChange("dateRange", range || { from: undefined, to: undefined })}
-                          numberOfMonths={2}
-                          className="pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
                   </div>
                 </div>
               </div>
