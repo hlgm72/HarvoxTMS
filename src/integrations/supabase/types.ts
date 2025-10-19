@@ -3472,6 +3472,10 @@ export type Database = {
         Args: { target_period_id: string }
         Returns: Json
       }
+      cleanup_empty_user_payroll: {
+        Args: { target_payroll_id: string }
+        Returns: Json
+      }
       cleanup_expired_backups: {
         Args: Record<PropertyKey, never>
         Returns: number
