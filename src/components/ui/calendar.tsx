@@ -26,10 +26,24 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
   const currentMonth = props.displayMonth.getMonth();
   const currentYear = props.displayMonth.getFullYear();
   
+  const [isEditingYear, setIsEditingYear] = React.useState(false);
+  const [yearInput, setYearInput] = React.useState(currentYear.toString());
+  const yearInputRef = React.useRef<HTMLInputElement>(null);
+  
   const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
+  
+  React.useEffect(() => {
+    setYearInput(currentYear.toString());
+  }, [currentYear]);
+  
+  React.useEffect(() => {
+    if (isEditingYear && yearInputRef.current) {
+      yearInputRef.current.select();
+    }
+  }, [isEditingYear]);
   
   const handlePreviousMonth = () => {
     const newDate = new Date(currentYear, currentMonth - 1, 1);
@@ -44,19 +58,44 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
   const handlePreviousYear = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('🔼 Año anterior clickeado', { currentYear, fromYear });
     const newDate = new Date(currentYear - 1, currentMonth, 1);
-    console.log('📅 Nueva fecha:', newDate);
     goToMonth(newDate);
   };
   
   const handleNextYear = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('🔽 Año siguiente clickeado', { currentYear, toYear });
     const newDate = new Date(currentYear + 1, currentMonth, 1);
-    console.log('📅 Nueva fecha:', newDate);
     goToMonth(newDate);
+  };
+  
+  const handleYearClick = () => {
+    setIsEditingYear(true);
+  };
+  
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    setYearInput(value);
+  };
+  
+  const handleYearBlur = () => {
+    const year = parseInt(yearInput, 10);
+    if (!isNaN(year) && year >= fromYear && year <= toYear) {
+      const newDate = new Date(year, currentMonth, 1);
+      goToMonth(newDate);
+    } else {
+      setYearInput(currentYear.toString());
+    }
+    setIsEditingYear(false);
+  };
+  
+  const handleYearKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleYearBlur();
+    } else if (e.key === 'Escape') {
+      setYearInput(currentYear.toString());
+      setIsEditingYear(false);
+    }
   };
   
   return (
@@ -84,9 +123,26 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
       </div>
       
       <div className="flex items-center gap-1 pointer-events-auto">
-        <span className="text-sm font-medium min-w-[60px] text-center pointer-events-none">
-          {currentYear}
-        </span>
+        {isEditingYear ? (
+          <input
+            ref={yearInputRef}
+            type="text"
+            value={yearInput}
+            onChange={handleYearChange}
+            onBlur={handleYearBlur}
+            onKeyDown={handleYearKeyDown}
+            className="text-sm font-medium w-[60px] text-center bg-transparent border border-border rounded px-1 focus:outline-none focus:ring-2 focus:ring-primary pointer-events-auto"
+            maxLength={4}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={handleYearClick}
+            className="text-sm font-medium min-w-[60px] text-center hover:bg-accent rounded px-1 pointer-events-auto"
+          >
+            {currentYear}
+          </button>
+        )}
         <div className="flex flex-col pointer-events-auto">
           <button
             type="button"
