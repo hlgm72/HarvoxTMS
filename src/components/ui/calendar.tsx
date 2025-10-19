@@ -175,7 +175,11 @@ function Calendar({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={onClear}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClear?.();
+            }}
             className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto"
           >
             {t('common:clear', 'Clear')}
@@ -184,7 +188,11 @@ function Calendar({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={onToday}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToday?.();
+            }}
             className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto"
           >
             {t('common:today', 'Today')}
