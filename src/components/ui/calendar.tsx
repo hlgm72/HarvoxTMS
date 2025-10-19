@@ -95,7 +95,7 @@ function Calendar({
                   max={toYear}
                   value={value}
                   onChange={handleChange}
-                  className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center pointer-events-auto"
+                  className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center pointer-events-auto z-50"
                 />
               );
             }
@@ -105,7 +105,7 @@ function Calendar({
               <select
                 value={value}
                 onChange={handleChange}
-                className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium pointer-events-auto"
+                className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium pointer-events-auto z-50"
               >
                 {children}
               </select>
