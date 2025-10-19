@@ -92,28 +92,21 @@ function Calendar({
             };
             
             return (
-              <Select
-                value={value?.toString()}
-                onValueChange={(value) => {
-                  handleChange(value);
-                }}
+              <select
+                value={value}
+                onChange={(e) => handleChange(e.target.value)}
+                className="text-sm bg-background border border-input rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-primary font-medium"
               >
-                <SelectTrigger className="pr-1.5 focus:ring-0 bg-background">
-                  <SelectValue>{selected?.props?.children}</SelectValue>
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <ScrollArea className="h-80">
-                    {options.map((option, id: number) => (
-                      <SelectItem
-                        key={`${option.props.value}-${id}`}
-                        value={option.props.value?.toString() ?? ""}
-                      >
-                        {option.props.children}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
+                {options.map((option, id: number) => (
+                  <option
+                    key={`${option.props.value}-${id}`}
+                    value={option.props.value?.toString() ?? ""}
+                    disabled={option.props.disabled}
+                  >
+                    {option.props.children}
+                  </option>
+                ))}
+              </select>
             );
           },
         }}
