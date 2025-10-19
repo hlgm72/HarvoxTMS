@@ -87,7 +87,7 @@ export function FuelExpenseDialog({
   const { mutate: mutateFuelExpense, isPending } = useFuelExpenseACID();
   const { data: expense } = useFuelExpense(expenseId || '');
   const { states } = useStates();
-  const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
+  const [isTransactionDateOpen, setIsTransactionDateOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
@@ -617,7 +617,7 @@ export function FuelExpenseDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('fuel:create_dialog.fields.transaction_date')}</FormLabel>
-                      <Popover>
+                      <Popover open={isTransactionDateOpen} onOpenChange={setIsTransactionDateOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -641,8 +641,14 @@ export function FuelExpenseDialog({
                             <Calendar
                               mode="single"
                               selected={field.value}
-                              onSelect={field.onChange}
-                              onToday={() => field.onChange(new Date())}
+                              onSelect={(date) => {
+                                field.onChange(date);
+                                setIsTransactionDateOpen(false);
+                              }}
+                              onToday={() => {
+                                field.onChange(new Date());
+                                setIsTransactionDateOpen(false);
+                              }}
                               disableClear={true}
                               fromYear={2020}
                               toYear={2030}
