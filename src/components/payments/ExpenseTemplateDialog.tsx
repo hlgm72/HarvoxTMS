@@ -501,7 +501,10 @@ export function ExpenseTemplateDialog({
                 value={atmInput.displayValue}
                 onChange={() => {}} // Dummy onChange to satisfy React warning
                 onKeyDown={atmInput.handleKeyDown}
+                onInput={atmInput.handleInput}
                 onPaste={atmInput.handlePaste}
+                onFocus={atmInput.handleFocus}
+                onClick={atmInput.handleClick}
                 placeholder="$0.00"
                 className="text-right"
                 autoComplete="off"
