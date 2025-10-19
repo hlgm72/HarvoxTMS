@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, DropdownProps } from "react-day-picker";
 import { es } from "date-fns/locale";
 
 import { cn } from "@/lib/utils";
@@ -78,27 +78,36 @@ function Calendar({
         components={{
           IconLeft: ({ ..._props }) => <ChevronUp className="h-4 w-4" />,
           IconRight: ({ ..._props }) => <ChevronDown className="h-4 w-4" />,
-          Dropdown: (props) => {
-            if (props.name === 'years') {
+          Dropdown: (dropdownProps: DropdownProps) => {
+            const { value, onChange, children } = dropdownProps;
+            
+            const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+              if (onChange) {
+                onChange(e as React.ChangeEvent<HTMLSelectElement>);
+              }
+            };
+
+            if (dropdownProps.name === 'years') {
               return (
                 <input
                   type="number"
                   min={fromYear}
                   max={toYear}
-                  value={props.value}
-                  onChange={(e) => props.onChange?.(e as any)}
-                  className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center"
+                  value={value}
+                  onChange={handleChange}
+                  className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center pointer-events-auto"
                 />
               );
             }
-            // Para el dropdown de meses, aseguramos que se muestren las opciones
+            
+            // Dropdown de meses
             return (
               <select
-                value={props.value || ''}
-                onChange={(e) => props.onChange?.(e as any)}
-                className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium"
+                value={value}
+                onChange={handleChange}
+                className="text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium pointer-events-auto"
               >
-                {props.children}
+                {children}
               </select>
             );
           },
