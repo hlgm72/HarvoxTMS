@@ -3715,6 +3715,10 @@ export type Database = {
         Args: { document_id: string }
         Returns: Json
       }
+      delete_expense_instance_with_cleanup: {
+        Args: { expense_instance_id: string }
+        Returns: Json
+      }
       delete_fuel_expense_with_validation: {
         Args: { expense_id: string }
         Returns: Json
