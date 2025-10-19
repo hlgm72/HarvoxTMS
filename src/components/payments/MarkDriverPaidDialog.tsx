@@ -61,6 +61,10 @@ export function MarkDriverPaidDialog({
 
     setIsLoading(true);
     try {
+      // Obtener el userId ANTES del update para mejor performance
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
       // Actualizar directamente usando user_payrolls
       const { error } = await supabase
         .from('user_payrolls')
@@ -71,7 +75,7 @@ export function MarkDriverPaidDialog({
           payment_reference: formData.paymentReference || null,
           payment_notes: formData.notes || null,
           paid_at: new Date().toISOString(),
-          paid_by: (await supabase.auth.getUser()).data.user?.id,
+          paid_by: userId,
           updated_at: new Date().toISOString()
         })
         .eq('id', calculationId);
@@ -82,8 +86,6 @@ export function MarkDriverPaidDialog({
         t("mark_paid_dialog.notifications.success_title"),
         t("mark_paid_dialog.notifications.success_message", { driverName })
       );
-      onOpenChange(false);
-      onSuccess?.();
       
       // Reset form
       setFormData({
@@ -92,6 +94,9 @@ export function MarkDriverPaidDialog({
         paymentReference: "",
         notes: ""
       });
+      
+      onOpenChange(false);
+      onSuccess?.();
     } catch (error: any) {
       console.error('Error marking driver as paid:', error);
       showError(error.message || t("mark_paid_dialog.notifications.error_unexpected"));
