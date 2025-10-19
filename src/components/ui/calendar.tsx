@@ -1,20 +1,108 @@
 import * as React from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { DayPicker, DropdownProps } from "react-day-picker";
+import { DayPicker, useNavigation, CaptionProps } from "react-day-picker";
 import { es } from "date-fns/locale";
+import { format } from "date-fns";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTranslation } from "react-i18next";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   onClear?: () => void;
   onToday?: () => void;
   showFooterButtons?: boolean;
+  fromYear?: number;
+  toYear?: number;
 };
+
+function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number }) {
+  const { goToMonth } = useNavigation();
+  const { fromYear, toYear } = props;
+  
+  const currentMonth = props.displayMonth.getMonth();
+  const currentYear = props.displayMonth.getFullYear();
+  
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
+  const handlePreviousMonth = () => {
+    const newDate = new Date(currentYear, currentMonth - 1, 1);
+    goToMonth(newDate);
+  };
+  
+  const handleNextMonth = () => {
+    const newDate = new Date(currentYear, currentMonth + 1, 1);
+    goToMonth(newDate);
+  };
+  
+  const handlePreviousYear = () => {
+    const newDate = new Date(currentYear - 1, currentMonth, 1);
+    goToMonth(newDate);
+  };
+  
+  const handleNextYear = () => {
+    const newDate = new Date(currentYear + 1, currentMonth, 1);
+    goToMonth(newDate);
+  };
+  
+  return (
+    <div className="flex justify-center items-center gap-2 py-2">
+      <div className="flex items-center gap-1">
+        <span className="text-sm font-medium min-w-[100px] text-center">
+          {months[currentMonth]}
+        </span>
+        <div className="flex flex-col">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-4 w-6 p-0"
+            onClick={handlePreviousMonth}
+          >
+            <ChevronUp className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-4 w-6 p-0"
+            onClick={handleNextMonth}
+          >
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-1">
+        <span className="text-sm font-medium min-w-[60px] text-center">
+          {currentYear}
+        </span>
+        <div className="flex flex-col">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-4 w-6 p-0"
+            onClick={handlePreviousYear}
+            disabled={currentYear <= fromYear}
+          >
+            <ChevronUp className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-4 w-6 p-0"
+            onClick={handleNextYear}
+            disabled={currentYear >= toYear}
+          >
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function Calendar({
   className,
@@ -35,26 +123,13 @@ function Calendar({
       <DayPicker
         weekStartsOn={1}
         showOutsideDays={showOutsideDays}
-        fromYear={fromYear}
-        toYear={toYear}
-        captionLayout="dropdown"
         locale={locale}
         className={cn("p-3", className)}
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
           month: "space-y-4",
-          caption: "flex justify-center pt-1 relative items-center gap-1",
-          caption_label: "hidden",
-          caption_dropdowns: "flex items-center gap-1",
-          dropdown_month: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium",
-          dropdown_year: "text-sm bg-primary/10 border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[70px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium",
-          nav: "space-x-1 flex items-center",
-          nav_button: cn(
-            buttonVariants({ variant: "ghost" }),
-            "h-7 w-7 bg-transparent p-0 hover:bg-accent"
-          ),
-          nav_button_previous: "absolute -left-2",
-          nav_button_next: "absolute -right-2",
+          caption: "flex justify-center pt-1 relative items-center",
+          nav: "hidden",
           table: "w-full border-collapse space-y-1",
           head_row: "flex",
           head_cell:
@@ -78,41 +153,7 @@ function Calendar({
           ...classNames,
         }}
         components={{
-          IconLeft: ({ ..._props }) => <ChevronUp className="h-4 w-4" />,
-          IconRight: ({ ..._props }) => <ChevronDown className="h-4 w-4" />,
-          Dropdown: ({ value, onChange, children, ...props }: DropdownProps) => {
-            const options = React.Children.toArray(children) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[];
-            
-            const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const changeEvent = {
-                target: { value: e.target.value },
-              } as React.ChangeEvent<HTMLSelectElement>;
-              onChange?.(changeEvent);
-            };
-            
-            return (
-              <select
-                value={value}
-                onChange={handleChange}
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="text-sm bg-background border border-input rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-primary font-medium cursor-pointer"
-                style={{ pointerEvents: 'auto' }}
-              >
-                {options.map((option, id: number) => (
-                  <option
-                    key={`${option.props.value}-${id}`}
-                    value={option.props.value?.toString() ?? ""}
-                    disabled={option.props.disabled}
-                  >
-                    {option.props.children}
-                  </option>
-                ))}
-              </select>
-            );
-          },
+          Caption: (captionProps) => <CustomCaption {...captionProps} fromYear={fromYear} toYear={toYear} />,
         }}
         {...props}
       />
