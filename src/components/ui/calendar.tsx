@@ -13,6 +13,8 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   onClear?: () => void;
   onToday?: () => void;
   showFooterButtons?: boolean;
+  disableClear?: boolean;
+  disableToday?: boolean;
   fromYear?: number;
   toYear?: number;
 };
@@ -125,6 +127,8 @@ function Calendar({
   onClear,
   onToday,
   showFooterButtons = true,
+  disableClear = false,
+  disableToday = false,
   ...props
 }: CalendarProps) {
   const { i18n, t } = useTranslation();
@@ -180,7 +184,8 @@ function Calendar({
               e.stopPropagation();
               onClear?.();
             }}
-            className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto"
+            disabled={disableClear}
+            className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t('common:clear', 'Clear')}
           </Button>
@@ -193,7 +198,8 @@ function Calendar({
               e.stopPropagation();
               onToday?.();
             }}
-            className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto"
+            disabled={disableToday}
+            className="text-primary hover:text-primary hover:bg-primary/10 pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t('common:today', 'Today')}
           </Button>
