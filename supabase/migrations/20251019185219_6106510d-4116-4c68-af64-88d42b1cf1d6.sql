@@ -1,0 +1,4 @@
+-- Deshabilitar temporalmente los triggers de expense_recurring_templates para identificar el problema
+ALTER TABLE expense_recurring_templates DISABLE TRIGGER trigger_generate_instances_on_template_change;
+ALTER TABLE expense_recurring_templates DISABLE TRIGGER trigger_sync_recurring_template_on_insert;
+ALTER TABLE expense_recurring_templates DISABLE TRIGGER trigger_sync_recurring_template_on_update;
