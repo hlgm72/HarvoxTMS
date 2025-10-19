@@ -282,13 +282,16 @@ export const formatDateSafe = (
     if (typeof dateInput === 'string') {
       // ✅ CRÍTICO: Detectar fechas de "solo fecha" que vienen con 00:00:00 UTC
       // Estas deben tratarse como fechas locales, no como timestamps UTC
-      const isDateOnlyWithMidnightUTC = dateInput.match(/^\d{4}-\d{2}-\d{2}[T\s]00:00:00(\+00|\.000Z|Z)?$/);
+      const isDateOnlyWithMidnightUTC = dateInput.match(/^\d{4}-\d{2}-\d{2}[T\s]00:00:00/);
+      
+      console.log('🔍 formatDateSafe - Input:', dateInput, 'Matched midnight UTC:', !!isDateOnlyWithMidnightUTC);
       
       if (isDateOnlyWithMidnightUTC) {
         // Extraer solo la parte de fecha y crear como fecha local
         const datePart = dateInput.split(/[T\s]/)[0];
         const [year, month, day] = datePart.split('-').map(Number);
         dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
+        console.log('✅ formatDateSafe - Created local date:', dateToFormat, 'from parts:', year, month, day);
       } else if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
         dateToFormat = parseISO(dateInput);
         if (!isValid(dateToFormat)) {
@@ -486,13 +489,16 @@ const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, l
     if (typeof dateInput === 'string') {
       // ✅ CRÍTICO: Detectar fechas de "solo fecha" que vienen con 00:00:00 UTC
       // Estas deben tratarse como fechas locales, no como timestamps UTC
-      const isDateOnlyWithMidnightUTC = dateInput.match(/^\d{4}-\d{2}-\d{2}[T\s]00:00:00(\+00|\.000Z|Z)?$/);
+      const isDateOnlyWithMidnightUTC = dateInput.match(/^\d{4}-\d{2}-\d{2}[T\s]00:00:00/);
+      
+      console.log('🔍 formatDateOnlyWithLocale - Input:', dateInput, 'Matched midnight UTC:', !!isDateOnlyWithMidnightUTC);
       
       if (isDateOnlyWithMidnightUTC) {
         // Extraer solo la parte de fecha y crear como fecha local
         const datePart = dateInput.split(/[T\s]/)[0];
         const [year, month, day] = datePart.split('-').map(Number);
         dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
+        console.log('✅ formatDateOnlyWithLocale - Created local date:', dateToFormat, 'from parts:', year, month, day);
       } else if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
         dateToFormat = parseISO(dateInput);
         if (!isValid(dateToFormat)) {
