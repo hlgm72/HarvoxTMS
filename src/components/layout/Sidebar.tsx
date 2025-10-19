@@ -646,7 +646,7 @@ export function AppSidebar() {
                             }}
                             onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
                             onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
-                            className={`font-body group relative flex items-center justify-center transition-all duration-200 w-full h-12 ${
+                            className={`font-body group relative flex items-center justify-center transition-all duration-200 w-full py-2 ${
                               active 
                                 ? "bg-white/20 text-white shadow-lg" 
                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
@@ -745,10 +745,10 @@ export function AppSidebar() {
           marginRight: '0px'
         } as any}
       >
-      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] flex items-center justify-center ${collapsed ? 'py-4 px-0' : 'px-6 py-6'}`} style={{ 
+      <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4 px-0' : 'px-6 py-6'}`} style={{ 
         backgroundColor: 'hsl(var(--fleet-sidebar-darker))'
       }}>
-        <div className={`flex items-center transition-all duration-300 ${collapsed ? 'justify-center w-full' : 'gap-4 justify-start w-full'}`}>
+        <div className={`flex items-center justify-center transition-all duration-300 ${collapsed ? 'w-full' : 'gap-4 justify-start'}`}>
           {/* Logo Container with Professional Styling */}
           <div className="relative group">
             <img 
