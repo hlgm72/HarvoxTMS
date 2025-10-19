@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Plus, Package, Clock } from "lucide-react";
@@ -8,12 +8,9 @@ import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
-import { LoadsStatsCards } from "@/components/loads/LoadsStatsCards";
-import { LoadsCurrentFiltersDisplay } from "@/components/loads/LoadsCurrentFiltersDisplay";
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
 import { useLoadsStats } from "@/hooks/useLoadsStats";
 import { useDriversList } from "@/hooks/useDriversList";
-import { useLoads } from "@/hooks/useLoads";
 import { useCurrentPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
@@ -80,13 +77,6 @@ export default function Loads() {
   
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
-  
-  // Hook para obtener todas las cargas y extraer brokers únicos
-  const { data: allLoads = [] } = useLoads();
-  const brokers = useMemo(() => {
-    const uniqueBrokers = [...new Set(allLoads.map(load => load.broker_name).filter(Boolean))];
-    return uniqueBrokers as string[];
-  }, [allLoads]);
 
   const getPeriodDescription = () => {
     // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
@@ -180,34 +170,13 @@ export default function Loads() {
         }
       />
 
-      <div className="p-2 md:p-4 space-y-6">
-        {/* Tarjetas de Estadísticas */}
-        <LoadsStatsCards periodFilter={periodFilter} />
-        
-        {/* Filtros Activos */}
-        <LoadsCurrentFiltersDisplay
-          filters={filters}
-          periodFilter={periodFilter}
-          drivers={drivers || []}
-          brokers={brokers || []}
-          onClearFilters={() => {
-            setFilters({
-              search: '',
-              status: "all",
-              driverId: "all",
-              brokerId: "all",
-              sortBy: 'date_desc',
-              periodFilter: periodFilter
-            });
-          }}
-        />
-        
+      <div className="p-2 md:p-4 space-y-6">        
         {/* Filtro de Períodos */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <PeriodFilter 
             value={periodFilter} 
             onChange={setPeriodFilter}
-            isLoading={false}
+            isLoading={false} // TODO: Conectar con el estado real de loading
           />
         </div>
 

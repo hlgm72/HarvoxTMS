@@ -6,25 +6,6 @@
     "in_transit": "in transit",
     "pending_assignment": "pending assignment"
   },
-  "stats": {
-    "total_active": "Active Loads",
-    "in_transit": "In Transit",
-    "pending_assignment": "Pending Assignment",
-    "total_amount": "Total Amount"
-  },
-  "filters": {
-    "period": "Period",
-    "driver": "Driver",
-    "broker": "Broker",
-    "status": "Status",
-    "search": "Search",
-    "all": "All",
-    "selected": "Selected",
-    "not_selected": "Not selected",
-    "applied_criteria": "Applied criteria",
-    "clear": "Clear filters",
-    "clear_short": "Clear"
-  },
   "create": {
     "button": "New Load",
     "title": "Create New Load", 
