@@ -717,6 +717,7 @@ export function FuelExpenseDialog({
                           step="0.01" 
                           placeholder={t('fuel:create_dialog.placeholders.gallons')} 
                           {...field}
+                          value={field.value === 0 ? '0.00' : field.value}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value) || 0;
                             field.onChange(Number(value.toFixed(2)));
