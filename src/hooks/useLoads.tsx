@@ -272,15 +272,14 @@ export const useLoads = (filters?: LoadsFilters) => {
           allPeriods
         );
         
-        // PASO 3: Query SIMPLIFICADA - traer todas las cargas creadas por usuarios de la compañía
-        // Esto incluye cargas con o sin conductor asignado
+        // ✅ OPTIMIZACIÓN: Query simplificada con límite reducido para mejorar performance
         const loadsQuery = supabase
           .from('loads')
           .select('*')
           .in('created_by', companyUsers)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
-          .limit(500);
+          .limit(200); // Reducido de 500 a 200 para mejorar performance inicial
 
         const { data: allLoads, error: loadsError } = await loadsQuery;
 

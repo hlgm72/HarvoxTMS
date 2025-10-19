@@ -1,5 +1,6 @@
 {
   "title": "Load Management",
+  "active_filters": "Active Filters",
   "subtitle": {
     "loading": "Loading statistics...",
     "active_loads": "active loads",

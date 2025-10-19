@@ -1,6 +1,7 @@
 {
-  "title": "Gestión de Cargas",
-  "subtitle": {
+    "title": "Gestión de Cargas",
+    "active_filters": "Filtros Activos",
+    "subtitle": {
     "loading": "Cargando estadísticas...",
     "active_loads": "cargas activas",
     "in_transit": "en tránsito",

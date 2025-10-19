@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Plus, Package, Clock } from "lucide-react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { LoadsList } from "@/components/loads/LoadsList";
@@ -9,7 +10,7 @@ import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
 import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
-import { useLoadsStats } from "@/hooks/useLoadsStats";
+import { useLoads } from "@/hooks/useLoads";
 import { useDriversList } from "@/hooks/useDriversList";
 import { useCurrentPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
@@ -36,14 +37,13 @@ export default function Loads() {
   
   const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentPeriodWithDates());
   
-  // Adaptar filtros para el sistema universal
+  // ✅ CORRECCIÓN: Usar nombres consistentes driver/broker en lugar de driverId/brokerId
   const [filters, setFilters] = useState({
     search: '',
     status: "all",
-    driverId: "all", 
-    brokerId: "all",
-    sortBy: 'date_desc',
-    periodFilter: getCurrentPeriodWithDates()
+    driver: "all", 
+    broker: "all",
+    sortBy: 'date_desc'
   });
 
   // ✅ INICIALIZACIÓN AUTOMÁTICA: Poblar período actual cuando esté disponible
@@ -64,19 +64,44 @@ export default function Loads() {
     }
   }, [calculatedPeriods, periodFilter.type, periodFilter.periodId, periodFilter.startDate]);
 
-  // ✅ SINCRONIZACIÓN CRÍTICA: Mantener ambos estados alineados
-  useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      periodFilter: periodFilter
-    }));
-  }, [periodFilter]);
+  // ✅ OPTIMIZACIÓN: Obtener loads una sola vez y calcular stats en el cliente
+  const loadsFilters = periodFilter ? {
+    periodFilter: {
+      type: periodFilter.type,
+      periodId: periodFilter.periodId,
+      startDate: periodFilter.startDate,
+      endDate: periodFilter.endDate
+    }
+  } : undefined;
   
-  // Hook para obtener estadísticas en tiempo real
-  const { data: loadsStats, isLoading: statsLoading } = useLoadsStats({ periodFilter: filters.periodFilter });
+  const { data: loads = [], isLoading: loadsLoading } = useLoads(loadsFilters);
   
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
+  
+  // ✅ OPTIMIZACIÓN: Calcular stats desde los loads ya cargados (sin query adicional)
+  const loadsStats = useMemo(() => {
+    const totalActive = loads.filter(l => 
+      l.status !== 'completed' && l.status !== 'cancelled'
+    ).length;
+    
+    const totalInTransit = loads.filter(l => 
+      l.status === 'in_transit'
+    ).length;
+    
+    const pendingAssignment = loads.filter(l => 
+      l.status === 'created' || l.status === 'route_planned'
+    ).length;
+    
+    const totalAmount = loads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
+    
+    return {
+      totalActive,
+      totalInTransit,
+      pendingAssignment,
+      totalAmount
+    };
+  }, [loads]);
 
   const getPeriodDescription = () => {
     // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
@@ -123,77 +148,81 @@ export default function Loads() {
     return '';
   };
 
-  // Generar descripción de filtros activos
-  const getFilterDescription = () => {
-    const parts: string[] = [];
-    
-    // Filtro de período con fechas
-    if (periodFilter) {
-      const dateRange = getPeriodDateRange();
-      const description = getPeriodDescription();
-      if (dateRange) {
-        parts.push(`${description}: ${dateRange}`);
-      } else {
-        parts.push(description);
-      }
-    }
-    
-    // Filtro de conductor
-    if (filters.driverId && filters.driverId !== 'all') {
-      const driver = drivers?.find(d => d.user_id === filters.driverId);
-      parts.push(`${t('filters.driver')}: ${driver ? driver.label : t('filters.selected')}`);
-    }
-    
-    // Filtro de broker
-    if (filters.brokerId && filters.brokerId !== 'all') {
-      parts.push(`${t('filters.broker')}: ${filters.brokerId}`);
-    }
-    
-    // Filtro de estado
-    if (filters.status && filters.status !== 'all') {
-      const statusLabels: Record<string, string> = {
-        pending: t('filters.pending'),
-        in_transit: t('filters.in_transit'),
-        delivered: t('filters.delivered'),
-        completed: t('filters.completed')
-      };
-      parts.push(`${t('filters.status')}: ${statusLabels[filters.status] || filters.status}`);
-    }
-    
-    if (parts.length === 0) {
-      return t('filters.no_filters');
-    }
-    
-    return parts.join(' • ');
-  };
-  
-  // Crear el subtitle dinámico con las estadísticas y filtros
-  const getSubtitle = () => {
+  // ✅ OPTIMIZACIÓN: Subtitle memoizado con stats calculadas en tiempo real
+  const subtitle = useMemo(() => {
     const needsCalculatedPeriods = periodFilter?.type === 'current' || periodFilter?.type === 'previous';
     
-    if (statsLoading || !loadsStats || (needsCalculatedPeriods && !calculatedPeriods)) {
-      return <div>{t('subtitle.loading')}</div>;
+    if (loadsLoading || (needsCalculatedPeriods && !calculatedPeriods)) {
+      return <div className="text-sm text-muted-foreground">{t('subtitle.loading')}</div>;
     }
     
-    // Primera línea: estadísticas
-    const stats = [
-      `${loadsStats.totalActive} ${t('subtitle.active_loads')}`,
-      `${formatCurrency(loadsStats.totalAmount)} ${t('subtitle.in_transit')}`,
-      `${loadsStats.pendingAssignment} ${t('subtitle.pending_assignment')}`
-    ].join(' • ');
+    // Stats display
+    const statsDisplay = (
+      <div className="flex items-center gap-4 text-sm">
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{loadsStats.totalActive}</span>
+          <span className="text-muted-foreground">{t('subtitle.active_loads')}</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{formatCurrency(loadsStats.totalAmount)}</span>
+          <span className="text-muted-foreground">{t('subtitle.total_value')}</span>
+        </span>
+        {loadsStats.totalInTransit > 0 && (
+          <span className="flex items-center gap-1">
+            <span className="font-medium text-orange-600">{loadsStats.totalInTransit}</span>
+            <span className="text-muted-foreground">{t('subtitle.in_transit')}</span>
+          </span>
+        )}
+      </div>
+    );
     
-    // Segunda línea: filtros activos
-    const filterDescription = getFilterDescription();
+    // ✅ Sincronizar filtros activos con FloatingActions
+    const hasActiveFilters = filters.status !== 'all' || filters.driver !== 'all' || filters.broker !== 'all';
+    const periodDesc = getPeriodDescription();
+    const dateRange = getPeriodDateRange();
+    
+    if (hasActiveFilters) {
+      return (
+        <div className="space-y-2">
+          {statsDisplay}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">{t('active_filters')}:</span>
+            {periodDesc && dateRange && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {periodDesc}: {dateRange}
+              </Badge>
+            )}
+            {filters.status !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t('filters.status')}: {filters.status}
+              </Badge>
+            )}
+            {filters.driver !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t('filters.driver')}: {drivers?.find(d => d.value === filters.driver)?.label || filters.driver}
+              </Badge>
+            )}
+            {filters.broker !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t('filters.broker')}: {filters.broker}
+              </Badge>
+            )}
+          </div>
+        </div>
+      );
+    }
     
     return (
-      <>
-        <div>{stats}</div>
-        <div className="text-xs text-muted-foreground/80">
-          {filterDescription}
-        </div>
-      </>
+      <div className="space-y-1">
+        {statsDisplay}
+        {(periodDesc || dateRange) && (
+          <div className="text-xs text-muted-foreground">
+            {periodDesc} {dateRange && `• ${dateRange}`}
+          </div>
+        )}
+      </div>
     );
-  };
+  }, [loadsLoading, calculatedPeriods, periodFilter, loadsStats, filters, drivers, t, getPeriodDescription, getPeriodDateRange]);
   
   // console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
 
@@ -202,7 +231,7 @@ export default function Loads() {
       <PageToolbar 
         icon={Package}
         title={t("title")}
-        subtitle={getSubtitle()}
+        subtitle={subtitle}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -215,10 +244,10 @@ export default function Loads() {
         <LoadDocumentsProvider>
           <LoadsList 
             filters={{
-              search: filters.search, // Pasar el filtro de búsqueda
+              search: filters.search,
               status: filters.status,
-              driver: filters.driverId,
-              broker: filters.brokerId,
+              driver: filters.driver,
+              broker: filters.broker,
               dateRange: { from: undefined, to: undefined }
             }}
             periodFilter={periodFilter}
@@ -233,12 +262,12 @@ export default function Loads() {
         />
       </div>
 
-      {/* Floating Actions */}
+      {/* ✅ Floating Actions con filtros sincronizados */}
       <LoadsFloatingActions
         filters={{
           status: filters.status,
-          driver: filters.driverId,
-          broker: filters.brokerId,
+          driver: filters.driver,
+          broker: filters.broker,
           dateRange: { from: undefined, to: undefined }
         }}
         periodFilter={periodFilter}
@@ -246,8 +275,8 @@ export default function Loads() {
           setFilters(prev => ({
             ...prev,
             status: newFilters.status,
-            driverId: newFilters.driver,
-            brokerId: newFilters.broker
+            driver: newFilters.driver,
+            broker: newFilters.broker
           }));
         }}
         onPeriodFilterChange={(newPeriodFilter) => {
