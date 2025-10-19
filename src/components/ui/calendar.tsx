@@ -35,6 +35,7 @@ function Calendar({
         showOutsideDays={showOutsideDays}
         fromYear={fromYear}
         toYear={toYear}
+        captionLayout="dropdown"
         locale={locale}
         className={cn("p-3", className)}
         classNames={{
