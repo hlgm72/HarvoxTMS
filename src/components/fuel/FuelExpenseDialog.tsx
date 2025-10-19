@@ -613,10 +613,17 @@ export function FuelExpenseDialog({
                             <Calendar
                               mode="single"
                               selected={field.value}
-                              onSelect={field.onChange}
+                              onSelect={(date) => {
+                                console.log('📆 Date selected:', date);
+                                field.onChange(date);
+                              }}
                               onClear={() => {
-                                console.log('🧹 Clear clicked, setting to undefined');
+                                console.log('🧹 Clear clicked - current value:', field.value);
                                 field.onChange(undefined);
+                                console.log('🧹 After clear - value should be:', undefined);
+                                setTimeout(() => {
+                                  console.log('🧹 After timeout - actual value:', field.value);
+                                }, 100);
                               }}
                               onToday={() => {
                                 console.log('📅 Today clicked, setting to:', new Date());
