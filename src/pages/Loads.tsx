@@ -211,16 +211,7 @@ export default function Loads() {
         }
       />
 
-      <div className="p-2 md:p-4 space-y-6">        
-        {/* Filtro de Períodos */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <PeriodFilter 
-            value={periodFilter} 
-            onChange={setPeriodFilter}
-            isLoading={false} // TODO: Conectar con el estado real de loading
-          />
-        </div>
-
+      <div className="p-2 md:p-4 space-y-6">
         <LoadDocumentsProvider>
           <LoadsList 
             filters={{
