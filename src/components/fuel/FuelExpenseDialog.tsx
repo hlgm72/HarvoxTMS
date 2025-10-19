@@ -395,9 +395,9 @@ export function FuelExpenseDialog({
   const fees = form.watch('fees');
   const transactionDate = form.watch('transaction_date');
 
-  // Auto-calculate gross amount (gallons * price) - only for create mode
+  // Auto-calculate gross amount (gallons * price)
   React.useEffect(() => {
-    if (!isEditMode && gallons && pricePerGallon) {
+    if (gallons && pricePerGallon) {
       const gross = gallons * pricePerGallon;
       const roundedGross = Number(gross.toFixed(2));
       const currentGross = form.getValues('gross_amount');
@@ -408,11 +408,11 @@ export function FuelExpenseDialog({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gallons, pricePerGallon, isEditMode]);
+  }, [gallons, pricePerGallon]);
 
-  // Auto-calculate total amount (gross - discounts + fees) - only for create mode
+  // Auto-calculate total amount (gross - discounts + fees)
   React.useEffect(() => {
-    if (!isEditMode && grossAmount !== undefined && !isNaN(grossAmount)) {
+    if (grossAmount !== undefined && !isNaN(grossAmount)) {
       const discount = Number(discountAmount) || 0;
       const fee = Number(fees) || 0;
       const total = Number(grossAmount) - discount + fee;
@@ -428,21 +428,7 @@ export function FuelExpenseDialog({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grossAmount, discountAmount, fees, isEditMode]);
-
-  // Auto-calculate total for edit mode (simple calculation)
-  React.useEffect(() => {
-    if (isEditMode && gallons && pricePerGallon) {
-      const total = gallons * pricePerGallon;
-      const roundedTotal = Number(total.toFixed(2));
-      const currentTotal = form.getValues('total_amount');
-      
-      if (currentTotal !== roundedTotal) {
-        form.setValue('total_amount', roundedTotal);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gallons, pricePerGallon, isEditMode]);
+  }, [grossAmount, discountAmount, fees]);
 
   // Auto-select payment period based on transaction date (solo buscar, no crear)
   const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
