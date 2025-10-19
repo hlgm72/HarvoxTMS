@@ -661,14 +661,14 @@ export function AppSidebar() {
                            )}
                          </NavLink>
                          </TooltipTrigger>
-                        <TooltipContent 
-                          side="right" 
-                          className="bg-slate-900 text-white border-slate-700 shadow-xl z-[99999] font-medium"
-                          sideOffset={12}
-                          avoidCollisions={true}
-                        >
-                          {item.title}
-                        </TooltipContent>
+                         <TooltipContent 
+                           side="right" 
+                           className="bg-slate-900 text-white border-slate-700 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
+                           sideOffset={16}
+                           avoidCollisions={false}
+                         >
+                           {item.title}
+                         </TooltipContent>
                       </Tooltip>
                    ) : (
                          <NavLink 
@@ -729,17 +729,17 @@ export function AppSidebar() {
   };
 
   return (
-    <TooltipProvider delayDuration={300} skipDelayDuration={100}>
+    <TooltipProvider delayDuration={200} skipDelayDuration={0}>
       <Sidebar
-        className="overflow-x-hidden mr-0"
+        className="mr-0"
         collapsible="icon"
         variant="sidebar"
         side="left"
         style={{ 
           backgroundColor: 'hsl(var(--sidebar-background))',
           width: collapsed ? '56px' : 'var(--sidebar-width)',
-          overflowX: 'hidden',
-          marginRight: '0px'
+          marginRight: '0px',
+          overflow: 'visible'
         } as any}
       >
       <SidebarHeader className={`border-b border-[hsl(var(--sidebar-border))] ${collapsed ? 'py-4' : 'px-6 py-6'}`} style={{ 
