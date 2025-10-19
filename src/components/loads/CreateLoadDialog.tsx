@@ -213,6 +213,69 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [selectedCompany?.id]);
 
+  // Reset all states when opening in create mode
+  useEffect(() => {
+    if (isOpen && mode === 'create') {
+      // Reset phase to step 1
+      setCurrentPhase(1);
+      
+      // Reset selections
+      setSelectedClient(null);
+      setSelectedDriver(null);
+      setSelectedDispatcher(null);
+      
+      // Reset stops to default
+      setLoadStops([
+        {
+          id: 'stop-1',
+          stop_number: 1,
+          stop_type: 'pickup',
+          company_name: '',
+          address: '',
+          city: '',
+          state: '',
+          zip_code: '',
+        },
+        {
+          id: 'stop-2', 
+          stop_number: 2,
+          stop_type: 'delivery',
+          company_name: '',
+          address: '',
+          city: '',
+          state: '',
+          zip_code: '',
+        }
+      ]);
+      
+      // Reset documents
+      setLoadDocuments([]);
+      
+      // Reset percentages
+      setPercentagesInitialized(null);
+      
+      // Reset form to default values
+      form.reset({
+        client_id: "",
+        contact_id: "",
+        load_number: "",
+        po_number: "",
+        total_amount: 0,
+        pu_number: "",
+        commodity: "",
+        weight_lbs: undefined,
+        customer_name: "",
+        notes: "",
+        factoring_percentage: undefined,
+        dispatching_percentage: undefined,
+        leasing_percentage: undefined,
+      });
+      
+      // Reset ATM input
+      atmInput.setValue(0);
+    }
+  }, [isOpen, mode]);
+
   // Auto-select contact if client has only one contact
   useEffect(() => {
     if (selectedClient && clientContacts && clientContacts.length === 1) {
