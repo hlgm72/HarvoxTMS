@@ -280,7 +280,16 @@ export const formatDateSafe = (
     let dateToFormat: Date;
     
     if (typeof dateInput === 'string') {
-      if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
+      // ✅ CRÍTICO: Detectar fechas de "solo fecha" que vienen con 00:00:00 UTC
+      // Estas deben tratarse como fechas locales, no como timestamps UTC
+      const isDateOnlyWithMidnightUTC = dateInput.match(/^\d{4}-\d{2}-\d{2}[T\s]00:00:00(\+00|\.000Z|Z)?$/);
+      
+      if (isDateOnlyWithMidnightUTC) {
+        // Extraer solo la parte de fecha y crear como fecha local
+        const datePart = dateInput.split(/[T\s]/)[0];
+        const [year, month, day] = datePart.split('-').map(Number);
+        dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
+      } else if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
         dateToFormat = parseISO(dateInput);
         if (!isValid(dateToFormat)) {
           return 'Fecha inválida';
@@ -475,7 +484,16 @@ const formatDateOnlyWithLocale = (dateInput: string | Date | null | undefined, l
     let dateToFormat: Date;
     
     if (typeof dateInput === 'string') {
-      if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
+      // ✅ CRÍTICO: Detectar fechas de "solo fecha" que vienen con 00:00:00 UTC
+      // Estas deben tratarse como fechas locales, no como timestamps UTC
+      const isDateOnlyWithMidnightUTC = dateInput.match(/^\d{4}-\d{2}-\d{2}[T\s]00:00:00(\+00|\.000Z|Z)?$/);
+      
+      if (isDateOnlyWithMidnightUTC) {
+        // Extraer solo la parte de fecha y crear como fecha local
+        const datePart = dateInput.split(/[T\s]/)[0];
+        const [year, month, day] = datePart.split('-').map(Number);
+        dateToFormat = new Date(year, month - 1, day, 12, 0, 0, 0);
+      } else if (dateInput.includes('T') && (dateInput.includes(':') || dateInput.includes('Z'))) {
         dateToFormat = parseISO(dateInput);
         if (!isValid(dateToFormat)) {
           return language === 'es' ? 'Fecha inválida' : 'Invalid date';
