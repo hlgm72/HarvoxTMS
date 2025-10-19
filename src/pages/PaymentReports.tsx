@@ -470,9 +470,8 @@ export default function PaymentReports() {
     return (
       <>
         <div>{statsLine}</div>
-        <div className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
-          <span className="font-medium">{t("filters.active_filters")}</span>
-          <span>{filterDescription}</span>
+        <div className="text-xs text-muted-foreground/80">
+          {filterDescription}
         </div>
       </>
     );
