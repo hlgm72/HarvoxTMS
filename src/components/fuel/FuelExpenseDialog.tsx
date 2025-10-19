@@ -479,8 +479,9 @@ export function FuelExpenseDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0 bg-white">
+        {/* Fixed Header */}
+        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle>
             {isEditMode ? t('fuel:edit_dialog.title') : t('fuel:create_dialog.title')}
           </DialogTitle>
@@ -513,7 +514,9 @@ export function FuelExpenseDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
             {/* Información Básica */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">
@@ -954,21 +957,23 @@ export function FuelExpenseDialog({
                 )}
               />
             </div>
+            </div>
 
-            <DialogFooter>
+            {/* Fixed Footer */}
+            <DialogFooter className="px-6 py-4 border-t shrink-0">
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 {t('common:actions.cancel')}
               </Button>
-          <Button 
-            type="submit" 
-            disabled={isPending || !canModify} // ⭐ NUEVO: Deshabilitar si conductor pagado
-            title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
-          >
-            {isPending 
-              ? (isEditMode ? t('fuel:create_dialog.actions.saving') : t('fuel:create_dialog.actions.creating')) 
-              : (isEditMode ? t('fuel:create_dialog.actions.save_changes') : t('fuel:create_dialog.actions.create'))
-            }
-          </Button>
+              <Button 
+                type="submit" 
+                disabled={isPending || !canModify} // ⭐ NUEVO: Deshabilitar si conductor pagado
+                title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
+              >
+                {isPending 
+                  ? (isEditMode ? t('fuel:create_dialog.actions.saving') : t('fuel:create_dialog.actions.creating')) 
+                  : (isEditMode ? t('fuel:create_dialog.actions.save_changes') : t('fuel:create_dialog.actions.create'))
+                }
+              </Button>
             </DialogFooter>
           </form>
         </Form>
