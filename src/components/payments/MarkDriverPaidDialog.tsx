@@ -115,10 +115,12 @@ export function MarkDriverPaidDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Driver Info */}
           <div className="bg-muted/50 p-3 rounded-lg">
-            <p className="font-medium">{driverName}</p>
-            <p className="text-lg font-bold text-green-600">
-              {formatCurrency(netPayment)}
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-medium text-foreground">{driverName}</p>
+              <p className="text-lg font-bold text-green-600">
+                {formatCurrency(netPayment)}
+              </p>
+            </div>
           </div>
 
           {/* Payment Date */}
