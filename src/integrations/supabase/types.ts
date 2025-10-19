@@ -3255,6 +3255,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_recurring_expenses_to_user_payroll: {
+        Args: { target_period_id: string; target_user_id: string }
+        Returns: Json
+      }
       approve_fuel_expenses_for_paid_drivers: {
         Args: Record<PropertyKey, never>
         Returns: Json
