@@ -79,7 +79,7 @@
     {
       "name": "Preview",
       "short_name": "Vista Previa",
-      "description": "Vista previa de FleetNest",
+      "description": "Vista previa de Harvox TMS",
       "url": "/preview",
       "icons": [
         {

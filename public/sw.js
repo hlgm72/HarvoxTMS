@@ -1,7 +1,7 @@
 
 const CACHE_VERSION = 'v4.0.0-' + Date.now(); // Force complete cache reset
-const STATIC_CACHE = 'fleetnest-static-' + CACHE_VERSION;
-const DYNAMIC_CACHE = 'fleetnest-dynamic-' + CACHE_VERSION;
+const STATIC_CACHE = 'harvox-static-' + CACHE_VERSION;
+const DYNAMIC_CACHE = 'harvox-dynamic-' + CACHE_VERSION;
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [
@@ -171,7 +171,7 @@ self.addEventListener('push', (event) => {
   console.log('SW: Push notification received');
   
   const options = {
-    body: event.data ? event.data.text() : 'Nueva notificación de FleetNest',
+    body: event.data ? event.data.text() : 'Nueva notificación de Harvox TMS',
     icon: '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png',
     badge: '/lovable-uploads/ec4495b7-2147-4fca-93d5-3dbdafbef98a.png',
     vibrate: [100, 50, 100],
@@ -194,7 +194,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('FleetNest', options)
+    self.registration.showNotification('Harvox TMS', options)
   );
 });
 

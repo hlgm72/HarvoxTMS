@@ -1,5 +1,5 @@
 {
-  "name": "fleetnest-tms",
+  "name": "harvox-tms",
   "type": "module",
   "scripts": {
     "clean": "rm -rf dist .vite node_modules/.vite node_modules bun.lockb",

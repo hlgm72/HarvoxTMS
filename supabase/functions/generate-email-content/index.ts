@@ -47,7 +47,7 @@ Total Expenses: $${data.totalExpenses.toFixed(2)}
 
 Requirements:
 - Professional HTML email format with inline CSS
-- FleetNest TMS branding (use blue and green color scheme)
+- Harvox TMS branding (use blue and green color scheme)
 - Responsive design that works on mobile
 - Include a summary table with key metrics
 - Warm, professional tone in Spanish
