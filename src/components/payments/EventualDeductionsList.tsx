@@ -91,8 +91,6 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
         // Aplicar filtro de período si está especificado
         if (filters?.periodFilter) {
-          console.log('🔍 Aplicando filtro de período:', filters.periodFilter);
-          
           // ✅ CORREGIDO: Filtrar solo por fechas del período, sin incluir deducciones sin fecha
           if (filters.periodFilter.type === 'specific' && (filters.periodFilter as any).periodId) {
             const periodId = (filters.periodFilter as any).periodId;
@@ -101,29 +99,19 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             if (periodId.startsWith('calculated-')) {
               // Para períodos calculados, usar las fechas del filtro
               if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
-                console.log('📅 Filtrando por fechas de período calculado:', {
-                  startDate: filters.periodFilter.startDate,
-                  endDate: filters.periodFilter.endDate
-                });
                 query = query
                   .gte('expense_date', filters.periodFilter.startDate)
                   .lte('expense_date', filters.periodFilter.endDate);
               } else {
-                console.log('❌ No hay fechas disponibles para período calculado');
                 query = query.eq('id', '00000000-0000-0000-0000-000000000000');
               }
             } else {
               // Para períodos reales de BD, filtrar por payment_period_id
-              console.log('📅 Filtrando por payment_period_id:', periodId);
               query = query.eq('payment_period_id', periodId);
             }
           }
           // Si el filtro tiene fechas específicas, usarlas
           else if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
-            console.log('📅 Filtrando por fechas específicas:', {
-              startDate: filters.periodFilter.startDate,
-              endDate: filters.periodFilter.endDate
-            });
             query = query
               .gte('expense_date', filters.periodFilter.startDate)
               .lte('expense_date', filters.periodFilter.endDate);
@@ -134,12 +122,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               const startDate = calculatedPeriods.current.period_start_date;
               const endDate = calculatedPeriods.current.period_end_date;
               
-              console.log('📅 Filtrando por período actual:', { startDate, endDate });
               query = query
                 .gte('expense_date', startDate)
                 .lte('expense_date', endDate);
             } else {
-              console.log('❌ No hay período actual calculado');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
@@ -149,18 +135,16 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               const startDate = calculatedPeriods.previous.period_start_date;
               const endDate = calculatedPeriods.previous.period_end_date;
               
-              console.log('📅 Filtrando por período anterior:', { startDate, endDate });
               query = query
                 .gte('expense_date', startDate)
                 .lte('expense_date', endDate);
             } else {
-              console.log('❌ No hay período anterior calculado');
               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
             }
           }
           // Para 'all', no aplicar filtro de período
           else if (filters.periodFilter.type === 'all') {
-            console.log('📅 Mostrando todas las deducciones (sin filtro de período)');
+            // No aplicar filtro
           }
         } else {
           // Si no hay filtro de período, usar el período actual calculado por defecto
@@ -168,12 +152,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             const startDate = calculatedPeriods.current.period_start_date;
             const endDate = calculatedPeriods.current.period_end_date;
             
-            console.log('📅 Sin filtro específico, usando período actual por defecto:', { startDate, endDate });
             query = query
               .gte('expense_date', startDate)
               .lte('expense_date', endDate);
-          } else {
-            console.log('❌ No hay período actual calculado, no aplicar filtro por defecto');
           }
         }
 
@@ -193,21 +174,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
             const startUTC = convertUserDateToUTC(fromDate);
             const endUTC = convertUserDateToUTC(toDate);
             
-            console.log('📅 Aplicando rango de fechas UTC:', {
-              startUTC: startUTC.split('T')[0],
-              endUTC: endUTC.split('T')[0]
-            });
-
             query = query
               .gte('expense_date', startUTC.split('T')[0])
               .lte('expense_date', endUTC.split('T')[0]);
-          } else {
-            console.warn('⚠️ Fechas inválidas en filtros:', {
-              from: filters.dateRange.from,
-              to: filters.dateRange.to,
-              fromValid: !isNaN(fromDate.getTime()),
-              toValid: !isNaN(toDate.getTime())
-            });
           }
         }
 

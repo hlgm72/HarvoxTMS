@@ -67,7 +67,6 @@ export default function FuelManagement() {
   useEffect(() => {
     if (filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
       if (currentPeriod) {
-        console.log('✅ Estableciendo período actual desde BD:', currentPeriod);
         setFilters(prev => ({
           ...prev,
           periodFilter: {
@@ -78,13 +77,9 @@ export default function FuelManagement() {
       } else {
         // Si no hay período real, mantener periodId como undefined
         // Esto permitirá filtrar por fechas calculadas sin romper las consultas
-        console.log('⚠️ No hay período actual real en BD - usando período calculado solo para display');
       }
     }
   }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
-
-  console.log('🔍 Filtros activos en Fuel Management:', filters);
-  console.log('📅 Período actual cargado:', currentPeriod);
   
   const [activeTab, setActiveTab] = useState('expenses');
 
@@ -101,11 +96,7 @@ export default function FuelManagement() {
   const handleFleetOneSync = async () => {
     setSyncLoading(true);
     try {
-      console.log('🔄 Sincronizando con FleetOne...');
       await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('✅ Sincronización completada');
-    } catch (error) {
-      console.error('❌ Error en sincronización:', error);
     } finally {
       setSyncLoading(false);
     }
@@ -115,11 +106,7 @@ export default function FuelManagement() {
   const handleExport = async (format: string) => {
     setExportLoading(true);
     try {
-      console.log(`📄 Exportando datos como ${format}...`);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('✅ Export completado');
-    } catch (error) {
-      console.error('❌ Error en export:', error);
     } finally {
       setExportLoading(false);
     }
@@ -135,18 +122,8 @@ export default function FuelManagement() {
     ...((() => {
       const pf = filters.periodFilter;
       
-      console.log('🔍 Processing periodFilter:', {
-        type: pf?.type,
-        periodId: pf?.periodId,
-        startDate: pf?.startDate,
-        endDate: pf?.endDate,
-        calculatedCurrent: calculatedPeriods?.current,
-        calculatedPrevious: calculatedPeriods?.previous
-      });
-      
       // 1. Si el filtro ya tiene fechas explícitas, usarlas directamente
       if (pf?.startDate && pf?.endDate) {
-        console.log('✅ Usando fechas explícitas del filtro');
         return {
           startDate: pf.startDate,
           endDate: pf.endDate
@@ -155,13 +132,11 @@ export default function FuelManagement() {
       
       // 2. Si es tipo 'all', no filtrar por período
       if (pf?.type === 'all') {
-        console.log('✅ Tipo "all" - sin filtro de período');
         return {};
       }
       
       // 3. Si es tipo 'current', usar período calculado
       if (pf?.type === 'current' && calculatedPeriods?.current) {
-        console.log('✅ Usando período calculado CURRENT:', calculatedPeriods.current);
         return {
           startDate: calculatedPeriods.current.period_start_date,
           endDate: calculatedPeriods.current.period_end_date
@@ -170,7 +145,6 @@ export default function FuelManagement() {
       
       // 4. Si es tipo 'previous', usar período calculado
       if (pf?.type === 'previous' && calculatedPeriods?.previous) {
-        console.log('✅ Usando período calculado PREVIOUS:', calculatedPeriods.previous);
         return {
           startDate: calculatedPeriods.previous.period_start_date,
           endDate: calculatedPeriods.previous.period_end_date
@@ -179,25 +153,20 @@ export default function FuelManagement() {
       
       // 5. Si hay un periodId específico de BD (no calculado), usarlo
       if (pf?.periodId && !pf.periodId.startsWith('calculated-')) {
-        console.log('✅ Usando periodId de BD:', pf.periodId);
         return { periodId: pf.periodId };
       }
       
       // 6. Por defecto, usar período actual calculado si está disponible
       if (calculatedPeriods?.current) {
-        console.log('✅ Fallback a período calculado CURRENT:', calculatedPeriods.current);
         return {
           startDate: calculatedPeriods.current.period_start_date,
           endDate: calculatedPeriods.current.period_end_date
         };
       }
       
-      console.log('⚠️ No hay filtros de período aplicables');
       return {};
     })())
   };
-
-  console.log('🔍 Query filters aplicados:', queryFilters);
 
   // Obtener estadísticas con los filtros aplicados
   const { data: stats, isLoading: statsLoading } = useFuelStats(queryFilters);
