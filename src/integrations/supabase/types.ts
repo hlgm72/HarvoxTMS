@@ -3114,6 +3114,7 @@ export type Database = {
       }
       user_payrolls: {
         Row: {
+          actual_payment_date: string | null
           balance_alert_message: string | null
           calculated_at: string | null
           calculated_by: string | null
@@ -3139,6 +3140,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          actual_payment_date?: string | null
           balance_alert_message?: string | null
           calculated_at?: string | null
           calculated_by?: string | null
@@ -3164,6 +3166,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          actual_payment_date?: string | null
           balance_alert_message?: string | null
           calculated_at?: string | null
           calculated_by?: string | null

@@ -512,6 +512,10 @@
   "mark_paid_dialog": {
     "title": "Mark as Paid",
     "description": "Confirm the payment made to this driver. Enter the details of the payment method used.",
+    "payment_date": "Payment Date",
+    "payment_date_required": "Payment Date *",
+    "payment_date_placeholder": "Select payment date",
+    "payment_date_description": "Actual date when the payment was made to the driver",
     "payment_method": "Payment Method",
     "payment_method_required": "Payment Method *",
     "payment_method_placeholder": "Select payment method",

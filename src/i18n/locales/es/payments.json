@@ -447,6 +447,10 @@
   "mark_paid_dialog": {
     "title": "Marcar como Pagado",
     "description": "Confirmar el pago realizado a este conductor. Ingresa los detalles del método de pago utilizado.",
+    "payment_date": "Fecha de Pago",
+    "payment_date_required": "Fecha de Pago *",
+    "payment_date_placeholder": "Seleccionar fecha de pago",
+    "payment_date_description": "Fecha real en que se realizó el pago al conductor",
     "payment_method": "Método de Pago",
     "payment_method_required": "Método de Pago *",
     "payment_method_placeholder": "Seleccionar método de pago",

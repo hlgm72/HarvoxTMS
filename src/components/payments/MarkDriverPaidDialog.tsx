@@ -5,11 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from '@/lib/dateFormatting';
-import { DollarSign, CreditCard, Building, Check } from "lucide-react";
+import { DollarSign, CreditCard, Building, Check, CalendarIcon } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import { cn } from "@/lib/utils";
 
 interface MarkDriverPaidDialogProps {
   open: boolean;
@@ -32,6 +36,7 @@ export function MarkDriverPaidDialog({
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    paymentDate: new Date(),
     paymentMethod: "",
     paymentReference: "",
     notes: ""
@@ -60,9 +65,12 @@ export function MarkDriverPaidDialog({
         .from('user_payrolls')
         .update({
           payment_status: 'paid',
+          actual_payment_date: format(formData.paymentDate, 'yyyy-MM-dd'),
           payment_method: formData.paymentMethod,
           payment_reference: formData.paymentReference || null,
           payment_notes: formData.notes || null,
+          paid_at: new Date().toISOString(),
+          paid_by: (await supabase.auth.getUser()).data.user?.id,
           updated_at: new Date().toISOString()
         })
         .eq('id', calculationId);
@@ -78,6 +86,7 @@ export function MarkDriverPaidDialog({
       
       // Reset form
       setFormData({
+        paymentDate: new Date(),
         paymentMethod: "",
         paymentReference: "",
         notes: ""
@@ -109,6 +118,37 @@ export function MarkDriverPaidDialog({
             <p className="font-medium">{driverName}</p>
             <p className="text-lg font-bold text-green-600">
               {formatCurrency(netPayment)}
+            </p>
+          </div>
+
+          {/* Payment Date */}
+          <div className="space-y-2">
+            <Label htmlFor="paymentDate">{t("mark_paid_dialog.payment_date_required")}</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !formData.paymentDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {formData.paymentDate ? format(formData.paymentDate, "PPP") : t("mark_paid_dialog.payment_date_placeholder")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={formData.paymentDate}
+                  onSelect={(date) => date && setFormData(prev => ({ ...prev, paymentDate: date }))}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+            <p className="text-xs text-muted-foreground">
+              {t("mark_paid_dialog.payment_date_description")}
             </p>
           </div>
 
