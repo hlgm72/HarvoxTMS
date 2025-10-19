@@ -622,13 +622,14 @@ export function AppSidebar() {
     if (sectionItems.length === 0) return null;
 
      return (
-      <div key={sectionName} className={collapsed ? '' : 'mb-1'}>
+      <div key={sectionName} className="mb-1">
         {!collapsed && (
           <div className="px-4 py-1 text-xs font-body font-normal text-white/70 uppercase tracking-wide">
             {sectionLabel}
           </div>
         )}
-        <div className={collapsed ? '' : 'space-y-0'}>
+        <div>
+          <div className="space-y-0">
             {sectionItems.map((item: any) => {
               const active = isActive(item.url);
               const IconComponent = item.icon;
@@ -719,9 +720,10 @@ export function AppSidebar() {
                   </div>
                );
              })}
-        </div>
-      </div>
-    );
+           </div>
+         </div>
+       </div>
+     );
   };
 
   return (
@@ -783,7 +785,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={`overflow-y-auto ${collapsed ? 'p-0 gap-0' : 'py-2 px-0'}`} style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
+      <SidebarContent className="py-2 px-0 overflow-y-auto" style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}>
           {isSuperAdmin ? (
             // Para SuperAdmin: Estilo Limitless exacto
             <>
