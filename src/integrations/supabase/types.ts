@@ -3493,6 +3493,10 @@ export type Database = {
         Args: { period_id: string; user_id_param?: string }
         Returns: Json
       }
+      can_modify_period: {
+        Args: { period_id: string }
+        Returns: boolean
+      }
       can_user_be_permanently_deleted: {
         Args: { user_id_param: string }
         Returns: Json
@@ -3538,7 +3542,7 @@ export type Database = {
         Returns: Json
       }
       cleanup_empty_payment_period: {
-        Args: { period_id: string }
+        Args: { target_period_id: string }
         Returns: Json
       }
       cleanup_expired_backups: {
@@ -4460,8 +4464,8 @@ export type Database = {
         Returns: Json
       }
       recalculate_payment_period_totals: {
-        Args: { period_id: string }
-        Returns: undefined
+        Args: { target_period_id: string }
+        Returns: Json
       }
       recalculate_period_percentage_deductions: {
         Args: { target_period_id: string; target_user_id: string }
