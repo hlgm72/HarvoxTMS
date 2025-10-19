@@ -83,6 +83,11 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
       console.log('📱 Mobile input detected, setting value:', newValue);
       setValue(newValue);
       onValueChange?.(newValue / 100);
+      
+      // Move cursor to the end after value update
+      setTimeout(() => {
+        input.setSelectionRange(input.value.length, input.value.length);
+      }, 0);
     }
   }, [value, onValueChange]);
 
