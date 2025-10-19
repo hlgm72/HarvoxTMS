@@ -34,7 +34,7 @@ import {
   Eye,
   Edit
 } from "lucide-react";
-import { formatPaymentPeriod, formatDateAuto, formatCurrency } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateAuto, formatDateSafe, formatCurrency } from "@/lib/dateFormatting";
 import { format } from "date-fns";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { useFleetNotifications } from "@/components/notifications";
@@ -916,9 +916,9 @@ export function PaymentReportDialog({
                          <div className="font-medium truncate text-sm sm:text-base">
                            {expense.station_name || t('deductions.status.station')}
                          </div>
-                         <div className="text-xs sm:text-sm text-muted-foreground">
-                           {expense.gallons_purchased} gal • {formatDateAuto(expense.transaction_date)}
-                           {(expense.station_city || expense.station_state) && (
+                          <div className="text-xs sm:text-sm text-muted-foreground">
+                            {expense.gallons_purchased} gal • {formatDateSafe(expense.transaction_date)}
+                            {(expense.station_city || expense.station_state) && (
                              <span className="ml-2">
                                • {expense.station_city && expense.station_state 
                                  ? `${expense.station_city}, ${expense.station_state}`
