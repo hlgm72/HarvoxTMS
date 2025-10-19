@@ -197,6 +197,7 @@ export function EventualDeductionDialog({
           .eq('company_id', companyId)
           .eq('user_id', formData.user_id)
           .in('status', ['open', 'processing'])
+          .neq('payment_status', 'paid')  // ✅ Filtrar payrolls pagados
           .order('created_at', { ascending: false});
         
         if (periodsError) {
@@ -263,9 +264,22 @@ export function EventualDeductionDialog({
         throw new Error('La fecha del gasto es requerida');
       }
 
+      // ⚠️ VALIDACIÓN: No crear instancias para períodos futuros
+      if (expenseDate > new Date()) {
+        throw new Error('No se pueden crear deducciones para fechas futuras. Por favor, selecciona una fecha actual o pasada.');
+      }
+
       // Verificar que hay un período válido (solo para crear, no para editar)
       if (!editingDeduction && (!paymentPeriods || paymentPeriods.length === 0)) {
         throw new Error('No se encontró un período de pago válido para la fecha seleccionada. Por favor, selecciona una fecha dentro de un período abierto.');
+      }
+
+      // ⚠️ VALIDACIÓN: No modificar payrolls ya pagados
+      if (paymentPeriods && paymentPeriods.length > 0) {
+        const payroll = paymentPeriods[0];
+        if (payroll.payment_status === 'paid') {
+          throw new Error('Este conductor ya ha sido pagado en este período. No se pueden crear o modificar deducciones para períodos ya pagados.');
+        }
       }
 
       if (editingDeduction) {
