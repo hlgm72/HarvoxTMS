@@ -510,7 +510,7 @@ export function EventualDeductionDialog({
                       month={expenseDate}
                       onMonthChange={setExpenseDate}
                       captionLayout="dropdown-buttons"
-                      className="p-3 pointer-events-auto"
+                      className="p-1 pointer-events-auto"
                     />
                   </PopoverContent>
                 </Popover>
