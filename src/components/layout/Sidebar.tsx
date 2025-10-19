@@ -639,10 +639,12 @@ export function AppSidebar() {
                     {collapsed ? (
                         <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
-                            onClick={() => {
+                          <NavLink
+                            to={item.url}
+                            end
+                            onClick={(e) => {
                               console.log('Tooltip clicked for:', item.title);
-                              window.location.href = item.url;
+                              handleNavClick();
                             }}
                             onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
                             onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
@@ -662,7 +664,7 @@ export function AppSidebar() {
                            {active && (
                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
                            )}
-                         </button>
+                         </NavLink>
                          </TooltipTrigger>
                         <TooltipContent 
                           side="right" 
