@@ -37,7 +37,7 @@ function Calendar({
         toYear={toYear}
         captionLayout="dropdown"
         locale={locale}
-        className={cn("p-3 pointer-events-auto", className)}
+        className={cn("p-3", className)}
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
           month: "space-y-4",
@@ -95,7 +95,8 @@ function Calendar({
                   max={toYear}
                   value={value}
                   onChange={handleChange}
-                  className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center pointer-events-auto z-50"
+                  style={{ pointerEvents: 'auto' }}
+                  className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 w-[85px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium text-center relative z-[100]"
                 />
               );
             }
@@ -105,7 +106,8 @@ function Calendar({
               <select
                 value={value}
                 onChange={handleChange}
-                className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium pointer-events-auto z-50"
+                style={{ pointerEvents: 'auto' }}
+                className="text-sm bg-background border-2 border-primary/20 rounded-lg px-3 py-2 min-w-[90px] h-9 cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-medium relative z-[100]"
               >
                 {children}
               </select>
