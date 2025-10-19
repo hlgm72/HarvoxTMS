@@ -35,6 +35,7 @@ export function MarkDriverPaidDialog({
   const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [formData, setFormData] = useState({
     paymentDate: new Date(),
     paymentMethod: "",
@@ -126,7 +127,7 @@ export function MarkDriverPaidDialog({
           {/* Payment Date */}
           <div className="space-y-2">
             <Label htmlFor="paymentDate">{t("mark_paid_dialog.payment_date_required")}</Label>
-            <Popover>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -143,7 +144,12 @@ export function MarkDriverPaidDialog({
                 <Calendar
                   mode="single"
                   selected={formData.paymentDate}
-                  onSelect={(date) => date && setFormData(prev => ({ ...prev, paymentDate: date }))}
+                  onSelect={(date) => {
+                    if (date) {
+                      setFormData(prev => ({ ...prev, paymentDate: date }));
+                      setCalendarOpen(false);
+                    }
+                  }}
                   initialFocus
                   className="pointer-events-auto"
                 />
