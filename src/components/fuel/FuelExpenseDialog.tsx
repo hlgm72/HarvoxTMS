@@ -236,7 +236,8 @@ export function FuelExpenseDialog({
       feesATM.setValue(0);
       totalAmountATM.setValue(0);
     }
-  }, [expense, isEditMode, grossAmountATM, discountAmountATM, feesATM, totalAmountATM]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expense, isEditMode]);
 
   // Get available cards for selected driver
   const selectedDriverId = form.watch('driver_user_id');
