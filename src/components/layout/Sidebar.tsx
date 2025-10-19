@@ -646,7 +646,7 @@ export function AppSidebar() {
                             }}
                             onMouseEnter={() => console.log('Mouse entered tooltip for:', item.title)}
                             onMouseLeave={() => console.log('Mouse left tooltip for:', item.title)}
-                            className={`font-body group relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
+                            className={`font-body relative w-full py-2 flex items-center justify-center transition-all duration-200 ${
                               active 
                                 ? "bg-white/20 text-white shadow-lg" 
                                 : "text-white/85 hover:bg-white/15 hover:text-white hover:shadow-md"
@@ -654,7 +654,7 @@ export function AppSidebar() {
                          >
                            <IconComponent 
                              className={`h-4 w-4 flex-shrink-0 transition-all duration-200 ${
-                               active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                               active ? "text-white drop-shadow-sm" : "text-white/70"
                              }`}
                            />
                            
@@ -663,7 +663,7 @@ export function AppSidebar() {
                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-white"></div>
                            )}
                          </button>
-                        </TooltipTrigger>
+                         </TooltipTrigger>
                         <TooltipContent 
                           side="right" 
                           className="bg-slate-900 text-white border-slate-700 shadow-xl z-[99999] font-medium"
@@ -678,7 +678,7 @@ export function AppSidebar() {
                            to={item.url} 
                            end
                            onClick={handleNavClick}
-                          className={`font-body group relative flex items-center gap-3 transition-all duration-200 ${
+                          className={`font-body relative flex items-center gap-3 transition-all duration-200 ${
                             collapsed ? 'w-full py-2 justify-center' : 'px-4 py-2'
                           } ${
                             active 
@@ -688,7 +688,7 @@ export function AppSidebar() {
                       >
                         <IconComponent 
                           className={`!h-4 !w-4 flex-shrink-0 transition-all duration-200 ${
-                            active ? "text-white drop-shadow-sm" : "text-white/70 group-hover:text-white"
+                            active ? "text-white drop-shadow-sm" : "text-white/70"
                           }`} 
                           style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', lineHeight: '20px' }}
                         />
@@ -707,7 +707,7 @@ export function AppSidebar() {
                                      ? "bg-red-500 text-white border-red-600 animate-pulse"
                                      : active 
                                        ? "bg-white/30 text-white border-white/50" 
-                                       : "bg-white/15 text-white/90 border-white/30 group-hover:bg-white/25 group-hover:text-white"
+                                       : "bg-white/15 text-white/90 border-white/30"
                                  }`}
                               >
                                 {item.badge}
