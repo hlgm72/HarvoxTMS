@@ -37,6 +37,7 @@ import {
 import { formatPaymentPeriod, formatDateAuto, formatDateSafe, formatCurrency } from "@/lib/dateFormatting";
 import { format } from "date-fns";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
+import { calculateWeekNumberFromString } from "@/utils/weekCalculation";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
@@ -660,7 +661,14 @@ export function PaymentReportDialog({
                 </DialogTitle>
                 <DialogDescription className="text-sm mt-1">
                   {t('period.period_label')}: {(calculation as any).period?.period_start_date && (calculation as any).period?.period_end_date
-                    ? formatPaymentPeriod((calculation as any).period.period_start_date, (calculation as any).period.period_end_date)
+                    ? (() => {
+                        const startDate = (calculation as any).period.period_start_date;
+                        const endDate = (calculation as any).period.period_end_date;
+                        const weekNumber = calculateWeekNumberFromString(startDate);
+                        const year = startDate.split('-')[0];
+                        const formattedDates = formatPaymentPeriod(startDate, endDate);
+                        return `Wk${weekNumber}/${year} (${formattedDates})`;
+                      })()
                     : 'N/A'}
                 </DialogDescription>
                 <Button 
@@ -702,10 +710,15 @@ export function PaymentReportDialog({
               </span>
             </DialogTitle>
             <DialogDescription className="text-xs sm:text-sm break-words mt-1">
-              {t('period.period_label')}: {formatPaymentPeriod(
-                (calculation as any).period?.period_start_date,
-                (calculation as any).period?.period_end_date
-              )}
+              {t('period.period_label')}: {(() => {
+                const startDate = (calculation as any).period?.period_start_date;
+                const endDate = (calculation as any).period?.period_end_date;
+                if (!startDate || !endDate) return 'N/A';
+                const weekNumber = calculateWeekNumberFromString(startDate);
+                const year = startDate.split('-')[0];
+                const formattedDates = formatPaymentPeriod(startDate, endDate);
+                return `Wk${weekNumber}/${year} (${formattedDates})`;
+              })()}
               {calculation.payment_date && (
                   <span className="block text-primary font-medium mt-1">
                     {t('report_dialog.fuel_details.date')}: {formatDateAuto(calculation.payment_date)}
