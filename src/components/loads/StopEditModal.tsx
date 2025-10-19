@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
+import { formatPrettyDate } from '@/lib/dateFormatting';
 import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -155,59 +155,20 @@ export function StopEditModal({
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal bg-background border-input",
+                        "w-full justify-start text-left font-normal",
                         !formData.scheduled_date && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.scheduled_date ? formatPrettyDate(formData.scheduled_date) : t("loads:create_wizard.phases.route_details.edit_modal.select_date")}
+                      {formData.scheduled_date ? (
+                        formatPrettyDate(formData.scheduled_date)
+                      ) : (
+                        <span>{t("loads:create_wizard.phases.route_details.edit_modal.select_date")}</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
-                   </PopoverTrigger>
-                   <PopoverContent className="w-auto p-0 bg-background border-border">
-                    <div className="space-y-3 p-4">
-                      {/* Month/Year Selectors */}
-                      <div className="flex gap-2">
-                        <Select
-                          value={(formData.scheduled_date?.getMonth() ?? new Date().getMonth()).toString()}
-                          onValueChange={(value) => {
-                            const currentDate = formData.scheduled_date || new Date();
-                            const newDate = new Date(currentDate.getFullYear(), parseInt(value), currentDate.getDate());
-                            updateField('scheduled_date', newDate);
-                          }}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Array.from({ length: 12 }, (_, i) => (
-                              <SelectItem key={i} value={i.toString()}>
-                                {formatMonthName(new Date(2024, i, 1))}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        
-                        <div className="relative">
-                          <Input
-                            type="number"
-                            min={2020}
-                            max={2030}
-                            value={formData.scheduled_date?.getFullYear() ?? new Date().getFullYear()}
-                            onChange={(e) => {
-                              const year = parseInt(e.target.value);
-                              if (year >= 2020 && year <= 2030) {
-                                const currentDate = formData.scheduled_date || new Date();
-                                const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
-                                updateField('scheduled_date', newDate);
-                              }
-                            }}
-                            className="w-20 text-center"
-                            placeholder={t("loads:create_wizard.phases.route_details.edit_modal.year_placeholder")}
-                          />
-                        </div>
-                      </div>
-                      
-                      {/* Calendar */}
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+                    <div className="pointer-events-auto">
                       <Calendar
                         mode="single"
                         selected={formData.scheduled_date}
@@ -215,9 +176,14 @@ export function StopEditModal({
                           updateField('scheduled_date', date);
                           setIsDateOpen(false);
                         }}
-                        month={formData.scheduled_date || new Date()}
-                        onMonthChange={(date) => updateField('scheduled_date', date)}
-                        className="p-0 pointer-events-auto"
+                        onToday={() => {
+                          updateField('scheduled_date', new Date());
+                          setIsDateOpen(false);
+                        }}
+                        disableClear={true}
+                        fromYear={2020}
+                        toYear={2030}
+                        initialFocus
                       />
                     </div>
                   </PopoverContent>
