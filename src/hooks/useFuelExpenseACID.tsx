@@ -54,8 +54,8 @@ export const useFuelExpenseACID = () => {
       }
 
       if (!(data as any)?.success) {
-        console.error('❌ useFuelExpenseACID - RPC error:', (data as any)?.message);
-        throw new Error((data as any)?.message || 'Error procesando gasto de combustible');
+        console.error('❌ useFuelExpenseACID - RPC error:', (data as any)?.error);
+        throw new Error((data as any)?.error || 'Error procesando gasto de combustible');
       }
 
       console.log('✅ useFuelExpenseACID - Operación exitosa:', data);
