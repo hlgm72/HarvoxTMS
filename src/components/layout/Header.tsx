@@ -42,7 +42,7 @@ export function Header() {
   const getLeftPosition = () => {
     if (isMobile) return 'left-0';
     if (open) return 'left-[280px]'; // Cuando está abierto, dejar espacio completo del Sidebar
-    return 'left-16'; // Cuando está contraído, usar 64px que coincide con el sidebar contraído
+    return 'left-14'; // Cuando está contraído, usar 56px que coincide con el sidebar contraído
   };
 
   return (
