@@ -660,8 +660,8 @@ export default function PaymentReports() {
         calculationId={selectedForPayment?.id || ""}
         driverName={(() => {
           if (!selectedForPayment) return "";
-          const driver = drivers.find(d => d.user_id === selectedForPayment.driver_user_id);
-          return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
+          const driver = drivers.find(d => d.user_id === selectedForPayment.user_id);
+          return `${driver?.first_name || ''} ${driver?.last_name || ''}`.trim();
         })()}
         netPayment={selectedForPayment ? calculateNetPayment(selectedForPayment) : 0}
         onSuccess={handlePaymentSuccess}
