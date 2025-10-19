@@ -136,12 +136,9 @@ export function FuelExpenseDialog({
   const protectionTooltip = getFinancialOperationTooltip(financialValidation, 'crear/editar este gasto de combustible');
 
   // ATM formatters for monetary fields - reverted to direct calls
-  console.log('🔧 FuelExpenseDialog: Creating ATM inputs, form:', !!form);
-  
   const grossAmountATM = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
-      console.log('💰 grossAmountATM onValueChange:', value);
       const currentValue = form.getValues('gross_amount');
       if (currentValue !== value) {
         form.setValue('gross_amount', value);
@@ -152,7 +149,6 @@ export function FuelExpenseDialog({
   const discountAmountATM = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
-      console.log('💸 discountAmountATM onValueChange:', value);
       const currentValue = form.getValues('discount_amount');
       if (currentValue !== value) {
         form.setValue('discount_amount', value);
@@ -163,7 +159,6 @@ export function FuelExpenseDialog({
   const feesATM = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
-      console.log('📋 feesATM onValueChange:', value);
       const currentValue = form.getValues('fees');
       if (currentValue !== value) {
         form.setValue('fees', value);
@@ -174,15 +169,12 @@ export function FuelExpenseDialog({
   const totalAmountATM = useATMInput({
     initialValue: 0,
     onValueChange: (value) => {
-      console.log('🎯 totalAmountATM onValueChange:', value);
       const currentValue = form.getValues('total_amount');
       if (currentValue !== value) {
         form.setValue('total_amount', value);
       }
     }
   });
-
-  console.log('✅ FuelExpenseDialog: ATM inputs created successfully');
 
   // Populate form with expense data for edit mode
   React.useEffect(() => {
@@ -244,7 +236,7 @@ export function FuelExpenseDialog({
       feesATM.setValue(0);
       totalAmountATM.setValue(0);
     }
-  }, [expense, form, isEditMode]);
+  }, [expense, isEditMode, grossAmountATM, discountAmountATM, feesATM, totalAmountATM]);
 
   // Get available cards for selected driver
   const selectedDriverId = form.watch('driver_user_id');
