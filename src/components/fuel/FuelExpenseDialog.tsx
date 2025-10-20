@@ -481,7 +481,7 @@ export function FuelExpenseDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0 bg-white">
         {/* Fixed Header */}
-        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0 bg-muted/50">
           <DialogTitle>
             {isEditMode ? t('fuel:edit_dialog.title') : t('fuel:create_dialog.title')}
           </DialogTitle>
@@ -960,7 +960,7 @@ export function FuelExpenseDialog({
             </div>
 
             {/* Fixed Footer */}
-            <DialogFooter className="px-6 py-4 border-t shrink-0">
+            <DialogFooter className="px-6 py-4 border-t shrink-0 bg-muted/50">
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 {t('common:actions.cancel')}
               </Button>
