@@ -377,8 +377,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
               {/* Step 1: Client Information */}
               <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{t('create_client_dialog.steps.client_info')}</CardTitle>
+                  <div className="flex items-center justify-end">
                     <Button
                       type="button"
                       variant="outline"
