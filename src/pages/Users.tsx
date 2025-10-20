@@ -152,41 +152,47 @@ export default function Users() {
     
     setLoading(true);
     try {
-      // Obtener usuarios activos de la empresa con sus roles
-      const { data: companyUsers, error } = await supabase
-        .from('user_company_roles')
-        .select(`
-          user_id,
-          role,
-          is_active,
-          created_at
-        `)
-        .eq('company_id', userRole.company_id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+      // ⚡ OPTIMIZACIÓN: Ejecutar consultas en paralelo
+      const [
+        { data: companyUsers, error: companyUsersError },
+        { data: pendingInvitations, error: invitationsError }
+      ] = await Promise.all([
+        // Query 1: Obtener usuarios activos de la empresa con sus roles
+        supabase
+          .from('user_company_roles')
+          .select(`
+            user_id,
+            role,
+            is_active,
+            created_at
+          `)
+          .eq('company_id', userRole.company_id)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false }),
+        
+        // Query 2: Obtener invitaciones pendientes (no aceptadas)
+        supabase
+          .from('user_invitations')
+          .select(`
+            id,
+            target_user_id,
+            first_name,
+            last_name,
+            email,
+            role,
+            created_at
+          `)
+          .eq('company_id', userRole.company_id)
+          .eq('is_active', true)
+          .is('accepted_at', null)  // Solo invitaciones no aceptadas
+          .gt('expires_at', getCurrentUTC())
+          .order('created_at', { ascending: false })
+      ]);
 
-      if (error) {
-        console.error('❌ Error fetching company users:', error);
-        throw error;
+      if (companyUsersError) {
+        console.error('❌ Error fetching company users:', companyUsersError);
+        throw companyUsersError;
       }
-
-      // Obtener invitaciones pendientes (no aceptadas)
-      const { data: pendingInvitations, error: invitationsError } = await supabase
-        .from('user_invitations')
-        .select(`
-          id,
-          target_user_id,
-          first_name,
-          last_name,
-          email,
-          role,
-          created_at
-        `)
-        .eq('company_id', userRole.company_id)
-        .eq('is_active', true)
-        .is('accepted_at', null)  // Solo invitaciones no aceptadas
-        .gt('expires_at', getCurrentUTC())
-        .order('created_at', { ascending: false });
 
       if (invitationsError) {
         console.error('❌ Error fetching invitations:', invitationsError);
@@ -268,18 +274,59 @@ export default function Users() {
         typeof id === 'string' && id.length > 0
       );
       
-      let profiles: any[] = [];
-      if (userIdsWithProfiles.length > 0) {
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('user_id, first_name, last_name, avatar_url, phone')
-          .in('user_id', userIdsWithProfiles);
+      // ⚡ OPTIMIZACIÓN: Ejecutar consultas de perfiles y emails en paralelo
+      const hasAdminPrivileges = userRole?.role && [
+        'superadmin', 
+        'company_owner', 
+        'operations_manager'
+      ].includes(userRole.role);
 
-        if (profilesError) {
-          console.error('❌ Error fetching profiles:', profilesError);
-          throw profilesError;
+      let profiles: any[] = [];
+      let userEmails: any[] = [];
+
+      if (userIdsWithProfiles.length > 0) {
+        try {
+          // Ejecutar queries en paralelo cuando sea posible
+          if (hasAdminPrivileges) {
+            // Query 3 y 4 en paralelo: perfiles y emails
+            const [profilesResult, emailsResult] = await Promise.all([
+              supabase
+                .from('profiles')
+                .select('user_id, first_name, last_name, avatar_url, phone')
+                .in('user_id', userIdsWithProfiles),
+              supabase
+                .rpc('get_user_emails_for_company', { 
+                  company_id_param: userRole.company_id 
+                })
+            ]);
+
+            if (profilesResult.error) {
+              console.error('❌ Error fetching profiles:', profilesResult.error);
+              throw profilesResult.error;
+            }
+            profiles = profilesResult.data || [];
+
+            if (emailsResult.error) {
+              console.warn('⚠️ Error fetching emails:', emailsResult.error);
+            } else {
+              userEmails = emailsResult.data || [];
+            }
+          } else {
+            // Solo query de perfiles
+            const { data: profilesData, error: profilesError } = await supabase
+              .from('profiles')
+              .select('user_id, first_name, last_name, avatar_url, phone')
+              .in('user_id', userIdsWithProfiles);
+
+            if (profilesError) {
+              console.error('❌ Error fetching profiles:', profilesError);
+              throw profilesError;
+            }
+            profiles = profilesData || [];
+          }
+        } catch (error) {
+          console.warn('⚠️ Error in queries:', error);
         }
-        profiles = profilesData || [];
       }
 
       // Actualizar información de perfiles
@@ -293,44 +340,15 @@ export default function Users() {
         }
       });
 
-      // Obtener emails para usuarios con privilegios administrativos
-      const hasAdminPrivileges = userRole?.role && [
-        'superadmin', 
-        'company_owner', 
-        'operations_manager'
-      ].includes(userRole.role);
-
-      if (hasAdminPrivileges) {
-        // Usar la función segura para obtener emails de usuarios
-        try {
-          const { data: userEmails, error: emailError } = await supabase
-            .rpc('get_user_emails_for_company', { 
-              company_id_param: userRole.company_id 
-            });
-
-          if (emailError) {
-            console.error('❌ Error fetching emails:', emailError);
-            throw emailError;
+      // Mapear emails a usuarios
+      if (hasAdminPrivileges && userEmails.length > 0) {
+        userEmails.forEach(({ user_id, email }) => {
+          if (usersMap.has(user_id)) {
+            const mappedUser = usersMap.get(user_id)!;
+            mappedUser.email = email || mappedUser.email;
           }
-
-          if (userEmails) {
-            // Mapear emails a usuarios
-            userEmails.forEach(({ user_id, email }) => {
-              if (usersMap.has(user_id)) {
-                const mappedUser = usersMap.get(user_id)!;
-                mappedUser.email = email || mappedUser.email;
-              }
-            });
-          }
-        } catch (error) {
-          console.warn('⚠️ Error obteniendo emails:', error);
-          // Fallback: solo mostrar email del usuario actual
-          if (user?.id && usersMap.has(user.id)) {
-            const currentUser = usersMap.get(user.id)!;
-            currentUser.email = user.email || currentUser.email;
-          }
-        }
-      } else {
+        });
+      } else if (!hasAdminPrivileges) {
         // Usuarios sin privilegios solo ven su propio email
         if (user?.id && usersMap.has(user.id)) {
           const currentUser = usersMap.get(user.id)!;
