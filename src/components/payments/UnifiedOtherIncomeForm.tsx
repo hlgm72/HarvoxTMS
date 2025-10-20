@@ -114,14 +114,15 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {!isEditing && (
-        <UserTypeSelector
-          value={userType}
-          onChange={setUserType}
-          label={t('form.apply_to')}
-        />
-      )}
+    <form onSubmit={handleSubmit} className="space-y-4 flex flex-col h-full">
+      <div className="flex-1 space-y-4">
+        {!isEditing && (
+          <UserTypeSelector
+            value={userType}
+            onChange={setUserType}
+            label={t('form.apply_to')}
+          />
+        )}
 
       <div className="space-y-2">
         <Label htmlFor="user">
@@ -227,8 +228,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           required
         />
       </div>
+      </div>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 pt-4 border-t bg-muted/50 -mx-6 -mb-6 px-6 py-4">
         <Button type="button" variant="outline" onClick={onClose}>
           {t('form.cancel')}
         </Button>

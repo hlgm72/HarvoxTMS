@@ -40,13 +40,15 @@ export default function AdditionalPayments() {
       </div>
       {/* Dialog para crear ingreso */}
       <Dialog open={isCreateIncomeDialogOpen} onOpenChange={setIsCreateIncomeDialogOpen}>
-        <DialogContent className="max-w-md bg-white">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[80vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="p-6 pb-4 border-b flex-shrink-0 bg-muted/50">
             <DialogTitle>{t('additional_payments.dialogs.new_income_title')}</DialogTitle>
           </DialogHeader>
-          <UnifiedOtherIncomeForm 
-            onClose={() => setIsCreateIncomeDialogOpen(false)} 
-          />
+          <div className="overflow-y-auto flex-1 p-6 bg-white">
+            <UnifiedOtherIncomeForm 
+              onClose={() => setIsCreateIncomeDialogOpen(false)} 
+            />
+          </div>
         </DialogContent>
       </Dialog>
     

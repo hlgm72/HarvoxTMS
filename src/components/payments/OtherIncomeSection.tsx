@@ -222,14 +222,16 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 {t('additional_payments.actions.add_income')}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-white">
-              <DialogHeader>
+            <DialogContent className="max-w-md max-h-[80vh] flex flex-col p-0 gap-0">
+              <DialogHeader className="p-6 pb-4 border-b flex-shrink-0 bg-muted/50">
                 <DialogTitle>{t('additional_payments.dialogs.new_income_title')}</DialogTitle>
                 <DialogDescription>
                   Agregar un ingreso adicional para el período de pago actual
                 </DialogDescription>
               </DialogHeader>
-              <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
+              <div className="overflow-y-auto flex-1 p-6 bg-white">
+                <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -384,28 +386,30 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
 
       {/* Dialog para editar ingreso */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md bg-white">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[80vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="p-6 pb-4 border-b flex-shrink-0 bg-muted/50">
             <DialogTitle>{t('additional_payments.dialogs.edit_title')}</DialogTitle>
           </DialogHeader>
-          {itemToEdit && (
-            <UnifiedOtherIncomeForm 
-              onClose={() => {
-                setIsEditDialogOpen(false);
-                setItemToEdit(null);
-              }}
-              editData={{
-                id: itemToEdit.id,
-                description: itemToEdit.description,
-                amount: itemToEdit.amount,
-                income_type: itemToEdit.income_type,
-                income_date: itemToEdit.income_date,
-                user_id: itemToEdit.user_id,
-                applied_to_role: itemToEdit.applied_to_role as "driver" | "dispatcher",
-                reference_number: itemToEdit.reference_number
-              }}
-            />
-          )}
+          <div className="overflow-y-auto flex-1 p-6 bg-white">
+            {itemToEdit && (
+              <UnifiedOtherIncomeForm 
+                onClose={() => {
+                  setIsEditDialogOpen(false);
+                  setItemToEdit(null);
+                }}
+                editData={{
+                  id: itemToEdit.id,
+                  description: itemToEdit.description,
+                  amount: itemToEdit.amount,
+                  income_type: itemToEdit.income_type,
+                  income_date: itemToEdit.income_date,
+                  user_id: itemToEdit.user_id,
+                  applied_to_role: itemToEdit.applied_to_role as "driver" | "dispatcher",
+                  reference_number: itemToEdit.reference_number
+                }}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
