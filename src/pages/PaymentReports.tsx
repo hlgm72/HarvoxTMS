@@ -108,7 +108,7 @@ export default function PaymentReports() {
   }, [currentPeriod?.id, filters.periodFilter.type]);
 
 
-  // Determinar qué período usar para filtrar
+  // ✅ SOLUCIÓN: Usar períodos calculados para filtrar en cliente, no en BD
   const getFilterPeriodIds = useMemo(() => {
     const periodFilter = filters.periodFilter;
     
@@ -116,32 +116,27 @@ export default function PaymentReports() {
 
     switch (periodFilter.type) {
       case 'current':
-        // ✅ CRÍTICO: Usar company_payment_period_id, NO id (que es user_payroll.id)
-        return currentPeriod?.company_payment_period_id ? [currentPeriod.company_payment_period_id] : [];
-      
       case 'previous':
-        // ✅ CORREGIDO: Usar company_payment_period_id
-        return previousPeriod?.company_payment_period_id ? [previousPeriod.company_payment_period_id] : [];
-      
       case 'next':
-        // ✅ CORREGIDO: Usar company_payment_period_id
-        return nextPeriod?.company_payment_period_id ? [nextPeriod.company_payment_period_id] : [];
+        // Para current/previous/next, no filtrar en BD sino en cliente
+        return [];
       
       case 'specific':
         return periodFilter.periodId ? [periodFilter.periodId] : [];
       
       case 'all':
-        // Para 'all', no necesitamos filtrar por IDs específicos - la query ya trae todos por company_id
         return [];
       
       case 'custom':
-        // Para filtro personalizado, usaremos las fechas en la query
+      case 'this_month':
+      case 'this_quarter':
+      case 'this_year':
         return [];
       
       default:
-        return currentPeriod?.company_payment_period_id ? [currentPeriod.company_payment_period_id] : [];
+        return [];
     }
-  }, [filters.periodFilter, currentPeriod, previousPeriod, nextPeriod, allPeriods]);
+  }, [filters.periodFilter, allPeriods]);
 
   // Obtener reportes existentes filtrados por período con verificación automática de integridad
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
@@ -171,6 +166,9 @@ export default function PaymentReports() {
 
       // ✅ CORREGIDO: Determinar si necesitamos filtrar en BD o en cliente
       const needsClientSideFiltering = 
+        filters.periodFilter.type === 'current' ||
+        filters.periodFilter.type === 'previous' ||
+        filters.periodFilter.type === 'next' ||
         filters.periodFilter.periodId?.startsWith('calculated-') ||
         filters.periodFilter.type === 'custom' ||
         filters.periodFilter.type === 'this_month' ||
@@ -180,15 +178,13 @@ export default function PaymentReports() {
 
       if (needsClientSideFiltering) {
         // Para períodos calculados o rangos de fechas, obtener todos y filtrar en cliente
+        console.log('🔍 Will filter on client side for:', filters.periodFilter.type);
       } else if (filters.periodFilter.type === 'all') {
         // Para 'all', no aplicar filtro de período - ya está filtrado por company_id
       } else if (getFilterPeriodIds.length > 0) {
-        // Para períodos específicos de BD (current, previous, next, specific)
+        // Para períodos específicos de BD (specific)
         console.log('🔍 Filtering by company_payment_period_id IN:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
-      } else {
-        console.log('⚠️ No period IDs to filter, returning empty array');
-        return [];
       }
 
       const { data, error } = await query;
@@ -198,12 +194,38 @@ export default function PaymentReports() {
         throw error;
       }
       
-      // Filtrar en cliente si es necesario (solo para períodos calculados o rangos personalizados)
+      // Filtrar en cliente si es necesario
       let filteredData = data || [];
       
-      // ✅ Solo filtrar en cliente si es un período calculado (no existe en BD) o rango personalizado
-      if ((filters.periodFilter.periodId?.startsWith('calculated-') || 
-           filters.periodFilter.type === 'custom' ||
+      // ✅ Filtrar en cliente para current/previous/next usando períodos calculados
+      if (filters.periodFilter.type === 'current' && calculatedPeriods?.current) {
+        const targetPeriod = calculatedPeriods.current;
+        console.log('🔍 Filtering CURRENT on client side with dates:', targetPeriod.period_start_date, targetPeriod.period_end_date);
+        filteredData = filteredData.filter((calc: any) => {
+          const periodStart = calc.period?.period_start_date;
+          const periodEnd = calc.period?.period_end_date;
+          return periodStart === targetPeriod.period_start_date && periodEnd === targetPeriod.period_end_date;
+        });
+        console.log('✅ Filtered CURRENT to', filteredData.length, 'calculations');
+      } else if (filters.periodFilter.type === 'previous' && calculatedPeriods?.previous) {
+        const targetPeriod = calculatedPeriods.previous;
+        console.log('🔍 Filtering PREVIOUS on client side with dates:', targetPeriod.period_start_date, targetPeriod.period_end_date);
+        filteredData = filteredData.filter((calc: any) => {
+          const periodStart = calc.period?.period_start_date;
+          const periodEnd = calc.period?.period_end_date;
+          return periodStart === targetPeriod.period_start_date && periodEnd === targetPeriod.period_end_date;
+        });
+        console.log('✅ Filtered PREVIOUS to', filteredData.length, 'calculations');
+      } else if (filters.periodFilter.type === 'next' && calculatedPeriods?.next) {
+        const targetPeriod = calculatedPeriods.next;
+        console.log('🔍 Filtering NEXT on client side with dates:', targetPeriod.period_start_date, targetPeriod.period_end_date);
+        filteredData = filteredData.filter((calc: any) => {
+          const periodStart = calc.period?.period_start_date;
+          const periodEnd = calc.period?.period_end_date;
+          return periodStart === targetPeriod.period_start_date && periodEnd === targetPeriod.period_end_date;
+        });
+        console.log('✅ Filtered NEXT to', filteredData.length, 'calculations');
+      } else if ((filters.periodFilter.type === 'custom' ||
            filters.periodFilter.type === 'this_month' ||
            filters.periodFilter.type === 'this_quarter' ||
            filters.periodFilter.type === 'this_year') &&
@@ -234,8 +256,11 @@ export default function PaymentReports() {
       console.log('✅ PaymentReports Query - Returning', sortedData.length, 'calculations');
       return sortedData;
     },
-    enabled: !!user && !!userCompany?.company_id && (
+    enabled: !!user && !!userCompany?.company_id && !!calculatedPeriods && (
       filters.periodFilter.type === 'all' || 
+      filters.periodFilter.type === 'current' ||
+      filters.periodFilter.type === 'previous' ||
+      filters.periodFilter.type === 'next' ||
       getFilterPeriodIds.length > 0 || 
       Boolean(filters.periodFilter.startDate && filters.periodFilter.endDate)
     ),
