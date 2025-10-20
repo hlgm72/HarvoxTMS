@@ -91,12 +91,17 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
     if (isOpen) {
       if (client) {
         // Modo edición: cargar datos del cliente
+        // Formatear MC Number con prefijo 'MC-' para mostrar
+        const formattedMcNumber = client.mc_number 
+          ? (client.mc_number.startsWith('MC-') ? client.mc_number : `MC-${client.mc_number}`)
+          : '';
+        
         form.reset({
           name: client.name,
           alias: client.alias || '',
           phone: '',
           dot_number: client.dot_number || '',
-          mc_number: client.mc_number || '',
+          mc_number: formattedMcNumber,
           address: client.address || '',
           email_domain: client.email_domain || '@',
           logo_url: client.logo_url || '',
@@ -293,7 +298,14 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
   });
 
   const handleSubmitForm = (data: CreateClientForm) => {
-    createClientMutation.mutate(data);
+    // Limpiar el prefijo 'MC-' del mc_number antes de guardar
+    const cleanedData = {
+      ...data,
+      mc_number: data.mc_number 
+        ? data.mc_number.replace(/^MC-/i, '').trim()
+        : data.mc_number
+    };
+    createClientMutation.mutate(cleanedData);
   };
 
   const addDispatcher = () => {
@@ -535,16 +547,51 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                        control={form.control}
                        name="mc_number"
                        render={({ field }) => {
-                         const handlers = createMCHandlers(field.onChange);
+                         const handleMCNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                           let value = e.target.value;
+                           // Permitir solo números después del prefijo MC-
+                           value = value.replace(/[^0-9MC-]/gi, '');
+                           
+                           // Si el usuario está escribiendo y no hay 'MC-', agregarlo
+                           if (value && !value.toUpperCase().startsWith('MC-')) {
+                             // Si escribió solo números, agregar MC-
+                             if (/^\d/.test(value)) {
+                               value = 'MC-' + value;
+                             }
+                           }
+                           
+                           // Asegurar que siempre comience con MC- si hay contenido
+                           if (value && !value.toUpperCase().startsWith('MC-')) {
+                             value = 'MC-' + value.replace(/^MC-/gi, '');
+                           }
+                           
+                           // Convertir MC a mayúsculas
+                           if (value.toLowerCase().startsWith('mc-')) {
+                             value = 'MC-' + value.substring(3);
+                           }
+                           
+                           field.onChange(value);
+                         };
+
+                         const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+                           // Prevenir borrar el MC- si el cursor está al principio
+                           if ((e.key === 'Backspace' || e.key === 'Delete') && 
+                               e.currentTarget.selectionStart !== null &&
+                               e.currentTarget.selectionStart <= 3 && 
+                               field.value.toUpperCase().startsWith('MC-')) {
+                             e.preventDefault();
+                           }
+                         };
+
                          return (
                            <FormItem>
                              <FormLabel>{t('create_client_dialog.form.mc_number')}</FormLabel>
                              <FormControl>
                                <Input 
-                                 placeholder={t('create_client_dialog.placeholders.mc_number')} 
+                                 placeholder="MC-123456" 
                                  value={field.value}
-                                 onChange={handlers.onChange}
-                                 onKeyPress={handlers.onKeyPress}
+                                 onChange={handleMCNumberChange}
+                                 onKeyDown={handleKeyDown}
                                  tabIndex={6}
                                />
                              </FormControl>
