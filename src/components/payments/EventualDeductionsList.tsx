@@ -79,10 +79,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         // Aplicar filtros de estado
         if (filters?.status && filters.status !== 'all') {
           query = query.eq('status', filters.status);
-        } else {
-          // Si no hay filtro de estado, mostrar solo 'planned' y 'cancelled' (no 'applied')
-          query = query.in('status', ['planned', 'cancelled']);
         }
+        // Si no hay filtro o es 'all', mostrar todas las instancias (sin filtro de status)
 
         // Aplicar filtros de tipo de gasto
         if (filters?.expenseType && filters.expenseType !== 'all') {
