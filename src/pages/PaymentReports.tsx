@@ -116,14 +116,16 @@ export default function PaymentReports() {
 
     switch (periodFilter.type) {
       case 'current':
-        return currentPeriod ? [currentPeriod.id] : [];
+        // ✅ CRÍTICO: Usar company_payment_period_id, NO id (que es user_payroll.id)
+        return currentPeriod?.company_payment_period_id ? [currentPeriod.company_payment_period_id] : [];
       
       case 'previous':
-        // ✅ CORREGIDO: Solo usar ID si hay periodId especificado (período real de BD)
-        return periodFilter.periodId && previousPeriod ? [previousPeriod.id] : [];
+        // ✅ CORREGIDO: Usar company_payment_period_id
+        return previousPeriod?.company_payment_period_id ? [previousPeriod.company_payment_period_id] : [];
       
       case 'next':
-        return periodFilter.periodId && nextPeriod ? [nextPeriod.id] : [];
+        // ✅ CORREGIDO: Usar company_payment_period_id
+        return nextPeriod?.company_payment_period_id ? [nextPeriod.company_payment_period_id] : [];
       
       case 'specific':
         return periodFilter.periodId ? [periodFilter.periodId] : [];
@@ -137,7 +139,7 @@ export default function PaymentReports() {
         return [];
       
       default:
-        return currentPeriod ? [currentPeriod.id] : [];
+        return currentPeriod?.company_payment_period_id ? [currentPeriod.company_payment_period_id] : [];
     }
   }, [filters.periodFilter, currentPeriod, previousPeriod, nextPeriod, allPeriods]);
 
@@ -182,8 +184,10 @@ export default function PaymentReports() {
         // Para 'all', no aplicar filtro de período - ya está filtrado por company_id
       } else if (getFilterPeriodIds.length > 0) {
         // Para períodos específicos de BD (current, previous, next, specific)
+        console.log('🔍 Filtering by company_payment_period_id IN:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
       } else {
+        console.log('⚠️ No period IDs to filter, returning empty array');
         return [];
       }
 
