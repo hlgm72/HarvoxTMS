@@ -376,7 +376,7 @@ export function ExpenseTemplateDialog({
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           {/* Scrollable Content */}
-          <div className="p-6 space-y-4 overflow-y-auto flex-1">
+          <div className="p-6 space-y-4 overflow-y-auto flex-1 bg-white">
           {mode === 'create' && (
             <UserTypeSelector
               value={selectedRole}
