@@ -178,7 +178,7 @@ export function FuelExpenseDialog({
 
   // Populate form with expense data for edit mode
   React.useEffect(() => {
-    if (isEditMode && expense) {
+    if (open && isEditMode && expense) {
       form.reset({
         driver_user_id: expense.driver_user_id,
         payment_period_id: expense.payment_period_id,
@@ -206,7 +206,7 @@ export function FuelExpenseDialog({
       discountAmountATM.setValue(expense.discount_amount || 0);
       feesATM.setValue(expense.fees || 0);
       totalAmountATM.setValue(expense.total_amount || 0);
-    } else if (!isEditMode) {
+    } else if (open && !isEditMode) {
       // Reset to default values for create mode
       form.reset({
         driver_user_id: '',
@@ -231,13 +231,13 @@ export function FuelExpenseDialog({
       });
 
       // Reset ATM inputs for create mode
-      grossAmountATM.setValue(0);
-      discountAmountATM.setValue(0);
-      feesATM.setValue(0);
-      totalAmountATM.setValue(0);
+      grossAmountATM.reset();
+      discountAmountATM.reset();
+      feesATM.reset();
+      totalAmountATM.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expense, isEditMode]);
+  }, [open, expense, isEditMode]);
 
   // Get available cards for selected driver
   const selectedDriverId = form.watch('driver_user_id');
