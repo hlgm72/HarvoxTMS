@@ -666,8 +666,9 @@ export function AppSidebar() {
                          <TooltipPortal>
                            <TooltipContent 
                              side="right" 
-                             className="bg-slate-900 text-white border-slate-700 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
+                             className="text-white border-white/20 shadow-2xl z-[100000] font-medium text-sm px-3 py-2"
                              sideOffset={16}
+                             style={{ backgroundColor: 'hsl(var(--fleet-sidebar-darker))' }}
                            >
                              {item.title}
                            </TooltipContent>
