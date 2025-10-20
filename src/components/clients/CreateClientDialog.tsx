@@ -376,7 +376,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
             <div className="space-y-6">
               {/* Step 1: Client Information */}
               <Card>
-                <CardContent className="space-y-4 pt-4">
+                <CardContent className="space-y-4 pt-2">
                   {/* Logo Upload Section */}
                   <FormField
                     control={form.control}
