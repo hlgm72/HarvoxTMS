@@ -8,7 +8,8 @@ import { StopEditModal } from './StopEditModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Plus, MapPin, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react';
 import { useLoadStops, LoadStop } from '@/hooks/useLoadStops';
 import { useTranslation } from 'react-i18next';
 
@@ -137,9 +138,41 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-primary" />
-          <CardTitle>{t("loads:create_wizard.phases.route_details.card_title")}</CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-primary" />
+            <CardTitle>{t("loads:create_wizard.phases.route_details.card_title")}</CardTitle>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addStop}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              {t("loads:create_wizard.phases.route_details.add_intermediate_stop")}
+            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button 
+                    type="button"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <HelpCircle className="h-5 w-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="max-w-xs">
+                  <div className="space-y-1 text-sm">
+                    <p>• {t("loads:create_wizard.phases.route_details.instructions.click_edit")}</p>
+                    <p>• {t("loads:create_wizard.phases.route_details.instructions.drag_reorder")}</p>
+                    <p>• {t("loads:create_wizard.phases.route_details.instructions.chronological_dates")}</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
         <CardDescription>
           {t("loads:create_wizard.phases.route_details.card_description")}
@@ -197,25 +230,6 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
           </SortableContext>
         </DndContext>
 
-        {/* Add Stop Button */}
-        <div className="flex justify-center pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addStop}
-            className="w-full max-w-sm"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {t("loads:create_wizard.phases.route_details.add_intermediate_stop")}
-          </Button>
-        </div>
-
-        {/* Info */}
-        <div className="text-sm text-muted-foreground text-center space-y-1">
-          <p>• {t("loads:create_wizard.phases.route_details.instructions.click_edit")}</p>
-          <p>• {t("loads:create_wizard.phases.route_details.instructions.drag_reorder")}</p>
-          <p>• {t("loads:create_wizard.phases.route_details.instructions.chronological_dates")}</p>
-        </div>
       </CardContent>
 
       {/* Edit Modal */}
