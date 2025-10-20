@@ -227,8 +227,8 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
           </DialogDescription>
         </DialogHeader>
 
-        {/* Contenido Scrolleable con fondo gris */}
-        <div className="flex-1 overflow-y-auto bg-gray-50 px-6 py-6">
+        {/* Contenido Scrolleable con fondo blanco */}
+        <div className="flex-1 overflow-y-auto bg-white px-6 py-6">
           <div className="space-y-6">
             {/* Información Personal */}
             <div className="space-y-4">
