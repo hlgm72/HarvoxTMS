@@ -3043,7 +3043,6 @@ export type Database = {
       user_payrolls: {
         Row: {
           actual_payment_date: string | null
-          balance_alert_message: string | null
           calculated_at: string | null
           calculated_by: string | null
           company_id: string
@@ -3051,7 +3050,6 @@ export type Database = {
           created_at: string
           fuel_expenses: number
           gross_earnings: number
-          has_negative_balance: boolean
           id: string
           net_payment: number
           other_income: number
@@ -3070,7 +3068,6 @@ export type Database = {
         }
         Insert: {
           actual_payment_date?: string | null
-          balance_alert_message?: string | null
           calculated_at?: string | null
           calculated_by?: string | null
           company_id: string
@@ -3078,7 +3075,6 @@ export type Database = {
           created_at?: string
           fuel_expenses?: number
           gross_earnings?: number
-          has_negative_balance?: boolean
           id?: string
           net_payment?: number
           other_income?: number
@@ -3097,7 +3093,6 @@ export type Database = {
         }
         Update: {
           actual_payment_date?: string | null
-          balance_alert_message?: string | null
           calculated_at?: string | null
           calculated_by?: string | null
           company_id?: string
@@ -3105,7 +3100,6 @@ export type Database = {
           created_at?: string
           fuel_expenses?: number
           gross_earnings?: number
-          has_negative_balance?: boolean
           id?: string
           net_payment?: number
           other_income?: number
