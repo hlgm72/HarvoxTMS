@@ -60,6 +60,18 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
     );
   }
 
+  // Custom filter function for consecutive character matching
+  const filterContacts = (value: string, search: string) => {
+    const searchLower = search.toLowerCase();
+    const valueLower = value.toLowerCase();
+    
+    // If search is empty, show all
+    if (!searchLower) return 1;
+    
+    // Check if search term appears as consecutive characters in value
+    return valueLower.includes(searchLower) ? 1 : 0;
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -80,7 +92,7 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[280px] p-0">
-        <Command>
+        <Command filter={filterContacts}>
           <CommandInput placeholder={t('actions.search_placeholder')} />
           <CommandList>
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
