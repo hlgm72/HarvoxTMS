@@ -637,8 +637,10 @@
     },
     "dialogs": {
       "new_income_title": "Nuevo Ingreso Adicional",
+      "new_income_description": "Agregar ingreso adicional para un período de pago específico",
       "view_details_title": "Detalles del Ingreso",
       "edit_title": "Editar Ingreso Adicional",
+      "edit_description": "Modificar el ingreso adicional seleccionado",
       "delete_title": "¿Eliminar ingreso adicional?",
       "delete_description": "Esta acción eliminará permanentemente el ingreso \"{{description}}\" por {{amount}}. El período del conductor será recalculado automáticamente."
     },

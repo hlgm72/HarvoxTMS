@@ -114,36 +114,38 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 flex flex-col h-full">
-      <div className="flex-1 space-y-4">
-        {!isEditing && (
-          <UserTypeSelector
-            value={userType}
-            onChange={setUserType}
-            label={t('form.apply_to')}
-          />
-        )}
+    <>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          {!isEditing && (
+            <UserTypeSelector
+              value={userType}
+              onChange={setUserType}
+              label={t('form.apply_to')}
+            />
+          )}
 
-      <div className="space-y-2">
-        <Label htmlFor="user">
-          {userType === "driver" ? t('form.driver') : t('form.dispatcher')}
-        </Label>
-        <Select value={selectedUser} onValueChange={setSelectedUser} disabled={isEditing}>
-          <SelectTrigger>
-            <SelectValue placeholder={`${t(userType === "driver" ? 'form.select_driver' : 'form.select_dispatcher')}`} />
-          </SelectTrigger>
-          <SelectContent>
-            {currentUsers.map((user) => (
-              <SelectItem key={user.id} value={user.id}>
-                {userType === "driver" 
-                  ? `${user.first_name} ${user.last_name}`.trim()
-                  : user.full_name || `${user.first_name} ${user.last_name}`.trim()
-                }
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="user">
+              {userType === "driver" ? t('form.driver') : t('form.dispatcher')}
+            </Label>
+            <Select value={selectedUser} onValueChange={setSelectedUser} disabled={isEditing}>
+              <SelectTrigger>
+                <SelectValue placeholder={`${t(userType === "driver" ? 'form.select_driver' : 'form.select_dispatcher')}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {currentUsers.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {userType === "driver" 
+                      ? `${user.first_name} ${user.last_name}`.trim()
+                      : user.full_name || `${user.first_name} ${user.last_name}`.trim()
+                    }
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
       <div className="space-y-2">
         <Label htmlFor="income-type">{t('form.income_type')}</Label>
@@ -224,26 +226,27 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder={t('form.description_placeholder')}
           required
         />
       </div>
       </div>
 
-      <div className="flex justify-end gap-2 pt-4 border-t bg-muted/50 -mx-6 -mb-6 px-6 py-4">
-        <Button type="button" variant="outline" onClick={onClose}>
+      <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background -mx-6 px-6">
+        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
           {t('form.cancel')}
         </Button>
         <Button 
-          type="submit" 
+          type="submit"
+          onClick={handleSubmit}
           disabled={(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) || 
                    !selectedUser || !description || atmInput.numericValue <= 0 || !date}
+          className="flex-1"
         >
           {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
            (isEditing ? t('form.updating') : t('form.creating')) : 
            (isEditing ? t('form.update') : t('form.create'))}
         </Button>
       </div>
-    </form>
+    </>
   );
 }

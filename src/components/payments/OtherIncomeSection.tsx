@@ -222,13 +222,13 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 {t('additional_payments.actions.add_income')}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md max-h-[80vh] flex flex-col p-0 gap-0">
-              <DialogHeader className="p-6 pb-4 border-b flex-shrink-0 bg-muted/50">
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
+              <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
                 <DialogTitle>{t('additional_payments.dialogs.new_income_title')}</DialogTitle>
                 <DialogDescription>
-                  Agregar un ingreso adicional para el período de pago actual
+                  {t('additional_payments.dialogs.new_income_description')}
                 </DialogDescription>
-              </DialogHeader>
+              </div>
               <div className="overflow-y-auto flex-1 p-6 bg-white">
                 <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
               </div>
@@ -386,10 +386,13 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
 
       {/* Dialog para editar ingreso */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md max-h-[80vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="p-6 pb-4 border-b flex-shrink-0 bg-muted/50">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
+          <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
             <DialogTitle>{t('additional_payments.dialogs.edit_title')}</DialogTitle>
-          </DialogHeader>
+            <DialogDescription>
+              {t('additional_payments.dialogs.edit_description')}
+            </DialogDescription>
+          </div>
           <div className="overflow-y-auto flex-1 p-6 bg-white">
             {itemToEdit && (
               <UnifiedOtherIncomeForm 

@@ -642,8 +642,10 @@
     },
     "dialogs": {
       "new_income_title": "New Additional Income",
+      "new_income_description": "Add additional income for a specific payment period",
       "view_details_title": "Income Details",
       "edit_title": "Edit Additional Income",
+      "edit_description": "Modify the selected additional income",
       "delete_title": "Delete additional income?",
       "delete_description": "This action will permanently delete the income \"{{description}}\" for {{amount}}. The driver period will be recalculated automatically."
     },
