@@ -6,8 +6,6 @@ import { logger } from '@/lib/logger';
 
 // Enhanced auth state cleanup utility
 const enhancedCleanupAuthState = () => {
-  logger.debug('Enhanced cleanup of auth state');
-  
   // Use the existing utility
   cleanupAuthState();
   
@@ -99,8 +97,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
-      logger.debug('Fetching user roles');
-      
       const { data: roles, error } = await supabase
         .from('user_company_roles')
         .select('*')
@@ -128,7 +124,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [];
       }
 
-      logger.debug('Roles fetched successfully', { roleCount: roles?.length || 0 });
       return roles || [];
     } catch (error) {
       logger.error('Exception in fetchUserRoles', error as Error, { component: 'AuthContext' });
@@ -146,7 +141,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedRole = JSON.parse(storedRole);
         const validRole = roles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
         if (validRole) {
-          logger.debug('Using stored role preference');
           return validRole.role;
         }
       } catch (e) {
@@ -160,7 +154,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     for (const roleType of roleHierarchy) {
       const role = roles.find(r => r.role === roleType);
       if (role) {
-        logger.debug('Auto-selected role from hierarchy');
         return role.role;
       }
     }
@@ -169,8 +162,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const refreshRoles = useCallback(async () => {
-    logger.debug('Starting refreshRoles');
-    
     // Get current session directly from Supabase instead of relying on state
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
@@ -180,17 +171,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     if (!session?.user) {
-      logger.debug('No session user found, cannot refresh roles');
       return;
     }
-    
-    logger.debug('Refreshing roles for authenticated user');
     
     // Add a delay to ensure database consistency after invitation acceptance
     await new Promise(resolve => setTimeout(resolve, 500));
     
     const roles = await fetchUserRoles(session.user.id);
-    logger.debug('Roles refreshed', { roleCount: roles?.length || 0 });
     
     setUserRoles(roles);
     
@@ -204,11 +191,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchUserRoles, determineCurrentRole]);
 
   const switchRole = useCallback((roleId: string) => {
-    logger.debug('switchRole called', { component: 'AuthContext' });
-    
     const role = userRoles?.find(r => r.id === roleId);
     if (role) {
-      logger.debug('Switching to new role', { component: 'AuthContext' });
       setCurrentRole(role.role);
       
       // Store role preference
@@ -219,8 +203,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Force update
       setForceUpdateCounter(prev => prev + 1);
-      
-      logger.debug('Role switched successfully', { component: 'AuthContext' });
     } else {
       logger.warn('Role not found for roleId', { component: 'AuthContext' });
     }
@@ -238,8 +220,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
-      logger.debug('Auth state changed', { event, component: 'AuthContext' });
-      
       // Handle auth errors by cleaning up state
       if (event === 'TOKEN_REFRESHED' && !session) {
         logger.warn('Token refresh failed, cleaning up auth state');
@@ -254,7 +234,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Handle signed out state
       if (event === 'SIGNED_OUT') {
-        logger.debug('User signed out, cleaning up state');
         enhancedCleanupAuthState();
         setSession(null);
         setUser(null);
@@ -273,7 +252,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (!mounted) return;
           
           try {
-            logger.debug('Fetching roles after auth state change');
             const { data: roles, error } = await supabase
               .from('user_company_roles')
               .select('*')
@@ -289,7 +267,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
 
             const userRoles = roles || [];
-            logger.debug('User roles set', { roleCount: userRoles.length });
             setUserRoles(userRoles);
             
             // Determine current role
@@ -324,7 +301,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             }
             
-            logger.debug('Selected role determined', { component: 'AuthContext' });
             setCurrentRole(selectedRole);
             setLoading(false);
           } catch (error) {
@@ -463,8 +439,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      logger.debug('Starting sign out process', { component: 'AuthContext' });
-      
       // Set loading to true to prevent Index from showing Landing
       setLoading(true);
       
@@ -480,16 +454,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Attempt global sign out from Supabase
       try {
         await supabase.auth.signOut({ scope: 'global' });
-        logger.debug('Supabase sign out successful');
       } catch (err) {
         logger.warn('Supabase sign out error (continuing anyway)', { error: err });
       }
       
       // Force redirect to auth page without going through Index/Landing
-      console.log('🔄 Redirecting directly to auth page...');
       window.location.replace('/auth');
     } catch (error) {
-      console.error('❌ Error in sign out process:', error);
+      logger.error('Error in sign out process', error as Error, { component: 'AuthContext' });
       // Force cleanup and redirect anyway
       enhancedCleanupAuthState();
       window.location.replace('/auth');
