@@ -377,25 +377,25 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
               {/* Step 1: Client Information */}
               <Card>
                 <CardContent className="space-y-4 pt-4">
-                  <div className="flex items-center justify-end mb-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowFMCSAModal(true)}
-                      className="gap-2"
-                    >
-                      <Search className="h-4 w-4" />
-                      {t('create_client_dialog.form.fmcsa_lookup')}
-                    </Button>
-                  </div>
                   {/* Logo Upload Section */}
                   <FormField
                     control={form.control}
                     name="logo_url"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('create_client_dialog.form.logo_section')}</FormLabel>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>{t('create_client_dialog.form.logo_section')}</FormLabel>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowFMCSAModal(true)}
+                            className="gap-2"
+                          >
+                            <Search className="h-4 w-4" />
+                            {t('create_client_dialog.form.fmcsa_lookup')}
+                          </Button>
+                        </div>
                         <FormControl>
                           <ClientLogoUpload
                             logoUrl={field.value || undefined}
