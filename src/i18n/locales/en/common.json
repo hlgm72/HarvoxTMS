@@ -771,5 +771,12 @@
     "view_error_desc": "Could not generate link to view document",
     "open_error": "Error",
     "open_error_desc": "Could not open document"
+  },
+  "form": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "creating": "Creating...",
+    "updating": "Updating..."
   }
 }

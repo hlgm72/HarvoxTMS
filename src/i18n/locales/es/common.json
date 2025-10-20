@@ -766,5 +766,12 @@
     "view_error_desc": "No se pudo generar el enlace para ver el documento",
     "open_error": "Error",
     "open_error_desc": "No se pudo abrir el documento"
+  },
+  "form": {
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "creating": "Creando...",
+    "updating": "Actualizando..."
   }
 }
