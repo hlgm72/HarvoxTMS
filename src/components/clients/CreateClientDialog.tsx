@@ -484,12 +484,25 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                        render={({ field }) => {
                          const handleEmailDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                            let value = e.target.value;
-                           // Asegurar que siempre comience con @
-                           if (!value.startsWith('@')) {
-                             value = '@' + value.replace('@', '');
+                           
+                           // Limpiar espacios
+                           value = value.replace(/\s/g, '');
+                           
+                           // Si el valor está vacío, dejarlo como '@'
+                           if (!value || value === '@') {
+                             field.onChange('@');
+                             return;
                            }
-                           // Limpiar espacios y convertir a minúsculas
-                           value = value.replace(/\s/g, '').toLowerCase();
+                           
+                           // Remover todos los '@' del input
+                           value = value.replace(/@/g, '');
+                           
+                           // Agregar un solo '@' al inicio
+                           value = '@' + value;
+                           
+                           // Convertir a minúsculas
+                           value = value.toLowerCase();
+                           
                            field.onChange(value);
                          };
 
