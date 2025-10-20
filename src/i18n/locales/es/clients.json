@@ -35,7 +35,7 @@
     "add_contacts_description": "Agrega contactos y despachadores para este cliente"
   },
   "contacts": {
-    "title": "Contactos de {clientName}",
+    "title": "Contactos de {{clientName}}",
     "tabs": {
       "info": "Información",
       "contacts": "Contactos",

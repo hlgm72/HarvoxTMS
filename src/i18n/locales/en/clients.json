@@ -35,7 +35,7 @@
     "add_contacts_description": "Add contacts and dispatchers for this client"
   },
   "contacts": {
-    "title": "Contacts for {clientName}",
+    "title": "Contacts for {{clientName}}",
     "tabs": {
       "info": "Information",
       "contacts": "Contacts", 
