@@ -218,211 +218,216 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white border shadow-lg">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl h-[90vh] flex flex-col p-0 gap-0 bg-white border shadow-lg">
+        {/* Header Fijo */}
+        <DialogHeader className="px-6 py-4 border-b bg-white shrink-0">
           <DialogTitle>Editar Usuario</DialogTitle>
           <DialogDescription>
             Modifica la información del usuario y gestiona sus roles.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Información Personal */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Información Personal</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="first_name">Nombre</Label>
-                <Input
-                  id="first_name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Nombre"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="last_name">Apellido</Label>
-                <Input
-                  id="last_name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Apellido"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
-              <Input
-                id="phone"
-                value={phone}
-                onChange={(e) => {
-                  const handlers = createPhoneHandlers(setPhone);
-                  handlers.onChange(e);
-                }}
-                onKeyPress={(e) => {
-                  const handlers = createPhoneHandlers(setPhone);
-                  handlers.onKeyPress(e);
-                }}
-                placeholder="(555) 123-4567"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                value={user.email}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">
-                El email no se puede modificar
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Estado</Label>
-              <Select value={userStatus} onValueChange={setUserStatus}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Gestión de Roles */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Roles</h3>
-            
-            {/* Roles actuales */}
-            <div className="space-y-2">
-              <Label>Roles Actuales</Label>
-              <div className="flex flex-wrap gap-2">
-                {userRoles.map((role) => {
-                  const getRoleBadgeWithColors = (role: string) => {
-                    const roleConfig: Record<string, { label: string; variant: string; className: string }> = {
-                      'superadmin': { 
-                        label: '🔧 Super Admin', 
-                        variant: 'default',
-                        className: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700'
-                      },
-                      'company_owner': { 
-                        label: '👑 Company Owner', 
-                        variant: 'default',
-                        className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
-                      },
-                      'operations_manager': { 
-                        label: '👨‍💼 Operations Manager', 
-                        variant: 'default',
-                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
-                      },
-                      'general_manager': { 
-                        label: '👨‍💼 General Manager', 
-                        variant: 'default',
-                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
-                      },
-                      'safety_manager': { 
-                        label: '⚠️ Safety Manager', 
-                        variant: 'default',
-                        className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
-                      },
-                      'senior_dispatcher': { 
-                        label: '📋 Senior Dispatcher', 
-                        variant: 'default',
-                        className: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700'
-                      },
-                      'dispatcher': { 
-                        label: '📋 Dispatcher', 
-                        variant: 'default',
-                        className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
-                      },
-                      'driver': { 
-                        label: '🚛 Driver', 
-                        variant: 'default',
-                        className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-700'
-                      },
-                      'multi_company_dispatcher': { 
-                        label: '🏢 Multi-Company Dispatcher', 
-                        variant: 'default',
-                        className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-700'
-                      },
-                    };
-
-                    const config = roleConfig[role] || { 
-                      label: role, 
-                      variant: 'outline',
-                      className: 'bg-gray-50 text-gray-600 border-gray-300'
-                    };
-
-                    return config;
-                  };
-
-                  const roleConfig = getRoleBadgeWithColors(role);
-                  
-                  return (
-                    <Badge 
-                      key={role} 
-                      variant={roleConfig.variant as any} 
-                      className={`flex items-center gap-2 ${roleConfig.className}`}
-                    >
-                      {roleConfig.label}
-                      {userRoles.length > 1 && (
-                        <button
-                          onClick={() => handleRemoveRole(role)}
-                          disabled={loading || rolesLoading}
-                          className="ml-1 text-xs hover:text-destructive"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      )}
-                    </Badge>
-                  );
-                })}
-                {userRoles.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Sin roles asignados</p>
-                )}
-              </div>
-            </div>
-
-            {/* Agregar nuevo rol */}
-            {availableRoles.length > 0 && (
-              <div className="space-y-2">
-                <Label>Agregar Rol</Label>
-                <div className="flex gap-2">
-                  <Select value={newRole} onValueChange={setNewRole}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Selecciona un rol" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableRoles.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button 
-                    onClick={handleAddRole}
-                    disabled={!newRole || loading || rolesLoading}
-                  >
-                    Agregar
-                  </Button>
+        {/* Contenido Scrolleable con fondo gris */}
+        <div className="flex-1 overflow-y-auto bg-gray-50 px-6 py-6">
+          <div className="space-y-6">
+            {/* Información Personal */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Información Personal</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first_name">Nombre</Label>
+                  <Input
+                    id="first_name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Nombre"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="last_name">Apellido</Label>
+                  <Input
+                    id="last_name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Apellido"
+                  />
                 </div>
               </div>
-            )}
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Teléfono</Label>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => {
+                    const handlers = createPhoneHandlers(setPhone);
+                    handlers.onChange(e);
+                  }}
+                  onKeyPress={(e) => {
+                    const handlers = createPhoneHandlers(setPhone);
+                    handlers.onKeyPress(e);
+                  }}
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  value={user.email}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">
+                  El email no se puede modificar
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Estado</Label>
+                <Select value={userStatus} onValueChange={setUserStatus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Gestión de Roles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Roles</h3>
+              
+              {/* Roles actuales */}
+              <div className="space-y-2">
+                <Label>Roles Actuales</Label>
+                <div className="flex flex-wrap gap-2">
+                  {userRoles.map((role) => {
+                    const getRoleBadgeWithColors = (role: string) => {
+                      const roleConfig: Record<string, { label: string; variant: string; className: string }> = {
+                        'superadmin': { 
+                          label: '🔧 Super Admin', 
+                          variant: 'default',
+                          className: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700'
+                        },
+                        'company_owner': { 
+                          label: '👑 Company Owner', 
+                          variant: 'default',
+                          className: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700'
+                        },
+                        'operations_manager': { 
+                          label: '👨‍💼 Operations Manager', 
+                          variant: 'default',
+                          className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                        },
+                        'general_manager': { 
+                          label: '👨‍💼 General Manager', 
+                          variant: 'default',
+                          className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                        },
+                        'safety_manager': { 
+                          label: '⚠️ Safety Manager', 
+                          variant: 'default',
+                          className: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700'
+                        },
+                        'senior_dispatcher': { 
+                          label: '📋 Senior Dispatcher', 
+                          variant: 'default',
+                          className: 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700'
+                        },
+                        'dispatcher': { 
+                          label: '📋 Dispatcher', 
+                          variant: 'default',
+                          className: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-700'
+                        },
+                        'driver': { 
+                          label: '🚛 Driver', 
+                          variant: 'default',
+                          className: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-700'
+                        },
+                        'multi_company_dispatcher': { 
+                          label: '🏢 Multi-Company Dispatcher', 
+                          variant: 'default',
+                          className: 'bg-cyan-100 text-cyan-800 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-700'
+                        },
+                      };
+
+                      const config = roleConfig[role] || { 
+                        label: role, 
+                        variant: 'outline',
+                        className: 'bg-gray-50 text-gray-600 border-gray-300'
+                      };
+
+                      return config;
+                    };
+
+                    const roleConfig = getRoleBadgeWithColors(role);
+                    
+                    return (
+                      <Badge 
+                        key={role} 
+                        variant={roleConfig.variant as any} 
+                        className={`flex items-center gap-2 ${roleConfig.className}`}
+                      >
+                        {roleConfig.label}
+                        {userRoles.length > 1 && (
+                          <button
+                            onClick={() => handleRemoveRole(role)}
+                            disabled={loading || rolesLoading}
+                            className="ml-1 text-xs hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </Badge>
+                    );
+                  })}
+                  {userRoles.length === 0 && (
+                    <p className="text-sm text-muted-foreground">Sin roles asignados</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Agregar nuevo rol */}
+              {availableRoles.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Agregar Rol</Label>
+                  <div className="flex gap-2">
+                    <Select value={newRole} onValueChange={setNewRole}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Selecciona un rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableRoles.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      onClick={handleAddRole}
+                      disabled={!newRole || loading || rolesLoading}
+                    >
+                      Agregar
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end space-x-2 pt-4">
+        {/* Footer Fijo */}
+        <div className="px-6 py-4 border-t bg-white shrink-0 flex justify-end space-x-2">
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
