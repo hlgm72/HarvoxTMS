@@ -1234,10 +1234,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
            onClose={() => setShowCreateClient(false)}
             onSuccess={(clientId) => {
               // Refresh clients list and select the new client
-              refetchClients().then(() => {
+              refetchClients().then((result) => {
+                // Get the updated clients list from the refetch result
+                const updatedClients = result.data || [];
+                const newClient = updatedClients.find(c => c.id === clientId);
+                
+                // Set form value and selected client
                 form.setValue("client_id", clientId);
-                const newClient = clients.find(c => c.id === clientId);
                 setSelectedClient(newClient || null);
+                
                 // Also refresh contacts for the new client
                 refetchContacts();
               });
