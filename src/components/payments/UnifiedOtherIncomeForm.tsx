@@ -203,11 +203,17 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
         <Label htmlFor="amount">{t('form.amount')}</Label>
         <Input
           id="amount"
+          type="text"
+          inputMode="numeric"
           value={atmInput.displayValue}
-          onChange={(e) => atmInput.setValue(parseFloat(e.target.value) || 0)}
+          onChange={atmInput.handleInput}
           onKeyDown={atmInput.handleKeyDown}
           onPaste={atmInput.handlePaste}
-          placeholder={t('form.amount_placeholder')}
+          onFocus={atmInput.handleFocus}
+          onClick={atmInput.handleClick}
+          placeholder="$0.00"
+          className="text-right text-lg"
+          autoComplete="off"
           required
         />
       </div>
