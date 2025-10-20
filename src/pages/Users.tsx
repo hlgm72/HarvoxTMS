@@ -151,8 +151,6 @@ export default function Users() {
     
     setLoading(true);
     try {
-      console.log('🔍 Fetching users for company:', userRole.company_id);
-      
       // Obtener usuarios activos de la empresa con sus roles
       const { data: companyUsers, error } = await supabase
         .from('user_company_roles')
@@ -170,8 +168,6 @@ export default function Users() {
         console.error('❌ Error fetching company users:', error);
         throw error;
       }
-      
-      console.log('✅ Company users loaded:', companyUsers?.length || 0);
 
       // Obtener invitaciones pendientes (no aceptadas)
       const { data: pendingInvitations, error: invitationsError } = await supabase
@@ -195,8 +191,6 @@ export default function Users() {
         console.error('❌ Error fetching invitations:', invitationsError);
         throw invitationsError;
       }
-      
-      console.log('✅ Pending invitations loaded:', pendingInvitations?.length || 0);
 
       // Combinar usuarios activos y pendientes
       const allUserIds = new Set();
@@ -273,8 +267,6 @@ export default function Users() {
         typeof id === 'string' && id.length > 0
       );
       
-      console.log('🔍 Fetching profiles for users:', userIdsWithProfiles.length);
-      
       let profiles: any[] = [];
       if (userIdsWithProfiles.length > 0) {
         const { data: profilesData, error: profilesError } = await supabase
@@ -287,7 +279,6 @@ export default function Users() {
           throw profilesError;
         }
         profiles = profilesData || [];
-        console.log('✅ Profiles loaded:', profiles.length);
       }
 
       // Actualizar información de perfiles
@@ -311,7 +302,6 @@ export default function Users() {
       if (hasAdminPrivileges) {
         // Usar la función segura para obtener emails de usuarios
         try {
-          console.log('🔍 Fetching emails for admin user');
           const { data: userEmails, error: emailError } = await supabase
             .rpc('get_user_emails_for_company', { 
               company_id_param: userRole.company_id 
@@ -323,7 +313,6 @@ export default function Users() {
           }
 
           if (userEmails) {
-            console.log('✅ Emails loaded:', userEmails.length);
             // Mapear emails a usuarios
             userEmails.forEach(({ user_id, email }) => {
               if (usersMap.has(user_id)) {
@@ -349,7 +338,6 @@ export default function Users() {
       }
 
       const usersList = Array.from(usersMap.values());
-      console.log('✅ Final users list:', usersList.length);
       setUsers(usersList);
       setFilteredUsers(usersList); // Inicializar usuarios filtrados
       
