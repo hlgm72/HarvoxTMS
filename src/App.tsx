@@ -210,16 +210,14 @@ function AppContent() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/clients" 
-          element={
-            <ProtectedRoute>
-              <Layout>
-                <Clients />
-              </Layout>
-            </ProtectedRoute>
-          } 
-        />
+            <Route 
+              path="/clients" 
+              element={
+                <ProtectedRoute>
+                  <Clients />
+                </ProtectedRoute>
+              } 
+            />
         <Route 
           path="/equipment" 
           element={
