@@ -8,9 +8,21 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+// Helper to read sidebar state from cookie
+const getSidebarStateFromCookie = (): boolean => {
+  if (typeof document === 'undefined') return false;
+  const cookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('sidebar:state='));
+  return cookie ? cookie.split('=')[1] === 'true' : false;
+};
+
 export function Layout({ children }: LayoutProps) {
+  const [defaultOpen] = React.useState(() => getSidebarStateFromCookie());
+
   return (
     <SidebarProvider 
+      defaultOpen={defaultOpen}
       style={
         {
           "--sidebar-width": "280px",
