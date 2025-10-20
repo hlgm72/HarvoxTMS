@@ -162,6 +162,14 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'shrink-width': {
+					'0%': {
+						width: '100%'
+					},
+					'100%': {
+						width: '0%'
+					}
 				}
 			},
 			animation: {

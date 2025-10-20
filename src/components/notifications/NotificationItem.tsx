@@ -59,11 +59,12 @@ const notificationConfig = {
 export function NotificationItem({ notification, onClose }: NotificationItemProps) {
   const config = notificationConfig[notification.type];
   const Icon = config.icon;
+  const duration = notification.duration || 5000;
 
   return (
     <div
       className={cn(
-        'relative flex items-start gap-4 p-4 rounded-xl border backdrop-blur-sm',
+        'relative flex items-start gap-4 p-4 rounded-xl border backdrop-blur-sm overflow-hidden',
         'animate-fade-in transition-all duration-300 hover:scale-105',
         config.bgColor,
         config.borderColor,
@@ -113,6 +114,17 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
       >
         <X className="h-3 w-3" />
       </Button>
+
+      {/* Progress Bar */}
+      {!notification.persistent && (
+        <div 
+          className="absolute bottom-0 left-0 h-1 bg-white/30 rounded-b-xl"
+          style={{
+            width: '100%',
+            animation: `shrink-width ${duration}ms linear forwards`
+          }}
+        />
+      )}
     </div>
   );
 }
