@@ -33,7 +33,9 @@
     "start_adding": "Start by adding your first client",
     "no_contacts_available": "No contacts available",
     "detailed_info": "Detailed client information",
-    "add_contacts_description": "Add contacts and dispatchers for this client"
+    "add_contacts_description": "Add contacts and dispatchers for this client",
+    "update_success": "Client updated",
+    "update_success_description": "{{clientName}} has been successfully updated"
   },
   "contacts": {
     "title": "Contacts for {{clientName}}",
@@ -211,6 +213,14 @@
       "name_required": "Name required",
       "email_invalid": "Invalid email",
       "client_name_required": "Client name required"
+    }
+  },
+  "edit_dialog": {
+    "title": "Edit Client",
+    "description": "Update client information and contacts",
+    "buttons": {
+      "update": "Update Client",
+      "updating": "Updating..."
     }
   },
   "fmcsa_lookup_modal": {
