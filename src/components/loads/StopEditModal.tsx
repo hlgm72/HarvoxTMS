@@ -333,10 +333,18 @@ export function StopEditModal({
               <Textarea
                 placeholder={t("loads:create_wizard.phases.route_details.edit_modal.instructions_placeholder")}
                 value={formData.special_instructions || ''}
-                onChange={(e) => updateField('special_instructions', e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Enforce max length
+                  if (value.length <= 500) {
+                    updateField('special_instructions', value);
+                  }
+                }}
                 rows={2}
                 className="h-16 min-h-16 resize-none"
+                maxLength={500}
               />
+              <p className="text-xs text-muted-foreground">{(formData.special_instructions || '').length}/500</p>
             </div>
           </div>
         </div>

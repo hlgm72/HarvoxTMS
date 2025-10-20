@@ -408,9 +408,17 @@ export function StopFormCard({
                 id={`instructions-${stop.id}`}
                 placeholder="Instrucciones especiales para esta parada..."
                 value={stop.special_instructions || ''}
-                onChange={(e) => onUpdate({ special_instructions: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Enforce max length
+                  if (value.length <= 500) {
+                    onUpdate({ special_instructions: value });
+                  }
+                }}
                 rows={3}
+                maxLength={500}
               />
+              <p className="text-xs text-muted-foreground">{(stop.special_instructions || '').length}/500</p>
             </div>
           </div>
         )}

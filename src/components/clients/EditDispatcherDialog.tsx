@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Users } from "lucide-react";
 import {
   Dialog,
@@ -23,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateContact, ClientContact } from "@/hooks/useClients";
 import { createPhoneHandlers } from '@/lib/textUtils';
+import { contactNameSchema, emailSchema, phoneSchema, notesSchema } from '@/lib/validationSchemas';
 
 interface EditDispatcherDialogProps {
   dispatcher: ClientContact;
@@ -30,12 +33,25 @@ interface EditDispatcherDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type UpdateDispatcherForm = Omit<ClientContact, "created_at" | "updated_at">;
+const updateDispatcherSchema = z.object({
+  id: z.string(),
+  client_id: z.string(),
+  name: contactNameSchema,
+  email: emailSchema,
+  phone_office: phoneSchema,
+  phone_mobile: phoneSchema,
+  extension: z.string().max(10, { message: "Extension must be less than 10 characters" }).optional().nullable(),
+  notes: notesSchema,
+  is_active: z.boolean(),
+});
+
+type UpdateDispatcherForm = z.infer<typeof updateDispatcherSchema>;
 
 export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDispatcherDialogProps) {
   const updateDispatcher = useUpdateContact();
   
   const form = useForm<UpdateDispatcherForm>({
+    resolver: zodResolver(updateDispatcherSchema),
     defaultValues: {
       id: dispatcher.id,
       client_id: dispatcher.client_id,
@@ -67,7 +83,20 @@ export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDis
 
   const onSubmit = async (data: UpdateDispatcherForm) => {
     try {
-      await updateDispatcher.mutateAsync(data);
+      // Ensure all required fields are present with correct types
+      const submitData = {
+        id: data.id,
+        client_id: data.client_id,
+        name: data.name,
+        email: data.email || null,
+        phone_office: data.phone_office || null,
+        phone_mobile: data.phone_mobile || null,
+        extension: data.extension || null,
+        notes: data.notes || null,
+        is_active: data.is_active,
+      };
+      
+      await updateDispatcher.mutateAsync(submitData);
       onOpenChange(false);
     } catch (error) {
       // Error is handled by the mutation
@@ -92,12 +121,15 @@ export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDis
             <FormField
               control={form.control}
               name="name"
-              rules={{ required: "El nombre es requerido" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nombre Completo *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej. María González" {...field} />
+                    <Input 
+                      placeholder="Ej. María González" 
+                      {...field} 
+                      maxLength={100}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,8 +146,10 @@ export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDis
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="maria@empresa.com"
+                        placeholder="email@ejemplo.com"
                         {...field}
+                        value={field.value || ''}
+                        maxLength={255}
                       />
                     </FormControl>
                     <FormMessage />
@@ -166,7 +200,7 @@ export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDis
                   <FormItem>
                     <FormLabel>Extensión</FormLabel>
                     <FormControl>
-                      <Input placeholder="1234" {...field} />
+                      <Input placeholder="1234" {...field} value={field.value || ''} maxLength={10} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -185,8 +219,11 @@ export function EditDispatcherDialog({ dispatcher, open, onOpenChange }: EditDis
                       placeholder="Información adicional sobre el contacto..."
                       rows={3}
                       {...field}
+                      value={field.value || ''}
+                      maxLength={1000}
                     />
                   </FormControl>
+                  <p className="text-xs text-muted-foreground">{(field.value || '').length}/1000</p>
                   <FormMessage />
                 </FormItem>
               )}

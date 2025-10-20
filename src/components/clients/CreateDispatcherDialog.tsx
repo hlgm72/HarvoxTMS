@@ -1,4 +1,6 @@
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Users } from "lucide-react";
 import {
   Dialog,
@@ -22,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useCreateContact, ClientContact } from "@/hooks/useClients";
 import { createPhoneHandlers } from '@/lib/textUtils';
+import { contactNameSchema, emailSchema, phoneSchema, notesSchema } from '@/lib/validationSchemas';
 
 interface CreateDispatcherDialogProps {
   clientId: string;
@@ -29,12 +32,24 @@ interface CreateDispatcherDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type CreateDispatcherForm = Omit<ClientContact, "id" | "created_at" | "updated_at">;
+const createDispatcherSchema = z.object({
+  client_id: z.string(),
+  name: contactNameSchema,
+  email: emailSchema,
+  phone_office: phoneSchema,
+  phone_mobile: phoneSchema,
+  extension: z.string().max(10, { message: "Extension must be less than 10 characters" }).optional().nullable(),
+  notes: notesSchema,
+  is_active: z.boolean(),
+});
+
+type CreateDispatcherForm = z.infer<typeof createDispatcherSchema>;
 
 export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateDispatcherDialogProps) {
   const createDispatcher = useCreateContact();
   
   const form = useForm<CreateDispatcherForm>({
+    resolver: zodResolver(createDispatcherSchema),
     defaultValues: {
       client_id: clientId,
       name: "",
@@ -49,10 +64,19 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
 
   const onSubmit = async (data: CreateDispatcherForm) => {
     try {
-      await createDispatcher.mutateAsync({
-        ...data,
+      // Ensure all required fields are present
+      const submitData = {
         client_id: clientId,
-      });
+        name: data.name,
+        email: data.email || null,
+        phone_office: data.phone_office || null,
+        phone_mobile: data.phone_mobile || null,
+        extension: data.extension || null,
+        notes: data.notes || null,
+        is_active: data.is_active,
+      };
+      
+      await createDispatcher.mutateAsync(submitData);
       form.reset();
       onOpenChange(false);
     } catch (error) {
@@ -78,12 +102,15 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
             <FormField
               control={form.control}
               name="name"
-              rules={{ required: "El nombre es requerido" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nombre Completo *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej. María González" {...field} />
+                    <Input 
+                      placeholder="Ej. María González" 
+                      {...field} 
+                      maxLength={100}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,10 +125,12 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="maria@empresa.com"
-                        {...field}
+                      <Input 
+                        type="email" 
+                        placeholder="email@ejemplo.com" 
+                        {...field} 
+                        value={field.value || ''}
+                        maxLength={255}
                       />
                     </FormControl>
                     <FormMessage />
@@ -152,7 +181,7 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
                   <FormItem>
                     <FormLabel>Extensión</FormLabel>
                     <FormControl>
-                      <Input placeholder="1234" {...field} />
+                      <Input placeholder="1234" {...field} value={field.value || ''} maxLength={10} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,8 +200,11 @@ export function CreateDispatcherDialog({ clientId, open, onOpenChange }: CreateD
                       placeholder="Información adicional sobre el contacto..."
                       rows={3}
                       {...field}
+                      value={field.value || ''}
+                      maxLength={1000}
                     />
                   </FormControl>
+                  <p className="text-xs text-muted-foreground">{(field.value || '').length}/1000</p>
                   <FormMessage />
                 </FormItem>
               )}

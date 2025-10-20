@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { useRecalculateUserPeriod } from '@/hooks/useRecalculateUserPeriod';
+import { sanitizeText } from '@/lib/securityUtils';
 
 export interface CreateLoadData {
   id?: string;
@@ -203,19 +204,19 @@ export const useCreateLoad = () => {
       console.log('🔍 useCreateLoad - Client contact ID being sent:', loadData.client_contact_id);
       console.log('🔍 useCreateLoad - Dispatcher in loadData:', loadData.internal_dispatcher_id);
       
-      // Prepare stops data
+      // Prepare stops data with sanitization
       const stopsData = (data.stops || []).map(stop => ({
         stop_number: stop.stop_number,
         stop_type: stop.stop_type,
-        company_name: stop.company_name,
-        address: stop.address,
-        city: stop.city,
+        company_name: sanitizeText(stop.company_name || ''),
+        address: sanitizeText(stop.address || ''),
+        city: sanitizeText(stop.city || ''),
         state: stop.state,
-        zip_code: stop.zip_code,
-        reference_number: stop.reference_number || '',
-        contact_name: stop.contact_name || '',
+        zip_code: sanitizeText(stop.zip_code || ''),
+        reference_number: sanitizeText(stop.reference_number || ''),
+        contact_name: sanitizeText(stop.contact_name || ''),
         contact_phone: stop.contact_phone || '',
-        special_instructions: stop.special_instructions || '',
+        special_instructions: sanitizeText(stop.special_instructions || ''),
         scheduled_date: stop.scheduled_date ? 
           (stop.scheduled_date instanceof Date ? 
             formatDateInUserTimeZone(stop.scheduled_date) : 
