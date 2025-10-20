@@ -722,78 +722,6 @@ export type Database = {
         }
         Relationships: []
       }
-      driver_period_calculations_backup_20250211: {
-        Row: {
-          balance_alert_message: string | null
-          calculated_at: string | null
-          calculated_by: string | null
-          company_payment_period_id: string | null
-          created_at: string | null
-          driver_user_id: string | null
-          fuel_expenses: number | null
-          gross_earnings: number | null
-          has_negative_balance: boolean | null
-          id: string | null
-          net_payment: number | null
-          other_income: number | null
-          paid_at: string | null
-          paid_by: string | null
-          payment_method: string | null
-          payment_notes: string | null
-          payment_reference: string | null
-          payment_status: string | null
-          total_deductions: number | null
-          total_income: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          balance_alert_message?: string | null
-          calculated_at?: string | null
-          calculated_by?: string | null
-          company_payment_period_id?: string | null
-          created_at?: string | null
-          driver_user_id?: string | null
-          fuel_expenses?: number | null
-          gross_earnings?: number | null
-          has_negative_balance?: boolean | null
-          id?: string | null
-          net_payment?: number | null
-          other_income?: number | null
-          paid_at?: string | null
-          paid_by?: string | null
-          payment_method?: string | null
-          payment_notes?: string | null
-          payment_reference?: string | null
-          payment_status?: string | null
-          total_deductions?: number | null
-          total_income?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          balance_alert_message?: string | null
-          calculated_at?: string | null
-          calculated_by?: string | null
-          company_payment_period_id?: string | null
-          created_at?: string | null
-          driver_user_id?: string | null
-          fuel_expenses?: number | null
-          gross_earnings?: number | null
-          has_negative_balance?: boolean | null
-          id?: string | null
-          net_payment?: number | null
-          other_income?: number | null
-          paid_at?: string | null
-          paid_by?: string | null
-          payment_method?: string | null
-          payment_notes?: string | null
-          payment_reference?: string | null
-          payment_status?: string | null
-          total_deductions?: number | null
-          total_income?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       driver_profiles: {
         Row: {
           cdl_class: string | null
@@ -3134,6 +3062,7 @@ export type Database = {
           payment_notes: string | null
           payment_reference: string | null
           payment_status: string | null
+          payroll_role: Database["public"]["Enums"]["payroll_role_type"]
           status: string | null
           total_deductions: number
           updated_at: string
@@ -3160,6 +3089,7 @@ export type Database = {
           payment_notes?: string | null
           payment_reference?: string | null
           payment_status?: string | null
+          payroll_role: Database["public"]["Enums"]["payroll_role_type"]
           status?: string | null
           total_deductions?: number
           updated_at?: string
@@ -3186,6 +3116,7 @@ export type Database = {
           payment_notes?: string | null
           payment_reference?: string | null
           payment_status?: string | null
+          payroll_role?: Database["public"]["Enums"]["payroll_role_type"]
           status?: string | null
           total_deductions?: number
           updated_at?: string
@@ -4645,6 +4576,7 @@ export type Database = {
         | "fuel_receipt"
         | "scale_ticket"
         | "other"
+      payroll_role_type: "company_driver" | "owner_operator" | "dispatcher"
       user_role:
         | "superadmin"
         | "company_owner"
@@ -4790,6 +4722,7 @@ export const Constants = {
         "scale_ticket",
         "other",
       ],
+      payroll_role_type: ["company_driver", "owner_operator", "dispatcher"],
       user_role: [
         "superadmin",
         "company_owner",
