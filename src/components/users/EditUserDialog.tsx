@@ -218,9 +218,9 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[90vh] flex flex-col p-0 gap-0 bg-white border shadow-lg">
+      <DialogContent className="max-w-2xl h-[90vh] flex flex-col p-0 gap-0 bg-gray-50 border shadow-lg">
         {/* Header Fijo */}
-        <DialogHeader className="px-6 py-4 border-b bg-white shrink-0">
+        <DialogHeader className="px-6 py-4 border-b bg-gray-50 shrink-0">
           <DialogTitle>Editar Usuario</DialogTitle>
           <DialogDescription>
             Modifica la información del usuario y gestiona sus roles.
@@ -427,7 +427,7 @@ export function EditUserDialog({ isOpen, onClose, user, onSuccess }: EditUserDia
         </div>
 
         {/* Footer Fijo */}
-        <div className="px-6 py-4 border-t bg-white shrink-0 flex justify-end space-x-2">
+        <div className="px-6 py-4 border-t bg-gray-50 shrink-0 flex justify-end space-x-2">
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
