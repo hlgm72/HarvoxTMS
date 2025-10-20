@@ -498,38 +498,60 @@ export function EventualDeductionDialog({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>{t("deductions.period_dialog.expense_date_required")}</Label>
-                <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !expenseDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {expenseDate ? formatPrettyDate(expenseDate) : t("deductions.form.select_date")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={expenseDate}
-                      onSelect={(date) => {
-                        if (date) {
-                          setExpenseDate(date);
-                          setIsDatePickerOpen(false);
-                        }
-                      }}
-                      month={expenseDate}
-                      onMonthChange={setExpenseDate}
-                      captionLayout="dropdown-buttons"
-                      className="p-1 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{t("deductions.period_dialog.expense_date_required")}</Label>
+                  <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !expenseDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {expenseDate ? formatPrettyDate(expenseDate) : t("deductions.form.select_date")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={expenseDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setExpenseDate(date);
+                            setIsDatePickerOpen(false);
+                          }
+                        }}
+                        month={expenseDate}
+                        onMonthChange={setExpenseDate}
+                        captionLayout="dropdown-buttons"
+                        className="p-1 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
+                  <Select 
+                    value={formData.expense_type_id} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("deductions.form.select_expense_type")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {expenseTypes.map((type) => (
+                        <SelectItem key={type.id} value={type.id}>
+                          {type.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
                 
                 {formData.user_id && expenseDate && isLoadingPeriods && (
                   <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
@@ -589,26 +611,7 @@ export function EventualDeductionDialog({
                     </p>
                   </div>
                 )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
-                <Select 
-                  value={formData.expense_type_id} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, expense_type_id: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("deductions.form.select_expense_type")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {expenseTypes.map((type) => (
-                      <SelectItem key={type.id} value={type.id}>
-                        {type.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="amount">{t("deductions.form.amount")} <span className="text-red-500">*</span></Label>
