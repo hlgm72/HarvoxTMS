@@ -11,7 +11,6 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider 
-      defaultOpen={true}
       style={
         {
           "--sidebar-width": "280px",
