@@ -147,54 +147,56 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           </div>
         </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="income-type">{t('form.income_type')}</Label>
-        <Select value={incomeType} onValueChange={setIncomeType}>
-          <SelectTrigger>
-            <SelectValue placeholder={t('form.select_income_type')} />
-          </SelectTrigger>
-          <SelectContent>
-            {incomeTypes.map((type) => (
-              <SelectItem key={type.key} value={type.key}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="date">{t('form.income_date')}</Label>
+          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? formatPrettyDate(date) : <span>{t('form.select_date')}</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(date) => {
+                  setDate(date);
+                  setIsDatePickerOpen(false);
+                }}
+                initialFocus
+                showOutsideDays={true}
+                className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5"
+                captionLayout="dropdown-buttons"
+                fromYear={2020}
+                toYear={2030}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="date">{t('form.income_date')}</Label>
-        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? formatPrettyDate(date) : <span>{t('form.select_date')}</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={(date) => {
-                setDate(date);
-                setIsDatePickerOpen(false);
-              }}
-              initialFocus
-              showOutsideDays={true}
-              className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5"
-              captionLayout="dropdown-buttons"
-              fromYear={2020}
-              toYear={2030}
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="space-y-2">
+          <Label htmlFor="income-type">{t('form.income_type')}</Label>
+          <Select value={incomeType} onValueChange={setIncomeType}>
+            <SelectTrigger>
+              <SelectValue placeholder={t('form.select_income_type')} />
+            </SelectTrigger>
+            <SelectContent>
+              {incomeTypes.map((type) => (
+                <SelectItem key={type.key} value={type.key}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-2">
