@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Client, useDeleteClient } from "@/hooks/useClients";
-import { EditClientDialog } from "./EditClientDialog";
+import { CreateClientDialog } from "./CreateClientDialog";
 import { ClientDetailDialog } from "./ClientDetailDialog";
 import { ClientDispatchersPopover } from "./ClientDispatchersPopover";
 import { useTranslation } from 'react-i18next';
@@ -266,10 +266,10 @@ export function ClientsList({ clients }: ClientsListProps) {
 
       {/* Edit Dialog */}
       {selectedClient && (
-        <EditClientDialog
+        <CreateClientDialog
           client={selectedClient}
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
+          isOpen={showEditDialog}
+          onClose={() => setShowEditDialog(false)}
         />
       )}
 

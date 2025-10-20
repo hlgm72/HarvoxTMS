@@ -21,15 +21,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Building2, User, Plus, Trash2, Phone, Mail, Search } from 'lucide-react';
+import { Client } from '@/hooks/useClients';
 
 interface CreateClientDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (brokerId: string) => void;
   initialName?: string;
+  client?: Client; // Para modo edición
 }
 
-export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '' }: CreateClientDialogProps) {
+export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '', client }: CreateClientDialogProps) {
   const { t } = useTranslation('clients');
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
@@ -37,6 +39,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [showFMCSAModal, setShowFMCSAModal] = useState(false);
+  const isEditMode = !!client;
 
   const dispatcherSchema = z.object({
     name: z.string().min(1, t('create_client_dialog.validation.name_required')),
@@ -86,22 +89,60 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
   // Reset form when dialog opens/closes or initialName changes
   useEffect(() => {
     if (isOpen) {
-      // When opening, reset form with initialName
-      form.reset({
-        name: initialName,
-        alias: '',
-        phone: '',
-        dot_number: '',
-        mc_number: '',
-        address: '',
-        email_domain: '@',
-        logo_url: '',
-        notes: '',
-        dispatchers: [],
-      });
+      if (client) {
+        // Modo edición: cargar datos del cliente
+        form.reset({
+          name: client.name,
+          alias: client.alias || '',
+          phone: '',
+          dot_number: client.dot_number || '',
+          mc_number: client.mc_number || '',
+          address: client.address || '',
+          email_domain: client.email_domain || '@',
+          logo_url: client.logo_url || '',
+          notes: client.notes || '',
+          dispatchers: [],
+        });
+        
+        // Cargar contactos existentes
+        if (client.id) {
+          supabase
+            .from('company_client_contacts')
+            .select('*')
+            .eq('client_id', client.id)
+            .eq('is_active', true)
+            .then(({ data: contacts }) => {
+              if (contacts && contacts.length > 0) {
+                const formattedContacts = contacts.map(c => ({
+                  name: c.name,
+                  email: c.email || '',
+                  phone_office: c.phone_office || '',
+                  phone_mobile: c.phone_mobile || '',
+                  extension: c.extension || '',
+                  notes: c.notes || '',
+                }));
+                form.setValue('dispatchers', formattedContacts);
+              }
+            });
+        }
+      } else {
+        // Modo creación: resetear con initialName
+        form.reset({
+          name: initialName,
+          alias: '',
+          phone: '',
+          dot_number: '',
+          mc_number: '',
+          address: '',
+          email_domain: '@',
+          logo_url: '',
+          notes: '',
+          dispatchers: [],
+        });
+      }
       setCurrentStep(1);
     }
-  }, [isOpen, initialName]);
+  }, [isOpen, initialName, client]);
 
   const createClientMutation = useMutation({
     mutationFn: async (data: CreateClientForm) => {
@@ -109,54 +150,109 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
         throw new Error(t('create_client_dialog.messages.user_not_found'));
       }
 
-      // 1. Crear el cliente
-      const { data: client, error: clientError } = await supabase
-        .from('company_clients')
-        .insert([{
-          company_id: userCompany.company_id,
-          name: data.name,
-          alias: data.alias || null,
-          phone: data.phone || null,
-          dot_number: data.dot_number || null,
-          mc_number: data.mc_number || null,
-          address: data.address || null,
-          email_domain: data.email_domain || null,
-          logo_url: data.logo_url || null,
-          notes: data.notes || null,
-          is_active: true,
-        }])
-        .select()
-        .single();
+      if (isEditMode && client) {
+        // MODO EDICIÓN
+        // 1. Actualizar el cliente
+        const { data: updatedClient, error: clientError } = await supabase
+          .from('company_clients')
+          .update({
+            name: data.name,
+            alias: data.alias || null,
+            phone: data.phone || null,
+            dot_number: data.dot_number || null,
+            mc_number: data.mc_number || null,
+            address: data.address || null,
+            email_domain: data.email_domain || null,
+            logo_url: data.logo_url || null,
+            notes: data.notes || null,
+          })
+          .eq('id', client.id)
+          .select()
+          .single();
 
-      if (clientError) throw clientError;
+        if (clientError) throw clientError;
 
-      // 2. Crear contactos si los hay
-      if (data.dispatchers && data.dispatchers.length > 0) {
-        const contactsToCreate = data.dispatchers
-          .filter(d => d.name.trim()) // Solo crear contactos con nombre
-          .map(contact => ({
-            client_id: client.id,
-            name: contact.name,
-            email: contact.email || null,
-            phone_office: contact.phone_office || null,
-            phone_mobile: contact.phone_mobile || null,
-            extension: contact.extension || null,
-            notes: contact.notes || null,
-            is_active: true,
-          }));
+        // 2. Eliminar contactos existentes y crear los nuevos
+        await supabase
+          .from('company_client_contacts')
+          .delete()
+          .eq('client_id', client.id);
 
-        if (contactsToCreate.length > 0) {
-          const { error: contactsError } = await supabase
-            .from('company_client_contacts')
-            .insert(contactsToCreate);
+        if (data.dispatchers && data.dispatchers.length > 0) {
+          const contactsToCreate = data.dispatchers
+            .filter(d => d.name.trim())
+            .map(contact => ({
+              client_id: client.id,
+              name: contact.name,
+              email: contact.email || null,
+              phone_office: contact.phone_office || null,
+              phone_mobile: contact.phone_mobile || null,
+              extension: contact.extension || null,
+              notes: contact.notes || null,
+              is_active: true,
+            }));
 
-          if (contactsError) throw contactsError;
+          if (contactsToCreate.length > 0) {
+            const { error: contactsError } = await supabase
+              .from('company_client_contacts')
+              .insert(contactsToCreate);
+
+            if (contactsError) throw contactsError;
+          }
         }
-      }
 
-      return client;
+        return updatedClient;
+      } else {
+        // MODO CREACIÓN
+        // 1. Crear el cliente
+        const { data: newClient, error: clientError } = await supabase
+          .from('company_clients')
+          .insert([{
+            company_id: userCompany.company_id,
+            name: data.name,
+            alias: data.alias || null,
+            phone: data.phone || null,
+            dot_number: data.dot_number || null,
+            mc_number: data.mc_number || null,
+            address: data.address || null,
+            email_domain: data.email_domain || null,
+            logo_url: data.logo_url || null,
+            notes: data.notes || null,
+            is_active: true,
+          }])
+          .select()
+          .single();
+
+        if (clientError) throw clientError;
+
+        // 2. Crear contactos si los hay
+        if (data.dispatchers && data.dispatchers.length > 0) {
+          const contactsToCreate = data.dispatchers
+            .filter(d => d.name.trim())
+            .map(contact => ({
+              client_id: newClient.id,
+              name: contact.name,
+              email: contact.email || null,
+              phone_office: contact.phone_office || null,
+              phone_mobile: contact.phone_mobile || null,
+              extension: contact.extension || null,
+              notes: contact.notes || null,
+              is_active: true,
+            }));
+
+          if (contactsToCreate.length > 0) {
+            const { error: contactsError } = await supabase
+              .from('company_client_contacts')
+              .insert(contactsToCreate);
+
+            if (contactsError) throw contactsError;
+          }
+        }
+
+        return newClient;
+      }
     },
-    onSuccess: (client) => {
+    onSuccess: (clientData) => {
       // Invalidar TODAS las queries relacionadas con clientes
       queryClient.invalidateQueries({ 
         queryKey: ['clients'],
@@ -172,15 +268,19 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
         exact: false
       });
       
-      showSuccess(
-        t('create_client_dialog.messages.success_title'),
-        t('create_client_dialog.messages.success_description', { clientName: client.name })
-      );
+      const successTitle = isEditMode 
+        ? t('messages.update_success')
+        : t('create_client_dialog.messages.success_title');
+      const successDescription = isEditMode
+        ? t('messages.update_success_description', { clientName: clientData.name })
+        : t('create_client_dialog.messages.success_description', { clientName: clientData.name });
+      
+      showSuccess(successTitle, successDescription);
 
       // Resetear formulario y cerrar
       form.reset();
       setCurrentStep(1);
-      onSuccess?.(client.id);
+      onSuccess?.(clientData.id);
       onClose();
     },
     onError: (error: any) => {
@@ -223,10 +323,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
         <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            {t('create_client_dialog.title')}
+            {isEditMode ? t('edit_dialog.title') : t('create_client_dialog.title')}
           </DialogTitle>
           <DialogDescription>
-            {t('create_client_dialog.description')}
+            {isEditMode ? t('edit_dialog.description') : t('create_client_dialog.description')}
           </DialogDescription>
           
           {/* Progress Steps */}
@@ -732,7 +832,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                   disabled={createClientMutation.isPending}
                   onClick={form.handleSubmit(handleSubmitForm)}
                 >
-                  {createClientMutation.isPending ? t('create_client_dialog.buttons.creating') : t('create_client_dialog.buttons.create_client')}
+                  {createClientMutation.isPending 
+                    ? (isEditMode ? t('edit_dialog.buttons.updating') : t('create_client_dialog.buttons.creating'))
+                    : (isEditMode ? t('edit_dialog.buttons.update') : t('create_client_dialog.buttons.create_client'))
+                  }
                 </Button>
               </div>
             </div>

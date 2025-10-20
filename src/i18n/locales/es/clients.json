@@ -33,7 +33,9 @@
     "start_adding": "Comienza agregando tu primer cliente",
     "no_contacts_available": "Sin contactos disponibles",
     "detailed_info": "Información detallada del cliente",
-    "add_contacts_description": "Agrega contactos y despachadores para este cliente"
+    "add_contacts_description": "Agrega contactos y despachadores para este cliente",
+    "update_success": "Cliente actualizado",
+    "update_success_description": "{{clientName}} ha sido actualizado exitosamente"
   },
   "contacts": {
     "title": "Contactos de {{clientName}}",
@@ -211,6 +213,14 @@
       "name_required": "Nombre requerido",
       "email_invalid": "Email inválido",
       "client_name_required": "Nombre del cliente requerido"
+    }
+  },
+  "edit_dialog": {
+    "title": "Editar Cliente",
+    "description": "Actualiza la información del cliente y sus contactos",
+    "buttons": {
+      "update": "Actualizar Cliente",
+      "updating": "Actualizando..."
     }
   },
   "fmcsa_lookup_modal": {
