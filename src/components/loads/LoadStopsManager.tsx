@@ -159,11 +159,12 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
                   <button 
                     type="button"
                     className="text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={(e) => e.preventDefault()}
                   >
                     <HelpCircle className="h-5 w-5" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="left" className="max-w-xs">
+                <TooltipContent side="left" className="max-w-xs" onClick={(e) => e.stopPropagation()}>
                   <div className="space-y-1 text-sm">
                     <p>• {t("loads:create_wizard.phases.route_details.instructions.click_edit")}</p>
                     <p>• {t("loads:create_wizard.phases.route_details.instructions.drag_reorder")}</p>
