@@ -198,8 +198,8 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
 
   return (
     <Dialog open={isOpen && !showFMCSAModal} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
             {t('create_client_dialog.title')}
@@ -209,8 +209,9 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
           </DialogDescription>
         </DialogHeader>
 
-        {/* Progress Steps */}
-        <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="overflow-y-auto flex-1 p-6">
+          {/* Progress Steps */}
+          <div className="flex items-center justify-center gap-4 mb-6">
           <div className={`flex items-center gap-2 ${currentStep === 1 ? 'text-primary' : 'text-muted-foreground'}`}>
             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
               currentStep === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'
@@ -476,23 +477,6 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                   />
                 </CardContent>
               </Card>
-
-              {/* Action Buttons for Step 1 */}
-              <div className="flex justify-between">
-                <div></div>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" onClick={handleClose}>
-                    {t('create_client_dialog.buttons.cancel')}
-                  </Button>
-                  
-                  <Button
-                    type="button"
-                    onClick={handleNextStep}
-                  >
-                    {t('create_client_dialog.buttons.next')}
-                  </Button>
-                </div>
-              </div>
             </div>
           )}
 
@@ -684,33 +668,55 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                   )}
                 </CardContent>
               </Card>
-
-              {/* Action Buttons for Step 2 */}
-              <div className="flex justify-between">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setCurrentStep(1)}
-                >
-                  {t('create_client_dialog.buttons.previous')}
-                </Button>
-
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" onClick={handleClose}>
-                    {t('create_client_dialog.buttons.cancel')}
-                  </Button>
-                  
-                  <Button 
-                    type="submit" 
-                    disabled={createClientMutation.isPending}
-                  >
-                    {createClientMutation.isPending ? t('create_client_dialog.buttons.creating') : t('create_client_dialog.buttons.create_client')}
-                  </Button>
-                </div>
-              </div>
             </form>
           )}
         </Form>
+        </div>
+
+        {/* Fixed Action Buttons */}
+        <div className="flex-shrink-0 p-4 border-t bg-background">
+          {currentStep === 1 ? (
+            <div className="flex justify-between">
+              <div></div>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={handleClose}>
+                  {t('create_client_dialog.buttons.cancel')}
+                </Button>
+                
+                <Button
+                  type="button"
+                  onClick={handleNextStep}
+                >
+                  {t('create_client_dialog.buttons.next')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCurrentStep(1)}
+              >
+                {t('create_client_dialog.buttons.previous')}
+              </Button>
+
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={handleClose}>
+                  {t('create_client_dialog.buttons.cancel')}
+                </Button>
+                
+                <Button 
+                  type="submit" 
+                  disabled={createClientMutation.isPending}
+                  onClick={form.handleSubmit(handleSubmitForm)}
+                >
+                  {createClientMutation.isPending ? t('create_client_dialog.buttons.creating') : t('create_client_dialog.buttons.create_client')}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </DialogContent>
 
       {/* FMCSA Lookup Modal - Renderizado independiente */}
