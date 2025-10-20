@@ -834,7 +834,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
           {/* Form Content Area */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto px-6 pt-3 pb-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Phase 1: Essential Information */}
