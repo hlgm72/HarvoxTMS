@@ -529,7 +529,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
   if (!driver) return null;
 
-  const fullName = `${driver.first_name || ''} ${driver.last_name || ''}`.trim() || 'Driver';
+  const fullName = `${driverData.first_name || ''} ${driverData.last_name || ''}`.trim() || 'Driver';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
