@@ -109,7 +109,7 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
                 className="ml-2 h-8 shrink-0"
               >
                 <Plus className="h-4 w-4 mr-1" />
-                {t('actions.create')}
+                New Contact
               </Button>
             )}
           </div>
