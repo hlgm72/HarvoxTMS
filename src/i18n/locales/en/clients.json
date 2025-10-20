@@ -177,7 +177,6 @@
       "add_contact": "Add Contact",
       "previous": "Previous"
     },
-    "contact_label": "Contact {index}",
     "dispatcher_section": {
       "title": "Dispatcher Contacts",
       "description": "Add contacts who manage loads for this client",

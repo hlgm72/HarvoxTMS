@@ -177,7 +177,6 @@
       "add_contact": "Agregar Contacto",
       "previous": "Anterior"
     },
-    "contact_label": "Contacto {index}",
     "dispatcher_section": {
       "title": "Contactos Despachadores",
       "description": "Agrega contactos que manejen cargas para este cliente",
