@@ -74,9 +74,7 @@ export function ClientsList({ clients }: ClientsListProps) {
 
   return (
     <div className="space-y-4">
-      {clients.map((client) => {
-        console.log('🔍 Cliente en lista:', client.name, 'MC:', client.mc_number, 'DOT:', client.dot_number);
-        return (
+      {clients.map((client) => (
           <Card key={client.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               {/* Mobile Layout */}
@@ -264,8 +262,7 @@ export function ClientsList({ clients }: ClientsListProps) {
               </div>
             </CardContent>
           </Card>
-        );
-      })}
+        ))}
 
       {/* Edit Dialog */}
       {selectedClient && (
