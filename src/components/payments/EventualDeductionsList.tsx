@@ -507,7 +507,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                       </Button>
                     )}
                     
-                    {isAutomaticDeduction(deduction) ? (
+                    {isAutomaticDeduction(deduction) && deduction.status !== 'applied' ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div>
@@ -573,13 +573,12 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                           </p>
                         </TooltipContent>
                       </Tooltip>
-                    ) : !isAutomaticDeduction(deduction) ? (
+                    ) : !isAutomaticDeduction(deduction) && deduction.status !== 'applied' ? (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setDeletingExpense(deduction)}
                         className="text-destructive hover:text-destructive h-8"
-                        disabled={deduction.status === 'applied'}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
