@@ -52,6 +52,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateClient, setShowCreateClient] = useState(false);
   const [showCreateDispatcher, setShowCreateDispatcher] = useState(false);
+  const [clientSearchTerm, setClientSearchTerm] = useState("");
   const [loadStops, setLoadStops] = useState<any[]>(() => {
     // Initialize with default stops for create mode
     if (mode === 'create') {
@@ -1109,7 +1110,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 clients={clients}
                 selectedClient={selectedClient}
                 onClientSelect={setSelectedClient}
-                onShowCreateClient={() => setShowCreateClient(true)}
+                onShowCreateClient={(searchTerm) => {
+                  setClientSearchTerm(searchTerm);
+                  setShowCreateClient(true);
+                }}
                 onShowCreateDispatcher={() => setShowCreateDispatcher(true)}
               />
             )}
@@ -1231,8 +1235,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
          {/* Create Client Dialog */}
          <CreateClientDialog
            isOpen={showCreateClient}
-           onClose={() => setShowCreateClient(false)}
+           onClose={() => {
+             setShowCreateClient(false);
+             setClientSearchTerm(""); // Clear search term when closing
+           }}
+           initialName={clientSearchTerm}
             onSuccess={(clientId) => {
+              // Clear search term
+              setClientSearchTerm("");
+              
               // Refresh clients list and select the new client
               refetchClients().then((result) => {
                 // Get the updated clients list from the refetch result

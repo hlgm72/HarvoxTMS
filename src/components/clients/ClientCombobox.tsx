@@ -17,7 +17,7 @@ interface ClientComboboxProps {
   disabled?: boolean;
   className?: string;
   side?: "top" | "bottom" | "left" | "right";
-  onCreateNew?: () => void;
+  onCreateNew?: (searchTerm: string) => void;
 }
 
 export const ClientCombobox: React.FC<ClientComboboxProps> = ({
@@ -33,6 +33,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
 }) => {
   const { t } = useTranslation('clients');
   const [open, setOpen] = React.useState(false);
+  const [searchValue, setSearchValue] = React.useState("");
 
   const selectedClient = clients.find(client => client.id === value);
 
@@ -88,23 +89,30 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[300px] p-0" side={side}>
         <Command filter={filterClients}>
-          <CommandInput placeholder={t('actions.search_client')} />
+          <div className="flex items-center border-b px-3">
+            <CommandInput 
+              placeholder={t('actions.search_client')} 
+              className="flex-1"
+              value={searchValue}
+              onValueChange={setSearchValue}
+            />
+            {onCreateNew && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setOpen(false);
+                  onCreateNew(searchValue);
+                }}
+                className="ml-2 h-8 shrink-0"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                {t('actions.create')}
+              </Button>
+            )}
+          </div>
           <CommandList>
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
-            {onCreateNew && (
-              <CommandGroup>
-                <CommandItem
-                  onSelect={() => {
-                    setOpen(false);
-                    onCreateNew();
-                  }}
-                  className="cursor-pointer border-b"
-                >
-                  <Plus className="mr-2 h-4 w-4 text-primary" />
-                  <span className="text-primary font-medium">{t('actions.create_new_client')}</span>
-                </CommandItem>
-              </CommandGroup>
-            )}
             <CommandGroup>
               {clients.map((client) => (
                 <CommandItem

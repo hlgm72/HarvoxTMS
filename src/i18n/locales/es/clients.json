@@ -8,7 +8,8 @@
     "select_client": "Seleccionar cliente...",
     "select_contact": "Seleccionar contacto...",
     "search_client": "Buscar cliente...",
-    "create_new_client": "Crear nuevo cliente"
+    "create_new_client": "Crear nuevo cliente",
+    "create": "Crear"
   },
   "stats": {
     "total_clients": "Total Clientes",

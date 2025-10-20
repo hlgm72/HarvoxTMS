@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,9 +26,10 @@ interface CreateClientDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (brokerId: string) => void;
+  initialName?: string;
 }
 
-export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientDialogProps) {
+export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '' }: CreateClientDialogProps) {
   const { t } = useTranslation('clients');
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
@@ -64,7 +65,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
   const form = useForm<CreateClientForm>({
     resolver: zodResolver(createClientSchema),
     defaultValues: {
-      name: '',
+      name: initialName,
       alias: '',
       phone: '',
       dot_number: '',
@@ -81,6 +82,26 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
     control: form.control,
     name: "dispatchers",
   });
+
+  // Reset form when dialog opens/closes or initialName changes
+  useEffect(() => {
+    if (isOpen) {
+      // When opening, reset form with initialName
+      form.reset({
+        name: initialName,
+        alias: '',
+        phone: '',
+        dot_number: '',
+        mc_number: '',
+        address: '',
+        email_domain: '@',
+        logo_url: '',
+        notes: '',
+        dispatchers: [],
+      });
+      setCurrentStep(1);
+    }
+  }, [isOpen, initialName]);
 
   const createClientMutation = useMutation({
     mutationFn: async (data: CreateClientForm) => {

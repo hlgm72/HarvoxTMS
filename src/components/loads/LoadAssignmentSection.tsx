@@ -39,7 +39,7 @@ interface LoadAssignmentSectionProps {
   clients?: Client[];
   selectedClient?: Client | null;
   onClientSelect?: (client: Client | null) => void;
-  onShowCreateClient?: () => void;
+  onShowCreateClient?: (searchTerm: string) => void;
   onShowCreateDispatcher?: () => void;
 }
 
