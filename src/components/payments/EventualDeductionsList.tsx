@@ -10,9 +10,11 @@ import { formatPaymentPeriod, formatDetailedPaymentPeriod, formatDeductionDate, 
 import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2, Lock } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
+import { CancelAutomaticDeductionDialog } from "./CancelAutomaticDeductionDialog";
 import { useTranslation } from 'react-i18next';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
+import { useCancelAutomaticDeduction } from '@/hooks/useCancelAutomaticDeduction';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EventualDeductionsListProps {
@@ -48,6 +50,9 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [cancelingAutoDeduction, setCancelingAutoDeduction] = useState<any>(null);
+
+  const cancelAutoDeductionMutation = useCancelAutomaticDeduction();
 
   // Obtener períodos calculados
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
@@ -325,6 +330,23 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
            expense.recurring_template_id !== null;
   };
 
+  const handleCancelAutoDeduction = (deduction: any) => {
+    setCancelingAutoDeduction(deduction);
+  };
+
+  const confirmCancelAutoDeduction = (note: string) => {
+    if (!cancelingAutoDeduction) return;
+
+    cancelAutoDeductionMutation.mutate({
+      expenseInstanceId: cancelingAutoDeduction.id,
+      userId: cancelingAutoDeduction.user_id,
+      paymentPeriodId: cancelingAutoDeduction.payment_period_id,
+      cancellationNote: note
+    });
+
+    setCancelingAutoDeduction(null);
+  };
+
   if (eventualDeductions.length === 0) {
     return (
       <div className="text-center py-8">
@@ -432,19 +454,17 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                     {isAutomaticDeduction(deduction) ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled
-                              className="text-destructive hover:text-destructive h-8"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCancelAutoDeduction(deduction)}
+                            className="text-destructive hover:text-destructive h-8"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Las deducciones automáticas no se pueden eliminar manualmente</p>
+                          <p>Cancelar deducción automática</p>
                         </TooltipContent>
                       </Tooltip>
                     ) : (
@@ -511,6 +531,18 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           setEditingExpense(null);
         }}
         editingDeduction={editingExpense}
+      />
+
+      {/* Dialog de cancelación de deducciones automáticas */}
+      <CancelAutomaticDeductionDialog
+        isOpen={!!cancelingAutoDeduction}
+        onClose={() => setCancelingAutoDeduction(null)}
+        onConfirm={confirmCancelAutoDeduction}
+        deductionData={cancelingAutoDeduction ? {
+          driverName: `${cancelingAutoDeduction.profiles?.first_name} ${cancelingAutoDeduction.profiles?.last_name}`,
+          expenseType: cancelingAutoDeduction.expense_types?.name || '',
+          amount: Number(cancelingAutoDeduction.amount || 0)
+        } : undefined}
       />
     </div>
   );
