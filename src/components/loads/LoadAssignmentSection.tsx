@@ -203,22 +203,10 @@ export function LoadAssignmentSection({
               name="contact_id"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center justify-between mb-2">
-                    <FormLabel className="flex items-center gap-2 mb-0">
-                      <Contact className="h-4 w-4" />
-                      {t("loads:create_wizard.form.client_contact")}
-                    </FormLabel>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onShowCreateDispatcher?.()}
-                      disabled={!selectedClient}
-                      className="h-7 text-xs"
-                    >
-                      + New Contact
-                    </Button>
-                  </div>
+                  <FormLabel className="flex items-center gap-2">
+                    <Contact className="h-4 w-4" />
+                    {t("loads:create_wizard.form.client_contact")}
+                  </FormLabel>
                   <FormControl>
                     <ContactCombobox
                       clientId={selectedClient?.id}
@@ -230,6 +218,7 @@ export function LoadAssignmentSection({
                       placeholder={t("loads:create_wizard.form.contact_placeholder")}
                       disabled={!selectedClient}
                       className="w-full"
+                      onCreateNew={selectedClient ? onShowCreateDispatcher : undefined}
                     />
                   </FormControl>
                   <FormMessage />

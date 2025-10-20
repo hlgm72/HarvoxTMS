@@ -93,23 +93,28 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[280px] p-0">
         <Command filter={filterContacts}>
-          <CommandInput placeholder={t('actions.search_placeholder')} />
+          <div className="flex items-center border-b px-3">
+            <CommandInput 
+              placeholder={t('actions.search_placeholder')} 
+              className="flex-1"
+            />
+            {onCreateNew && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setOpen(false);
+                  onCreateNew();
+                }}
+                className="ml-2 h-8 shrink-0"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                {t('actions.create')}
+              </Button>
+            )}
+          </div>
           <CommandList>
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
-            {onCreateNew && (
-              <CommandGroup>
-                <CommandItem
-                  onSelect={() => {
-                    setOpen(false);
-                    onCreateNew();
-                  }}
-                  className="cursor-pointer border-b"
-                >
-                  <Plus className="mr-2 h-4 w-4 text-primary" />
-                  <span className="text-primary font-medium">{t('contacts.add_contact')}</span>
-                </CommandItem>
-              </CommandGroup>
-            )}
             <CommandGroup>
               {contacts.map((contact) => (
                 <CommandItem
