@@ -124,7 +124,8 @@
       "month": "Month"
     },
     "template": {
-      "create_title": "Create New Deduction",
+      "create_title": "Create New Recurrent Deduction",
+      "create_description": "Create a new deduction template to automatically apply",
       "edit_title": "Edit Deduction",
       "edit_description": "Modify the selected period deduction.",
       "create_button": "Create Deduction",

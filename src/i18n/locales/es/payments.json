@@ -124,7 +124,8 @@
       "month": "Mes"
     },
     "template": {
-      "create_title": "Crear Nueva Deducción",
+      "create_title": "Crear Nueva Deducción Recurrente",
+      "create_description": "Crear una nueva plantilla de deducción para aplicar automáticamente",
       "edit_title": "Editar Deducción",
       "edit_description": "Modifica la deducción del período seleccionada.",
       "create_button": "Crear Deducción",

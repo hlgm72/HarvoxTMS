@@ -345,8 +345,8 @@ export function ExpenseTemplateDialog({
           </DialogTitle>
           <DialogDescription>
             {mode === 'create' 
-              ? "Crear una nueva plantilla de deducción para aplicar automáticamente"
-              : "Editar la configuración de la plantilla de deducción existente"
+              ? t("deductions.template.create_description")
+              : t("deductions.template.edit_description")
             }
           </DialogDescription>
         </div>
