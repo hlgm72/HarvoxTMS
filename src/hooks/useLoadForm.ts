@@ -10,7 +10,7 @@ const loadFormSchema = z.object({
   contact_id: z.string().optional(),
   load_number: z.string().min(1, "El número de carga es requerido"),
   po_number: z.string().optional(),
-  total_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
+  total_amount: z.number().positive("El monto debe ser mayor a 0").optional().or(z.literal(0)),
   pu_number: z.string().optional(),
   commodity: z.string().optional(),
   weight_lbs: z.number().optional(),
