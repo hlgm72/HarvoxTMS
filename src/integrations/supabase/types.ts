@@ -4058,6 +4058,10 @@ export type Database = {
         Args: { target_company_id: string }
         Returns: Json
       }
+      get_payment_date_for_period: {
+        Args: { period_id: string }
+        Returns: string
+      }
       get_payment_period_elements: {
         Args: { period_id_param: string }
         Returns: Json
