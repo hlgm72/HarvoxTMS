@@ -745,7 +745,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         </div>
 
         {/* Main Content - Horizontal Layout */}
-        <div className="flex h-[calc(90vh-12rem)]">
+        <div className="flex flex-col h-[calc(90vh-12rem)]">
+          <div className="flex flex-1 overflow-hidden">
           {/* Vertical Steps Sidebar */}
           <div className="hidden md:flex flex-col w-64 border-r bg-muted/20 p-6">
             <div className="space-y-2 flex-1">
@@ -832,7 +833,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           </div>
 
           {/* Form Content Area */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Phase 1: Essential Information */}
@@ -1143,85 +1145,86 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
               </LoadDocumentsProvider>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  const newPhase = Math.max(1, currentPhase - 1);
-                  if (currentPhase === 2) {
-                    setShowStopsValidation(false);
-                  }
-                  setCurrentPhase(newPhase);
-                }}
-                disabled={currentPhase === 1}
-              >
-                {t("loads:create_wizard.buttons.previous")}
-              </Button>
-
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={handleClose}>
-                  {t("loads:create_wizard.buttons.cancel")}
-                </Button>
-                
-                {currentPhase < phases.length ? (
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (currentPhase === 2) {
-                        setShowStopsValidation(true);
-                      }
-                      setCurrentPhase(currentPhase + 1);
-                    }}
-                  >
-                    {t("loads:create_wizard.buttons.next")}
-                  </Button>
-                 ) : (mode === 'create' || mode === 'duplicate') ? (
-                   <Button 
-                     type="button"
-                     onClick={() => {
-                       console.log('🚨 Crear Carga button clicked');
-                       const values = form.getValues();
-                       console.log('🚨 Form values:', values);
-                       
-                       // Ejecutar nuestras validaciones personalizadas directamente
-                       onSubmit(values);
-                     }}
-                     disabled={
-                       createLoadMutation.isPending ||
-                       !canModify // ⭐ NUEVO: Deshabilitar si conductor pagado
-                     }
-                     title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
-                   >
-                     {createLoadMutation.isPending ? (
-                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                     ) : null}
-                     {t("loads:create_wizard.buttons.create_load")}
-                   </Button>
-                ) : (
-                  <Button 
-                    type="button"
-                    onClick={() => {
-                      const values = form.getValues();
-                      onSubmit(values);
-                    }}
-                    disabled={
-                      createLoadMutation.isPending ||
-                      !canModify // ⭐ NUEVO: Deshabilitar si conductor pagado  
-                    }
-                    title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
-                  >
-                    {createLoadMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : null}
-                    {t("loads:create_wizard.buttons.save_changes")}
-                  </Button>
-                )}
-              </div>
-            </div>
               </form>
             </Form>
+            </div>
+            
+            {/* Fixed Action Buttons Footer */}
+            <div className="border-t bg-background p-4">
+              <div className="flex justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const newPhase = Math.max(1, currentPhase - 1);
+                    if (currentPhase === 2) {
+                      setShowStopsValidation(false);
+                    }
+                    setCurrentPhase(newPhase);
+                  }}
+                  disabled={currentPhase === 1}
+                >
+                  {t("loads:create_wizard.buttons.previous")}
+                </Button>
+
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={handleClose}>
+                    {t("loads:create_wizard.buttons.cancel")}
+                  </Button>
+                  
+                  {currentPhase < phases.length ? (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        if (currentPhase === 2) {
+                          setShowStopsValidation(true);
+                        }
+                        setCurrentPhase(currentPhase + 1);
+                      }}
+                    >
+                      {t("loads:create_wizard.buttons.next")}
+                    </Button>
+                   ) : (mode === 'create' || mode === 'duplicate') ? (
+                     <Button 
+                       type="button"
+                       onClick={() => {
+                         const values = form.getValues();
+                         onSubmit(values);
+                       }}
+                       disabled={
+                         createLoadMutation.isPending ||
+                         !canModify
+                       }
+                       title={protectionTooltip || undefined}
+                     >
+                       {createLoadMutation.isPending ? (
+                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                       ) : null}
+                       {t("loads:create_wizard.buttons.create_load")}
+                     </Button>
+                  ) : (
+                    <Button 
+                      type="button"
+                      onClick={() => {
+                        const values = form.getValues();
+                        onSubmit(values);
+                      }}
+                      disabled={
+                        createLoadMutation.isPending ||
+                        !canModify
+                      }
+                      title={protectionTooltip || undefined}
+                    >
+                      {createLoadMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
+                      {t("loads:create_wizard.buttons.save_changes")}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
 
