@@ -199,33 +199,35 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="amount">{t('form.amount')}</Label>
-        <Input
-          id="amount"
-          type="text"
-          inputMode="numeric"
-          value={atmInput.displayValue}
-          onChange={atmInput.handleInput}
-          onKeyDown={atmInput.handleKeyDown}
-          onPaste={atmInput.handlePaste}
-          onFocus={atmInput.handleFocus}
-          onClick={atmInput.handleClick}
-          placeholder="$0.00"
-          className="text-right text-lg"
-          autoComplete="off"
-          required
-        />
-      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="amount">{t('form.amount')}</Label>
+          <Input
+            id="amount"
+            type="text"
+            inputMode="numeric"
+            value={atmInput.displayValue}
+            onChange={atmInput.handleInput}
+            onKeyDown={atmInput.handleKeyDown}
+            onPaste={atmInput.handlePaste}
+            onFocus={atmInput.handleFocus}
+            onClick={atmInput.handleClick}
+            placeholder="$0.00"
+            className="text-right text-lg"
+            autoComplete="off"
+            required
+          />
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="reference-number">{t('form.reference_number')}</Label>
-        <Input
-          id="reference-number"
-          value={referenceNumber}
-          onChange={(e) => setReferenceNumber(e.target.value)}
-          placeholder={t('form.reference_placeholder')}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="reference-number">{t('form.reference_number')}</Label>
+          <Input
+            id="reference-number"
+            value={referenceNumber}
+            onChange={(e) => setReferenceNumber(e.target.value)}
+            placeholder={t('form.reference_placeholder')}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
