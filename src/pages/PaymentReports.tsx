@@ -99,18 +99,14 @@ export default function PaymentReports() {
 
   // Actualizar filtro de período cuando se carga el período actual
   useEffect(() => {
-    // ✅ Para 'current', NO guardar fechas - solo tipo
-    // El filtro en BD usará currentPeriod.id automáticamente
-    if (currentPeriod && filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
-      setFilters(prev => ({
-        ...prev,
-        periodFilter: {
-          type: 'current'
-          // NO incluir periodId, startDate, endDate, ni label para que siempre use el cálculo dinámico
-        }
-      }));
+    // Solo actualizar una vez cuando currentPeriod se carga inicialmente
+    if (currentPeriod && filters.periodFilter.type === 'current') {
+      console.log('🔄 PaymentReports - Updating periodFilter with currentPeriod:', currentPeriod.id);
+      // No necesitamos actualizar el estado si ya está configurado correctamente
+      // El queryKey ya incluye currentPeriod.id, por lo que la query se re-ejecutará automáticamente
     }
-  }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
+  }, [currentPeriod?.id, filters.periodFilter.type]);
+
 
   // Determinar qué período usar para filtrar
   const getFilterPeriodIds = useMemo(() => {
@@ -147,8 +143,13 @@ export default function PaymentReports() {
 
   // Obtener reportes existentes filtrados por período con verificación automática de integridad
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
-    queryKey: ['payment-calculations-reports', getFilterPeriodIds, filters.periodFilter],
+    queryKey: ['payment-calculations-reports', getFilterPeriodIds, filters.periodFilter, currentPeriod?.id],
     queryFn: async () => {
+      console.log('🔍 PaymentReports Query - Starting with:', {
+        filterType: filters.periodFilter.type,
+        getFilterPeriodIds,
+        currentPeriodId: currentPeriod?.id
+      });
       // ⚠️ VERIFICACIÓN DE INTEGRIDAD DESACTIVADA TEMPORALMENTE
       // La función verify_and_recalculate_company_payments estaba causando problemas de permisos
       // y resetaba los datos a 0. Por ahora usaremos los datos directos de la DB.
@@ -226,14 +227,16 @@ export default function PaymentReports() {
         return dateB.localeCompare(dateA); // Descendente (más reciente primero)
       });
       
+      console.log('✅ PaymentReports Query - Returning', sortedData.length, 'calculations');
       return sortedData;
     },
     enabled: !!user && !!userCompany?.company_id && (
       filters.periodFilter.type === 'all' || 
-      (filters.periodFilter.type === 'current' && !!currentPeriod) ||
       getFilterPeriodIds.length > 0 || 
       Boolean(filters.periodFilter.startDate && filters.periodFilter.endDate)
-    )
+    ),
+    staleTime: 0, // Force refetch when dependencies change
+    refetchOnMount: true
   });
 
   // Obtener conductores para filtro
