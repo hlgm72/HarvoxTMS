@@ -16,6 +16,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -1087,7 +1088,7 @@ export default function Users() {
       {/* Dialog para invitar usuario */}
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
         <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
-          <DialogHeader>
+          <DialogHeader className="bg-muted/50">
             <DialogTitle>{t('invite_dialog.title', { ns: 'users' })}</DialogTitle>
             <DialogDescription>
               {t('invite_dialog.description', { ns: 'users' })}
@@ -1140,15 +1141,21 @@ export default function Users() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex justify-end space-x-2">
-              <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
-                {t('actions.cancel', { ns: 'users' })}
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? t('invite_dialog.sending', { ns: 'users' }) : t('invite_dialog.send_invitation', { ns: 'users' })}
-              </Button>
-            </div>
           </form>
+          <DialogFooter className="bg-muted/50">
+            <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
+              {t('actions.cancel', { ns: 'users' })}
+            </Button>
+            <Button type="button" onClick={(e) => {
+              const form = e.currentTarget.closest('dialog')?.querySelector('form');
+              if (form) {
+                const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
+                form.dispatchEvent(submitEvent);
+              }
+            }} disabled={loading}>
+              {loading ? t('invite_dialog.sending', { ns: 'users' }) : t('invite_dialog.send_invitation', { ns: 'users' })}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
