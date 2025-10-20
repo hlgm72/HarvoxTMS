@@ -507,26 +507,6 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                       </Button>
                     )}
                     
-                    {isAutomaticDeduction(deduction) && deduction.status !== 'applied' ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled
-                              className="h-8"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Las deducciones automáticas no se pueden editar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : null}
-                    
                     {isAutomaticDeduction(deduction) && deduction.status === 'planned' ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
