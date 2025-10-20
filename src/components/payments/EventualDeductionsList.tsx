@@ -377,13 +377,62 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {deduction.period_data && 
+                    {deduction.period_data ? (
                       formatDetailedPaymentPeriod(
                         deduction.period_data.period.period_start_date,
                         deduction.period_data.period.period_end_date,
                         deduction.period_data.period.period_frequency
                       )
-                    }
+                    ) : deduction.expense_date ? (
+                      // Si no hay period_data pero hay expense_date, determinar el período calculado
+                      (() => {
+                        const expenseDate = new Date(deduction.expense_date);
+                        
+                        // Verificar si está en el período actual
+                        if (calculatedPeriods?.current) {
+                          const currentStart = new Date(calculatedPeriods.current.period_start_date);
+                          const currentEnd = new Date(calculatedPeriods.current.period_end_date);
+                          if (expenseDate >= currentStart && expenseDate <= currentEnd) {
+                            return formatDetailedPaymentPeriod(
+                              calculatedPeriods.current.period_start_date,
+                              calculatedPeriods.current.period_end_date,
+                              calculatedPeriods.current.period_frequency
+                            );
+                          }
+                        }
+                        
+                        // Verificar si está en el período anterior
+                        if (calculatedPeriods?.previous) {
+                          const prevStart = new Date(calculatedPeriods.previous.period_start_date);
+                          const prevEnd = new Date(calculatedPeriods.previous.period_end_date);
+                          if (expenseDate >= prevStart && expenseDate <= prevEnd) {
+                            return formatDetailedPaymentPeriod(
+                              calculatedPeriods.previous.period_start_date,
+                              calculatedPeriods.previous.period_end_date,
+                              calculatedPeriods.previous.period_frequency
+                            );
+                          }
+                        }
+                        
+                        // Verificar si está en el período siguiente
+                        if (calculatedPeriods?.next) {
+                          const nextStart = new Date(calculatedPeriods.next.period_start_date);
+                          const nextEnd = new Date(calculatedPeriods.next.period_end_date);
+                          if (expenseDate >= nextStart && expenseDate <= nextEnd) {
+                            return formatDetailedPaymentPeriod(
+                              calculatedPeriods.next.period_start_date,
+                              calculatedPeriods.next.period_end_date,
+                              calculatedPeriods.next.period_frequency
+                            );
+                          }
+                        }
+                        
+                        // Si no coincide con ningún período calculado, mostrar solo la fecha
+                        return formatDeductionDate(deduction.expense_date);
+                      })()
+                    ) : (
+                      t("deductions.labels.no_period", "Sin período asignado")
+                    )}
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
