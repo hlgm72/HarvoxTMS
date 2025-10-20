@@ -141,6 +141,7 @@
   "create_client_dialog": {
     "title": "Create New Client",
     "description": "Add a new client to the system and optionally their contacts",
+    "contact_label": "Contact {{index}}",
     "steps": {
       "client_info": "Client Information",
       "contacts": "Contacts (Optional)"
