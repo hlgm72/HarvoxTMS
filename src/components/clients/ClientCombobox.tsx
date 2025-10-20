@@ -55,6 +55,18 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
     return parts.join(' ');
   };
 
+  // Custom filter function for consecutive character matching
+  const filterClients = (value: string, search: string) => {
+    const searchLower = search.toLowerCase();
+    const valueLower = value.toLowerCase();
+    
+    // If search is empty, show all
+    if (!searchLower) return 1;
+    
+    // Check if search term appears as consecutive characters in value
+    return valueLower.includes(searchLower) ? 1 : 0;
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -75,7 +87,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[300px] p-0" side={side}>
-        <Command>
+        <Command filter={filterClients}>
           <CommandInput placeholder={t('actions.search_client')} />
           <CommandList>
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
