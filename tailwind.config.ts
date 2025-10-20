@@ -177,7 +177,8 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out',
 				'slide-in': 'slide-in 0.3s ease-out',
-				'scale-in': 'scale-in 0.2s ease-out'
+				'scale-in': 'scale-in 0.2s ease-out',
+				'shrink-width': 'shrink-width linear forwards'
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
