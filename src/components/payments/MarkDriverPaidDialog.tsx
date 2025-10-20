@@ -67,7 +67,29 @@ export function MarkDriverPaidDialog({
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
 
-      // Actualizar directamente usando user_payrolls
+      // Primero, obtener el payroll para conocer el company_payment_period_id y user_id
+      const { data: payrollData, error: payrollError } = await supabase
+        .from('user_payrolls')
+        .select('company_payment_period_id, user_id')
+        .eq('id', calculationId)
+        .single();
+
+      if (payrollError) throw payrollError;
+
+      // Actualizar las expense_instances de 'planned' a 'applied'
+      const { error: instancesError } = await supabase
+        .from('expense_instances')
+        .update({
+          status: 'applied',
+          applied_at: new Date().toISOString()
+        })
+        .eq('payment_period_id', payrollData.company_payment_period_id)
+        .eq('user_id', payrollData.user_id)
+        .eq('status', 'planned');
+
+      if (instancesError) throw instancesError;
+
+      // Actualizar el user_payroll
       const { error } = await supabase
         .from('user_payrolls')
         .update({
@@ -89,12 +111,15 @@ export function MarkDriverPaidDialog({
         t("mark_paid_dialog.notifications.success_message", { driverName })
       );
       
-      // Invalidar queries específicas en lugar de refetch general
+      // Invalidar queries específicas
       await queryClient.invalidateQueries({ 
         queryKey: ['payment-calculations-reports']
       });
       await queryClient.invalidateQueries({ 
         queryKey: ['payment-reports-stats']
+      });
+      await queryClient.invalidateQueries({ 
+        queryKey: ['eventual-deductions']
       });
       
       // Reset form
