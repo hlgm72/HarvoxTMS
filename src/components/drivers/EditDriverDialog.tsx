@@ -533,21 +533,24 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader>
+      <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0 bg-gray-50">
+        {/* Header Fijo */}
+        <DialogHeader className="px-6 py-4 border-b bg-gray-50 shrink-0">
           <DialogTitle>Edit Driver: {fullName}</DialogTitle>
           <DialogDescription>
             Manage all driver information, including personal, employment and owner operator data.
           </DialogDescription>
         </DialogHeader>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
-            <span>Loading driver data...</span>
-          </div>
-        ) : (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Contenido Scrolleable con fondo blanco */}
+        <div className="flex-1 overflow-y-auto bg-white px-6 py-6">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+              <span>Loading driver data...</span>
+            </div>
+          ) : (
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 gap-1 p-1 min-h-[60px] bg-muted/30">
               <TabsTrigger 
                 value="personal" 
@@ -917,10 +920,12 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                 )}
               </div>
             </TabsContent>
-          </Tabs>
-        )}
+            </Tabs>
+          )}
+        </div>
 
-        <div className="flex justify-end space-x-2 pt-4">
+        {/* Footer Fijo */}
+        <div className="px-6 py-4 border-t bg-gray-50 shrink-0 flex justify-end space-x-2">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
