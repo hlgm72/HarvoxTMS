@@ -25,7 +25,7 @@ interface DeductionsStatsFilters {
 export function useDeductionsStats(filters?: DeductionsStatsFilters) {
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
-  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
+  const { data: calculatedPeriods, isLoading: periodsLoading } = useCalculatedPeriods(userCompany?.company_id);
 
   return useQuery({
     queryKey: ['deductions-stats', user?.id, userCompany?.company_id, filters],
@@ -54,7 +54,7 @@ export function useDeductionsStats(filters?: DeductionsStatsFilters) {
       return await calculateRecurringTemplatesStats(companyId, filters);
 
     },
-    enabled: !!user?.id && !!userCompany?.company_id,
+    enabled: !!user?.id && !!userCompany?.company_id && !periodsLoading,
   });
 }
 
