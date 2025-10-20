@@ -232,11 +232,12 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
       <div className="space-y-2">
         <Label htmlFor="description">{t('form.description')}</Label>
-        <Input
+        <Textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={t('form.description_placeholder')}
+          rows={2}
           required
         />
       </div>
