@@ -230,7 +230,19 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 </DialogDescription>
               </div>
               <div className="overflow-y-auto flex-1 p-6 bg-white">
-                <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} />
+                <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} showButtons={false} />
+              </div>
+              <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
+                <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="flex-1">
+                  {t('common:form.cancel')}
+                </Button>
+                <Button 
+                  type="submit"
+                  form="other-income-form"
+                  className="flex-1"
+                >
+                  {t('common:form.create')}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -400,6 +412,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                   setIsEditDialogOpen(false);
                   setItemToEdit(null);
                 }}
+                showButtons={false}
                 editData={{
                   id: itemToEdit.id,
                   description: itemToEdit.description,
@@ -412,6 +425,21 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 }}
               />
             )}
+          </div>
+          <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
+            <Button type="button" variant="outline" onClick={() => {
+              setIsEditDialogOpen(false);
+              setItemToEdit(null);
+            }} className="flex-1">
+              {t('common:form.cancel')}
+            </Button>
+            <Button 
+              type="submit"
+              form="other-income-form"
+              className="flex-1"
+            >
+              {t('common:form.update')}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

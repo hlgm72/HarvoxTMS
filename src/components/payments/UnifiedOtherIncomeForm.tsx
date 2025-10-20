@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 interface UnifiedOtherIncomeFormProps {
   onClose: () => void;
   defaultUserType?: "driver" | "dispatcher";
+  showButtons?: boolean;
   editData?: {
     id: string;
     description: string;
@@ -34,7 +35,7 @@ interface UnifiedOtherIncomeFormProps {
   };
 }
 
-export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData }: UnifiedOtherIncomeFormProps) {
+export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true }: UnifiedOtherIncomeFormProps) {
   const { t } = useTranslation(['payments', 'common']);
   const isEditing = !!editData;
   
@@ -114,9 +115,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+    <form id="other-income-form" onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
           {!isEditing && (
             <UserTypeSelector
               value={userType}
@@ -226,27 +226,28 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          placeholder={t('form.description_placeholder')}
           required
         />
       </div>
-      </div>
 
-      <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background -mx-6 px-6">
-        <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-          {t('form.cancel')}
-        </Button>
-        <Button 
-          type="submit"
-          onClick={handleSubmit}
-          disabled={(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) || 
-                   !selectedUser || !description || atmInput.numericValue <= 0 || !date}
-          className="flex-1"
-        >
-          {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
-           (isEditing ? t('form.updating') : t('form.creating')) : 
-           (isEditing ? t('form.update') : t('form.create'))}
-        </Button>
-      </div>
-    </>
+      {showButtons && (
+        <div className="flex gap-2 pt-4 border-t">
+          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            {t('form.cancel')}
+          </Button>
+          <Button 
+            type="submit"
+            disabled={(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) || 
+                     !selectedUser || !description || atmInput.numericValue <= 0 || !date}
+            className="flex-1"
+          >
+            {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
+             (isEditing ? t('form.updating') : t('form.creating')) : 
+             (isEditing ? t('form.update') : t('form.create'))}
+          </Button>
+        </div>
+      )}
+    </form>
   );
 }
