@@ -378,12 +378,67 @@ export function ExpenseTemplateDialog({
           {/* Scrollable Content */}
           <div className="p-6 space-y-4 overflow-y-auto flex-1 bg-white">
           {mode === 'create' && (
-            <UserTypeSelector
-              value={selectedRole}
-              onChange={setSelectedRole}
-              label={t("deductions.template.apply_to")}
-              disabled={false}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <UserTypeSelector
+                value={selectedRole}
+                onChange={setSelectedRole}
+                label={t("deductions.template.apply_to")}
+                disabled={false}
+              />
+
+              <div className="space-y-2">
+                <Label htmlFor="user">{selectedRole === 'driver' ? t("deductions.form.driver") : t("deductions.form.dispatcher")}</Label>
+                <Popover open={driverSearchOpen} onOpenChange={setDriverSearchOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={driverSearchOpen}
+                      className="w-full justify-between"
+                    >
+                       {formData.driver_user_id 
+                         ? users.find(user => user.user_id === formData.driver_user_id)?.first_name + ' ' + 
+                           users.find(user => user.user_id === formData.driver_user_id)?.last_name
+                         : `${selectedRole === 'driver' ? t("deductions.form.select_driver") : t("deductions.form.select_dispatcher")}`}
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                     <Command>
+                       <CommandInput 
+                         placeholder={selectedRole === 'driver' ? t("deductions.form.search_driver") : t("deductions.form.search_dispatcher")}
+                         value={driverSearchValue}
+                         onValueChange={setDriverSearchValue}
+                       />
+                       <CommandList>
+                         <CommandEmpty>{selectedRole === 'driver' ? t("deductions.form.no_drivers_found") : t("deductions.form.no_dispatchers_found")}</CommandEmpty>
+                         <CommandGroup>
+                           {filteredUsers && filteredUsers.map((user) => (
+                             <CommandItem
+                               key={user.user_id}
+                               value={`${user.first_name} ${user.last_name}`}
+                               onSelect={() => {
+                                 setFormData(prev => ({ ...prev, driver_user_id: user.user_id }));
+                                 setDriverSearchOpen(false);
+                                 setDriverSearchValue("");
+                               }}
+                             >
+                               <Check
+                                 className={cn(
+                                   "mr-2 h-4 w-4",
+                                 formData.driver_user_id === user.user_id ? "opacity-100" : "opacity-0"
+                               )}
+                             />
+                             {user.first_name} {user.last_name}
+                           </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+                </Popover>
+              </div>
+            </div>
           )}
 
           {mode === 'edit' && (
@@ -405,61 +460,6 @@ export function ExpenseTemplateDialog({
                 />
               </div>
             </>
-          )}
-
-          {mode === 'create' && (
-            <div className="space-y-2">
-              <Label htmlFor="user">{selectedRole === 'driver' ? t("deductions.form.driver") : t("deductions.form.dispatcher")}</Label>
-              <Popover open={driverSearchOpen} onOpenChange={setDriverSearchOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={driverSearchOpen}
-                    className="w-full justify-between"
-                  >
-                     {formData.driver_user_id 
-                       ? users.find(user => user.user_id === formData.driver_user_id)?.first_name + ' ' + 
-                         users.find(user => user.user_id === formData.driver_user_id)?.last_name
-                       : `${selectedRole === 'driver' ? t("deductions.form.select_driver") : t("deductions.form.select_dispatcher")}`}
-                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start">
-                   <Command>
-                     <CommandInput 
-                       placeholder={selectedRole === 'driver' ? t("deductions.form.search_driver") : t("deductions.form.search_dispatcher")}
-                       value={driverSearchValue}
-                       onValueChange={setDriverSearchValue}
-                     />
-                     <CommandList>
-                       <CommandEmpty>{selectedRole === 'driver' ? t("deductions.form.no_drivers_found") : t("deductions.form.no_dispatchers_found")}</CommandEmpty>
-                       <CommandGroup>
-                         {filteredUsers && filteredUsers.map((user) => (
-                           <CommandItem
-                             key={user.user_id}
-                             value={`${user.first_name} ${user.last_name}`}
-                             onSelect={() => {
-                               setFormData(prev => ({ ...prev, driver_user_id: user.user_id }));
-                               setDriverSearchOpen(false);
-                               setDriverSearchValue("");
-                             }}
-                           >
-                             <Check
-                               className={cn(
-                                 "mr-2 h-4 w-4",
-                                 formData.driver_user_id === user.user_id ? "opacity-100" : "opacity-0"
-                               )}
-                             />
-                             {user.first_name} {user.last_name}
-                           </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
           )}
 
           {mode === 'edit' ? (
