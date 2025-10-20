@@ -139,7 +139,7 @@ export function StopEditModal({
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-6 space-y-6 overflow-y-auto flex-1">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1 bg-white dark:bg-gray-900">
           {/* Programación */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
