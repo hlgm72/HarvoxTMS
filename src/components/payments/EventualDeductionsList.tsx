@@ -463,13 +463,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  {getStatusBadge(deduction.status)}
                   {isAutomaticDeduction(deduction) && (
                     <Badge variant="secondary" className="flex items-center gap-1">
                       <Lock className="h-3 w-3" />
                       {t("deductions.status_labels.automatic")}
                     </Badge>
                   )}
+                  {getStatusBadge(deduction.status)}
                   {deduction.is_critical && (
                     <Badge variant="destructive" className="flex items-center gap-1">
                       <AlertTriangle className="h-3 w-3" />
