@@ -620,11 +620,28 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
 
                           <FormField
                             control={form.control}
+                            name={`dispatchers.${index}.extension`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>{t('create_client_dialog.dispatcher_form.extension')}</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder={t('create_client_dialog.dispatcher_placeholders.extension')}
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
                             name={`dispatchers.${index}.phone_mobile`}
                             render={({ field }) => {
                               const handlers = createPhoneHandlers(field.onChange);
                               return (
-                                <FormItem>
+                                <FormItem className="md:col-span-2">
                                   <FormLabel>{t('create_client_dialog.dispatcher_form.phone_mobile')}</FormLabel>
                                   <FormControl>
                                     <div className="flex">
@@ -642,23 +659,6 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
                                 </FormItem>
                               );
                             }}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name={`dispatchers.${index}.extension`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>{t('create_client_dialog.dispatcher_form.extension')}</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder={t('create_client_dialog.dispatcher_placeholders.extension')}
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
                           />
 
                           <FormField
