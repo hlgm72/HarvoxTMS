@@ -47,10 +47,6 @@ export default function Payments() {
     period.id !== currentPeriod?.id && period.period_start_date < (currentPeriod?.period_start_date || '')
   );
   
-  console.log('📅 Fecha actual usuario:', todayUserDate);
-  console.log('📅 Período actual encontrado:', currentPeriod?.period_start_date, 'a', currentPeriod?.period_end_date);
-  console.log('📅 Período anterior encontrado:', previousPeriod?.period_start_date, 'a', previousPeriod?.period_end_date);
-  
   // Usar los datos directamente del período (ya tiene los cálculos)
   const currentPeriodSummary = currentPeriod ? {
     gross_earnings: currentPeriod.gross_earnings,
