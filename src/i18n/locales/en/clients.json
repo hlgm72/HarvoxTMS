@@ -9,7 +9,7 @@
     "select_contact": "Select contact...",
     "search_client": "Search client...",
     "create_new_client": "Create new client",
-    "create": "Create"
+    "create": "New client"
   },
   "stats": {
     "total_clients": "Total Clients",
