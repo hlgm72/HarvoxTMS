@@ -375,42 +375,41 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
             {currentStep === 1 && (
             <div className="space-y-6">
               {/* Step 1: Client Information */}
-              <Card>
-                <CardContent className="space-y-4 pt-6">
-                  {/* FMCSA Lookup Button */}
-                  <div className="flex justify-end">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowFMCSAModal(true)}
-                      className="gap-2"
-                    >
-                      <Search className="h-4 w-4" />
-                      {t('create_client_dialog.form.fmcsa_lookup')}
-                    </Button>
-                  </div>
-                  
-                  {/* Logo Upload Section */}
-                  <FormField
-                    control={form.control}
-                    name="logo_url"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('create_client_dialog.form.logo_section')}</FormLabel>
-                        <FormControl>
-                          <ClientLogoUpload
-                            logoUrl={field.value || undefined}
-                            clientName={form.watch("name") || form.watch("alias")}
-                            emailDomain={form.watch("email_domain")}
-                            onLogoChange={(url) => field.onChange(url || "")}
-                            disabled={createClientMutation.isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="space-y-4">
+                {/* FMCSA Lookup Button */}
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowFMCSAModal(true)}
+                    className="gap-2"
+                  >
+                    <Search className="h-4 w-4" />
+                    {t('create_client_dialog.form.fmcsa_lookup')}
+                  </Button>
+                </div>
+                
+                {/* Logo Upload Section */}
+                <FormField
+                  control={form.control}
+                  name="logo_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('create_client_dialog.form.logo_section')}</FormLabel>
+                      <FormControl>
+                        <ClientLogoUpload
+                          logoUrl={field.value || undefined}
+                          clientName={form.watch("name") || form.watch("alias")}
+                          emailDomain={form.watch("email_domain")}
+                          onLogoChange={(url) => field.onChange(url || "")}
+                          disabled={createClientMutation.isPending}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <FormField
@@ -663,11 +662,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                           />
                         </FormControl>
                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
+                </FormItem>
+              )}
+            />
+              </div>
             </div>
           )}
 
