@@ -2,10 +2,11 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { cleanupAuthState } from '@/lib/authUtils';
+import { logger } from '@/lib/logger';
 
 // Enhanced auth state cleanup utility
 const enhancedCleanupAuthState = () => {
-  console.log('🧹 Enhanced cleanup of auth state...');
+  logger.debug('Enhanced cleanup of auth state');
   
   // Use the existing utility
   cleanupAuthState();
@@ -70,7 +71,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Add defensive checks for React hooks
   if (typeof useState !== 'function') {
-    console.error('useState is not available. React hooks may not be imported correctly.');
+    logger.error('React hooks not available', new Error('useState is not a function'));
     return <div>Loading...</div>;
   }
 
@@ -98,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserRoles = useCallback(async (userId: string) => {
     try {
-      // Fetching roles for user silently
+      logger.debug('Fetching user roles');
       
       const { data: roles, error } = await supabase
         .from('user_company_roles')
@@ -106,12 +107,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('user_id', userId)
         .eq('is_active', true);
 
-      console.log('📋 Raw roles query result:', { roles, error, userId });
-
       if (error) {
-        console.error('❌ Error fetching user roles:', error);
-        console.error('❌ Error code:', error.code);
-        console.error('❌ Error message:', error.message);
+        logger.error('Error fetching user roles', error, { 
+          errorCode: error.code,
+          component: 'AuthContext'
+        });
         
         // If this is an auth/RLS error, try to sign out gracefully
         if (error.message?.includes('refresh token') || 
@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             error.message?.includes('Invalid') ||
             error.code === 'PGRST116' ||
             error.code === '42501') {
-          // console.log('🚨 Auth/RLS error detected, signing out...');
+          logger.warn('Auth/RLS error detected, signing out');
           enhancedCleanupAuthState();
           window.location.href = '/auth';
           return [];
@@ -128,10 +128,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [];
       }
 
-      // console.log('✅ Roles fetched successfully:', roles);
+      logger.debug('Roles fetched successfully', { roleCount: roles?.length || 0 });
       return roles || [];
     } catch (error) {
-      console.error('💥 Exception in fetchUserRoles:', error);
+      logger.error('Exception in fetchUserRoles', error as Error, { component: 'AuthContext' });
       return [];
     }
   }, []);
@@ -146,11 +146,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedRole = JSON.parse(storedRole);
         const validRole = roles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
         if (validRole) {
-          // console.log('🎯 Using stored role:', validRole.role);
+          logger.debug('Using stored role preference');
           return validRole.role;
         }
       } catch (e) {
-        console.warn('Error parsing stored role:', e);
+        logger.warn('Error parsing stored role', { error: e });
       }
     }
 
@@ -160,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     for (const roleType of roleHierarchy) {
       const role = roles.find(r => r.role === roleType);
       if (role) {
-        // console.log('🎯 Auto-selected role:', role.role);
+        logger.debug('Auto-selected role from hierarchy');
         return role.role;
       }
     }
@@ -169,34 +169,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const refreshRoles = useCallback(async () => {
-    console.log('🔄 Starting refreshRoles...');
+    logger.debug('Starting refreshRoles');
     
     // Get current session directly from Supabase instead of relying on state
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
     if (sessionError) {
-      console.error('❌ Error getting session for role refresh:', sessionError);
+      logger.error('Error getting session for role refresh', sessionError);
       return;
     }
     
     if (!session?.user) {
-      console.log('🚫 No session user found, cannot refresh roles');
+      logger.debug('No session user found, cannot refresh roles');
       return;
     }
     
-    console.log('🔄 Refreshing roles for user:', session.user.id);
+    logger.debug('Refreshing roles for authenticated user');
     
     // Add a delay to ensure database consistency after invitation acceptance
     await new Promise(resolve => setTimeout(resolve, 500));
     
     const roles = await fetchUserRoles(session.user.id);
-    console.log('🔄 Fetched roles after refresh:', roles);
-    console.log('🔄 Roles count:', (roles || []).length);
+    logger.debug('Roles refreshed', { roleCount: roles?.length || 0 });
     
     setUserRoles(roles);
     
     const selectedRole = determineCurrentRole(roles);
-    console.log('🔄 Selected role after refresh:', selectedRole);
     setCurrentRole(selectedRole);
     
     // Force update to ensure state changes are propagated
@@ -206,12 +204,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchUserRoles, determineCurrentRole]);
 
   const switchRole = useCallback((roleId: string) => {
-    // console.log('🔄 AuthContext: switchRole called with roleId:', roleId);
-    // console.log('🔄 AuthContext: Available roles:', userRoles);
+    logger.debug('switchRole called', { component: 'AuthContext' });
     
     const role = userRoles?.find(r => r.id === roleId);
     if (role) {
-      // console.log('🔄 AuthContext: Switching to role:', role.role);
+      logger.debug('Switching to new role', { component: 'AuthContext' });
       setCurrentRole(role.role);
       
       // Store role preference
@@ -223,9 +220,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Force update
       setForceUpdateCounter(prev => prev + 1);
       
-      // console.log('🔄 AuthContext: Role switched successfully to:', role.role);
+      logger.debug('Role switched successfully', { component: 'AuthContext' });
     } else {
-      console.warn('🔄 AuthContext: Role not found for roleId:', roleId);
+      logger.warn('Role not found for roleId', { component: 'AuthContext' });
     }
   }, [userRoles]);
 
@@ -241,20 +238,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
-      // console.log('🔄 Auth state changed:', event, session?.user?.email);
-      // console.log('🔍 AuthContext debug - full state:', {
-      //   event,
-      //   sessionExists: !!session,
-      //   userExists: !!session?.user,
-      //   userEmail: session?.user?.email,
-      //   currentUser: !!user,
-      //   currentSession: !!session,
-      //   loading
-      // });
+      logger.debug('Auth state changed', { event, component: 'AuthContext' });
       
       // Handle auth errors by cleaning up state
       if (event === 'TOKEN_REFRESHED' && !session) {
-        console.log('❌ Token refresh failed, cleaning up auth state');
+        logger.warn('Token refresh failed, cleaning up auth state');
         enhancedCleanupAuthState();
         setSession(null);
         setUser(null);
@@ -266,7 +254,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Handle signed out state
       if (event === 'SIGNED_OUT') {
-        console.log('👋 User signed out, cleaning up state');
+        logger.debug('User signed out, cleaning up state');
         enhancedCleanupAuthState();
         setSession(null);
         setUser(null);
@@ -285,17 +273,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (!mounted) return;
           
           try {
-            // console.log('🔍 Fetching roles for user:', session.user.id);
+            logger.debug('Fetching roles after auth state change');
             const { data: roles, error } = await supabase
               .from('user_company_roles')
               .select('*')
               .eq('user_id', session.user.id)
               .eq('is_active', true);
 
-            // console.log('📋 Raw roles data:', { roles, error });
-
             if (error) {
-              console.error('Error fetching user roles:', error);
+              logger.error('Error fetching user roles', error, { component: 'AuthContext' });
               setUserRoles([]);
               setCurrentRole(null);
               setLoading(false);
@@ -303,7 +289,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
 
             const userRoles = roles || [];
-            // console.log('📋 Setting user roles:', userRoles);
+            logger.debug('User roles set', { roleCount: userRoles.length });
             setUserRoles(userRoles);
             
             // Determine current role
@@ -318,7 +304,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     selectedRole = validRole.role;
                   }
                 } catch (e) {
-                  console.warn('Error parsing stored role:', e);
+                  logger.warn('Error parsing stored role', { error: e });
                 }
               }
               
@@ -338,11 +324,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             }
             
-            // console.log('🎯 Final selected role:', selectedRole);
+            logger.debug('Selected role determined', { component: 'AuthContext' });
             setCurrentRole(selectedRole);
             setLoading(false);
           } catch (error) {
-            console.error('Error in role fetching:', error);
+            logger.error('Error in role fetching', error as Error, { component: 'AuthContext' });
             setUserRoles([]);
             setCurrentRole(null);
             setLoading(false);
@@ -361,12 +347,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!mounted) return;
       
       if (error) {
-        console.error('❌ Error getting initial session:', error);
+        logger.error('Error getting initial session', error, { component: 'AuthContext' });
         // If session retrieval fails due to auth issues, clean up
         if (error.message?.includes('refresh token') || 
             error.message?.includes('Invalid') ||
             error.message?.includes('JWT')) {
-          console.log('🚨 Session error detected, cleaning up auth state');
+          logger.warn('Session error detected, cleaning up auth state');
           enhancedCleanupAuthState();
           setSession(null);
           setUser(null);
@@ -391,7 +377,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (!mounted) return;
             
             if (error) {
-              console.error('Error fetching user roles:', error);
+              logger.error('Error fetching initial user roles', error, { component: 'AuthContext' });
               setUserRoles([]);
               setCurrentRole(null);
               setLoading(false);
@@ -413,7 +399,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     selectedRole = validRole.role;
                   }
                 } catch (e) {
-                  console.warn('Error parsing stored role:', e);
+                  logger.warn('Error parsing stored role', { error: e });
                 }
               }
               
@@ -477,7 +463,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      console.log('👋 Starting sign out process...');
+      logger.debug('Starting sign out process', { component: 'AuthContext' });
       
       // Set loading to true to prevent Index from showing Landing
       setLoading(true);
@@ -494,9 +480,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Attempt global sign out from Supabase
       try {
         await supabase.auth.signOut({ scope: 'global' });
-        console.log('✅ Supabase sign out successful');
+        logger.debug('Supabase sign out successful');
       } catch (err) {
-        console.warn('⚠️ Supabase sign out error (continuing anyway):', err);
+        logger.warn('Supabase sign out error (continuing anyway)', { error: err });
       }
       
       // Force redirect to auth page without going through Index/Landing

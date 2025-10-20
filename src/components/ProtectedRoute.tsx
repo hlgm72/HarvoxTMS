@@ -47,7 +47,7 @@ export const ProtectedRoute = ({
   // Check role requirement - check if user has the required role among ALL their roles
   const hasRequiredRole = requiredRole ? userRoles?.some(role => role.role === requiredRole) : true;
   if (requiredRole && !hasRequiredRole) {
-    console.log('🔒 Access denied - Required role:', requiredRole, 'User roles:', userRoles?.map(r => r.role));
+    // Access denied - silent check, RLS handles actual security
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
