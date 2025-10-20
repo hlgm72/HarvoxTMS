@@ -125,7 +125,7 @@ export function ExpenseTypeDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col p-0 gap-0 max-h-[90vh]">
         {/* Fixed Header */}
-        <div className="flex-shrink-0 p-6 pb-4">
+        <div className="flex-shrink-0 p-6 pb-4 border-b bg-muted/50">
           <DialogHeader>
             <DialogTitle>
               {mode === "create" 
@@ -141,7 +141,7 @@ export function ExpenseTypeDialog({
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto flex-1 p-6 pt-0">
+        <div className="overflow-y-auto flex-1 p-6 pt-6 bg-white">
           <form id="expense-type-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <Label htmlFor="name">{t("deductions.labels.name")} *</Label>
@@ -199,7 +199,7 @@ export function ExpenseTypeDialog({
         </div>
 
         {/* Fixed Footer */}
-        <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
+        <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-muted/50">
           <Button
             type="button"
             variant="outline"
