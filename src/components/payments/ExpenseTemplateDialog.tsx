@@ -462,55 +462,36 @@ export function ExpenseTemplateDialog({
             </>
           )}
 
-          {mode === 'edit' ? (
-            <div className="space-y-2">
-              <Label>{t("deductions.form.expense_type")}</Label>
-              <Input
-                value={template?.expense_types?.name || 'Tipo no definido'}
-                disabled
-                className="bg-muted"
-              />
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
-              <Select 
-                value={formData.expenseTypeId} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, expenseTypeId: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t("deductions.form.select_expense_type")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {expenseTypes.map((type) => (
-                    <SelectItem key={type.id} value={type.id}>
-                      {type.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">{t("deductions.form.amount")}</Label>
-              <Input
-                id="amount"
-                type="text"
-                value={atmInput.displayValue}
-                onChange={() => {}} // Dummy onChange to satisfy React warning
-                onKeyDown={atmInput.handleKeyDown}
-                onInput={atmInput.handleInput}
-                onPaste={atmInput.handlePaste}
-                onFocus={atmInput.handleFocus}
-                onClick={atmInput.handleClick}
-                placeholder="$0.00"
-                className="text-right"
-                autoComplete="off"
-                required
-              />
-            </div>
+            {mode === 'edit' ? (
+              <div className="space-y-2">
+                <Label>{t("deductions.form.expense_type")}</Label>
+                <Input
+                  value={template?.expense_types?.name || 'Tipo no definido'}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="expense-type">{t("deductions.form.expense_type")}</Label>
+                <Select 
+                  value={formData.expenseTypeId} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, expenseTypeId: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("deductions.form.select_expense_type")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {expenseTypes.map((type) => (
+                      <SelectItem key={type.id} value={type.id}>
+                        {type.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="frequency">{t("deductions.form.frequency")}</Label>
@@ -631,6 +612,25 @@ export function ExpenseTemplateDialog({
                 </PopoverContent>
               </Popover>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="amount">{t("deductions.form.amount")}</Label>
+            <Input
+              id="amount"
+              type="text"
+              value={atmInput.displayValue}
+              onChange={() => {}} // Dummy onChange to satisfy React warning
+              onKeyDown={atmInput.handleKeyDown}
+              onInput={atmInput.handleInput}
+              onPaste={atmInput.handlePaste}
+              onFocus={atmInput.handleFocus}
+              onClick={atmInput.handleClick}
+              placeholder="$0.00"
+              className="text-right"
+              autoComplete="off"
+              required
+            />
           </div>
 
           <div className="space-y-2">
