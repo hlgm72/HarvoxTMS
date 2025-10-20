@@ -10,11 +10,11 @@ interface LayoutProps {
 
 // Helper to read sidebar state from cookie
 const getSidebarStateFromCookie = (): boolean => {
-  if (typeof document === 'undefined') return false;
+  if (typeof document === 'undefined') return true;
   const cookie = document.cookie
     .split('; ')
     .find(row => row.startsWith('sidebar:state='));
-  return cookie ? cookie.split('=')[1] === 'true' : false;
+  return cookie ? cookie.split('=')[1] === 'true' : true;
 };
 
 export function Layout({ children }: LayoutProps) {
