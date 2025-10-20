@@ -207,34 +207,34 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess }: CreateClientD
           <DialogDescription>
             {t('create_client_dialog.description')}
           </DialogDescription>
+          
+          {/* Progress Steps */}
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <div className={`flex items-center gap-2 ${currentStep === 1 ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                currentStep === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'
+              }`}>
+                1
+              </div>
+              <span className="text-sm font-medium">{t('create_client_dialog.steps.client_info')}</span>
+            </div>
+            
+            <div className="w-8 h-px bg-border" />
+            
+            <div className={`flex items-center gap-2 ${currentStep === 2 ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                currentStep === 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'
+              }`}>
+                2
+              </div>
+              <span className="text-sm font-medium">{t('create_client_dialog.steps.contacts')}</span>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="overflow-y-auto flex-1 p-6">
-          {/* Progress Steps */}
-          <div className="flex items-center justify-center gap-4 mb-6">
-          <div className={`flex items-center gap-2 ${currentStep === 1 ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-              currentStep === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'
-            }`}>
-              1
-            </div>
-            <span className="text-sm font-medium">{t('create_client_dialog.steps.client_info')}</span>
-          </div>
-          
-          <div className="w-8 h-px bg-border" />
-          
-          <div className={`flex items-center gap-2 ${currentStep === 2 ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-              currentStep === 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'
-            }`}>
-              2
-            </div>
-            <span className="text-sm font-medium">{t('create_client_dialog.steps.contacts')}</span>
-          </div>
-        </div>
-
-        <Form {...form}>
-          {currentStep === 1 && (
+          <Form {...form}>
+            {currentStep === 1 && (
             <div className="space-y-6">
               {/* Step 1: Client Information */}
               <Card>
