@@ -47,7 +47,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
     // Auto-remove notification after duration
     if (!notification.persistent) {
-      const duration = notification.duration || 4000;
+      const duration = notification.duration || 5000; // Sincronizado con la animación de la barra
       setTimeout(() => {
         removeNotification(id);
       }, duration);
