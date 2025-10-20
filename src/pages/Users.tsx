@@ -1087,14 +1087,14 @@ export default function Users() {
 
       {/* Dialog para invitar usuario */}
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-white border-border">
-          <DialogHeader className="bg-muted/50">
+        <DialogContent className="sm:max-w-[425px] p-0 gap-0 bg-white dark:bg-white border-border">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0 bg-muted/50">
             <DialogTitle>{t('invite_dialog.title', { ns: 'users' })}</DialogTitle>
             <DialogDescription>
               {t('invite_dialog.description', { ns: 'users' })}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleInviteUser} className="space-y-4">
+          <form onSubmit={handleInviteUser} className="px-6 py-4 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="first_name">{t('invite_dialog.form.first_name', { ns: 'users' })}</Label>
@@ -1142,7 +1142,7 @@ export default function Users() {
               </Select>
             </div>
           </form>
-          <DialogFooter className="bg-muted/50">
+          <DialogFooter className="px-6 py-4 border-t shrink-0 bg-muted/50">
             <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)}>
               {t('actions.cancel', { ns: 'users' })}
             </Button>
