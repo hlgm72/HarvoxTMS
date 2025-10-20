@@ -117,17 +117,26 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
 
       {/* Progress Bar - animates from right to left */}
       {!notification.persistent && (
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 rounded-b-xl overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-xl">
           <div 
-            className="h-full bg-white/60"
+            className="h-full bg-white/70 transition-all ease-linear"
             style={{
-              width: '100%',
-              animation: `shrink-width ${duration}ms linear forwards`,
-              transformOrigin: 'right'
+              animation: `progressShrink ${duration}ms linear forwards`
             }}
           />
         </div>
       )}
+      
+      <style>{`
+        @keyframes progressShrink {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+      `}</style>
     </div>
   );
 }
