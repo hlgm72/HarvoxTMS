@@ -335,7 +335,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
         <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            {isEditMode ? t('edit_dialog.title') : t('create_client_dialog.title')}
+            {isEditMode ? `${t('edit_dialog.title')}: ${client?.name}` : t('create_client_dialog.title')}
           </DialogTitle>
           <DialogDescription>
             {isEditMode ? t('edit_dialog.description') : t('create_client_dialog.description')}
