@@ -149,13 +149,9 @@ export default function PaymentReports() {
   const { data: paymentCalculations = [], isLoading, refetch } = useQuery({
     queryKey: ['payment-calculations-reports', getFilterPeriodIds, filters.periodFilter],
     queryFn: async () => {
-      console.log('🔍 PaymentReports Query - getFilterPeriodIds:', getFilterPeriodIds);
-      console.log('🔍 PaymentReports Query - periodFilter:', filters.periodFilter);
-      
       // ⚠️ VERIFICACIÓN DE INTEGRIDAD DESACTIVADA TEMPORALMENTE
       // La función verify_and_recalculate_company_payments estaba causando problemas de permisos
       // y resetaba los datos a 0. Por ahora usaremos los datos directos de la DB.
-      console.log('🔍 Obteniendo datos de cálculos sin verificación automática de integridad...');
       
       let query = supabase
         .from('user_payrolls')
@@ -181,16 +177,12 @@ export default function PaymentReports() {
 
       if (needsClientSideFiltering) {
         // Para períodos calculados o rangos de fechas, obtener todos y filtrar en cliente
-        console.log('📊 Will filter on client side - fetching all periods');
       } else if (filters.periodFilter.type === 'all') {
         // Para 'all', no aplicar filtro de período - ya está filtrado por company_id
-        console.log('📊 Showing all periods - no period filter applied');
       } else if (getFilterPeriodIds.length > 0) {
         // Para períodos específicos de BD (current, previous, next, specific)
-        console.log('📊 Adding period filter for real DB IDs:', getFilterPeriodIds);
         query = query.in('company_payment_period_id', getFilterPeriodIds);
       } else {
-        console.log('📊 No period filter applied - returning empty');
         return [];
       }
 
@@ -200,8 +192,6 @@ export default function PaymentReports() {
         console.error('❌ PaymentReports Query Error:', error);
         throw error;
       }
-      
-      console.log('✅ PaymentReports Query Result:', data?.length, 'calculations found');
       
       // Filtrar en cliente si es necesario (solo para períodos calculados o rangos personalizados)
       let filteredData = data || [];
