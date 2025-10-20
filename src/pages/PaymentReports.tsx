@@ -230,6 +230,7 @@ export default function PaymentReports() {
     },
     enabled: !!user && !!userCompany?.company_id && (
       filters.periodFilter.type === 'all' || 
+      (filters.periodFilter.type === 'current' && !!currentPeriod) ||
       getFilterPeriodIds.length > 0 || 
       Boolean(filters.periodFilter.startDate && filters.periodFilter.endDate)
     )
