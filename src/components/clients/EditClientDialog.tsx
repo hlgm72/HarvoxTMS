@@ -110,8 +110,8 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] flex flex-col p-0 gap-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
             Editar Cliente
@@ -122,7 +122,8 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
+            <div className="overflow-y-auto flex-1 p-6 bg-white space-y-4">
             {/* Logo Upload Section */}
             <FormField
               control={form.control}
@@ -292,8 +293,9 @@ export function EditClientDialog({ client, open, onOpenChange }: EditClientDialo
                 </FormItem>
               )}
             />
+            </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex-shrink-0 p-6 pt-4 border-t bg-background">
               <Button 
                 type="button" 
                 variant="outline" 

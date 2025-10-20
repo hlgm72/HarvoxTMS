@@ -219,7 +219,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
 
   return (
     <Dialog open={isOpen && !showFMCSAModal} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-2xl flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
@@ -253,7 +253,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
           </div>
         </DialogHeader>
 
-        <div className="overflow-y-auto flex-1 p-6">
+        <div className="overflow-y-auto flex-1 p-6 bg-white">
           <Form {...form}>
             {currentStep === 1 && (
             <div className="space-y-6">
