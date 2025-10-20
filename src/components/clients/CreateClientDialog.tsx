@@ -376,8 +376,9 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
             <div className="space-y-6">
               {/* Step 1: Client Information */}
               <Card>
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-end">
+                <CardContent className="space-y-4 pt-6">
+                  {/* FMCSA Lookup Button */}
+                  <div className="flex justify-end">
                     <Button
                       type="button"
                       variant="outline"
@@ -389,8 +390,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                       {t('create_client_dialog.form.fmcsa_lookup')}
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                  
                   {/* Logo Upload Section */}
                   <FormField
                     control={form.control}
