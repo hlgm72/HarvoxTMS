@@ -303,12 +303,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
       return true;
     })
     .sort((a, b) => {
-      // Ordenar por fecha de inicio del período de pago (más reciente primero)
-      if (a.period_start_date && b.period_start_date) {
-        return new Date(b.period_start_date).getTime() - new Date(a.period_start_date).getTime();
-      }
-      // Si no hay período, ordenar por fecha de creación
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      // Ordenar por número de carga en orden descendente
+      return b.load_number.localeCompare(a.load_number, undefined, { numeric: true, sensitivity: 'base' });
     });
 
   if (isLoading) {
