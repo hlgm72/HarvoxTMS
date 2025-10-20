@@ -21,6 +21,7 @@ interface CancelAutomaticDeductionDialogProps {
     driverName: string;
     expenseType: string;
     amount: number;
+    isReactivating?: boolean;
   };
 }
 
@@ -48,16 +49,29 @@ export function CancelAutomaticDeductionDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Cancelar Deducción Automática
+            {deductionData?.isReactivating ? "Reactivar Deducción" : "Cancelar Deducción Automática"}
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             <div>
-              Está a punto de cancelar una deducción automática. Esta acción:
-              <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                <li>Eliminará la instancia de deducción</li>
-                <li>Recalculará automáticamente el payroll del conductor</li>
-                <li>Si el payroll queda sin transacciones, será eliminado</li>
-              </ul>
+              {deductionData?.isReactivating ? (
+                <>
+                  Está a punto de reactivar una deducción cancelada. Esta acción:
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                    <li>Cambiará el estado de la deducción a 'Planned'</li>
+                    <li>Creará o actualizará el payroll del período correspondiente</li>
+                    <li>Aplicará la deducción al payroll del conductor</li>
+                  </ul>
+                </>
+              ) : (
+                <>
+                  Está a punto de cancelar una deducción automática. Esta acción:
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                    <li>Cambiará el estado de la deducción a 'Cancelled'</li>
+                    <li>Recalculará automáticamente el payroll del conductor</li>
+                    <li>Si el payroll queda sin transacciones, será eliminado</li>
+                  </ul>
+                </>
+              )}
             </div>
             
             {deductionData && (
@@ -70,11 +84,13 @@ export function CancelAutomaticDeductionDialog({
 
             <div className="space-y-2 pt-2">
               <Label htmlFor="cancellation-note" className="text-foreground">
-                Motivo de cancelación <span className="text-destructive">*</span>
+                {deductionData?.isReactivating ? "Motivo de reactivación" : "Motivo de cancelación"} <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="cancellation-note"
-                placeholder="Explique por qué se está cancelando esta deducción automática..."
+                placeholder={deductionData?.isReactivating 
+                  ? "Explique por qué se está reactivando esta deducción..."
+                  : "Explique por qué se está cancelando esta deducción automática..."}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 className="min-h-[100px]"
@@ -88,10 +104,12 @@ export function CancelAutomaticDeductionDialog({
           </AlertDialogCancel>
           <AlertDialogAction 
             onClick={handleConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className={deductionData?.isReactivating 
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "bg-destructive text-destructive-foreground hover:bg-destructive/90"}
             disabled={!note.trim()}
           >
-            Confirmar Cancelación
+            {deductionData?.isReactivating ? "Confirmar Reactivación" : "Confirmar Cancelación"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

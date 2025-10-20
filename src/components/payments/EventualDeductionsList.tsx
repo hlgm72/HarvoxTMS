@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { useCancelAutomaticDeduction } from '@/hooks/useCancelAutomaticDeduction';
+import { useReactivateAutomaticDeduction } from '@/hooks/useReactivateAutomaticDeduction';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EventualDeductionsListProps {
@@ -53,6 +54,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   const [cancelingAutoDeduction, setCancelingAutoDeduction] = useState<any>(null);
 
   const cancelAutoDeductionMutation = useCancelAutomaticDeduction();
+  const reactivateAutoDeductionMutation = useReactivateAutomaticDeduction();
 
   // Obtener períodos calculados
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
@@ -76,11 +78,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
         // Aplicar filtros de estado
         if (filters?.status && filters.status !== 'all') {
-          if (filters.status === 'planned') {
-            query = query.eq('status', 'planned');
-          } else {
-            query = query.eq('status', filters.status);
-          }
+          query = query.eq('status', filters.status);
+        } else {
+          // Si no hay filtro de estado, mostrar solo 'planned' y 'cancelled' (no 'applied')
+          query = query.in('status', ['planned', 'cancelled']);
         }
 
         // Aplicar filtros de tipo de gasto
@@ -224,12 +225,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 .then(res => res.data || [])
             : Promise.resolve([]),
           
-          // Obtener todos los períodos de una vez
+          // Obtener todos los períodos de una vez (incluyendo payment_status)
           payrollIds.length > 0
             ? supabase
                 .from('user_payrolls')
                 .select(`
                   id,
+                  payment_status,
                   period:company_payment_periods!company_payment_period_id(
                     period_start_date,
                     period_end_date,
@@ -309,7 +311,8 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
     const statusConfig = {
       planned: { variant: "outline" as const, label: t("deductions.status_labels.planned") },
       applied: { variant: "default" as const, label: t("deductions.status_labels.applied") },
-      deferred: { variant: "secondary" as const, label: t("deductions.status_labels.deferred") }
+      deferred: { variant: "secondary" as const, label: t("deductions.status_labels.deferred") },
+      cancelled: { variant: "destructive" as const, label: "Cancelada" }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || 
@@ -330,6 +333,14 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
            expense.recurring_template_id !== null;
   };
 
+  const canCancelOrReactivate = (deduction: any) => {
+    // Solo se puede cancelar o reactivar si el payroll no ha sido pagado
+    if (deduction.period_data?.payment_status === 'paid') {
+      return false;
+    }
+    return true;
+  };
+
   const handleCancelAutoDeduction = (deduction: any) => {
     setCancelingAutoDeduction(deduction);
   };
@@ -342,6 +353,24 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       userId: cancelingAutoDeduction.user_id,
       paymentPeriodId: cancelingAutoDeduction.payment_period_id,
       cancellationNote: note
+    });
+
+    setCancelingAutoDeduction(null);
+  };
+
+  const handleReactivateAutoDeduction = (deduction: any) => {
+    // Usar el mismo diálogo pero con un mensaje diferente
+    setCancelingAutoDeduction({ ...deduction, isReactivating: true });
+  };
+
+  const confirmReactivateAutoDeduction = (note: string) => {
+    if (!cancelingAutoDeduction) return;
+
+    reactivateAutoDeductionMutation.mutate({
+      expenseInstanceId: cancelingAutoDeduction.id,
+      userId: cancelingAutoDeduction.user_id,
+      expenseDate: cancelingAutoDeduction.expense_date,
+      reactivationNote: note
     });
 
     setCancelingAutoDeduction(null);
@@ -500,23 +529,53 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                       </Tooltip>
                     ) : null}
                     
-                    {isAutomaticDeduction(deduction) ? (
+                    {isAutomaticDeduction(deduction) && deduction.status === 'planned' ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCancelAutoDeduction(deduction)}
-                            className="text-destructive hover:text-destructive h-8"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCancelAutoDeduction(deduction)}
+                              className="text-destructive hover:text-destructive h-8"
+                              disabled={!canCancelOrReactivate(deduction)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Cancelar deducción automática</p>
+                          <p>
+                            {canCancelOrReactivate(deduction) 
+                              ? "Cancelar deducción automática" 
+                              : "No se puede cancelar: el período ya fue pagado"}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
-                    ) : (
+                    ) : isAutomaticDeduction(deduction) && deduction.status === 'cancelled' ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleReactivateAutoDeduction(deduction)}
+                              className="text-primary hover:text-primary h-8"
+                              disabled={!canCancelOrReactivate(deduction)}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {canCancelOrReactivate(deduction) 
+                              ? "Reactivar deducción" 
+                              : "No se puede reactivar: el período ya fue pagado"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : !isAutomaticDeduction(deduction) ? (
                       <Button
                         variant="outline"
                         size="sm"
@@ -526,7 +585,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
+                    ) : null}
                   </TooltipProvider>
                 </div>
               </div>
@@ -582,15 +641,18 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         editingDeduction={editingExpense}
       />
 
-      {/* Dialog de cancelación de deducciones automáticas */}
+      {/* Dialog de cancelación/reactivación de deducciones automáticas */}
       <CancelAutomaticDeductionDialog
         isOpen={!!cancelingAutoDeduction}
         onClose={() => setCancelingAutoDeduction(null)}
-        onConfirm={confirmCancelAutoDeduction}
+        onConfirm={cancelingAutoDeduction?.isReactivating 
+          ? confirmReactivateAutoDeduction 
+          : confirmCancelAutoDeduction}
         deductionData={cancelingAutoDeduction ? {
           driverName: `${cancelingAutoDeduction.profiles?.first_name} ${cancelingAutoDeduction.profiles?.last_name}`,
           expenseType: cancelingAutoDeduction.expense_types?.name || '',
-          amount: Number(cancelingAutoDeduction.amount || 0)
+          amount: Number(cancelingAutoDeduction.amount || 0),
+          isReactivating: cancelingAutoDeduction.isReactivating
         } : undefined}
       />
     </div>

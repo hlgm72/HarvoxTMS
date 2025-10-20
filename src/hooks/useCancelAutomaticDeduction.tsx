@@ -22,10 +22,11 @@ export function useCancelAutomaticDeduction() {
       paymentPeriodId,
       cancellationNote 
     }: CancelAutomaticDeductionParams) => {
-      // 1. Actualizar la nota en la instancia antes de eliminarla (para auditoría)
+      // 1. Cambiar el status a 'cancelled' en lugar de eliminar
       const { error: updateError } = await supabase
         .from('expense_instances')
         .update({ 
+          status: 'cancelled',
           notes: cancellationNote,
           updated_at: new Date().toISOString()
         })
@@ -33,15 +34,7 @@ export function useCancelAutomaticDeduction() {
 
       if (updateError) throw updateError;
 
-      // 2. Eliminar la instancia
-      const { error: deleteError } = await supabase
-        .from('expense_instances')
-        .delete()
-        .eq('id', expenseInstanceId);
-
-      if (deleteError) throw deleteError;
-
-      // 3. Recalcular el payroll del usuario usando el RPC
+      // 2. Recalcular el payroll del usuario usando el RPC
       const { data: recalcData, error: recalcError } = await supabase
         .rpc('calculate_user_payment_period_with_validation', {
           calculation_id: paymentPeriodId
@@ -57,7 +50,7 @@ export function useCancelAutomaticDeduction() {
         );
       }
 
-      // 4. Verificar si el payroll quedó vacío (sin transacciones)
+      // 3. Verificar si el payroll quedó vacío (sin transacciones)
       const { data: payrollData, error: payrollError } = await supabase
         .from('user_payrolls')
         .select(`
