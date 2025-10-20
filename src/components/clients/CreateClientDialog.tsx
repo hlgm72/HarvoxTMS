@@ -418,7 +418,11 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                        control={form.control}
                        name="name"
                        render={({ field }) => {
-                         const handlers = createTextHandlers(field.onChange, 'text');
+                         const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                           const value = e.target.value.toUpperCase();
+                           field.onChange(value);
+                         };
+                         
                          return (
                            <FormItem>
                              <FormLabel>{t('create_client_dialog.form.client_name_required')}</FormLabel>
@@ -426,8 +430,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                                <Input 
                                  placeholder={t('create_client_dialog.placeholders.client_name')} 
                                  value={field.value}
-                                 onChange={handlers.onChange}
-                                 onBlur={handlers.onBlur}
+                                 onChange={handleNameChange}
                                  tabIndex={1}
                                />
                              </FormControl>
@@ -441,7 +444,11 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                        control={form.control}
                        name="alias"
                        render={({ field }) => {
-                         const handlers = createTextHandlers(field.onChange, 'text');
+                         const handleAliasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                           const value = e.target.value.toUpperCase();
+                           field.onChange(value);
+                         };
+                         
                          return (
                            <FormItem>
                              <FormLabel>{t('create_client_dialog.form.alias')}</FormLabel>
@@ -449,8 +456,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                                <Input 
                                  placeholder={t('create_client_dialog.placeholders.alias')} 
                                  value={field.value}
-                                 onChange={handlers.onChange}
-                                 onBlur={handlers.onBlur}
+                                 onChange={handleAliasChange}
                                  tabIndex={2}
                                />
                              </FormControl>
