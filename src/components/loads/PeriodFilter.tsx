@@ -249,15 +249,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                      className="w-full justify-start"
                      disabled={!calculatedPeriods?.current}
                      onClick={() => {
-                       const displayPeriod = calculatedPeriods?.current;
-                       if (displayPeriod) {
-                         // SIEMPRE usar período calculado sin ID de BD
-                         handleOptionSelect({ 
-                           type: 'current',
-                           startDate: displayPeriod.period_start_date,
-                           endDate: displayPeriod.period_end_date
-                         });
-                       }
+                       // ✅ CRÍTICO: Solo pasar type, NO startDate/endDate
+                       // Esto permite que PaymentReports use currentPeriod.company_payment_period_id
+                       handleOptionSelect({ 
+                         type: 'current'
+                       });
                      }}
                    >
                       <Clock className="h-4 w-4 mr-2" />
@@ -281,17 +277,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                      variant={value.type === 'previous' ? 'default' : 'ghost'}
                      className="w-full justify-start"
                       onClick={() => {
-                        // SIEMPRE usar períodos calculados para Previous
-                        const displayPrevious = calculatedPeriods?.previous;
-                        
-                         if (displayPrevious) {
-                           handleOptionSelect({ 
-                             type: 'previous',
-                             periodId: displayPrevious.id,
-                             startDate: displayPrevious.period_start_date,
-                             endDate: displayPrevious.period_end_date
-                           });
-                         }
+                        // ✅ CRÍTICO: Solo pasar type, NO startDate/endDate/periodId
+                        // Esto permite que PaymentReports use previousPeriod.company_payment_period_id
+                        handleOptionSelect({ 
+                          type: 'previous'
+                        });
                       }}
                      disabled={!calculatedPeriods?.previous}
                     >
