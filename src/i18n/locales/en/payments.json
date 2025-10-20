@@ -166,6 +166,32 @@
       "critical": "Critical",
       "automatic": "Automatic"
     },
+    "cancel_automatic": {
+      "cancel_title": "Cancel Automatic Deduction",
+      "reactivate_title": "Reactivate Deduction",
+      "cancel_description": "You are about to cancel an automatic deduction. This action:",
+      "reactivate_description": "You are about to reactivate a cancelled deduction. This action:",
+      "cancel_consequences": {
+        "status_change": "Will change the deduction status to 'Cancelled'",
+        "recalculate": "Will automatically recalculate the driver's payroll",
+        "delete_payroll": "If the payroll has no transactions, it will be deleted"
+      },
+      "reactivate_consequences": {
+        "status_change": "Will change the deduction status to 'Planned'",
+        "create_period": "Will create or update the payroll for the corresponding period",
+        "apply_deduction": "Will apply the deduction to the driver's payroll"
+      },
+      "driver_label": "Driver:",
+      "type_label": "Type:",
+      "amount_label": "Amount:",
+      "cancel_reason_label": "Cancellation reason",
+      "reactivate_reason_label": "Reactivation reason",
+      "cancel_reason_required": "*",
+      "cancel_reason_placeholder": "Explain why this automatic deduction is being cancelled...",
+      "reactivate_reason_placeholder": "Explain why this deduction is being reactivated...",
+      "confirm_cancel": "Confirm Cancellation",
+      "confirm_reactivate": "Confirm Reactivation"
+    },
     "labels": {
       "period": "Period:",
       "type": "Type:",

@@ -166,6 +166,32 @@
       "critical": "Crítico",
       "automatic": "Automática"
     },
+    "cancel_automatic": {
+      "cancel_title": "Cancelar Deducción Automática",
+      "reactivate_title": "Reactivar Deducción",
+      "cancel_description": "Está a punto de cancelar una deducción automática. Esta acción:",
+      "reactivate_description": "Está a punto de reactivar una deducción cancelada. Esta acción:",
+      "cancel_consequences": {
+        "status_change": "Cambiará el estado de la deducción a 'Cancelled'",
+        "recalculate": "Recalculará automáticamente el payroll del conductor",
+        "delete_payroll": "Si el payroll queda sin transacciones, será eliminado"
+      },
+      "reactivate_consequences": {
+        "status_change": "Cambiará el estado de la deducción a 'Planned'",
+        "create_period": "Creará o actualizará el payroll del período correspondiente",
+        "apply_deduction": "Aplicará la deducción al payroll del conductor"
+      },
+      "driver_label": "Conductor:",
+      "type_label": "Tipo:",
+      "amount_label": "Monto:",
+      "cancel_reason_label": "Motivo de cancelación",
+      "reactivate_reason_label": "Motivo de reactivación",
+      "cancel_reason_required": "*",
+      "cancel_reason_placeholder": "Explique por qué se está cancelando esta deducción automática...",
+      "reactivate_reason_placeholder": "Explique por qué se está reactivando esta deducción...",
+      "confirm_cancel": "Confirmar Cancelación",
+      "confirm_reactivate": "Confirmar Reactivación"
+    },
     "labels": {
       "period": "Período:",
       "type": "Tipo:",

@@ -49,26 +49,28 @@ export function CancelAutomaticDeductionDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {deductionData?.isReactivating ? "Reactivar Deducción" : "Cancelar Deducción Automática"}
+            {deductionData?.isReactivating 
+              ? t("deductions.cancel_automatic.reactivate_title")
+              : t("deductions.cancel_automatic.cancel_title")}
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             <div>
               {deductionData?.isReactivating ? (
                 <>
-                  Está a punto de reactivar una deducción cancelada. Esta acción:
+                  {t("deductions.cancel_automatic.reactivate_description")}
                   <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                    <li>Cambiará el estado de la deducción a 'Planned'</li>
-                    <li>Creará o actualizará el payroll del período correspondiente</li>
-                    <li>Aplicará la deducción al payroll del conductor</li>
+                    <li>{t("deductions.cancel_automatic.reactivate_consequences.status_change")}</li>
+                    <li>{t("deductions.cancel_automatic.reactivate_consequences.create_period")}</li>
+                    <li>{t("deductions.cancel_automatic.reactivate_consequences.apply_deduction")}</li>
                   </ul>
                 </>
               ) : (
                 <>
-                  Está a punto de cancelar una deducción automática. Esta acción:
+                  {t("deductions.cancel_automatic.cancel_description")}
                   <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                    <li>Cambiará el estado de la deducción a 'Cancelled'</li>
-                    <li>Recalculará automáticamente el payroll del conductor</li>
-                    <li>Si el payroll queda sin transacciones, será eliminado</li>
+                    <li>{t("deductions.cancel_automatic.cancel_consequences.status_change")}</li>
+                    <li>{t("deductions.cancel_automatic.cancel_consequences.recalculate")}</li>
+                    <li>{t("deductions.cancel_automatic.cancel_consequences.delete_payroll")}</li>
                   </ul>
                 </>
               )}
@@ -76,21 +78,24 @@ export function CancelAutomaticDeductionDialog({
             
             {deductionData && (
               <div className="bg-muted p-3 rounded-md text-sm">
-                <div><strong>Conductor:</strong> {deductionData.driverName}</div>
-                <div><strong>Tipo:</strong> {deductionData.expenseType}</div>
-                <div><strong>Monto:</strong> ${deductionData.amount.toFixed(2)}</div>
+                <div><strong>{t("deductions.cancel_automatic.driver_label")}</strong> {deductionData.driverName}</div>
+                <div><strong>{t("deductions.cancel_automatic.type_label")}</strong> {deductionData.expenseType}</div>
+                <div><strong>{t("deductions.cancel_automatic.amount_label")}</strong> ${deductionData.amount.toFixed(2)}</div>
               </div>
             )}
 
             <div className="space-y-2 pt-2">
               <Label htmlFor="cancellation-note" className="text-foreground">
-                {deductionData?.isReactivating ? "Motivo de reactivación" : "Motivo de cancelación"} <span className="text-destructive">*</span>
+                {deductionData?.isReactivating 
+                  ? t("deductions.cancel_automatic.reactivate_reason_label")
+                  : t("deductions.cancel_automatic.cancel_reason_label")} 
+                <span className="text-destructive"> {t("deductions.cancel_automatic.cancel_reason_required")}</span>
               </Label>
               <Textarea
                 id="cancellation-note"
                 placeholder={deductionData?.isReactivating 
-                  ? "Explique por qué se está reactivando esta deducción..."
-                  : "Explique por qué se está cancelando esta deducción automática..."}
+                  ? t("deductions.cancel_automatic.reactivate_reason_placeholder")
+                  : t("deductions.cancel_automatic.cancel_reason_placeholder")}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 className="min-h-[100px]"
@@ -109,7 +114,9 @@ export function CancelAutomaticDeductionDialog({
               : "bg-destructive text-destructive-foreground hover:bg-destructive/90"}
             disabled={!note.trim()}
           >
-            {deductionData?.isReactivating ? "Confirmar Reactivación" : "Confirmar Cancelación"}
+            {deductionData?.isReactivating 
+              ? t("deductions.cancel_automatic.confirm_reactivate")
+              : t("deductions.cancel_automatic.confirm_cancel")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
