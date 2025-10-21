@@ -71,10 +71,29 @@ export function useReactivateAutomaticDeduction() {
 
       if (linkError) throw linkError;
 
-      // 5. Recalcular el payroll del usuario
+      // 5. Buscar el user_payroll correspondiente
+      const { data: userPayroll, error: payrollError } = await supabase
+        .from('user_payrolls')
+        .select('id')
+        .eq('company_payment_period_id', paymentPeriodId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (payrollError) {
+        console.error('Error finding user payroll:', payrollError);
+        throw new Error('No se pudo encontrar el payroll del usuario');
+      }
+
+      // Si no existe payroll, no hay nada que recalcular
+      if (!userPayroll) {
+        console.log('No payroll found - deduction reactivated but no payroll to recalculate');
+        return { paymentPeriodId, recalculated: false };
+      }
+
+      // 6. Recalcular el payroll del usuario
       const { error: recalcError } = await supabase
         .rpc('calculate_user_payment_period_with_validation', {
-          calculation_id: paymentPeriodId
+          calculation_id: userPayroll.id
         });
 
       if (recalcError) {
