@@ -3061,7 +3061,6 @@ export type Database = {
           payment_reference: string | null
           payment_status: string | null
           payroll_role: Database["public"]["Enums"]["payroll_role_type"]
-          status: string | null
           total_deductions: number
           updated_at: string
           user_id: string
@@ -3086,7 +3085,6 @@ export type Database = {
           payment_reference?: string | null
           payment_status?: string | null
           payroll_role: Database["public"]["Enums"]["payroll_role_type"]
-          status?: string | null
           total_deductions?: number
           updated_at?: string
           user_id: string
@@ -3111,7 +3109,6 @@ export type Database = {
           payment_reference?: string | null
           payment_status?: string | null
           payroll_role?: Database["public"]["Enums"]["payroll_role_type"]
-          status?: string | null
           total_deductions?: number
           updated_at?: string
           user_id?: string
