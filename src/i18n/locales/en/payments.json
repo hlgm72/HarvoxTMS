@@ -118,8 +118,8 @@
       "description_label": "Description/Reason",
       "atm_helper": "Enter numbers as you would in an ATM",
       "checking_period": "Checking payment period for selected date...",
-      "no_period_found": "No open payment period found for date {date}.",
-      "select_period_date": "Select a date within an open payment period.",
+      "no_period_found": "No open payment period found for {date}.",
+      "select_period_date": "Please select a date within an open payment period.",
       "period_found": "✓ Period found: {start} - {end}",
       "month": "Month"
     },
