@@ -68,7 +68,7 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
         .select(`
           id,
           company_id,
-          status,
+          payment_status,
           user_id,
           period:company_payment_periods!company_payment_period_id(
             period_start_date,
@@ -81,7 +81,7 @@ export const usePaymentPeriods = (companyIdOrFilters?: string | PaymentPeriodsFi
 
       // Aplicar filtros adicionales
       if (filters?.status) {
-        query = query.eq('status', filters.status);
+        query = query.eq('payment_status', filters.status);
       }
 
       const { data: userPeriods, error: periodsError } = await query;
@@ -190,7 +190,7 @@ export const useCurrentPaymentPeriod = (companyId?: string) => {
         )
         `)
         .eq('company_id', targetCompanyId)
-        .in('status', ['open', 'processing'])
+        .in('payment_status', ['open', 'processing'])
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
