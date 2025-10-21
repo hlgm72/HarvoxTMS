@@ -23,6 +23,7 @@ export function useCancelAutomaticDeduction() {
       cancellationNote 
     }: CancelAutomaticDeductionParams) => {
       // 1. Cambiar el status a 'cancelled' en lugar de eliminar
+      console.log('🔍 [Cancel] Step 1: Updating expense instance to cancelled');
       const { error: updateError } = await supabase
         .from('expense_instances')
         .update({ 
@@ -32,9 +33,14 @@ export function useCancelAutomaticDeduction() {
         })
         .eq('id', expenseInstanceId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('❌ [Cancel] Error updating expense instance:', updateError);
+        throw updateError;
+      }
+      console.log('✅ [Cancel] Expense instance updated successfully');
 
       // 2. Obtener el user_payroll correspondiente a este periodo y usuario
+      console.log('🔍 [Cancel] Step 2: Fetching user_payroll for:', { userId, paymentPeriodId });
       const { data: payrollData, error: payrollError } = await supabase
         .from('user_payrolls')
         .select('id, gross_earnings, other_income, fuel_expenses, total_deductions')
@@ -43,31 +49,37 @@ export function useCancelAutomaticDeduction() {
         .maybeSingle();
 
       if (payrollError) {
-        console.error('Error fetching payroll:', payrollError);
+        console.error('❌ [Cancel] Error fetching payroll:', payrollError);
         return { recalculated: false, payrollDeleted: false };
       }
 
       // Si no existe payroll, no hay nada más que hacer
       if (!payrollData) {
+        console.log('⚠️ [Cancel] No payroll found - deduction cancelled but no payroll to delete');
         return { recalculated: false, payrollDeleted: false };
       }
 
+      console.log('✅ [Cancel] Payroll found:', payrollData);
+
       // 3. Recalcular el payroll del usuario usando el RPC con el user_payroll_id correcto
+      console.log('🔍 [Cancel] Step 3: Recalculating payroll with ID:', payrollData.id);
       const { error: recalcError } = await supabase
         .rpc('calculate_user_payment_period_with_validation', {
           calculation_id: payrollData.id  // Usar el ID del user_payroll, no el company_payment_period_id
         });
 
       if (recalcError) {
-        console.error('Error recalculating payroll:', recalcError);
+        console.error('❌ [Cancel] Error recalculating payroll:', recalcError);
         showError(
           t("deductions.notifications.warning"),
           "La deducción fue cancelada pero hubo un problema al recalcular el payroll"
         );
         return { recalculated: false, payrollDeleted: false };
       }
+      console.log('✅ [Cancel] Payroll recalculated successfully');
 
       // 4. Verificar si el payroll quedó vacío después del recálculo
+      console.log('🔍 [Cancel] Step 4: Checking if payroll is empty after recalculation');
       const { data: updatedPayrollData, error: updatedPayrollError } = await supabase
         .from('user_payrolls')
         .select('id, gross_earnings, other_income, fuel_expenses, total_deductions')
@@ -75,14 +87,17 @@ export function useCancelAutomaticDeduction() {
         .maybeSingle();
 
       if (updatedPayrollError) {
-        console.error('Error checking updated payroll:', updatedPayrollError);
+        console.error('❌ [Cancel] Error checking updated payroll:', updatedPayrollError);
         return { recalculated: true, payrollDeleted: false };
       }
 
       // Si no existe más el payroll (fue eliminado por algún trigger), informar
       if (!updatedPayrollData) {
+        console.log('✅ [Cancel] Payroll was deleted (by trigger or other mechanism)');
         return { recalculated: true, payrollDeleted: true };
       }
+
+      console.log('✅ [Cancel] Updated payroll data:', updatedPayrollData);
 
       // Si el payroll está vacío (todos los valores en 0), eliminarlo
       const isEmpty = (
@@ -92,20 +107,25 @@ export function useCancelAutomaticDeduction() {
         (updatedPayrollData.total_deductions || 0) === 0
       );
 
+      console.log('🔍 [Cancel] Is payroll empty?', isEmpty);
+
       if (isEmpty) {
+        console.log('🔍 [Cancel] Step 5: Deleting empty payroll');
         const { error: deletePayrollError } = await supabase
           .from('user_payrolls')
           .delete()
           .eq('id', payrollData.id);
 
         if (deletePayrollError) {
-          console.error('Error deleting empty payroll:', deletePayrollError);
+          console.error('❌ [Cancel] Error deleting empty payroll:', deletePayrollError);
           return { recalculated: true, payrollDeleted: false };
         }
 
+        console.log('✅ [Cancel] Empty payroll deleted successfully');
         return { recalculated: true, payrollDeleted: true };
       }
 
+      console.log('✅ [Cancel] Payroll recalculated but not empty - keeping it');
       return { recalculated: true, payrollDeleted: false };
     },
     onSuccess: (result) => {
