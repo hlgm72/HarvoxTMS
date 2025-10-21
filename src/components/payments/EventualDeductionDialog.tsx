@@ -185,7 +185,7 @@ export function EventualDeductionDialog({
         console.log('Expense date for filtering:', expenseDateStr);
         
         // @ts-ignore - Complex Supabase query types
-        const queryResult = await supabase
+        const { data: userPeriods, error: periodsError } = await supabase
           .from('user_payrolls')
           .select(`
             *,
@@ -199,42 +199,30 @@ export function EventualDeductionDialog({
           .eq('user_id', formData.user_id)
           .in('status', ['open', 'processing'])
           .neq('payment_status', 'paid')  // ✅ Filtrar payrolls pagados
-          .order('created_at', { ascending: false});
-        
-        const { data: userPeriods, error: periodsError } = queryResult;
-        
+          .order('created_at', { ascending: false });
         
         if (periodsError) {
           console.error('Error fetching user periods:', periodsError);
           return [];
         }
         
-        // Filtrar manualmente los períodos que contienen la fecha del gasto
-        const filteredPeriods = (userPeriods || []).filter(period => {
-          if (!period.period) return false;
-          const startDate = period.period.period_start_date;
-          const endDate = period.period.period_end_date;
-          return expenseDateStr >= startDate && expenseDateStr <= endDate;
-        });
-        
-        console.log('User periods found:', userPeriods?.length || 0, 'Filtered:', filteredPeriods.length);
-        
-        return filteredPeriods;
-
-        if (periodsError) {
-          console.error('Error fetching user periods:', periodsError);
-          return [];
-        }
-
         console.log('User periods found:', userPeriods?.length || 0);
 
         if (!userPeriods || userPeriods.length === 0) {
           console.log('No user periods found for this date');
           return [];
         }
-
-        console.log('Final driver periods:', userPeriods.length);
-        return userPeriods;
+        
+        // Filtrar manualmente los períodos que contienen la fecha del gasto
+        const filteredPeriods = userPeriods.filter(period => {
+          if (!period.period) return false;
+          const startDate = period.period.period_start_date;
+          const endDate = period.period.period_end_date;
+          return expenseDateStr >= startDate && expenseDateStr <= endDate;
+        });
+        
+        console.log('Filtered periods for date:', filteredPeriods.length);
+        return filteredPeriods;
       } catch (error) {
         console.error('Error in payment periods query:', error);
         return [];
