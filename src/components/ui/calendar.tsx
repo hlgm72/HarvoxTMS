@@ -202,11 +202,11 @@ function Calendar({
           month: "space-y-2",
           caption: "flex justify-center pt-1 relative items-center",
           nav: "hidden",
-          table: "w-full border-collapse space-y-0.5",
-          head_row: "flex",
+          table: "w-full border-collapse",
+          head_row: "",
           head_cell:
             "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
-          row: "flex w-full mt-1",
+          row: "mt-1",
           cell: "h-8 w-8 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
           day: cn(
             buttonVariants({ variant: "ghost" }),
