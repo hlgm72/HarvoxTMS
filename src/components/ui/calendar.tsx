@@ -203,7 +203,7 @@ function Calendar({
           caption: "flex justify-center pt-1 relative items-center px-3 py-0",
           nav: "hidden",
           table: "w-full border-collapse px-3",
-          head_row: "bg-muted",
+          head_row: "",
           head_cell:
             "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem] py-2",
           row: "mt-1",
