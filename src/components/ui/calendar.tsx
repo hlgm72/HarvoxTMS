@@ -196,16 +196,16 @@ function Calendar({
         weekStartsOn={1}
         showOutsideDays={showOutsideDays}
         locale={locale}
-        className={cn("p-3 pointer-events-auto", className)}
+        className={cn("p-0 pointer-events-auto", className)}
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-          month: "space-y-2",
-          caption: "flex justify-center pt-1 relative items-center",
+          month: "space-y-0",
+          caption: "flex justify-center pt-1 relative items-center bg-muted px-3 py-2",
           nav: "hidden",
-          table: "w-full border-collapse",
-          head_row: "",
+          table: "w-full border-collapse px-3",
+          head_row: "bg-muted",
           head_cell:
-            "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+            "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem] py-2",
           row: "mt-1",
           cell: "h-8 w-8 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
           day: cn(
@@ -230,7 +230,7 @@ function Calendar({
         {...props}
       />
       {showFooterButtons && (
-        <div className="flex justify-between items-center px-3 pb-3 pt-0 pointer-events-auto">
+        <div className="flex justify-between items-center px-3 py-2 bg-muted pointer-events-auto">
           <Button
             type="button"
             variant="ghost"
