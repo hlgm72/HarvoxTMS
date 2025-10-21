@@ -53,53 +53,55 @@ export function CancelAutomaticDeductionDialog({
               ? t("deductions.cancel_automatic.reactivate_title")
               : t("deductions.cancel_automatic.cancel_title")}
           </AlertDialogTitle>
-          <AlertDialogDescription className="space-y-4">
-            <div>
-              {deductionData?.isReactivating ? (
-                <>
-                  {t("deductions.cancel_automatic.reactivate_description")}
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                    <li>{t("deductions.cancel_automatic.reactivate_consequences.status_change")}</li>
-                    <li>{t("deductions.cancel_automatic.reactivate_consequences.create_period")}</li>
-                    <li>{t("deductions.cancel_automatic.reactivate_consequences.apply_deduction")}</li>
-                  </ul>
-                </>
-              ) : (
-                <>
-                  {t("deductions.cancel_automatic.cancel_description")}
-                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                    <li>{t("deductions.cancel_automatic.cancel_consequences.status_change")}</li>
-                    <li>{t("deductions.cancel_automatic.cancel_consequences.recalculate")}</li>
-                    <li>{t("deductions.cancel_automatic.cancel_consequences.delete_payroll")}</li>
-                  </ul>
-                </>
-              )}
-            </div>
-            
-            {deductionData && (
-              <div className="bg-muted p-3 rounded-md text-sm">
-                <div><strong>{t("deductions.cancel_automatic.driver_label")}</strong> {deductionData.driverName}</div>
-                <div><strong>{t("deductions.cancel_automatic.type_label")}</strong> {deductionData.expenseType}</div>
-                <div><strong>{t("deductions.cancel_automatic.amount_label")}</strong> ${deductionData.amount.toFixed(2)}</div>
+          <AlertDialogDescription asChild>
+            <div className="space-y-4">
+              <div>
+                {deductionData?.isReactivating ? (
+                  <>
+                    {t("deductions.cancel_automatic.reactivate_description")}
+                    <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                      <li>{t("deductions.cancel_automatic.reactivate_consequences.status_change")}</li>
+                      <li>{t("deductions.cancel_automatic.reactivate_consequences.create_period")}</li>
+                      <li>{t("deductions.cancel_automatic.reactivate_consequences.apply_deduction")}</li>
+                    </ul>
+                  </>
+                ) : (
+                  <>
+                    {t("deductions.cancel_automatic.cancel_description")}
+                    <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                      <li>{t("deductions.cancel_automatic.cancel_consequences.status_change")}</li>
+                      <li>{t("deductions.cancel_automatic.cancel_consequences.recalculate")}</li>
+                      <li>{t("deductions.cancel_automatic.cancel_consequences.delete_payroll")}</li>
+                    </ul>
+                  </>
+                )}
               </div>
-            )}
+              
+              {deductionData && (
+                <div className="bg-muted p-3 rounded-md text-sm">
+                  <div><strong>{t("deductions.cancel_automatic.driver_label")}</strong> {deductionData.driverName}</div>
+                  <div><strong>{t("deductions.cancel_automatic.type_label")}</strong> {deductionData.expenseType}</div>
+                  <div><strong>{t("deductions.cancel_automatic.amount_label")}</strong> ${deductionData.amount.toFixed(2)}</div>
+                </div>
+              )}
 
-            <div className="space-y-2 pt-2">
-              <Label htmlFor="cancellation-note" className="text-foreground">
-                {deductionData?.isReactivating 
-                  ? t("deductions.cancel_automatic.reactivate_reason_label")
-                  : t("deductions.cancel_automatic.cancel_reason_label")} 
-                <span className="text-destructive"> {t("deductions.cancel_automatic.cancel_reason_required")}</span>
-              </Label>
-              <Textarea
-                id="cancellation-note"
-                placeholder={deductionData?.isReactivating 
-                  ? t("deductions.cancel_automatic.reactivate_reason_placeholder")
-                  : t("deductions.cancel_automatic.cancel_reason_placeholder")}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="min-h-[100px]"
-              />
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="cancellation-note" className="text-foreground">
+                  {deductionData?.isReactivating 
+                    ? t("deductions.cancel_automatic.reactivate_reason_label")
+                    : t("deductions.cancel_automatic.cancel_reason_label")} 
+                  <span className="text-destructive"> {t("deductions.cancel_automatic.cancel_reason_required")}</span>
+                </Label>
+                <Textarea
+                  id="cancellation-note"
+                  placeholder={deductionData?.isReactivating 
+                    ? t("deductions.cancel_automatic.reactivate_reason_placeholder")
+                    : t("deductions.cancel_automatic.cancel_reason_placeholder")}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="min-h-[100px]"
+                />
+              </div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
