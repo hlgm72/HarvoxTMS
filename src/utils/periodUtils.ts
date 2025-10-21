@@ -19,8 +19,6 @@ const getGlobalLanguage = (): string => {
  * Ejemplos: "WK32 - 2025" para semanal, "AGO - 2025" para mensual
  */
 export const formatPeriodLabel = (startDate: string, endDate: string): string => {
-  console.log('🔍 formatPeriodLabel input:', { startDate, endDate });
-  
   // ✅ USANDO FUNCIONES SEGURAS - Evitar problemas de zona horaria
   const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
   const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
@@ -31,27 +29,12 @@ export const formatPeriodLabel = (startDate: string, endDate: string): string =>
   const year = getYear(start);
   const language = getGlobalLanguage();
   
-  console.log('🔍 Parsed dates:', { 
-    startLocal: start.toLocaleDateString(),
-    endLocal: end.toLocaleDateString(),
-    year
-  });
-  
   // Calcular la duración del período
   const durationDays = differenceInDays(end, start) + 1;
-  console.log('🔍 Duration days:', durationDays);
   
   // Si es semanal (7-10 días), mostrar número de semana usando cálculo unificado
   if (durationDays <= 10) {
     const weekNumber = calculateWeekNumberFromString(startDate);
-    
-    console.log('🔍 formatPeriodLabel - Week calculation:', { 
-      weekNumber, 
-      year,
-      startDate,
-      endDate
-    });
-    
     return `W${weekNumber.toString().padStart(2, '0')}/${year}`;
   }
   
