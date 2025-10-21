@@ -210,10 +210,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         
         // ✅ OPTIMIZACIÓN: Obtener todos los user_ids y payment_period_ids únicos
         const userIds = [...new Set((data || []).map(d => d.user_id).filter(Boolean))];
-        const payrollIds = [...new Set((data || []).map(d => d.payment_period_id).filter(Boolean))];
+        const periodIds = [...new Set((data || []).map(d => d.payment_period_id).filter(Boolean))];
         
         // ✅ Solo 2 consultas adicionales en total (en lugar de 2N)
-        const [profilesData, payrollsData] = await Promise.all([
+        const [profilesData, periodsData] = await Promise.all([
           // Obtener todos los profiles de una vez
           userIds.length > 0
             ? supabase
@@ -223,20 +223,12 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 .then(res => res.data || [])
             : Promise.resolve([]),
           
-          // Obtener todos los períodos de una vez (incluyendo payment_status)
-          payrollIds.length > 0
+          // Obtener todos los períodos de compañía de una vez
+          periodIds.length > 0
             ? supabase
-                .from('user_payrolls')
-                .select(`
-                  id,
-                  payment_status,
-                  period:company_payment_periods!company_payment_period_id(
-                    period_start_date,
-                    period_end_date,
-                    period_frequency
-                  )
-                `)
-                .in('id', payrollIds)
+                .from('company_payment_periods')
+                .select('id, period_start_date, period_end_date, period_frequency')
+                .in('id', periodIds)
                 .then(res => res.data || [])
             : Promise.resolve([])
         ]);
@@ -245,38 +237,17 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         const profilesMap = new Map<string, any>();
         profilesData.forEach(p => profilesMap.set(p.user_id, p));
         
-        const payrollsMap = new Map<string, any>();
-        payrollsData.forEach(p => payrollsMap.set(p.id, p));
+        const periodsMap = new Map<string, any>();
+        periodsData.forEach(p => periodsMap.set(p.id, p));
         
         // ✅ Enriquecer los datos usando los mapas (operación O(n) en lugar de O(n²))
-        const enrichedData = (data || []).map((expense: any) => {
-          const periodData = expense.payment_period_id 
-            ? payrollsMap.get(expense.payment_period_id) || null
-            : null;
-          
-          // Log temporal para debug
-          if (expense.payment_period_id && !periodData) {
-            console.log('❌ No se encontró period_data para:', {
-              expense_id: expense.id,
-              payment_period_id: expense.payment_period_id,
-              available_periods: Array.from(payrollsMap.keys())
-            });
-          }
-          
-          if (periodData) {
-            console.log('✅ Period data encontrado:', {
-              expense_id: expense.id,
-              payment_period_id: expense.payment_period_id,
-              period_data: periodData
-            });
-          }
-          
-          return {
-            ...expense,
-            profiles: profilesMap.get(expense.user_id) || null,
-            period_data: periodData
-          };
-        });
+        const enrichedData = (data || []).map((expense: any) => ({
+          ...expense,
+          profiles: profilesMap.get(expense.user_id) || null,
+          period_data: expense.payment_period_id 
+            ? periodsMap.get(expense.payment_period_id) || null
+            : null
+        }));
 
         return enrichedData;
       } catch (error) {
@@ -353,10 +324,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   };
 
   const canCancelOrReactivate = (deduction: any) => {
-    // Solo se puede cancelar o reactivar si el payroll no ha sido pagado
-    if (deduction.period_data?.payment_status === 'paid') {
-      return false;
-    }
+    // Por ahora permitir siempre (podemos agregar lógica adicional después)
     return true;
   };
 
@@ -425,15 +393,12 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {deduction.period_data?.period ? (
+                    {deduction.period_data ? (
                       formatDetailedPaymentPeriod(
-                        deduction.period_data.period.period_start_date,
-                        deduction.period_data.period.period_end_date,
-                        deduction.period_data.period.period_frequency
+                        deduction.period_data.period_start_date,
+                        deduction.period_data.period_end_date,
+                        deduction.period_data.period_frequency
                       )
-                    ) : deduction.payment_period_id ? (
-                      // Si tiene payment_period_id pero no se cargó period_data, mostrar el ID
-                      `Período: ${deduction.payment_period_id.slice(0, 8)}...`
                     ) : deduction.expense_date ? (
                       // Si no hay period_data pero hay expense_date, determinar el período calculado
                       (() => {
