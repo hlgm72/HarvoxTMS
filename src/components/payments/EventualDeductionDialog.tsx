@@ -177,15 +177,15 @@ export function EventualDeductionDialog({
         const companyId = userCompanyRoles[0].company_id;
         console.log('User company found:', companyId);
 
-        // Obtenemos los períodos de usuario para el conductor en la fecha del gasto
-        console.log('Step 2: Getting user periods for date...');
-        
         // Convertir expenseDate a formato YYYY-MM-DD para la comparación
         const expenseDateStr = expenseDate.toISOString().split('T')[0];
         console.log('Expense date for filtering:', expenseDateStr);
+
+        // Obtenemos TODOS los períodos (incluyendo pagados) para detectar ese caso
+        console.log('Step 2: Getting ALL user periods for date...');
         
         // @ts-ignore - Complex Supabase query types
-        const { data: userPeriods, error: periodsError } = await supabase
+        const { data: allPeriods, error: periodsError } = await supabase
           .from('user_payrolls')
           .select(`
             *,
@@ -197,7 +197,6 @@ export function EventualDeductionDialog({
           `)
           .eq('company_id', companyId)
           .eq('user_id', formData.user_id)
-          .neq('payment_status', 'paid')  // ✅ Filtrar payrolls pagados
           .order('created_at', { ascending: false });
         
         if (periodsError) {
@@ -205,23 +204,74 @@ export function EventualDeductionDialog({
           return [];
         }
         
-        console.log('User periods found:', userPeriods?.length || 0);
+        console.log('All user periods found:', allPeriods?.length || 0);
 
-        if (!userPeriods || userPeriods.length === 0) {
-          console.log('No user periods found for this date');
-          return [];
-        }
-        
-        // Filtrar manualmente los períodos que contienen la fecha del gasto
-        const filteredPeriods = userPeriods.filter(period => {
+        // Filtrar períodos que contienen la fecha del gasto
+        const periodsForDate = allPeriods?.filter(period => {
           if (!period.period) return false;
           const startDate = period.period.period_start_date;
           const endDate = period.period.period_end_date;
           return expenseDateStr >= startDate && expenseDateStr <= endDate;
-        });
+        }) || [];
         
-        console.log('Filtered periods for date:', filteredPeriods.length);
-        return filteredPeriods;
+        console.log('Periods matching date:', periodsForDate.length);
+
+        // Verificar si hay períodos pagados para esta fecha
+        const paidPeriod = periodsForDate.find(p => p.payment_status === 'paid');
+        if (paidPeriod) {
+          console.log('⚠️ Found PAID period for this date - blocking creation');
+          return [{ ...paidPeriod, __is_paid: true }]; // Marcamos como pagado
+        }
+
+        // Filtrar solo períodos NO pagados
+        const unpaidPeriods = periodsForDate.filter(p => p.payment_status !== 'paid');
+
+        // Si hay período no pagado, usarlo
+        if (unpaidPeriods.length > 0) {
+          console.log('✅ Found unpaid period for this date');
+          return unpaidPeriods;
+        }
+
+        // Si no hay ningún período, crear uno automáticamente
+        console.log('📝 No period found - creating automatically...');
+        const { data: newPeriodId, error: createError } = await supabase.rpc(
+          'create_payment_period_if_needed',
+          {
+            target_company_id: companyId,
+            target_date: expenseDateStr
+          }
+        );
+
+        if (createError) {
+          console.error('Error creating period:', createError);
+          throw new Error('No se pudo crear el período de pago automáticamente');
+        }
+
+        console.log('✅ Period created:', newPeriodId);
+
+        // Buscar el user_payroll recién creado
+        const { data: newUserPeriods, error: fetchNewError } = await supabase
+          .from('user_payrolls')
+          .select(`
+            *,
+            period:company_payment_periods!company_payment_period_id(
+              period_start_date,
+              period_end_date,
+              period_frequency
+            )
+          `)
+          .eq('company_id', companyId)
+          .eq('user_id', formData.user_id)
+          .eq('company_payment_period_id', newPeriodId)
+          .limit(1);
+
+        if (fetchNewError || !newUserPeriods || newUserPeriods.length === 0) {
+          console.error('Error fetching newly created period:', fetchNewError);
+          return [];
+        }
+
+        console.log('✅ Successfully fetched newly created user_payroll');
+        return newUserPeriods;
       } catch (error) {
         console.error('Error in payment periods query:', error);
         return [];
@@ -229,6 +279,13 @@ export function EventualDeductionDialog({
     },
     enabled: !!formData.user_id && !!expenseDate && isOpen
   });
+
+  // Verificar si el período específico está pagado
+  const isPeriodPaid = paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid';
+  const canModifyPeriod = canModify && !isPeriodPaid;
+  const finalTooltip = isPeriodPaid 
+    ? 'No se pueden crear deducciones para períodos ya pagados' 
+    : protectionTooltip;
 
   // Obtener tipos de gastos
   const { data: expenseTypes = [] } = useQuery({
@@ -260,15 +317,11 @@ export function EventualDeductionDialog({
         throw new Error('No se pueden crear deducciones para fechas futuras. Por favor, selecciona una fecha actual o pasada.');
       }
 
-      // Verificar que hay un período válido (solo para crear, no para editar)
-      if (!editingDeduction && (!paymentPeriods || paymentPeriods.length === 0)) {
-        throw new Error('No se encontró un período de pago válido para la fecha seleccionada. Por favor, selecciona una fecha dentro de un período abierto.');
-      }
-
       // ⚠️ VALIDACIÓN: No modificar payrolls ya pagados
       if (paymentPeriods && paymentPeriods.length > 0) {
         const payroll = paymentPeriods[0];
-        if (payroll.payment_status === 'paid') {
+        // @ts-ignore - verificar flag personalizado
+        if (payroll.payment_status === 'paid' || payroll.__is_paid) {
           throw new Error('Este conductor ya ha sido pagado en este período. No se pueden crear o modificar deducciones para períodos ya pagados.');
         }
       }
@@ -553,18 +606,18 @@ export function EventualDeductionDialog({
                   </div>
                 )}
                 
-                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length === 0 && (
-                  <div className="p-3 border border-orange-200 bg-orange-50 rounded-md">
-                    <p className="text-sm text-orange-800">
-                      {t("deductions.period_dialog.no_period_found", { date: formatPrettyDate(expenseDate) })}
+                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid' && (
+                  <div className="p-3 border border-red-200 bg-red-50 rounded-md">
+                    <p className="text-sm text-red-800 font-medium">
+                      ⚠️ Período ya pagado - No se puede modificar
                     </p>
-                    <p className="text-xs text-orange-600 mt-1">
-                      {t("deductions.period_dialog.select_period_date")}
+                    <p className="text-xs text-red-600 mt-1">
+                      Este conductor ya recibió el pago para este período. No se pueden crear ni modificar deducciones.
                     </p>
                   </div>
                 )}
                 
-                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && (
+                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status !== 'paid' && (
                   <div className="p-3 border border-green-200 bg-green-50 rounded-md">
                     <p className="text-sm text-green-800">
                       {(() => {
@@ -649,9 +702,9 @@ export function EventualDeductionDialog({
               disabled={
                 isLoading || 
                 !isFormValid ||
-                !canModify // ⭐ NUEVO: Deshabilitar si conductor pagado
+                !canModifyPeriod // ⭐ Usar validación combinada
               }
-              title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
+              title={finalTooltip || undefined} // ⭐ Tooltip explicativo
               className="flex-1"
             >
               {isLoading 
