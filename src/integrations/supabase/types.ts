@@ -629,6 +629,33 @@ export type Database = {
         }
         Relationships: []
       }
+      data_fix_audit: {
+        Row: {
+          details: Json | null
+          fix_type: string
+          fixed_at: string | null
+          fixed_by: string | null
+          id: string
+          records_affected: number
+        }
+        Insert: {
+          details?: Json | null
+          fix_type: string
+          fixed_at?: string | null
+          fixed_by?: string | null
+          id?: string
+          records_affected: number
+        }
+        Update: {
+          details?: Json | null
+          fix_type?: string
+          fixed_at?: string | null
+          fixed_by?: string | null
+          id?: string
+          records_affected?: number
+        }
+        Relationships: []
+      }
       deployment_log: {
         Row: {
           completed_at: string | null
