@@ -52,10 +52,10 @@ export function useCancelAutomaticDeduction() {
         return { recalculated: false, payrollDeleted: false };
       }
 
-      // 3. Recalcular el payroll del usuario usando el RPC
+      // 3. Recalcular el payroll del usuario usando el RPC con el user_payroll_id correcto
       const { error: recalcError } = await supabase
         .rpc('calculate_user_payment_period_with_validation', {
-          calculation_id: paymentPeriodId
+          calculation_id: payrollData.id  // Usar el ID del user_payroll, no el company_payment_period_id
         });
 
       if (recalcError) {
