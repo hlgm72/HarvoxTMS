@@ -110,14 +110,20 @@ export function useCancelAutomaticDeduction() {
       console.log('🔍 [Cancel] Is payroll empty?', isEmpty);
 
       if (isEmpty) {
-        console.log('🔍 [Cancel] Step 5: Deleting empty payroll');
-        const { error: deletePayrollError } = await supabase
+        console.log('🔍 [Cancel] Step 5: Deleting empty payroll with ID:', payrollData.id);
+        console.log('🔍 [Cancel] Payroll to delete:', updatedPayrollData);
+        
+        const { data: deleteData, error: deletePayrollError } = await supabase
           .from('user_payrolls')
           .delete()
-          .eq('id', payrollData.id);
+          .eq('id', payrollData.id)
+          .select();
+
+        console.log('🔍 [Cancel] Delete result:', { data: deleteData, error: deletePayrollError });
 
         if (deletePayrollError) {
           console.error('❌ [Cancel] Error deleting empty payroll:', deletePayrollError);
+          console.error('❌ [Cancel] Full error details:', JSON.stringify(deletePayrollError, null, 2));
           return { recalculated: true, payrollDeleted: false };
         }
 
