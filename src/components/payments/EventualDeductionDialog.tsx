@@ -184,7 +184,8 @@ export function EventualDeductionDialog({
         const expenseDateStr = expenseDate.toISOString().split('T')[0];
         console.log('Expense date for filtering:', expenseDateStr);
         
-        const { data: userPeriods, error: periodsError } = await supabase
+        // @ts-ignore - Complex Supabase query types
+        const queryResult = await supabase
           .from('user_payrolls')
           .select(`
             *,
@@ -199,6 +200,9 @@ export function EventualDeductionDialog({
           .in('status', ['open', 'processing'])
           .neq('payment_status', 'paid')  // ✅ Filtrar payrolls pagados
           .order('created_at', { ascending: false});
+        
+        const { data: userPeriods, error: periodsError } = queryResult;
+        
         
         if (periodsError) {
           console.error('Error fetching user periods:', periodsError);
@@ -527,6 +531,7 @@ export function EventualDeductionDialog({
                         month={expenseDate}
                         onMonthChange={setExpenseDate}
                         captionLayout="dropdown-buttons"
+                        showWeekNumber
                         className="p-1 pointer-events-auto"
                       />
                     </PopoverContent>
