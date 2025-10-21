@@ -195,6 +195,7 @@ function Calendar({
       <DayPicker
         weekStartsOn={1}
         showOutsideDays={showOutsideDays}
+        showWeekNumber
         locale={locale}
         className={cn("p-0 pointer-events-auto", className)}
         classNames={{
