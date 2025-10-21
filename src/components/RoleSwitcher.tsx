@@ -52,13 +52,15 @@ export const RoleSwitcher = () => {
   };
 
   const handleRoleChange = (role: any) => {
-    // Store role preference in storage (UI preference only)
+    // ⚠️ SECURITY NOTE: localStorage is UI preference ONLY
+    // Actual authorization enforced by server-side RLS policies
+    // The switchRole() function validates against server-fetched roles
     const roleString = JSON.stringify(role);
     localStorage.setItem('currentRole', roleString);
     localStorage.setItem('lastActiveRole', roleString);
     sessionStorage.setItem('activeRole', roleString);
     
-    // Call switchRole
+    // Call switchRole (validates role exists in userRoles from database)
     switchRole(role.id);
     
     // Navigate to appropriate dashboard

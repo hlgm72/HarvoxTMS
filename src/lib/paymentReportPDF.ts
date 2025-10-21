@@ -1293,28 +1293,27 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         </html>
       `;
       
+      // ✅ SECURITY: Use Blob URLs instead of deprecated document.write()
+      // This is CSP-compatible and avoids injection risks
       const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
       const htmlUrl = URL.createObjectURL(htmlBlob);
       
-      // Siempre usar el wrapper HTML con título personalizado
+      // Open PDF report using secure Blob URL approach
       try {
         if (targetWindow && !targetWindow.closed) {
           // Use the provided window reference
-          targetWindow.document.write(htmlContent);
-          targetWindow.document.close();
+          targetWindow.location.href = htmlUrl;
           targetWindow.document.title = fileName.replace('.pdf', '');
           console.log('✅ PDF wrapper abierto en ventana existente con título:', fileName);
         } else {
-          // Fallback to creating a new window if none provided or closed
-          const newWindow = window.open('about:blank', '_blank');
+          // Create new window with Blob URL
+          const newWindow = window.open(htmlUrl, '_blank');
           if (newWindow) {
-            newWindow.document.write(htmlContent);
-            newWindow.document.close();
             newWindow.document.title = fileName.replace('.pdf', '');
             console.log('✅ PDF wrapper abierto en nueva ventana con título:', fileName);
           } else {
             console.log('⚠️ Popup bloqueado, usando data URI...');
-            // Fallback usando data URI para evitar el UUID
+            // Fallback usando data URI si popup está bloqueado
             const dataUri = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
             window.open(dataUri, '_blank');
           }

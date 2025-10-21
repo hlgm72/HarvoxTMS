@@ -134,17 +134,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const determineCurrentRole = useCallback((roles: UserRole[]) => {
     if (!roles || roles.length === 0) return null;
 
-    // Check for stored role preference
+    // ⚠️ SECURITY NOTE: localStorage is used ONLY for UI preference
+    // All actual authorization is enforced server-side via RLS policies
+    // Never trust localStorage values for security decisions
     const storedRole = localStorage.getItem('currentRole');
     if (storedRole) {
       try {
         const parsedRole = JSON.parse(storedRole);
+        // Validate stored role against actual server-fetched roles
         const validRole = roles.find(r => r.role === parsedRole.role && r.company_id === parsedRole.company_id);
         if (validRole) {
           return validRole.role;
         }
+        // Clear invalid localStorage entry
+        localStorage.removeItem('currentRole');
       } catch (e) {
         logger.warn('Error parsing stored role', { error: e });
+        localStorage.removeItem('currentRole');
       }
     }
 
@@ -191,11 +197,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchUserRoles, determineCurrentRole]);
 
   const switchRole = useCallback((roleId: string) => {
+    // ⚠️ SECURITY: Validate role exists in server-fetched userRoles
+    // before storing in localStorage (UI preference only)
     const role = userRoles?.find(r => r.id === roleId);
     if (role) {
       setCurrentRole(role.role);
       
-      // Store role preference
+      // Store UI preference only - not used for authorization
       localStorage.setItem('currentRole', JSON.stringify({
         role: role.role,
         company_id: role.company_id

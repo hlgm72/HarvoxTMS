@@ -235,17 +235,48 @@ export function PDFAnalyzer() {
         .in('user_id', driverIds);
 
       // Obtener períodos de pago de la empresa con fechas del período
-      const { data: userPeriods } = await supabase
+      // @ts-ignore - Avoiding TypeScript deep instantiation error with complex Supabase query
+      const { data: userPayrolls } = await supabase
         .from('user_payrolls')
-        .select(`
-          *,
-          period:company_payment_periods!company_payment_period_id(
-            period_start_date,
-            period_end_date
-          )
-        `)
+        .select('id, user_id, company_payment_period_id, status, company_id')
         .eq('company_id', companyId)
         .eq('status', 'open');
+      
+      // Define type for enriched payroll data
+      type PayrollWithPeriod = {
+        id: string;
+        user_id: string;
+        company_payment_period_id: string;
+        period?: {
+          id: string;
+          period_start_date: string;
+          period_end_date: string;
+        };
+      } & Record<string, any>;
+      
+      const userPeriods: PayrollWithPeriod[] | null = userPayrolls as any;
+      
+      // Fetch period details separately if needed
+      if (userPeriods && userPeriods.length > 0) {
+        const periodIds = userPeriods
+          .map(p => p.company_payment_period_id)
+          .filter(Boolean);
+        
+        if (periodIds.length > 0) {
+          const { data: periods } = await supabase
+            .from('company_payment_periods')
+            .select('id, period_start_date, period_end_date')
+            .in('id', periodIds);
+          
+          // Enrich userPeriods with period data
+          userPeriods.forEach((payroll: PayrollWithPeriod) => {
+            const period = periods?.find(p => p.id === payroll.company_payment_period_id);
+            if (period) {
+              payroll.period = period;
+            }
+          });
+        }
+      }
 
       // Obtener gastos de combustible existentes para verificar duplicados
       const { data: existingFuelExpenses } = await supabase
