@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +48,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   const { userCompany } = useCompanyCache();
   const { t } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
+  const queryClient = useQueryClient();
   const [deletingExpense, setDeletingExpense] = useState<any>(null);
   const [editingExpense, setEditingExpense] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -266,6 +267,10 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
     if (!deletingExpense) return;
 
     try {
+      const paymentPeriodId = deletingExpense.payment_period_id;
+      const userId = deletingExpense.user_id;
+
+      // 1. Eliminar la expense_instance
       const { error } = await supabase
         .from('expense_instances')
         .delete()
@@ -273,8 +278,57 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
 
       if (error) throw error;
 
+      // 2. Si tenía payment_period, recalcular el payroll
+      if (paymentPeriodId) {
+        const { data: userPayroll } = await supabase
+          .from('user_payrolls')
+          .select('id')
+          .eq('company_payment_period_id', paymentPeriodId)
+          .eq('user_id', userId)
+          .single();
+
+        if (userPayroll) {
+          // Recalcular el payroll
+          const { error: recalcError } = await supabase
+            .rpc('calculate_user_payment_period_with_validation', {
+              calculation_id: userPayroll.id
+            });
+
+          if (recalcError) {
+            console.error('Error recalculating payroll:', recalcError);
+          }
+
+          // Verificar si el payroll quedó vacío (sin transacciones)
+          const { data: payrollData } = await supabase
+            .from('user_payrolls')
+            .select('gross_earnings, fuel_expenses, total_deductions, other_income')
+            .eq('id', userPayroll.id)
+            .single();
+
+          const isEmpty = payrollData && 
+            payrollData.gross_earnings === 0 && 
+            payrollData.fuel_expenses === 0 && 
+            payrollData.total_deductions === 0 && 
+            payrollData.other_income === 0;
+
+          if (isEmpty) {
+            // Eliminar el user_payroll si está vacío
+            await supabase
+              .from('user_payrolls')
+              .delete()
+              .eq('id', userPayroll.id);
+          }
+        }
+      }
+
       showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_deleted"));
 
+      // 3. Invalidar queries para recargar los datos en toda la app
+      queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+      queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+      
       refetch();
       setDeletingExpense(null);
     } catch (error: any) {
