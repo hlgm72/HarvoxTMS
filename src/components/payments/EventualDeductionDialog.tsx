@@ -197,7 +197,6 @@ export function EventualDeductionDialog({
           `)
           .eq('company_id', companyId)
           .eq('user_id', formData.user_id)
-          .in('status', ['open', 'processing'])
           .neq('payment_status', 'paid')  // ✅ Filtrar payrolls pagados
           .order('created_at', { ascending: false });
         
