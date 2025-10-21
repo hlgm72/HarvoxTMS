@@ -408,10 +408,20 @@ All colors MUST be HSL.
 
   /* Week numbers alignment - react-day-picker */
   .rdp-weeknumber {
-    @apply h-8 w-8 text-center text-sm p-0 font-normal text-muted-foreground flex items-center justify-center;
+    height: 32px !important;
+    width: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    color: hsl(var(--muted-foreground)) !important;
+    padding: 0 !important;
+    margin-top: 0.25rem !important;
   }
   
   .rdp thead .rdp-weeknumber {
-    @apply text-[0.8rem];
+    font-size: 0.8rem !important;
+    margin-top: 0 !important;
   }
 }
