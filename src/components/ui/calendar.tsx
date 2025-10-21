@@ -99,7 +99,7 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
   };
   
   return (
-    <div className="flex justify-center items-center gap-2 py-2 pointer-events-auto">
+    <div className="flex justify-center items-center gap-2 py-2 pointer-events-auto bg-muted px-3">
       <div className="flex items-center gap-1 pointer-events-auto">
         <span className="text-sm font-medium min-w-[100px] text-center pointer-events-none">
           {months[currentMonth]}
@@ -200,7 +200,7 @@ function Calendar({
         classNames={{
           months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
           month: "space-y-0",
-          caption: "flex justify-center pt-1 relative items-center bg-muted px-3 py-2",
+          caption: "flex justify-center pt-1 relative items-center px-3 py-0",
           nav: "hidden",
           table: "w-full border-collapse px-3",
           head_row: "bg-muted",
