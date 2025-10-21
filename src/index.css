@@ -406,22 +406,40 @@ All colors MUST be HSL.
     @apply hidden;
   }
 
-  /* Week numbers alignment - react-day-picker */
+  /* Week numbers alignment - react-day-picker v8 
+     Asegurar que los números de semana se alineen verticalmente con las filas de días */
+  .rdp {
+    --rdp-cell-size: 2rem;
+  }
+  
   .rdp-weeknumber {
-    height: 32px !important;
-    width: 32px !important;
+    height: var(--rdp-cell-size) !important;
+    width: var(--rdp-cell-size) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-size: 0.875rem !important;
+    line-height: 1 !important;
     font-weight: 400 !important;
     color: hsl(var(--muted-foreground)) !important;
     padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Asegurar que las filas tengan altura consistente */
+  .rdp tbody tr {
+    display: flex !important;
+    align-items: center !important;
     margin-top: 0.25rem !important;
   }
   
   .rdp thead .rdp-weeknumber {
     font-size: 0.8rem !important;
-    margin-top: 0 !important;
+  }
+  
+  /* Asegurar que las celdas de días tengan altura consistente */
+  .rdp-day, .rdp-cell {
+    height: var(--rdp-cell-size) !important;
+    width: var(--rdp-cell-size) !important;
   }
 }
