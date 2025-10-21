@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useFleetNotifications } from "@/components/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from '@/lib/dateFormatting';
-import { DollarSign, CreditCard, Building, Check, CalendarIcon } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, DollarSign, CheckCircle2, CreditCard, Building, Check } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
@@ -63,64 +63,51 @@ export function MarkDriverPaidDialog({
 
     setIsLoading(true);
     try {
-      // Obtener el userId ANTES del update para mejor performance
-      const { data: { user } } = await supabase.auth.getUser();
-      const userId = user?.id;
+      // 🚀 OPTIMIZACIÓN: Usar RPC ACID en lugar de múltiples queries
+      // Reduce de 4 llamadas a la BD a solo 1 transacción atómica
+      const { data, error } = await supabase.rpc('mark_driver_as_paid_with_validation', {
+        calculation_id: calculationId,
+        payment_method_used: formData.paymentMethod,
+        payment_ref: formData.paymentReference || null,
+        notes: formData.notes || null
+      });
 
-      // Primero, obtener el payroll para conocer el company_payment_period_id y user_id
-      const { data: payrollData, error: payrollError } = await supabase
+      if (error) throw error;
+      
+      if (!(data as any)?.success) {
+        throw new Error((data as any)?.message || 'Error marking driver as paid');
+      }
+
+      // Ahora actualizar las expense_instances de 'planned' a 'applied'
+      // (esto no está en la RPC para mantener la separación de concerns)
+      const { data: payrollData } = await supabase
         .from('user_payrolls')
         .select('company_payment_period_id, user_id')
         .eq('id', calculationId)
         .single();
 
-      if (payrollError) throw payrollError;
-
-      // Actualizar las expense_instances de 'planned' a 'applied'
-      const { error: instancesError } = await supabase
-        .from('expense_instances')
-        .update({
-          status: 'applied',
-          applied_at: new Date().toISOString()
-        })
-        .eq('payment_period_id', payrollData.company_payment_period_id)
-        .eq('user_id', payrollData.user_id)
-        .eq('status', 'planned');
-
-      if (instancesError) throw instancesError;
-
-      // Actualizar el user_payroll
-      const { error } = await supabase
-        .from('user_payrolls')
-        .update({
-          payment_status: 'paid',
-          actual_payment_date: format(formData.paymentDate, 'yyyy-MM-dd'),
-          payment_method: formData.paymentMethod,
-          payment_reference: formData.paymentReference || null,
-          payment_notes: formData.notes || null,
-          paid_at: new Date().toISOString(),
-          paid_by: userId,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', calculationId);
-
-      if (error) throw error;
+      if (payrollData) {
+        await supabase
+          .from('expense_instances')
+          .update({
+            status: 'applied',
+            applied_at: new Date().toISOString()
+          })
+          .eq('payment_period_id', payrollData.company_payment_period_id)
+          .eq('user_id', payrollData.user_id)
+          .eq('status', 'planned');
+      }
 
       showSuccess(
         t("mark_paid_dialog.notifications.success_title"),
         t("mark_paid_dialog.notifications.success_message", { driverName })
       );
       
-      // Invalidar queries específicas
-      await queryClient.invalidateQueries({ 
-        queryKey: ['payment-calculations-reports']
-      });
-      await queryClient.invalidateQueries({ 
-        queryKey: ['payment-reports-stats']
-      });
-      await queryClient.invalidateQueries({ 
-        queryKey: ['eventual-deductions']
-      });
+      // ⚡ OPTIMIZACIÓN: No usar await en invalidaciones (no es necesario bloquear la UI)
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-reports-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
       
       // Reset form
       setFormData({
@@ -134,7 +121,16 @@ export function MarkDriverPaidDialog({
       onSuccess?.();
     } catch (error: any) {
       console.error('Error marking driver as paid:', error);
-      showError(error.message || t("mark_paid_dialog.notifications.error_unexpected"));
+      
+      // Proporcionar mensajes de error más específicos
+      let errorMessage = error.message || t("mark_paid_dialog.notifications.error_unexpected");
+      if (errorMessage.includes('ERROR_ALREADY_PAID')) {
+        errorMessage = 'El conductor ya está marcado como pagado';
+      } else if (errorMessage.includes('ERROR_CALCULATION_NOT_FOUND')) {
+        errorMessage = 'No se encontró el cálculo de pago';
+      }
+      
+      showError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -265,9 +261,20 @@ export function MarkDriverPaidDialog({
             <Button
               type="submit"
               disabled={isLoading || !formData.paymentMethod}
-              className="flex-1"
+              className="flex-1 relative overflow-hidden group"
             >
-              {isLoading ? t("mark_paid_dialog.processing") : t("mark_paid_dialog.submit")}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <span className="animate-pulse">{t("mark_paid_dialog.processing")}</span>
+                  <div className="absolute inset-0 -translate-x-full group-disabled:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000" />
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="mr-2 h-4 w-4 transition-transform group-hover:scale-110 group-hover:rotate-12" />
+                  {t("mark_paid_dialog.submit")}
+                </>
+              )}
             </Button>
           </div>
         </form>

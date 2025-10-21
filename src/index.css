@@ -452,4 +452,18 @@ All colors MUST be HSL.
   .rdp tfoot .rdp-weeknumber {
     background-color: hsl(var(--muted));
   }
+
+  /* Payment Button Shimmer Animation */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
 }
