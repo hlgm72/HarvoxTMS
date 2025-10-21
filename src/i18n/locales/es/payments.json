@@ -118,9 +118,9 @@
       "description_label": "Descripción/Motivo",
       "atm_helper": "Introduce los números como en un cajero automático",
       "checking_period": "Verificando período de pago para la fecha seleccionada...",
-      "no_period_found": "No hay un período de pago abierto para la fecha {date}.",
+      "no_period_found": "No hay un período de pago abierto para la fecha {{date}}.",
       "select_period_date": "Selecciona una fecha que esté dentro de un período de pago abierto.",
-      "period_found": "✓ Período encontrado: {start} - {end}",
+      "period_found": "✓ Período encontrado: {{start}} - {{end}}",
       "month": "Mes"
     },
     "template": {
