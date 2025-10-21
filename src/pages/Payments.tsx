@@ -178,7 +178,7 @@ export default function Payments() {
                   <p className="text-lg sm:text-xl font-semibold">
                     {formatCurrency(currentPeriodSummary?.net_payment || 0)}
                   </p>
-                  {getStatusBadge(currentPeriod?.status || 'open')}
+                  {getStatusBadge((currentPeriod as any)?.payment_status || (currentPeriod as any)?.status || 'open')}
                 </div>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function Payments() {
                 </p>
               </div>
             </div>
-            {previousPeriod && getStatusBadge(previousPeriod.status)}
+            {previousPeriod && getStatusBadge((previousPeriod as any).payment_status || (previousPeriod as any).status)}
           </div>
         </CardContent>
       </Card>

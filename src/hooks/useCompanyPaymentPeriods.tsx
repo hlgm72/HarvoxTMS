@@ -16,13 +16,12 @@ export interface UserPaymentPeriod {
   company_id: string;
   company_payment_period_id: string;
   payment_date?: string;
-  status: string;
+  payment_status: string;
   gross_earnings: number;
   fuel_expenses: number;
   total_deductions: number;
   other_income: number;
   net_payment: number;
-  payment_status: string;
   created_at: string;
   updated_at: string;
   // Campos del JOIN con company_payment_periods
@@ -99,7 +98,7 @@ export function useCompanyPaymentPeriods(companyId?: string) {
               period_start_date: period.period_start_date || '',
               period_end_date: period.period_end_date || '',
               period_frequency: period.period_frequency || '',
-              status: period.status,
+              status: period.payment_status,
               user_periods: [],
               total_net_payment: 0,
               users_count: 0,

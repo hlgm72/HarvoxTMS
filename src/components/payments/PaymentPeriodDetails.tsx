@@ -40,8 +40,6 @@ interface DriverCalculation {
   fuel_expenses: number;
   total_deductions: number;
   other_income: number;
-  has_negative_balance: boolean;
-  balance_alert_message?: string;
   payment_status: string;
   calculated_at?: string;
   profiles?: {
@@ -209,7 +207,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   }
 
   const totalDrivers = driverCalculations.length;
-  const driversWithNegativeBalance = driverCalculations.filter(d => d.has_negative_balance).length;
+  const driversWithNegativeBalance = driverCalculations.filter(d => calculateNetPayment(d) < 0).length;
   const unpaidDrivers = driverCalculations.filter(d => d.payment_status !== 'paid');
   
   // 🚨 CRÍTICO - Agregaciones financieras fundamentales - NO MODIFICAR SIN AUTORIZACIÓN
@@ -243,14 +241,14 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
               : 'Período sin fechas'}
           </h3>
           <div className="flex items-center gap-2 mt-1">
-            <Badge variant={getStatusBadgeVariant(period.status)}>
-              {period.status}
+            <Badge variant={getStatusBadgeVariant((period as any).payment_status || (period as any).status || 'pending')}>
+              {(period as any).payment_status || (period as any).status || 'pending'}
             </Badge>
           </div>
         </div>
         
         <div className="flex gap-2">
-          {period.status === 'open' && (
+          {((period as any).payment_status === 'pending' || (period as any).status === 'open') && (
             <Button onClick={handleProcessPeriod} disabled={isProcessing}>
               <Calculator className="h-4 w-4 mr-2" />
               {t('period.process_period')}
@@ -258,7 +256,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           )}
           
           {/* Botón para cerrar período - solo visible si está calculado y no bloqueado */}
-          {(period.status === 'calculated' || period.status === 'approved') && (
+          {((period as any).payment_status === 'processing' || (period as any).payment_status === 'approved' || (period as any).status === 'calculated' || (period as any).status === 'approved') && (
             <Button 
               onClick={handleClosePeriod} 
               disabled={isClosingPeriod}
@@ -448,8 +446,12 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
           )}
 
           {/* Lista de conductores */}
-          {driverCalculations.map((calc) => (
-            <Card key={calc.id} className={calc.has_negative_balance ? 'border-destructive' : calc.payment_status === 'paid' ? 'border-success' : ''}>
+          {driverCalculations.map((calc) => {
+            const netPayment = calculateNetPayment(calc);
+            const hasNegativeBalance = netPayment < 0;
+            
+            return (
+            <Card key={calc.id} className={hasNegativeBalance ? 'border-destructive' : calc.payment_status === 'paid' ? 'border-success' : ''}>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -476,7 +478,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                         Pagado
                       </Badge>
                     )}
-                    {calc.has_negative_balance && (
+                    {hasNegativeBalance && (
                       <Badge variant="destructive">
                         <AlertTriangle className="h-3 w-3 mr-1" />
                         Balance Negativo
@@ -484,11 +486,6 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                     )}
                   </div>
                 </div>
-                {calc.balance_alert_message && (
-                  <CardDescription className="text-destructive">
-                    {calc.balance_alert_message}
-                  </CardDescription>
-                )}
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
@@ -518,14 +515,15 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                   </div>
                   <div>
                     <p className="text-muted-foreground">Pago Neto</p>
-                    <p className={`font-semibold ${calculateNetPayment(calc) < 0 ? 'text-destructive' : ''}`}>
-                      {formatCurrency(calculateNetPayment(calc))}
+                    <p className={`font-semibold ${netPayment < 0 ? 'text-destructive' : ''}`}>
+                      {formatCurrency(netPayment)}
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
+          );
+          })}
         </TabsContent>
 
         <TabsContent value="summary">
@@ -552,7 +550,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('period.status_label')}</p>
-                  <p className="font-semibold">{period.status}</p>
+                  <p className="font-semibold">{(period as any).payment_status || (period as any).status || 'N/A'}</p>
                 </div>
               </div>
             </CardContent>

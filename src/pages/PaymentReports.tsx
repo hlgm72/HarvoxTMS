@@ -308,7 +308,7 @@ export default function PaymentReports() {
           matchesStatus = calc.payment_status === 'failed';
           break;
         case 'negative':
-          matchesStatus = calc.has_negative_balance;
+          matchesStatus = calculateNetPayment(calc) < 0;
           break;
         case 'approved':
           matchesStatus = calc.payment_status === 'approved';

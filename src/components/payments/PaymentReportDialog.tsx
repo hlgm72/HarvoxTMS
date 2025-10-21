@@ -738,7 +738,7 @@ export function PaymentReportDialog({
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
                 {t('report_dialog.financial_summary')}
               </CardTitle>
-              {calculation.has_negative_balance && (
+              {calculateNetPayment(calculation) < 0 && (
                 <div className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <span className="text-sm font-medium">
