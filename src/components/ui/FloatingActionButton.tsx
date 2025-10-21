@@ -20,7 +20,7 @@ export function FloatingActionButton({
         "flex items-center justify-center",
         "bg-primary text-primary-foreground",
         "rounded-l-lg shadow-lg",
-        "transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+        "transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]",
         "w-12 hover:w-[180px]",
         "h-12",
         "overflow-hidden",
@@ -28,8 +28,8 @@ export function FloatingActionButton({
         className
       )}
     >
-      <Settings className="h-5 w-5 min-w-[20px] shrink-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:rotate-90 group-hover:ml-4" />
-      <span className="max-w-0 opacity-0 text-sm font-semibold tracking-wider whitespace-nowrap transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:opacity-100 group-hover:max-w-[140px] group-hover:ml-2 group-hover:mr-4">
+      <Settings className="h-5 w-5 min-w-[20px] shrink-0 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:rotate-90 group-hover:ml-4" />
+      <span className="max-w-0 opacity-0 text-sm font-semibold tracking-wider whitespace-nowrap transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:opacity-100 group-hover:max-w-[140px] group-hover:ml-2 group-hover:mr-4">
         {label}
       </span>
     </button>
