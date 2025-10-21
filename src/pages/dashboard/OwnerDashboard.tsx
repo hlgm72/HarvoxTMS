@@ -216,7 +216,7 @@ export default function OwnerDashboard() {
         .from('user_payrolls')
         .select('*', { count: 'exact', head: true })
         .eq('company_id', userRole.company_id)
-        .eq('status', 'open');
+        .eq('payment_status', 'pending');
 
       setStats({
         total_drivers: driversCount || 0,

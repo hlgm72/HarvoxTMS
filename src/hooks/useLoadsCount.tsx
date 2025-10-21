@@ -40,35 +40,22 @@ export const useLoadsCount = () => {
         
         const { data: currentPeriods, error: periodError } = await supabase
           .from('user_payrolls')
-          .select(`
-            id,
-            period:company_payment_periods!company_payment_period_id(
-              period_start_date,
-              period_end_date
-            )
-          `)
+          .select('id, company_payment_period_id')
           .eq('company_id', userCompany.company_id)
-          .eq('status', 'open');
+          .eq('payment_status', 'pending');
 
         if (periodError) {
           console.error('Error obteniendo períodos actuales:', periodError);
           throw new Error('Error consultando períodos actuales');
         }
 
-        // Filter in client for date range
-        const filteredPeriods = (currentPeriods || []).filter((p: any) => {
-          const startDate = p.period?.period_start_date;
-          const endDate = p.period?.period_end_date;
-          return startDate && endDate && today >= startDate && today <= endDate;
-        });
-
         // Si no hay períodos actuales, retornar 0
-        if (!filteredPeriods || filteredPeriods.length === 0) {
+        if (!currentPeriods || currentPeriods.length === 0) {
           return 0;
         }
 
         // 2. Contar cargas del período actual usando los IDs de user_payment_periods
-        const periodIds = filteredPeriods.map((p: any) => p.id);
+        const periodIds = currentPeriods.map(p => p.id);
         const { count, error: loadsError } = await supabase
           .from('loads')
           .select('*', { count: 'exact', head: true })

@@ -77,7 +77,8 @@ export function usePaymentReportsStats(filters?: PaymentReportsStatsFilters) {
               query = query.eq('payment_status', 'failed');
               break;
             case 'negative':
-              query = query.eq('has_negative_balance', true);
+              // Filtrar por balance negativo usando cálculo en memoria
+              // No podemos filtrar esto en la query SQL
               break;
             case 'approved':
               query = query.eq('payment_status', 'approved');
