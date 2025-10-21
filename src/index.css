@@ -412,6 +412,14 @@ All colors MUST be HSL.
     --rdp-cell-size: 2rem;
   }
   
+  /* Fondo gris continuo para toda la columna de números de semana */
+  .rdp-weeknumber {
+    font-size: 0.75em;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    background-color: hsl(var(--muted));
+  }
+  
   /* Los weeknumbers y días comparten las mismas propiedades como en el CSS original */
   .rdp-weeknumber,
   .rdp-day {
@@ -423,12 +431,6 @@ All colors MUST be HSL.
     width: var(--rdp-cell-size);
     max-width: var(--rdp-cell-size);
     height: var(--rdp-cell-size);
-  }
-  
-  .rdp-weeknumber {
-    font-size: 0.75em;
-    font-weight: 400;
-    color: hsl(var(--muted-foreground));
   }
   
   /* Las celdas también deben tener el tamaño consistente */
@@ -443,5 +445,11 @@ All colors MUST be HSL.
   .rdp-head_row,
   .rdp-row {
     height: 100%;
+  }
+  
+  /* Extender el fondo gris de los weeknumbers a la cabecera y pie */
+  .rdp thead .rdp-weeknumber,
+  .rdp tfoot .rdp-weeknumber {
+    background-color: hsl(var(--muted));
   }
 }
