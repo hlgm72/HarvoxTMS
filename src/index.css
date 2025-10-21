@@ -405,4 +405,13 @@ All colors MUST be HSL.
   .rdp-vhidden {
     @apply hidden;
   }
+
+  /* Week numbers alignment - react-day-picker */
+  .rdp-weeknumber {
+    @apply h-8 w-8 text-center text-sm p-0 font-normal text-muted-foreground flex items-center justify-center;
+  }
+  
+  .rdp thead .rdp-weeknumber {
+    @apply text-[0.8rem];
+  }
 }
