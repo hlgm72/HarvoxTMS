@@ -402,17 +402,7 @@ export function EventualDeductionDialog({
       onClose();
     } catch (error: any) {
       console.error('Error creating eventual deduction:', error);
-      
-      // Manejar error de duplicado de tipo de gasto en el mismo período
-      if (error.code === '23505' && error.message?.includes('unique_period_expense_type_user')) {
-        const expenseTypeName = expenseTypes.find(t => t.id === formData.expense_type_id)?.name || 'este tipo';
-        showError(
-          'Deducción duplicada', 
-          `Ya existe una deducción de "${expenseTypeName}" para este conductor en este período. No se pueden tener múltiples deducciones del mismo tipo en un período.`
-        );
-      } else {
-        showError(t("deductions.notifications.error"), error.message || t("deductions.period_dialog.error_create"));
-      }
+      showError(t("deductions.notifications.error"), error.message || t("deductions.period_dialog.error_create"));
     } finally {
       setIsLoading(false);
     }
