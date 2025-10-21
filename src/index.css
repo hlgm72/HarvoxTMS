@@ -407,39 +407,41 @@ All colors MUST be HSL.
   }
 
   /* Week numbers alignment - react-day-picker v8 
-     Asegurar que los números de semana se alineen verticalmente con las filas de días */
+     Usar el mismo approach que el CSS original: tabla nativa sin flexbox en filas */
   .rdp {
     --rdp-cell-size: 2rem;
   }
   
+  /* Los weeknumbers y días comparten las mismas propiedades como en el CSS original */
+  .rdp-weeknumber,
+  .rdp-day {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: var(--rdp-cell-size);
+    max-width: var(--rdp-cell-size);
+    height: var(--rdp-cell-size);
+  }
+  
   .rdp-weeknumber {
-    height: var(--rdp-cell-size) !important;
-    width: var(--rdp-cell-size) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 0.875rem !important;
-    line-height: 1 !important;
-    font-weight: 400 !important;
-    color: hsl(var(--muted-foreground)) !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    font-size: 0.75em;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
   }
   
-  /* Asegurar que las filas tengan altura consistente */
-  .rdp tbody tr {
-    display: flex !important;
-    align-items: center !important;
-    margin-top: 0.25rem !important;
+  /* Las celdas también deben tener el tamaño consistente */
+  .rdp-cell {
+    width: var(--rdp-cell-size);
+    height: var(--rdp-cell-size);
+    padding: 0;
+    text-align: center;
   }
   
-  .rdp thead .rdp-weeknumber {
-    font-size: 0.8rem !important;
-  }
-  
-  /* Asegurar que las celdas de días tengan altura consistente */
-  .rdp-day, .rdp-cell {
-    height: var(--rdp-cell-size) !important;
-    width: var(--rdp-cell-size) !important;
+  /* Las filas deben usar el layout de tabla nativo, NO flexbox */
+  .rdp-head_row,
+  .rdp-row {
+    height: 100%;
   }
 }
