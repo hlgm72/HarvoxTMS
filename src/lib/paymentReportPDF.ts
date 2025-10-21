@@ -752,7 +752,13 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (data.deductions && data.deductions.length > 0) {
     data.deductions.forEach(deduction => {
-      addText(deduction.name || deduction.description, margin + 2, currentY, {
+      // Construir el texto de la deducción con descripción entre paréntesis si existe
+      let deductionText = deduction.name || deduction.description;
+      if (deduction.description && deduction.description.trim()) {
+        deductionText += ` (${deduction.description})`;
+      }
+      
+      addText(deductionText, margin + 2, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
