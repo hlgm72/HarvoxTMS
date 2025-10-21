@@ -74,7 +74,7 @@ export function useReactivateAutomaticDeduction() {
       // 5. Buscar el user_payroll correspondiente
       const { data: userPayroll, error: payrollError } = await supabase
         .from('user_payrolls')
-        .select('id')
+        .select('id, gross_earnings, other_income, fuel_expenses, total_deductions')
         .eq('company_payment_period_id', paymentPeriodId)
         .eq('user_id', userId)
         .maybeSingle();
@@ -87,7 +87,7 @@ export function useReactivateAutomaticDeduction() {
       // Si no existe payroll, no hay nada que recalcular
       if (!userPayroll) {
         console.log('No payroll found - deduction reactivated but no payroll to recalculate');
-        return { paymentPeriodId, recalculated: false };
+        return { paymentPeriodId, recalculated: false, payrollDeleted: false };
       }
 
       // 6. Recalcular el payroll del usuario
@@ -102,15 +102,66 @@ export function useReactivateAutomaticDeduction() {
           t("deductions.notifications.warning"),
           "La deducción fue reactivada pero hubo un problema al recalcular el payroll"
         );
+        return { paymentPeriodId, recalculated: false, payrollDeleted: false };
       }
 
-      return { paymentPeriodId, recalculated: !recalcError };
-    },
-    onSuccess: () => {
-      showSuccess(
-        t("deductions.notifications.success"),
-        "Deducción reactivada y aplicada al payroll exitosamente"
+      // 7. Verificar si el payroll quedó vacío después del recálculo
+      const { data: updatedPayrollData, error: updatedPayrollError } = await supabase
+        .from('user_payrolls')
+        .select('id, gross_earnings, other_income, fuel_expenses, total_deductions')
+        .eq('id', userPayroll.id)
+        .maybeSingle();
+
+      if (updatedPayrollError) {
+        console.error('Error checking updated payroll:', updatedPayrollError);
+        return { paymentPeriodId, recalculated: true, payrollDeleted: false };
+      }
+
+      // Si no existe más el payroll (fue eliminado por algún trigger), informar
+      if (!updatedPayrollData) {
+        console.log('Payroll was deleted (by trigger or other mechanism)');
+        return { paymentPeriodId, recalculated: true, payrollDeleted: true };
+      }
+
+      // Si el payroll está vacío (todos los valores en 0), eliminarlo
+      const isEmpty = (
+        (updatedPayrollData.gross_earnings || 0) === 0 &&
+        (updatedPayrollData.other_income || 0) === 0 &&
+        (updatedPayrollData.fuel_expenses || 0) === 0 &&
+        (updatedPayrollData.total_deductions || 0) === 0
       );
+
+      if (isEmpty) {
+        console.log('Deleting empty payroll with ID:', userPayroll.id);
+        
+        const { error: deletePayrollError } = await supabase
+          .from('user_payrolls')
+          .delete()
+          .eq('id', userPayroll.id);
+
+        if (deletePayrollError) {
+          console.error('Error deleting empty payroll:', deletePayrollError);
+          return { paymentPeriodId, recalculated: true, payrollDeleted: false };
+        }
+
+        console.log('Empty payroll deleted successfully');
+        return { paymentPeriodId, recalculated: true, payrollDeleted: true };
+      }
+
+      return { paymentPeriodId, recalculated: true, payrollDeleted: false };
+    },
+    onSuccess: (result) => {
+      if (result.payrollDeleted) {
+        showSuccess(
+          t("deductions.notifications.success"),
+          "Deducción reactivada y payroll eliminado (quedó vacío tras recalcular)"
+        );
+      } else {
+        showSuccess(
+          t("deductions.notifications.success"),
+          "Deducción reactivada y aplicada al payroll exitosamente"
+        );
+      }
 
       // Invalidar todas las queries relevantes
       queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
