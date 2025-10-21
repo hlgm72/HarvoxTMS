@@ -99,15 +99,12 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
   };
   
   return (
-    <div className="flex justify-center items-center gap-2 py-2 pointer-events-auto px-3 relative">
-      {/* Fondo gris para simular columna de números de semana en la cabecera */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-muted"></div>
-      
-      <div className="flex items-center gap-1 pointer-events-auto z-10">
-        <span className="text-sm font-medium min-w-[100px] text-center pointer-events-none z-10">
+    <div className="flex justify-center items-center gap-2 py-2 pointer-events-auto bg-muted px-3">
+      <div className="flex items-center gap-1 pointer-events-auto">
+        <span className="text-sm font-medium min-w-[100px] text-center pointer-events-none">
           {months[currentMonth]}
         </span>
-        <div className="flex flex-col pointer-events-auto z-10">
+        <div className="flex flex-col pointer-events-auto">
           <button
             type="button"
             className="h-4 w-6 p-0 hover:bg-accent rounded flex items-center justify-center pointer-events-auto"
@@ -125,7 +122,7 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
         </div>
       </div>
       
-      <div className="flex items-center gap-1 pointer-events-auto z-10">
+      <div className="flex items-center gap-1 pointer-events-auto">
         {isEditingYear ? (
           <input
             ref={yearInputRef}
@@ -146,7 +143,7 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
             {currentYear}
           </button>
         )}
-        <div className="flex flex-col pointer-events-auto z-10">
+        <div className="flex flex-col pointer-events-auto">
           <button
             type="button"
             className="h-4 w-6 p-0 hover:bg-accent rounded flex items-center justify-center pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed"
@@ -233,9 +230,7 @@ function Calendar({
         {...props}
       />
       {showFooterButtons && (
-        <div className="flex justify-between items-center px-3 py-2 bg-muted pointer-events-auto relative">
-          {/* Fondo gris para simular columna de números de semana en el pie */}
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-muted"></div>
+        <div className="flex justify-between items-center px-3 py-2 bg-muted pointer-events-auto">
           <Button
             type="button"
             variant="ghost"
