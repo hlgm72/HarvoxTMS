@@ -78,26 +78,6 @@ export function MarkDriverPaidDialog({
         throw new Error((data as any)?.message || 'Error marking driver as paid');
       }
 
-      // Ahora actualizar las expense_instances de 'planned' a 'applied'
-      // (esto no está en la RPC para mantener la separación de concerns)
-      const { data: payrollData } = await supabase
-        .from('user_payrolls')
-        .select('company_payment_period_id, user_id')
-        .eq('id', calculationId)
-        .single();
-
-      if (payrollData) {
-        await supabase
-          .from('expense_instances')
-          .update({
-            status: 'applied',
-            applied_at: new Date().toISOString()
-          })
-          .eq('payment_period_id', payrollData.company_payment_period_id)
-          .eq('user_id', payrollData.user_id)
-          .eq('status', 'planned');
-      }
-
       showSuccess(
         t("mark_paid_dialog.notifications.success_title"),
         t("mark_paid_dialog.notifications.success_message", { driverName })
