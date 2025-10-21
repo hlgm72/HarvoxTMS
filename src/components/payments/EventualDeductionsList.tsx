@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatPaymentPeriod, formatDetailedPaymentPeriod, formatDeductionDate, formatDateInUserTimeZone, convertUserDateToUTC } from "@/lib/dateFormatting";
-import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2, Lock, Play } from "lucide-react";
+import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2, Lock, RotateCcw } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { CancelAutomaticDeductionDialog } from "./CancelAutomaticDeductionDialog";
@@ -584,7 +584,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                               className="text-primary hover:text-primary h-8"
                               disabled={!canCancelOrReactivate(deduction)}
                             >
-                              <Play className="h-4 w-4" />
+                              <RotateCcw className="h-4 w-4" />
                             </Button>
                           </div>
                         </TooltipTrigger>
