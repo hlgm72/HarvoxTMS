@@ -249,13 +249,34 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
         payrollsData.forEach(p => payrollsMap.set(p.id, p));
         
         // ✅ Enriquecer los datos usando los mapas (operación O(n) en lugar de O(n²))
-        const enrichedData = (data || []).map((expense: any) => ({
-          ...expense,
-          profiles: profilesMap.get(expense.user_id) || null,
-          period_data: expense.payment_period_id 
+        const enrichedData = (data || []).map((expense: any) => {
+          const periodData = expense.payment_period_id 
             ? payrollsMap.get(expense.payment_period_id) || null
-            : null
-        }));
+            : null;
+          
+          // Log temporal para debug
+          if (expense.payment_period_id && !periodData) {
+            console.log('❌ No se encontró period_data para:', {
+              expense_id: expense.id,
+              payment_period_id: expense.payment_period_id,
+              available_periods: Array.from(payrollsMap.keys())
+            });
+          }
+          
+          if (periodData) {
+            console.log('✅ Period data encontrado:', {
+              expense_id: expense.id,
+              payment_period_id: expense.payment_period_id,
+              period_data: periodData
+            });
+          }
+          
+          return {
+            ...expense,
+            profiles: profilesMap.get(expense.user_id) || null,
+            period_data: periodData
+          };
+        });
 
         return enrichedData;
       } catch (error) {
@@ -404,12 +425,15 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                   </CardTitle>
                   <CardDescription className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {deduction.period_data ? (
+                    {deduction.period_data?.period ? (
                       formatDetailedPaymentPeriod(
                         deduction.period_data.period.period_start_date,
                         deduction.period_data.period.period_end_date,
                         deduction.period_data.period.period_frequency
                       )
+                    ) : deduction.payment_period_id ? (
+                      // Si tiene payment_period_id pero no se cargó period_data, mostrar el ID
+                      `Período: ${deduction.payment_period_id.slice(0, 8)}...`
                     ) : deduction.expense_date ? (
                       // Si no hay period_data pero hay expense_date, determinar el período calculado
                       (() => {
