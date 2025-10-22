@@ -12,6 +12,7 @@ import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateTime, formatDateOnly } from '@/lib/dateFormatting';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { FuelViewToggle, type FuelViewMode } from './FuelViewToggle';
+import { formatPeriodLabel } from '@/utils/periodUtils';
 
 interface FuelExpensesListProps {
   filters: {
@@ -190,15 +191,21 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
             {expenses.map((expense) => (
               <div key={expense.id} className="border rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={getDriverAvatar(expense.driver_user_id).url} alt={getDriverAvatar(expense.driver_user_id).name} />
                       <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                         {getDriverAvatar(expense.driver_user_id).initials}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="font-medium text-sm">
-                      {getDriverName(expense.driver_user_id)}
+                    <div className="flex items-center justify-between flex-1">
+                      <div className="font-medium text-sm">
+                        {getDriverName(expense.driver_user_id)}
+                      </div>
+                      <div className="flex items-center gap-1 text-lg font-bold text-primary">
+                        <DollarSign className="h-5 w-5" />
+                        <span>{expense.total_amount?.toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
                   <DropdownMenu>
@@ -256,9 +263,16 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 </div>
                 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3 text-muted-foreground" />
-                    <span>{formatDateOnly(expense.transaction_date)}</span>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                      <span>{formatDateOnly(expense.transaction_date)}</span>
+                    </div>
+                    {(expense as any).payment_periods?.start_date && (expense as any).payment_periods?.end_date && (
+                      <div className="text-xs text-muted-foreground pl-4">
+                        {formatPeriodLabel((expense as any).payment_periods.start_date, (expense as any).payment_periods.end_date)}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-muted-foreground" />
@@ -273,21 +287,22 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                 </div>
                 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center gap-1">
-                    <Fuel className="h-3 w-3 text-muted-foreground" />
-                    <span>{expense.gallons_purchased?.toFixed(1)} gal</span>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1">
+                      <Fuel className="h-3 w-3 text-muted-foreground" />
+                      <span>{expense.gallons_purchased?.toFixed(1)} gal</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground pl-4">
+                      ${expense.price_per_gallon?.toFixed(3)}/gal
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <DollarSign className="h-3 w-3 text-muted-foreground" />
-                    <span className="font-semibold">${expense.total_amount?.toFixed(2)}</span>
+                    {getFuelTypeIcon(expense.fuel_type)}
+                    <span className="capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
                   </div>
                 </div>
                 
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-1">
-                    {getFuelTypeIcon(expense.fuel_type)}
-                    <span className="text-xs capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
-                  </div>
+                <div className="flex justify-end items-center">
                   {getStatusBadge(expense.status)}
                 </div>
               </div>

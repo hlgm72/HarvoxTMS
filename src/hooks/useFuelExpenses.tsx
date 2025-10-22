@@ -64,6 +64,10 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
             make,
             model,
             year
+          ),
+          payment_periods (
+            start_date,
+            end_date
           )
         `)
         .order('transaction_date', { ascending: false });
