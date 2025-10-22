@@ -270,7 +270,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                     </div>
                     {(expense as any).company_payment_periods?.period_start_date && (expense as any).company_payment_periods?.period_end_date && (
                       <div className="text-xs text-muted-foreground pl-4">
-                        {formatPeriodLabel((expense as any).company_payment_periods.period_start_date, (expense as any).company_payment_periods.period_end_date)}
+                        {formatPeriodLabel((expense as any).company_payment_periods.period_start_date, (expense as any).company_payment_periods.period_end_date)} ({formatDateOnly((expense as any).company_payment_periods.period_start_date)} - {formatDateOnly((expense as any).company_payment_periods.period_end_date)})
                       </div>
                     )}
                   </div>
