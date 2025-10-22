@@ -574,6 +574,11 @@
       "locked": "Bloqueado"
     }
   },
+  "payment_status": {
+    "pending": "Pendiente",
+    "approved": "Aprobado", 
+    "applied": "Aplicado"
+  },
   "status": {
     "created": "Creado",
     "route_planned": "Ruta Planeada",

@@ -66,10 +66,10 @@ export function MarkDriverPaidDialog({
       // 🚀 OPTIMIZACIÓN: Usar RPC ACID en lugar de múltiples queries
       // Reduce de 4 llamadas a la BD a solo 1 transacción atómica
       const { data, error } = await supabase.rpc('mark_driver_as_paid_with_validation', {
-        calculation_id: calculationId,
-        payment_method_used: formData.paymentMethod,
-        payment_ref: formData.paymentReference || null,
-        notes: formData.notes || null
+        p_calculation_id: calculationId,
+        p_payment_method: formData.paymentMethod,
+        p_payment_reference: formData.paymentReference || null,
+        p_notes: formData.notes || null
       });
 
       if (error) throw error;

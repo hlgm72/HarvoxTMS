@@ -34,10 +34,10 @@ export function useDriverPaymentActions() {
     try {
       // ✅ USE ENHANCED ACID FUNCTION
       const { data, error } = await supabase.rpc('mark_driver_as_paid_with_validation', {
-        calculation_id: calculationId,
-        payment_method_used: paymentMethod,
-        payment_ref: paymentReference || null,
-        notes: notes || null
+        p_calculation_id: calculationId,
+        p_payment_method: paymentMethod,
+        p_payment_reference: paymentReference || null,
+        p_notes: notes || null
       });
 
       if (error) {
@@ -129,10 +129,10 @@ export function useDriverPaymentActions() {
 
       // ✅ USE ACID FUNCTION FOR ATOMIC BULK PAYMENT
       const { data, error } = await supabase.rpc('mark_multiple_drivers_as_paid_with_validation', {
-        calculation_ids: calculationIds,
-        payment_method_used: paymentMethod,
-        payment_ref: paymentReference || null,
-        notes: notes || null
+        p_calculation_ids: calculationIds,
+        p_payment_method: paymentMethod,
+        p_payment_reference: paymentReference || null,
+        p_notes: notes || null
       });
 
       if (error) throw error;

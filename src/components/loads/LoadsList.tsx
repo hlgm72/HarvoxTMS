@@ -401,6 +401,17 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                    >
                      {getStatusLabel(load.status, t)}
                    </Badge>
+                   {load.payment_status && load.payment_status !== 'pending' && (
+                     <Badge variant={
+                       load.payment_status === 'applied' ? 'primary' : 
+                       load.payment_status === 'approved' ? 'success' : 
+                       'default'
+                     }>
+                       {load.payment_status === 'applied' ? t('payment_status.applied') : 
+                        load.payment_status === 'approved' ? t('payment_status.approved') : 
+                        load.payment_status}
+                     </Badge>
+                   )}
                 </div>
               </div>
             </CardHeader>
@@ -505,14 +516,16 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                     <Eye className="h-3 w-3 mr-1" />
                     {t('list.view')}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setEditDialog({ isOpen: true, load })}
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    {t('list.edit')}
-                  </Button>
+                  {load.payment_status !== 'applied' && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setEditDialog({ isOpen: true, load })}
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      {t('list.edit')}
+                    </Button>
+                  )}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
@@ -583,17 +596,19 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
                           showText={true}
                         />
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setDeleteDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                        disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
-                        className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
-                      >
-                        <Trash2 className="h-3 w-3 mr-2" />
-                        {t('list.delete_load')}
-                      </DropdownMenuItem>
+                      {load.payment_status !== 'applied' && (
+                        <DropdownMenuItem 
+                          onClick={() => setDeleteDialog({ 
+                            isOpen: true, 
+                            load 
+                          })}
+                          disabled={['in_transit', 'delivered', 'completed'].includes(load.status)}
+                          className="text-destructive focus:text-destructive disabled:text-muted-foreground disabled:cursor-not-allowed"
+                        >
+                          <Trash2 className="h-3 w-3 mr-2" />
+                          {t('list.delete_load')}
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

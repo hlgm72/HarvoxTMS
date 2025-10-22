@@ -33,6 +33,7 @@ export interface Load {
   commodity: string | null;
   weight_lbs: number | null;
   status: string;
+  payment_status?: string;
   notes: string | null;
   customer_name?: string | null;
   created_at: string;

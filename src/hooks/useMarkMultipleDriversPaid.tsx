@@ -41,10 +41,10 @@ export const useMarkMultipleDriversPaid = () => {
       }
 
       const { data, error } = await supabase.rpc('mark_multiple_drivers_as_paid_with_validation', {
-        calculation_ids: params.calculationIds,
-        payment_method_used: params.paymentMethod || null,
-        payment_ref: params.paymentReference || null,
-        notes: params.notes || null
+        p_calculation_ids: params.calculationIds,
+        p_payment_method: params.paymentMethod || null,
+        p_payment_reference: params.paymentReference || null,
+        p_notes: params.notes || null
       });
 
       if (error) {
