@@ -172,14 +172,11 @@ export function ExpenseInstancesView() {
                   <Badge variant={getStatusBadgeVariant(instance.status)}>
                     {getStatusLabel(instance.status)}
                   </Badge>
-                  {instance.is_critical && (
-                    <Badge variant="destructive">Crítico</Badge>
-                  )}
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground">Fecha del Gasto</p>
                   <p className="font-medium">
@@ -188,10 +185,6 @@ export function ExpenseInstancesView() {
                       : 'No definida'
                     }
                   </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Prioridad</p>
-                  <p className="font-medium">{instance.priority || 'Normal'}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Categoría</p>

@@ -371,8 +371,6 @@ export function EventualDeductionDialog({
             description: formData.description,
             expense_date: formatDateInUserTimeZone(expenseDate),
             status: 'planned',
-            is_critical: false,
-            priority: 5,
             applied_to_role: selectedRole,
             created_by: user?.id
           });

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { formatPaymentPeriod, formatDetailedPaymentPeriod, formatDeductionDate, formatDateInUserTimeZone, convertUserDateToUTC } from "@/lib/dateFormatting";
-import { Trash2, AlertTriangle, Calendar, DollarSign, User, FileText, Edit2, Lock, RotateCcw } from "lucide-react";
+import { Trash2, Calendar, DollarSign, User, FileText, Edit2, Lock, RotateCcw } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { EventualDeductionDialog } from "./EventualDeductionDialog";
 import { CancelAutomaticDeductionDialog } from "./CancelAutomaticDeductionDialog";
@@ -513,12 +513,6 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                     </Badge>
                   )}
                   {getStatusBadge(deduction.status)}
-                  {deduction.is_critical && (
-                    <Badge variant="destructive" className="flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3" />
-                      {t("deductions.status_labels.critical")}
-                    </Badge>
-                  )}
                 </div>
               </div>
             </CardHeader>

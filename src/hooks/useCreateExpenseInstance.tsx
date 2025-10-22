@@ -9,8 +9,6 @@ export interface CreateExpenseInstanceData {
   amount: number;
   description?: string;
   expense_date?: string;
-  priority?: number;
-  is_critical?: boolean;
 }
 
 export function useCreateExpenseInstance() {

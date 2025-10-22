@@ -997,10 +997,8 @@ export type Database = {
           expense_date: string | null
           expense_type_id: string
           id: string
-          is_critical: boolean
           notes: string | null
           payment_period_id: string | null
-          priority: number
           recurring_template_id: string | null
           status: string
           updated_at: string
@@ -1017,10 +1015,8 @@ export type Database = {
           expense_date?: string | null
           expense_type_id: string
           id?: string
-          is_critical?: boolean
           notes?: string | null
           payment_period_id?: string | null
-          priority?: number
           recurring_template_id?: string | null
           status?: string
           updated_at?: string
@@ -1037,10 +1033,8 @@ export type Database = {
           expense_date?: string | null
           expense_type_id?: string
           id?: string
-          is_critical?: boolean
           notes?: string | null
           payment_period_id?: string | null
-          priority?: number
           recurring_template_id?: string | null
           status?: string
           updated_at?: string
