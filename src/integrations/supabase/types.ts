@@ -1850,6 +1850,7 @@ export type Database = {
           load_number: string
           notes: string | null
           payment_period_id: string | null
+          payment_status: string
           pickup_date: string | null
           po_number: string | null
           status: string
@@ -1874,6 +1875,7 @@ export type Database = {
           load_number: string
           notes?: string | null
           payment_period_id?: string | null
+          payment_status?: string
           pickup_date?: string | null
           po_number?: string | null
           status?: string
@@ -1898,6 +1900,7 @@ export type Database = {
           load_number?: string
           notes?: string | null
           payment_period_id?: string | null
+          payment_status?: string
           pickup_date?: string | null
           po_number?: string | null
           status?: string
@@ -4277,19 +4280,19 @@ export type Database = {
       }
       mark_driver_as_paid_with_validation: {
         Args: {
-          calculation_id: string
-          notes?: string
-          payment_method_used?: string
-          payment_ref?: string
+          p_calculation_id: string
+          p_notes?: string
+          p_payment_method: string
+          p_payment_reference?: string
         }
         Returns: Json
       }
       mark_multiple_drivers_as_paid_with_validation: {
         Args: {
-          calculation_ids: string[]
-          notes?: string
-          payment_method_used?: string
-          payment_ref?: string
+          p_calculation_ids: string[]
+          p_notes?: string
+          p_payment_method: string
+          p_payment_reference?: string
         }
         Returns: Json
       }
