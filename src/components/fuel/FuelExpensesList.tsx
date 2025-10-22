@@ -93,7 +93,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
         pending: 'warning' as const,
         approved: 'success' as const,
         verified: 'default' as const,
-        applied: 'success' as const,
+        applied: 'primary' as const,
       };
       return variantMap[status as keyof typeof variantMap] || 'default';
     };
