@@ -78,74 +78,17 @@ export function useCancelAutomaticDeduction() {
       }
       console.log('✅ [Cancel] Payroll recalculated successfully');
 
-      // 4. Verificar si el payroll quedó vacío después del recálculo
-      console.log('🔍 [Cancel] Step 4: Checking if payroll is empty after recalculation');
-      const { data: updatedPayrollData, error: updatedPayrollError } = await supabase
-        .from('user_payrolls')
-        .select('id, gross_earnings, other_income, fuel_expenses, total_deductions')
-        .eq('id', payrollData.id)
-        .maybeSingle();
-
-      if (updatedPayrollError) {
-        console.error('❌ [Cancel] Error checking updated payroll:', updatedPayrollError);
-        return { recalculated: true, payrollDeleted: false };
-      }
-
-      // Si no existe más el payroll (fue eliminado por algún trigger), informar
-      if (!updatedPayrollData) {
-        console.log('✅ [Cancel] Payroll was deleted (by trigger or other mechanism)');
-        return { recalculated: true, payrollDeleted: true };
-      }
-
-      console.log('✅ [Cancel] Updated payroll data:', updatedPayrollData);
-
-      // Si el payroll está vacío (todos los valores en 0), eliminarlo
-      const isEmpty = (
-        (updatedPayrollData.gross_earnings || 0) === 0 &&
-        (updatedPayrollData.other_income || 0) === 0 &&
-        (updatedPayrollData.fuel_expenses || 0) === 0 &&
-        (updatedPayrollData.total_deductions || 0) === 0
-      );
-
-      console.log('🔍 [Cancel] Is payroll empty?', isEmpty);
-
-      if (isEmpty) {
-        console.log('🔍 [Cancel] Step 5: Deleting empty payroll with ID:', payrollData.id);
-        console.log('🔍 [Cancel] Payroll to delete:', updatedPayrollData);
-        
-        const { data: deleteData, error: deletePayrollError } = await supabase
-          .from('user_payrolls')
-          .delete()
-          .eq('id', payrollData.id)
-          .select();
-
-        console.log('🔍 [Cancel] Delete result:', { data: deleteData, error: deletePayrollError });
-
-        if (deletePayrollError) {
-          console.error('❌ [Cancel] Error deleting empty payroll:', deletePayrollError);
-          console.error('❌ [Cancel] Full error details:', JSON.stringify(deletePayrollError, null, 2));
-          return { recalculated: true, payrollDeleted: false };
-        }
-
-        console.log('✅ [Cancel] Empty payroll deleted successfully');
-        return { recalculated: true, payrollDeleted: true };
-      }
-
-      console.log('✅ [Cancel] Payroll recalculated but not empty - keeping it');
+      // 4. ✅ NUEVO: Mantener el payroll aunque quede vacío (net_pay=0)
+      // Esto permite marcar el payroll manualmente como PAGADO más tarde
+      // Al pagarlo, las instancias 'cancelled' se marcarán como 'applied' y todo será inmutable
+      console.log('✅ [Cancel] Payroll recalculado exitosamente - manteniendo payroll aunque esté vacío');
       return { recalculated: true, payrollDeleted: false };
     },
     onSuccess: (result) => {
-      if (result.payrollDeleted) {
-        showSuccess(
-          t("deductions.notifications.success"),
-          "Deducción cancelada y payroll eliminado (no tenía otras transacciones)"
-        );
-      } else {
-        showSuccess(
-          t("deductions.notifications.success"),
-          "Deducción cancelada y payroll recalculado exitosamente"
-        );
-      }
+      showSuccess(
+        t("deductions.notifications.success"),
+        "Deducción cancelada y payroll recalculado. Puedes marcar el período como pagado para hacer esta instancia inmutable."
+      );
 
       // Invalidar todas las queries relevantes
       queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
