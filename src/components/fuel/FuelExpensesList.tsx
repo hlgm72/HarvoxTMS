@@ -429,16 +429,18 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                             <Eye className="h-4 w-4 mr-2" />
                             {t('fuel:expenses_list.actions.view')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onEdit?.(expense.id);
-                            }}
-                            className="cursor-pointer"
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            {t('fuel:expenses_list.actions.edit')}
-                          </DropdownMenuItem>
+                          {expense.status !== 'applied' && (
+                            <DropdownMenuItem 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit?.(expense.id);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              {t('fuel:expenses_list.actions.edit')}
+                            </DropdownMenuItem>
+                          )}
                           {expense.receipt_url && (
                             <DropdownMenuItem asChild>
                               <a 
@@ -453,17 +455,21 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                               </a>
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(expense.id);
-                            }}
-                            className="text-destructive cursor-pointer"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            {t('fuel:expenses_list.actions.delete')}
-                          </DropdownMenuItem>
+                          {expense.status !== 'applied' && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(expense.id);
+                                }}
+                                className="text-destructive cursor-pointer"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {t('fuel:expenses_list.actions.delete')}
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
