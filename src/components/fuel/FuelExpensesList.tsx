@@ -268,9 +268,9 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       <Calendar className="h-3 w-3 text-muted-foreground" />
                       <span>{formatDateOnly(expense.transaction_date)}</span>
                     </div>
-                    {(expense as any).payment_periods?.start_date && (expense as any).payment_periods?.end_date && (
+                    {(expense as any).company_payment_periods?.period_start_date && (expense as any).company_payment_periods?.period_end_date && (
                       <div className="text-xs text-muted-foreground pl-4">
-                        {formatPeriodLabel((expense as any).payment_periods.start_date, (expense as any).payment_periods.end_date)}
+                        {formatPeriodLabel((expense as any).company_payment_periods.period_start_date, (expense as any).company_payment_periods.period_end_date)}
                       </div>
                     )}
                   </div>

@@ -65,9 +65,9 @@ export function useFuelExpenses(filters: FuelExpenseFilters = {}) {
             model,
             year
           ),
-          payment_periods (
-            start_date,
-            end_date
+          company_payment_periods!payment_period_id (
+            period_start_date,
+            period_end_date
           )
         `)
         .order('transaction_date', { ascending: false });
