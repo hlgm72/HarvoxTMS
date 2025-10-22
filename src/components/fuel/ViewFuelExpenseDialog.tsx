@@ -32,13 +32,6 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
   };
 
   const getStatusBadge = (status: string) => {
-    const variants = {
-      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 hover:bg-yellow-100 hover:text-yellow-800 dark:hover:bg-yellow-900 dark:hover:text-yellow-300',
-      approved: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 hover:text-green-800 dark:hover:bg-green-900 dark:hover:text-green-300',
-      verified: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-100 hover:text-blue-800 dark:hover:bg-blue-900 dark:hover:text-blue-300',
-      applied: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 hover:bg-purple-100 hover:text-purple-800 dark:hover:bg-purple-900 dark:hover:text-purple-300',
-    };
-    
     const labels = {
       pending: t('fuel:filters.pending'),
       approved: t('fuel:filters.approved'),
@@ -46,8 +39,18 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
       applied: t('fuel:filters.applied'),
     };
 
+    const getVariant = (status: string): "default" | "secondary" | "destructive" | "success" | "warning" | "primary" | "outline" => {
+      const variantMap = {
+        pending: 'warning' as const,
+        approved: 'success' as const,
+        verified: 'default' as const,
+        applied: 'success' as const,
+      };
+      return variantMap[status as keyof typeof variantMap] || 'default';
+    };
+
     return (
-      <Badge className={variants[status as keyof typeof variants] || variants.pending}>
+      <Badge variant={getVariant(status)}>
         {labels[status as keyof typeof labels] || status}
       </Badge>
     );
