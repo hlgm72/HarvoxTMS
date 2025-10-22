@@ -487,7 +487,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">{t('summary.gross_income')}</p>
@@ -520,6 +520,13 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
                     </p>
                   </div>
                 </div>
+                
+                {calc.payment_notes && (
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-sm text-muted-foreground mb-1">Notas de Pago:</p>
+                    <p className="text-sm">{calc.payment_notes}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );
