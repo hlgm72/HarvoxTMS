@@ -597,6 +597,13 @@ export default function PaymentReports() {
                             </span>
                           )}
                         </div>
+                        
+                        {calculation.payment_notes && (
+                          <div className="mt-2 pt-2 border-t">
+                            <p className="text-xs text-muted-foreground mb-1">Notas de Pago:</p>
+                            <p className="text-sm">{calculation.payment_notes}</p>
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-2 w-full md:w-auto md:justify-end">
                         {/* Indicador de bloqueo financiero */}
