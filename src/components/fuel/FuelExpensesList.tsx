@@ -199,7 +199,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex items-center justify-between flex-1">
-                      <div className="font-medium text-sm">
+                      <div className="font-bold text-base">
                         {getDriverName(expense.driver_user_id)}
                       </div>
                       <div className="flex items-center gap-1 text-lg font-bold text-primary">
