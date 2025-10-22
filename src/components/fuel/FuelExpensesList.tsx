@@ -82,15 +82,17 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-      approved: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-      verified: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 hover:bg-yellow-100 hover:text-yellow-800 dark:hover:bg-yellow-900 dark:hover:text-yellow-300',
+      approved: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-100 hover:text-green-800 dark:hover:bg-green-900 dark:hover:text-green-300',
+      verified: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-100 hover:text-blue-800 dark:hover:bg-blue-900 dark:hover:text-blue-300',
+      applied: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 hover:bg-purple-100 hover:text-purple-800 dark:hover:bg-purple-900 dark:hover:text-purple-300',
     };
     
     const labels = {
       pending: t('fuel:filters.pending'),
       approved: t('fuel:filters.approved'),
       verified: t('fuel:filters.verified'),
+      applied: 'Aplicado',
     };
 
     return (
