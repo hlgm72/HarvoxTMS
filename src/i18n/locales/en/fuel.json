@@ -52,6 +52,7 @@
     "pending": "Pending",
     "approved": "Approved",
     "verified": "Verified",
+    "applied": "Applied",
     "vehicle": "Vehicle",
     "vehicle_label": "Vehicle",
     "select_vehicle": "Select vehicle",

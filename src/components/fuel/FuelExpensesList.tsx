@@ -92,7 +92,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
       pending: t('fuel:filters.pending'),
       approved: t('fuel:filters.approved'),
       verified: t('fuel:filters.verified'),
-      applied: 'Aplicado',
+      applied: t('fuel:filters.applied'),
     };
 
     return (

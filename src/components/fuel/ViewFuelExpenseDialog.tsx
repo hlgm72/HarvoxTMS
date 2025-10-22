@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ interface ViewFuelExpenseDialogProps {
 }
 
 export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFuelExpenseDialogProps) {
+  const { t } = useTranslation();
   const { data: expense, isLoading } = useFuelExpense(expenseId || '');
   const { drivers = [] } = useCompanyDrivers();
 
@@ -38,10 +40,10 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
     };
     
     const labels = {
-      pending: 'Pendiente',
-      approved: 'Aprobado',
-      verified: 'Verificado',
-      applied: 'Aplicado',
+      pending: t('fuel:filters.pending'),
+      approved: t('fuel:filters.approved'),
+      verified: t('fuel:filters.verified'),
+      applied: t('fuel:filters.applied'),
     };
 
     return (
