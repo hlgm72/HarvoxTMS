@@ -99,31 +99,53 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
           const today = getTodayInUserTimeZone();
           // console.log('📅 Getting current period for today:', today);
           
-          const { data: currentPeriods, error: periodError } = await supabase
+          // First get payroll IDs for the company - use ts-ignore to bypass TypeScript recursion error
+          // @ts-ignore - TypeScript has recursion issues with complex Supabase types
+          const payrollQuery = await supabase
             .from('user_payrolls')
-            .select(`
-              id,
-              period:company_payment_periods!company_payment_period_id(
-                period_start_date,
-                period_end_date
-              )
-            `)
+            .select('id, company_payment_period_id')
             .eq('company_id', userCompany.company_id)
             .eq('status', 'open');
+          
+          const payrollIds: any[] = payrollQuery.data;
+          const payrollError: any = payrollQuery.error;
 
-          if (periodError) {
-            console.error('Error obteniendo períodos actuales:', periodError);
+          if (payrollError) {
+            console.error('Error obteniendo payrolls:', payrollError);
             throw new Error('Error consultando períodos actuales');
           }
 
-          // Filter in client for date range
-          const filteredPeriods = (currentPeriods || []).filter((p: any) => {
-            const startDate = p.period?.period_start_date;
-            const endDate = p.period?.period_end_date;
-            return startDate && endDate && today >= startDate && today <= endDate;
-          });
+          if (!payrollIds || payrollIds.length === 0) {
+            targetPeriodId = [];
+          } else {
+            // Get the period dates
+            const periodIds: string[] = [...new Set(payrollIds.map((p: any) => p.company_payment_period_id))];
+            // @ts-ignore - TypeScript has recursion issues with complex Supabase types
+            const periodQuery = await supabase
+              .from('company_payment_periods')
+              .select('id, period_start_date, period_end_date')
+              .in('id', periodIds);
+            
+            const periods: any[] = periodQuery.data;
+            const periodError: any = periodQuery.error;
 
-          targetPeriodId = filteredPeriods && filteredPeriods.length > 0 ? filteredPeriods.map((p: any) => p.id) : [];
+            if (periodError) {
+              console.error('Error obteniendo períodos:', periodError);
+              throw new Error('Error consultando períodos actuales');
+            }
+
+            // Filter payrolls by period dates that match today
+            const matchingPayrolls = payrollIds.filter((payroll: any) => {
+              const period = periods?.find((p: any) => p.id === payroll.company_payment_period_id);
+              return period && 
+                     period.period_start_date && 
+                     period.period_end_date && 
+                     today >= period.period_start_date && 
+                     today <= period.period_end_date;
+            });
+
+            targetPeriodId = matchingPayrolls.map((p: any) => p.id);
+          }
           // console.log('📅 Current period found:', targetPeriodId);
         } else if (periodFilter?.type === 'previous' || periodFilter?.type === 'this_month' || periodFilter?.type === 'last_month' || periodFilter?.type === 'this_quarter' || periodFilter?.type === 'last_quarter' || periodFilter?.type === 'this_year' || periodFilter?.type === 'last_year') {
           // Para filtros basados en fechas, usar date-filter
