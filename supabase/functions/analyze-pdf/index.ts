@@ -9,32 +9,6 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-async function extractTextFromPDF(base64: string): Promise<string> {
-  try {
-    // Use PDFCo's free text extraction API (no API key needed for basic extraction)
-    const response = await fetch('https://api.pdf.co/v1/pdf/convert/to/text', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: `data:application/pdf;base64,${base64}`,
-        inline: true
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`PDFCo API error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.body || '';
-  } catch (error) {
-    console.error('PDF text extraction error:', error);
-    throw new Error('Failed to extract text from PDF');
-  }
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -59,21 +33,44 @@ serve(async (req) => {
       );
     }
 
-    console.log('PDF received, extracting text...');
+    console.log('PDF received, converting for OpenAI...');
     
-    const extractedText = await extractTextFromPDF(pdfBase64);
+    // Convert PDF pages to images and send to OpenAI vision
+    // Use a PDF to image conversion service
+    const pdfToImageResponse = await fetch('https://v2.convertapi.com/convert/pdf/to/jpg', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Parameters: [
+          {
+            Name: 'File',
+            FileValue: {
+              Name: 'document.pdf',
+              Data: pdfBase64
+            }
+          },
+          {
+            Name: 'PageRange',
+            Value: '1'
+          }
+        ]
+      })
+    });
 
-    if (!extractedText || extractedText.trim().length < 50) {
+    if (!pdfToImageResponse.ok) {
+      console.error('PDF conversion error:', await pdfToImageResponse.text());
       return new Response(
-        JSON.stringify({ 
-          error: 'Could not extract meaningful text from PDF. The PDF might be image-based or encrypted.' 
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Failed to convert PDF to image for analysis' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Text extracted successfully, length:', extractedText.length);
-    console.log('Analyzing with OpenAI...');
+    const conversionResult = await pdfToImageResponse.json();
+    const imageBase64 = conversionResult.Files[0].FileData;
+
+    console.log('PDF converted to image, analyzing with OpenAI Vision...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -82,56 +79,58 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
-            content: `Eres un asistente experto en análisis de documentos de combustible. Extrae datos de transacciones del siguiente texto.
+            content: [
+              {
+                type: 'text',
+                text: `Eres un asistente experto en análisis de documentos de combustible. Analiza esta imagen de un documento y extrae TODAS las transacciones de combustible que veas.
 
-PASO 1 - ANÁLISIS:
-- Identifica transacciones de combustible
-- Encuentra la estructura de tabla  
-- Identifica columnas
+IMPORTANTE:
+- Lee CUIDADOSAMENTE cada fila de la tabla
+- Extrae TODAS las transacciones que aparezcan
+- Para números de tarjeta: extrae el número completo de CADA fila
+- Para ubicaciones: separa el nombre de la estación, ciudad y estado
+- Para montos: escribe el número completo (si ves $156.45, escribe 156.45)
+- Para fechas: usa formato YYYY-MM-DD
 
-PASO 2 - EXTRACCIÓN:
-Para cada transacción extrae:
-- Números de tarjeta (completos)
-- Ubicación (estación, ciudad, estado separados)
-- Montos (números completos)
-- Fechas (formato YYYY-MM-DD)
-
-REGLAS:
-- Lee todos los dígitos
-- NO inventes datos
-- Si no encuentras un campo, usa null
-
-Texto:
-${extractedText.substring(0, 12000)}
-
-Responde SOLO con JSON:
+Responde SOLO con JSON válido en este formato:
 {
-  "columnsFound": ["columnas"],
+  "columnsFound": ["lista de columnas que ves en el documento"],
   "hasAuthorizationCode": true/false,
-  "authorizationCodeField": "nombre o null",
+  "authorizationCodeField": "nombre del campo de autorización o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "número",
-      "unit": "unidad",
-      "invoice": "factura",
-      "location_name": "estación",
+      "card": "número de tarjeta completo",
+      "unit": "número de unidad",
+      "invoice": "número de factura",
+      "location_name": "nombre de la estación",
       "city": "ciudad",
-      "state": "estado",
-      "qty": galones,
-      "gross_ppg": precio,
-      "gross_amt": bruto,
-      "disc_amt": descuento,
-      "fees": comisiones,
-      "total_amt": total
+      "state": "código de estado (TX, FL, etc)",
+      "qty": cantidad_galones_número,
+      "gross_ppg": precio_por_galón_número,
+      "gross_amt": monto_bruto_número_completo,
+      "disc_amt": descuento_número,
+      "fees": comisiones_número,
+      "total_amt": total_número_completo
     }
   ],
-  "analysis": "Breve descripción"
-}`
+  "analysis": "Breve descripción de lo que encontraste"
+}
+
+NO inventes datos. Solo extrae lo que REALMENTE ves en el documento.`
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageBase64}`,
+                  detail: 'high'
+                }
+              }
+            ]
           }
         ],
         max_tokens: 2000,
