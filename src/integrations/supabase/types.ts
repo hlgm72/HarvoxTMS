@@ -4198,6 +4198,10 @@ export type Database = {
       }
       lovable_ai_safety_check: { Args: never; Returns: string }
       maintenance_cleanup: { Args: never; Returns: undefined }
+      map_user_role_to_payroll_role: {
+        Args: { p_user_role: string }
+        Returns: Database["public"]["Enums"]["payroll_role_type"]
+      }
       mark_driver_as_paid_with_validation: {
         Args: {
           p_calculation_id: string
