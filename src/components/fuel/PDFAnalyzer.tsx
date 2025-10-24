@@ -260,19 +260,26 @@ export function PDFAnalyzer() {
         .eq('is_active', true)
         .in('user_id', driverIds);
 
-      // Obtener períodos de pago de la empresa con fechas del período
+      // Obtener períodos de pago de la empresa directamente (sin filtrar por estado)
+      const { data: companyPeriods } = await supabase
+        .from('company_payment_periods')
+        .select('id, period_start_date, period_end_date')
+        .eq('company_id', companyId);
+
+      // Obtener user_payrolls existentes para estos conductores (cualquier estado)
       // @ts-ignore - Avoiding TypeScript deep instantiation error with complex Supabase query
       const { data: userPayrolls } = await supabase
         .from('user_payrolls')
-        .select('id, user_id, company_payment_period_id, payment_status, company_id')
+        .select('id, user_id, company_payment_period_id, payment_status')
         .eq('company_id', companyId)
-        .eq('payment_status', 'open');
+        .in('user_id', driverIds);
       
       // Define type for enriched payroll data
       type PayrollWithPeriod = {
         id: string;
         user_id: string;
         company_payment_period_id: string;
+        payment_status?: string;
         period?: {
           id: string;
           period_start_date: string;
@@ -280,27 +287,29 @@ export function PDFAnalyzer() {
         };
       } & Record<string, any>;
       
-      const userPeriods: PayrollWithPeriod[] | null = userPayrolls as any;
+      // Crear estructura combinada: cada conductor con todos los períodos de la empresa
+      const userPeriods: PayrollWithPeriod[] = [];
       
-      // Fetch period details separately if needed
-      if (userPeriods && userPeriods.length > 0) {
-        const periodIds = userPeriods
-          .map(p => p.company_payment_period_id)
-          .filter(Boolean);
-        
-        if (periodIds.length > 0) {
-          const { data: periods } = await supabase
-            .from('company_payment_periods')
-            .select('id, period_start_date, period_end_date')
-            .in('id', periodIds);
-          
-          // Enrich userPeriods with period data
-          userPeriods.forEach((payroll: PayrollWithPeriod) => {
-            const period = periods?.find(p => p.id === payroll.company_payment_period_id);
-            if (period) {
-              payroll.period = period;
-            }
-          });
+      if (companyPeriods) {
+        for (const driverId of driverIds) {
+          for (const period of companyPeriods) {
+            // Buscar si existe un user_payroll para este conductor y período
+            const existingPayroll = userPayrolls?.find(
+              p => p.user_id === driverId && p.company_payment_period_id === period.id
+            );
+            
+            userPeriods.push({
+              id: existingPayroll?.id || `virtual-${driverId}-${period.id}`,
+              user_id: driverId,
+              company_payment_period_id: period.id,
+              payment_status: existingPayroll?.payment_status,
+              period: {
+                id: period.id,
+                period_start_date: period.period_start_date,
+                period_end_date: period.period_end_date
+              }
+            });
+          }
         }
       }
 
