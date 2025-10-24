@@ -501,7 +501,7 @@ export function PDFAnalyzer() {
   };
 
   const importTransactions = async () => {
-    // Debug logs removed to prevent Sentry spam
+    console.log('📦 [PDF Analyzer] Iniciando importación de transacciones');
     setIsImporting(true);
     try {
       const validTransactions = enrichedTransactions.filter(
@@ -509,7 +509,7 @@ export function PDFAnalyzer() {
              t.import_status === 'not_imported'
       );
       
-      // Debug logs removed to prevent Sentry spam
+      console.log('📦 [PDF Analyzer] Transacciones filtradas:', validTransactions.length);
 
       if (validTransactions.length === 0) {
         showError(
@@ -520,9 +520,19 @@ export function PDFAnalyzer() {
       }
 
       // Crear períodos automáticamente para transacciones que los necesiten
+      console.log('📦 [PDF Analyzer] Verificando períodos de pago...');
+      
       for (const transaction of validTransactions) {
+        console.log('📦 [PDF Analyzer] Procesando transacción:', {
+          date: transaction.date,
+          driver: transaction.driver_name,
+          period_status: transaction.period_mapping_status,
+          payment_period_id: transaction.payment_period_id
+        });
+        
         if (transaction.period_mapping_status === 'will_create' && transaction.driver_user_id) {
-          // ✅ Usar función UTC segura para fechas de base de datos
+          console.log('🔄 [PDF Analyzer] Creando período para transacción del', transaction.date);
+          
           const targetDate = transaction.date; // Ya viene en formato YYYY-MM-DD del PDF
           
           // Obtener companyId del usuario
@@ -534,26 +544,44 @@ export function PDFAnalyzer() {
             .limit(1);
           
           if (userCompanies?.[0]) {
-            const generatedCompanyPeriodId = await ensurePaymentPeriodExists({
+            const userPayrollId = await ensurePaymentPeriodExists({
               companyId: userCompanies[0].company_id,
               userId: transaction.driver_user_id,
               targetDate
             });
             
-            if (generatedCompanyPeriodId) {
-              // ensurePaymentPeriodExists returns the user_payment_period ID directly
-              transaction.payment_period_id = generatedCompanyPeriodId;
+            console.log('📦 [PDF Analyzer] Período creado/encontrado:', userPayrollId);
+            
+            if (userPayrollId) {
+              transaction.payment_period_id = userPayrollId;
+              transaction.period_mapping_status = 'found';
+            } else {
+              console.error('❌ [PDF Analyzer] No se pudo crear el período para', transaction.date);
             }
           }
         }
       }
+      
+      // Validar que todas las transacciones válidas tengan payment_period_id
+      const transactionsWithoutPeriod = validTransactions.filter(t => !t.payment_period_id);
+      if (transactionsWithoutPeriod.length > 0) {
+        console.error('❌ [PDF Analyzer] Transacciones sin período:', transactionsWithoutPeriod);
+        showError(
+          "Error en períodos de pago",
+          `${transactionsWithoutPeriod.length} transacciones no tienen período de pago asignado. Verifica la configuración de períodos.`
+        );
+        return;
+      }
 
       // Insertar transacciones una por una usando la función RPC ACID
+      console.log('📦 [PDF Analyzer] Importando', validTransactions.length, 'transacciones...');
+      let importedCount = 0;
+      
       for (const transaction of validTransactions) {
         const fuelExpenseData = {
           driver_user_id: transaction.driver_user_id!,
           payment_period_id: transaction.payment_period_id!,
-          transaction_date: transaction.date, // ✅ Usar fecha directamente en formato YYYY-MM-DD
+          transaction_date: transaction.date,
           fuel_type: transaction.category?.toLowerCase() || 'diesel',
           gallons_purchased: Number(transaction.qty),
           price_per_gallon: Number(transaction.gross_ppg),
@@ -562,14 +590,19 @@ export function PDFAnalyzer() {
           fees: Number(transaction.fees) || 0,
           total_amount: Number(transaction.total_amt),
           station_name: transaction.location_name,
-          station_city: transaction.city, // ✅ Incluir ciudad de la estación
+          station_city: transaction.city,
           station_state: transaction.state,
           card_last_five: transaction.card.slice(-5),
           invoice_number: transaction.invoice,
           status: 'pending'
         };
 
-        // Debug logs removed to prevent Sentry spam
+        console.log('📦 [PDF Analyzer] Importando transacción:', {
+          date: transaction.date,
+          driver: transaction.driver_name,
+          amount: transaction.total_amt,
+          payment_period_id: transaction.payment_period_id
+        });
         
         const { data, error } = await supabase.rpc('create_or_update_fuel_expense_with_validation', {
           expense_data: fuelExpenseData,
@@ -577,12 +610,15 @@ export function PDFAnalyzer() {
         });
 
         if (error) {
-          console.error('❌ Error creating fuel expense:', error);
+          console.error('❌ [PDF Analyzer] Error creando gasto:', error);
           throw error;
         }
 
-        // Debug logs removed to prevent Sentry spam
+        console.log('✅ [PDF Analyzer] Transacción importada exitosamente:', data);
+        importedCount++;
       }
+      
+      console.log('✅ [PDF Analyzer] Importación completada:', importedCount, 'transacciones');
 
       showSuccess(
         "Importación exitosa",
