@@ -1,8 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,35 +26,35 @@ serve(async (req) => {
       );
     }
 
-    if (!lovableApiKey) {
+    if (!openAIApiKey) {
       return new Response(
-        JSON.stringify({ error: 'Lovable AI key not configured' }),
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('PDF received, converting to data URL for analysis...');
+    console.log('PDF received, length:', pdfBase64.length);
 
-    // Create data URL for the PDF
+    // Convert PDF to data URL for OpenAI vision
     const pdfDataUrl = `data:application/pdf;base64,${pdfBase64}`;
 
-    console.log('Analyzing with Lovable AI...');
+    console.log('Analyzing with OpenAI gpt-4o (with vision)...');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible de un PDF.
+                text: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible de este documento PDF.
 
 PASO 1 - ANÁLISIS INICIAL DEL DOCUMENTO:
 Primero lee TODO el documento y identifica:
@@ -64,73 +63,51 @@ Primero lee TODO el documento y identifica:
 - ¿Qué columnas existen realmente?
 
 PASO 2 - IDENTIFICACIÓN DE DATOS:
-Para cada transacción de combustible:
-- NÚMEROS DE TARJETA: CUIDADOSAMENTE busca TODOS los números de tarjeta diferentes
-  * Pueden estar en columnas como "Card #", "Card Number", o similar
-  * Cada fila de transacción debe tener su propio número de tarjeta
-  * NO asumas que todas las transacciones usan la misma tarjeta
+Para cada transacción de combustible extrae:
+- NÚMEROS DE TARJETA: busca TODOS los números de tarjeta diferentes
+  * Cada fila puede tener su propio número de tarjeta
+  * NO asumas que todas usan la misma tarjeta
   * Verifica CADA FILA individualmente
 - UBICACIÓN: Extrae nombre de estación, ciudad y estado por separado
-  * Busca columnas como "Location", "Station", "Address", etc.
-  * Si la ubicación está combinada (ej: "Shell - Miami, FL"), separa en name/city/state
-  * Ciudad: nombre de la ciudad (ej: "Miami", "Houston", "Phoenix")
-  * Estado: código de 2 letras (ej: "FL", "TX", "AZ")
-- MONTOS: Lee los números completos exactamente como aparecen, SIN cortar ni modificar
-- FECHAS: En formato MM/DD/YYYY o DD/MM/YYYY o similar
+  * Si está combinado (ej: "Shell - Miami, FL"), separa en name/city/state
+- MONTOS: Lee los números completos exactamente como aparecen
+- FECHAS: En formato MM/DD/YYYY
 
-REGLAS CRÍTICAS PARA MONTOS:
-- Lee TODOS los dígitos antes del punto decimal
-- Si ves "156.45" escribe 156.45, NO 56.45
-- Si ves "1,234.56" escribe 1234.56
-- Si ves "$155.75" escribe 155.75
-- NUNCA cortes números - extrae el valor completo
-
-REGLAS CRÍTICAS PARA NÚMEROS DE TARJETA:
-- Extrae la secuencia completa de dígitos de CADA FILA
-- Puede tener espacios o guiones, pero extrae solo los números
-- Longitud típica: 10-20 dígitos
-- IMPORTANTE: Diferentes filas pueden tener diferentes números de tarjeta
-- NO copies el número de tarjeta de una fila a otra
-
-ANÁLISIS PASO A PASO:
-1. Primero identifica las secciones del PDF
-2. Localiza la tabla de transacciones de combustible
-3. Identifica cada columna y su contenido
-4. Extrae cada fila de datos cuidadosamente
+REGLAS CRÍTICAS:
+- Lee TODOS los dígitos de los montos (si ves "156.45" NO escribas 56.45)
+- Extrae el número de tarjeta completo de cada fila
+- NO inventes datos que no aparezcan en el documento
 
 Responde SOLO con JSON válido en este formato:
 {
-  "columnsFound": ["lista_de_columnas_reales_encontradas"],
+  "columnsFound": ["lista_de_columnas_reales"],
   "hasAuthorizationCode": true/false,
-  "authorizationCodeField": "nombre del campo si existe o null",
+  "authorizationCodeField": "nombre del campo o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "número_exacto_que_aparece_en_el_PDF",
-      "unit": "número de unidad exacto",
-      "invoice": "número de factura exacto",
-      "location_name": "nombre exacto de la estación",
-      "city": "ciudad de la estación",
-      "state": "código de estado",
-      "qty": cantidad_galones_numerica_exacta,
-      "gross_ppg": precio_por_galón_numerico_exacto,
-      "gross_amt": monto_bruto_numerico_COMPLETO,
-      "disc_amt": descuento_numerico_exacto,
-      "fees": comisiones_numericas_exactas,
-      "total_amt": total_final_numerico_COMPLETO
+      "card": "número_completo",
+      "unit": "número_unidad",
+      "invoice": "número_factura",
+      "location_name": "nombre_estación",
+      "city": "ciudad",
+      "state": "código_estado",
+      "qty": galones_numérico,
+      "gross_ppg": precio_por_galón,
+      "gross_amt": monto_bruto_completo,
+      "disc_amt": descuento,
+      "fees": comisiones,
+      "total_amt": total_completo
     }
   ],
-  "analysis": "Descripción de qué columnas encontraste, de dónde sacaste los números de tarjeta, y cómo identificaste los montos completos"
-}
-
-CRÍTICO: 
-- Solo extrae datos que REALMENTE aparezcan en el documento. NO inventes números.
-- MANTÉN los montos COMPLETOS sin cortar dígitos.`
+  "analysis": "Descripción breve de lo encontrado"
+}`
               },
               {
                 type: 'image_url',
                 image_url: {
-                  url: pdfDataUrl
+                  url: pdfDataUrl,
+                  detail: 'high'
                 }
               }
             ]
@@ -143,24 +120,9 @@ CRÍTICO:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'Payment required. Please add credits to your workspace.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
+      console.error('OpenAI API error:', response.status, errorText);
       return new Response(
-        JSON.stringify({ error: 'AI analysis error', details: errorText }),
+        JSON.stringify({ error: 'OpenAI API error', details: errorText }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -168,7 +130,7 @@ CRÍTICO:
     const data = await response.json();
     const responseText = data.choices[0].message.content;
     
-    console.log('AI response:', responseText);
+    console.log('OpenAI response:', responseText);
 
     let analysisResult;
     try {
@@ -195,7 +157,7 @@ CRÍTICO:
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Failed to parse AI response',
+          error: 'Failed to parse OpenAI response',
           details: parseError.message,
           rawResponse: responseText
         }),
