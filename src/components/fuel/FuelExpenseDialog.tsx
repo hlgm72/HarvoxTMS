@@ -333,11 +333,13 @@ export function FuelExpenseDialog({
         try {
           const transactionDateStr = formatDateInUserTimeZone(data.transaction_date);
           
-          console.log('🔍 FuelExpenseDialog - Ensuring payment period exists for:', {
-            company: userCompany.company_id,
-            date: transactionDateStr,
-            driver: data.driver_user_id
-          });
+          if (import.meta.env.DEV) {
+            console.log('🔍 FuelExpenseDialog - Ensuring payment period exists for:', {
+              company: userCompany.company_id,
+              date: transactionDateStr,
+              driver: data.driver_user_id
+            });
+          }
 
           const generatedPeriodId = await ensurePaymentPeriodExists({
             companyId: userCompany.company_id,
@@ -347,13 +349,19 @@ export function FuelExpenseDialog({
 
           if (generatedPeriodId) {
             data.payment_period_id = generatedPeriodId;
-            console.log('✅ Period ensured:', generatedPeriodId);
+            if (import.meta.env.DEV) {
+              console.log('✅ Period ensured:', generatedPeriodId);
+            }
           } else {
-            console.error('❌ Could not ensure payment period exists');
+            if (import.meta.env.DEV) {
+              console.error('❌ Could not ensure payment period exists');
+            }
             return;
           }
         } catch (error) {
-          console.error('❌ Error ensuring payment period:', error);
+          if (import.meta.env.DEV) {
+            console.error('❌ Error ensuring payment period:', error);
+          }
           return;
         }
       }

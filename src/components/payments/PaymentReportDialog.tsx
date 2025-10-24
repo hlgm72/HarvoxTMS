@@ -258,7 +258,9 @@ export function PaymentReportDialog({
     queryFn: async () => {
       if (!calculation?.company_payment_period_id || !calculation?.user_id) return [];
       
-      console.log('🔍 Querying deductions for company_payment_period:', calculation.company_payment_period_id, 'user:', calculation.user_id);
+      if (import.meta.env.DEV) {
+        console.log('🔍 Querying deductions for company_payment_period:', calculation.company_payment_period_id, 'user:', calculation.user_id);
+      }
       
       // ✅ CORREGIDO: payment_period_id en expense_instances es el company_payment_period_id
       const { data, error } = await supabase
@@ -282,31 +284,35 @@ export function PaymentReportDialog({
         .order('expense_date', { ascending: true });
 
       if (error) {
-        console.error('🚨 Error querying deductions:', error);
-        console.error('🚨 Error details:', JSON.stringify(error, null, 2));
+        if (import.meta.env.DEV) {
+          console.error('🚨 Error querying deductions:', error);
+          console.error('🚨 Error details:', JSON.stringify(error, null, 2));
+        }
         throw error;
       }
       
-      console.log('✅ Deductions query result:', data);
-      console.log('✅ Deductions count from query:', data?.length || 0);
-      
-      // Verificar permisos adicionales
-      console.log('🔐 Current user ID:', (await supabase.auth.getUser()).data.user?.id);
-      
-      // Debug: Calcular manualmente los totales esperados por tipo de deducción
-      if (data && data.length > 0) {
-        const leasingTotal = data.filter(d => d.expense_types?.name === 'Leasing Fee').reduce((sum, d) => sum + d.amount, 0);
-        const factoringTotal = data.filter(d => d.expense_types?.name === 'Factoring Fee').reduce((sum, d) => sum + d.amount, 0);
-        const dispatchingTotal = data.filter(d => d.expense_types?.name === 'Dispatching Fee').reduce((sum, d) => sum + d.amount, 0);
+      if (import.meta.env.DEV) {
+        console.log('✅ Deductions query result:', data);
+        console.log('✅ Deductions count from query:', data?.length || 0);
         
-        console.log('📊 DEDUCTION TOTALS FROM DB BY TYPE:');
-        console.log('  Leasing Total from DB:', leasingTotal);
-        console.log('  Factoring Total from DB:', factoringTotal);
-        console.log('  Dispatching Total from DB:', dispatchingTotal);
-        console.log('  Grand Total from DB:', leasingTotal + factoringTotal + dispatchingTotal);
+        // Verificar permisos adicionales
+        console.log('🔐 Current user ID:', (await supabase.auth.getUser()).data.user?.id);
         
-        console.log('📊 AVAILABLE EXPENSE TYPES:');
-        data.forEach(d => console.log(`  - ${d.expense_types?.name}: $${d.amount}`));
+        // Debug: Calcular manualmente los totales esperados por tipo de deducción
+        if (data && data.length > 0) {
+          const leasingTotal = data.filter(d => d.expense_types?.name === 'Leasing Fee').reduce((sum, d) => sum + d.amount, 0);
+          const factoringTotal = data.filter(d => d.expense_types?.name === 'Factoring Fee').reduce((sum, d) => sum + d.amount, 0);
+          const dispatchingTotal = data.filter(d => d.expense_types?.name === 'Dispatching Fee').reduce((sum, d) => sum + d.amount, 0);
+          
+          console.log('📊 DEDUCTION TOTALS FROM DB BY TYPE:');
+          console.log('  Leasing Total from DB:', leasingTotal);
+          console.log('  Factoring Total from DB:', factoringTotal);
+          console.log('  Dispatching Total from DB:', dispatchingTotal);
+          console.log('  Grand Total from DB:', leasingTotal + factoringTotal + dispatchingTotal);
+          
+          console.log('📊 AVAILABLE EXPENSE TYPES:');
+          data.forEach(d => console.log(`  - ${d.expense_types?.name}: $${d.amount}`));
+        }
       }
       
       return data || [];
@@ -320,14 +326,16 @@ export function PaymentReportDialog({
   const getReportData = () => {
     if (!calculation || !driver || !company) return null;
     
-    console.log('🔍 Report Data - Deductions count:', deductions.length);
-    console.log('🔍 Report Data - Deductions:', deductions);
-    
-    // Usar los totales precalculados de user_payment_periods
-    console.log('💰 USING PRECALCULATED TOTALS FROM DB:');
-    console.log('  Total Deductions from calculation:', calculation.total_deductions);
-    console.log('  Gross Earnings from calculation:', calculation.gross_earnings);
-    console.log('  Net Payment from calculation:', calculation.net_payment);
+    if (import.meta.env.DEV) {
+      console.log('🔍 Report Data - Deductions count:', deductions.length);
+      console.log('🔍 Report Data - Deductions:', deductions);
+      
+      // Usar los totales precalculados de user_payment_periods
+      console.log('💰 USING PRECALCULATED TOTALS FROM DB:');
+      console.log('  Total Deductions from calculation:', calculation.total_deductions);
+      console.log('  Gross Earnings from calculation:', calculation.gross_earnings);
+      console.log('  Net Payment from calculation:', calculation.net_payment);
+    }
     
     return {
       driver: {

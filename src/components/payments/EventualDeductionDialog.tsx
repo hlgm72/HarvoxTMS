@@ -152,11 +152,16 @@ export function EventualDeductionDialog({
         return [];
       }
 
-      console.log('Fetching periods for driver:', formData.user_id, 'date:', expenseDate);
+      if (import.meta.env.DEV) {
+        console.log('Fetching periods for driver:', formData.user_id, 'date:', expenseDate);
+      }
 
       try {
         // Primero obtenemos la empresa del conductor
-        console.log('Step 1: Getting user company...');
+        if (import.meta.env.DEV) {
+          console.log('Step 1: Getting user company...');
+        }
+        
         const { data: userCompanyRoles, error: companyError } = await supabase
           .from('user_company_roles')
           .select('company_id')
@@ -165,24 +170,34 @@ export function EventualDeductionDialog({
           .limit(1);
 
         if (companyError) {
-          console.error('Error getting user company:', companyError);
+          if (import.meta.env.DEV) {
+            console.error('Error getting user company:', companyError);
+          }
           return [];
         }
 
         if (!userCompanyRoles || userCompanyRoles.length === 0) {
-          console.log('No company found for user');
+          if (import.meta.env.DEV) {
+            console.log('No company found for user');
+          }
           return [];
         }
 
         const companyId = userCompanyRoles[0].company_id;
-        console.log('User company found:', companyId);
+        if (import.meta.env.DEV) {
+          console.log('User company found:', companyId);
+        }
 
         // Convertir expenseDate a formato YYYY-MM-DD para la comparación
         const expenseDateStr = expenseDate.toISOString().split('T')[0];
-        console.log('Expense date for filtering:', expenseDateStr);
+        if (import.meta.env.DEV) {
+          console.log('Expense date for filtering:', expenseDateStr);
+        }
 
         // Obtenemos TODOS los períodos (incluyendo pagados) para detectar ese caso
-        console.log('Step 2: Getting ALL user periods for date...');
+        if (import.meta.env.DEV) {
+          console.log('Step 2: Getting ALL user periods for date...');
+        }
         
         // @ts-ignore - Complex Supabase query types
         const { data: allPeriods, error: periodsError } = await supabase
@@ -200,11 +215,15 @@ export function EventualDeductionDialog({
           .order('created_at', { ascending: false });
         
         if (periodsError) {
-          console.error('Error fetching user periods:', periodsError);
+          if (import.meta.env.DEV) {
+            console.error('Error fetching user periods:', periodsError);
+          }
           return [];
         }
         
-        console.log('All user periods found:', allPeriods?.length || 0);
+        if (import.meta.env.DEV) {
+          console.log('All user periods found:', allPeriods?.length || 0);
+        }
 
         // Filtrar períodos que contienen la fecha del gasto
         const periodsForDate = allPeriods?.filter(period => {
@@ -214,12 +233,16 @@ export function EventualDeductionDialog({
           return expenseDateStr >= startDate && expenseDateStr <= endDate;
         }) || [];
         
-        console.log('Periods matching date:', periodsForDate.length);
+        if (import.meta.env.DEV) {
+          console.log('Periods matching date:', periodsForDate.length);
+        }
 
         // Verificar si hay períodos pagados para esta fecha
         const paidPeriod = periodsForDate.find(p => p.payment_status === 'paid');
         if (paidPeriod) {
-          console.log('⚠️ Found PAID period for this date - blocking creation');
+          if (import.meta.env.DEV) {
+            console.log('⚠️ Found PAID period for this date - blocking creation');
+          }
           return [{ ...paidPeriod, __is_paid: true }]; // Marcamos como pagado
         }
 
@@ -228,12 +251,16 @@ export function EventualDeductionDialog({
 
         // Si hay período no pagado, usarlo
         if (unpaidPeriods.length > 0) {
-          console.log('✅ Found unpaid period for this date');
+          if (import.meta.env.DEV) {
+            console.log('✅ Found unpaid period for this date');
+          }
           return unpaidPeriods;
         }
 
         // Si no hay ningún período, crear uno automáticamente
-        console.log('📝 No period found - creating automatically...');
+        if (import.meta.env.DEV) {
+          console.log('📝 No period found - creating automatically...');
+        }
         const { data: newPeriodId, error: createError } = await supabase.rpc(
           'create_payment_period_if_needed',
           {
@@ -243,11 +270,15 @@ export function EventualDeductionDialog({
         );
 
         if (createError) {
-          console.error('Error creating period:', createError);
+          if (import.meta.env.DEV) {
+            console.error('Error creating period:', createError);
+          }
           throw new Error('No se pudo crear el período de pago automáticamente');
         }
 
-        console.log('✅ Period created:', newPeriodId);
+        if (import.meta.env.DEV) {
+          console.log('✅ Period created:', newPeriodId);
+        }
 
         // Buscar el user_payroll recién creado
         const { data: newUserPeriods, error: fetchNewError } = await supabase
@@ -266,14 +297,20 @@ export function EventualDeductionDialog({
           .limit(1);
 
         if (fetchNewError || !newUserPeriods || newUserPeriods.length === 0) {
-          console.error('Error fetching newly created period:', fetchNewError);
+          if (import.meta.env.DEV) {
+            console.error('Error fetching newly created period:', fetchNewError);
+          }
           return [];
         }
 
-        console.log('✅ Successfully fetched newly created user_payroll');
+        if (import.meta.env.DEV) {
+          console.log('✅ Successfully fetched newly created user_payroll');
+        }
         return newUserPeriods;
       } catch (error) {
-        console.error('Error in payment periods query:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error in payment periods query:', error);
+        }
         return [];
       }
     },

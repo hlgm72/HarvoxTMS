@@ -625,23 +625,24 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       temporaryDocuments: (mode === 'create' || mode === 'duplicate') ? loadDocuments : undefined, // Pass temporary documents only for new loads
     };
 
-    console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
-
-    console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
-    console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_id);
-    console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
-    console.log('🔍 CreateLoadDialog - Full selected dispatcher:', selectedDispatcher);
-    console.log('🔍 CreateLoadDialog - Full load data to submit:', JSON.stringify(loadDataToSubmit, null, 2));
-    console.log('🔍 CreateLoadDialog - Selected dispatcher object:', selectedDispatcher);
-    console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
-    console.log('🔍 CreateLoadDialog - Raw form values:', values);
-    console.log('📋 CreateLoadDialog - Current mutation state:', {
-      isIdle: createLoadMutation.isIdle,
-      isPending: createLoadMutation.isPending,
-      isError: createLoadMutation.isError,
-      isSuccess: createLoadMutation.isSuccess,
-      error: createLoadMutation.error
-    });
+    if (import.meta.env.DEV) {
+      console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
+      console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
+      console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_id);
+      console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
+      console.log('🔍 CreateLoadDialog - Full selected dispatcher:', selectedDispatcher);
+      console.log('🔍 CreateLoadDialog - Full load data to submit:', JSON.stringify(loadDataToSubmit, null, 2));
+      console.log('🔍 CreateLoadDialog - Selected dispatcher object:', selectedDispatcher);
+      console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
+      console.log('🔍 CreateLoadDialog - Raw form values:', values);
+      console.log('📋 CreateLoadDialog - Current mutation state:', {
+        isIdle: createLoadMutation.isIdle,
+        isPending: createLoadMutation.isPending,
+        isError: createLoadMutation.isError,
+        isSuccess: createLoadMutation.isSuccess,
+        error: createLoadMutation.error
+      });
+    }
     
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {
