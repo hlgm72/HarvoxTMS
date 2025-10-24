@@ -15,13 +15,13 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting PDF text analysis...');
+    console.log('Starting PDF analysis...');
     
-    const { extractedText } = await req.json();
+    const { pdfBase64 } = await req.json();
 
-    if (!extractedText) {
+    if (!pdfBase64) {
       return new Response(
-        JSON.stringify({ error: 'Extracted text is required' }),
+        JSON.stringify({ error: 'PDF base64 data is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -33,7 +33,31 @@ serve(async (req) => {
       );
     }
 
-    console.log('Text received, length:', extractedText.length);
+    console.log('PDF received, length:', pdfBase64.length);
+
+    // Simple text extraction from PDF bytes
+    const pdfBytes = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
+    const decoder = new TextDecoder('utf-8', { fatal: false });
+    let extractedText = decoder.decode(pdfBytes);
+    
+    // Clean up the extracted text - remove binary junk, keep readable text
+    extractedText = extractedText
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    console.log('Text extracted, length:', extractedText.length);
+    console.log('Sample:', extractedText.substring(0, 500));
+
+    if (!extractedText || extractedText.length < 100) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Could not extract readable text from PDF. The PDF might be image-based or encrypted.' 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log('Analyzing with OpenAI...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -49,36 +73,37 @@ serve(async (req) => {
             role: 'user',
             content: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible del siguiente texto extraído de un PDF.
 
-PASO 1 - ANÁLISIS INICIAL:
-Lee TODO el texto e identifica:
-- ¿Dónde están las transacciones de combustible?
-- ¿Cuál es la estructura de la tabla?
-- ¿Qué columnas existen?
+IMPORTANTE: El texto puede estar desordenado o contener caracteres extraños. Busca patrones y datos coherentes.
+
+PASO 1 - ANÁLISIS:
+- Identifica transacciones de combustible
+- Encuentra la estructura de tabla
+- Identifica columnas
 
 PASO 2 - EXTRACCIÓN:
 Para cada transacción extrae:
-- NÚMEROS DE TARJETA: busca todos los números diferentes
-- UBICACIÓN: nombre de estación, ciudad y estado (separados)
-- MONTOS: números completos (si ves "156.45" escribe 156.45, NO 56.45)
-- FECHAS: formato YYYY-MM-DD
+- Números de tarjeta (completos)
+- Ubicación (estación, ciudad, estado separados)
+- Montos (números completos, si ves "156.45" escribe 156.45)
+- Fechas (formato YYYY-MM-DD)
 
-REGLAS CRÍTICAS:
-- Lee TODOS los dígitos de los montos
+REGLAS:
+- Lee todos los dígitos de montos
 - NO inventes datos
-- Cada fila puede tener diferente número de tarjeta
+- Si no encuentras un campo, usa null
 
 Texto del PDF:
-${extractedText}
+${extractedText.substring(0, 15000)}
 
 Responde SOLO con JSON válido:
 {
-  "columnsFound": ["lista_de_columnas"],
+  "columnsFound": ["columnas"],
   "hasAuthorizationCode": true/false,
   "authorizationCodeField": "nombre o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "número_completo",
+      "card": "número",
       "unit": "unidad",
       "invoice": "factura",
       "location_name": "estación",
@@ -86,13 +111,13 @@ Responde SOLO con JSON válido:
       "state": "estado",
       "qty": galones,
       "gross_ppg": precio,
-      "gross_amt": monto_bruto,
+      "gross_amt": bruto,
       "disc_amt": descuento,
       "fees": comisiones,
       "total_amt": total
     }
   ],
-  "analysis": "Descripción breve"
+  "analysis": "Breve descripción"
 }`
           }
         ],
@@ -156,7 +181,7 @@ Responde SOLO con JSON válido:
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Error processing text', 
+        error: 'Error processing PDF', 
         details: error.message 
       }),
       {
