@@ -90,15 +90,41 @@ export function PDFAnalyzer() {
     });
   };
 
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    const pdfjsLib = await import('pdfjs-dist');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map((item: any) => item.str)
+        .join(' ');
+      fullText += pageText + '\n';
+    }
+    
+    return fullText;
+  };
+
   const analyzePDF = async () => {
     if (!selectedFile) return;
 
     setIsAnalyzing(true);
     try {
-      const base64Data = await convertFileToBase64(selectedFile);
+      // First extract text from PDF
+      const extractedText = await extractTextFromPDF(selectedFile);
       
+      if (!extractedText.trim()) {
+        throw new Error('No text could be extracted from PDF');
+      }
+      
+      // Then analyze with AI
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { pdfBase64: base64Data }
+        body: { extractedText }
       });
 
       if (error) {

@@ -15,13 +15,13 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting PDF analysis...');
+    console.log('Starting PDF text analysis...');
     
-    const { pdfBase64 } = await req.json();
+    const { extractedText } = await req.json();
 
-    if (!pdfBase64) {
+    if (!extractedText) {
       return new Response(
-        JSON.stringify({ error: 'PDF base64 data is required' }),
+        JSON.stringify({ error: 'Extracted text is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -33,12 +33,8 @@ serve(async (req) => {
       );
     }
 
-    console.log('PDF received, length:', pdfBase64.length);
-
-    // Convert PDF to data URL for OpenAI vision
-    const pdfDataUrl = `data:application/pdf;base64,${pdfBase64}`;
-
-    console.log('Analyzing with OpenAI gpt-4o (with vision)...');
+    console.log('Text received, length:', extractedText.length);
+    console.log('Analyzing with OpenAI...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -47,70 +43,57 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible de este documento PDF.
+            content: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible del siguiente texto extraído de un PDF.
 
-PASO 1 - ANÁLISIS INICIAL DEL DOCUMENTO:
-Primero lee TODO el documento y identifica:
-- ¿Dónde están las filas de transacciones de combustible?
-- ¿Cuál es la estructura exacta de la tabla?
-- ¿Qué columnas existen realmente?
+PASO 1 - ANÁLISIS INICIAL:
+Lee TODO el texto e identifica:
+- ¿Dónde están las transacciones de combustible?
+- ¿Cuál es la estructura de la tabla?
+- ¿Qué columnas existen?
 
-PASO 2 - IDENTIFICACIÓN DE DATOS:
-Para cada transacción de combustible extrae:
-- NÚMEROS DE TARJETA: busca TODOS los números de tarjeta diferentes
-  * Cada fila puede tener su propio número de tarjeta
-  * NO asumas que todas usan la misma tarjeta
-  * Verifica CADA FILA individualmente
-- UBICACIÓN: Extrae nombre de estación, ciudad y estado por separado
-  * Si está combinado (ej: "Shell - Miami, FL"), separa en name/city/state
-- MONTOS: Lee los números completos exactamente como aparecen
-- FECHAS: En formato MM/DD/YYYY
+PASO 2 - EXTRACCIÓN:
+Para cada transacción extrae:
+- NÚMEROS DE TARJETA: busca todos los números diferentes
+- UBICACIÓN: nombre de estación, ciudad y estado (separados)
+- MONTOS: números completos (si ves "156.45" escribe 156.45, NO 56.45)
+- FECHAS: formato YYYY-MM-DD
 
 REGLAS CRÍTICAS:
-- Lee TODOS los dígitos de los montos (si ves "156.45" NO escribas 56.45)
-- Extrae el número de tarjeta completo de cada fila
-- NO inventes datos que no aparezcan en el documento
+- Lee TODOS los dígitos de los montos
+- NO inventes datos
+- Cada fila puede tener diferente número de tarjeta
 
-Responde SOLO con JSON válido en este formato:
+Texto del PDF:
+${extractedText}
+
+Responde SOLO con JSON válido:
 {
-  "columnsFound": ["lista_de_columnas_reales"],
+  "columnsFound": ["lista_de_columnas"],
   "hasAuthorizationCode": true/false,
-  "authorizationCodeField": "nombre del campo o null",
+  "authorizationCodeField": "nombre o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
       "card": "número_completo",
-      "unit": "número_unidad",
-      "invoice": "número_factura",
-      "location_name": "nombre_estación",
+      "unit": "unidad",
+      "invoice": "factura",
+      "location_name": "estación",
       "city": "ciudad",
-      "state": "código_estado",
-      "qty": galones_numérico,
-      "gross_ppg": precio_por_galón,
-      "gross_amt": monto_bruto_completo,
+      "state": "estado",
+      "qty": galones,
+      "gross_ppg": precio,
+      "gross_amt": monto_bruto,
       "disc_amt": descuento,
       "fees": comisiones,
-      "total_amt": total_completo
+      "total_amt": total
     }
   ],
-  "analysis": "Descripción breve de lo encontrado"
+  "analysis": "Descripción breve"
 }`
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: pdfDataUrl,
-                  detail: 'high'
-                }
-              }
-            ]
           }
         ],
         max_tokens: 2000,
@@ -130,18 +113,15 @@ Responde SOLO con JSON válido en este formato:
     const data = await response.json();
     const responseText = data.choices[0].message.content;
     
-    console.log('OpenAI response:', responseText);
+    console.log('OpenAI response received');
 
     let analysisResult;
     try {
-      // Limpiar respuesta
       const cleanedText = responseText.replace(/```json\n?|\n?```/g, '').trim();
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
-      
       const jsonToParse = jsonMatch ? jsonMatch[0] : cleanedText;
       analysisResult = JSON.parse(jsonToParse);
 
-      // Validar estructura
       analysisResult = {
         columnsFound: Array.isArray(analysisResult.columnsFound) ? analysisResult.columnsFound : [],
         hasAuthorizationCode: Boolean(analysisResult.hasAuthorizationCode),
@@ -152,12 +132,10 @@ Responde SOLO con JSON válido en este formato:
 
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      console.error('Raw response was:', responseText);
-      
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Failed to parse OpenAI response',
+          error: 'Failed to parse AI response',
           details: parseError.message,
           rawResponse: responseText
         }),
@@ -178,7 +156,7 @@ Responde SOLO con JSON válido en este formato:
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Error processing PDF', 
+        error: 'Error processing text', 
         details: error.message 
       }),
       {
