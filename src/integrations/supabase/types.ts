@@ -3709,6 +3709,10 @@ export type Database = {
         Args: { driver_id_param: string; period_id_param: string }
         Returns: Json
       }
+      force_recalculate_period: {
+        Args: { p_payment_period_id: string }
+        Returns: Json
+      }
       generate_company_payment_periods:
         | {
             Args: {
