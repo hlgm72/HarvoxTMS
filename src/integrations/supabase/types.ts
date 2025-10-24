@@ -272,7 +272,7 @@ export type Database = {
           action: string
           company_id: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           user_agent: string | null
         }
         Insert: {
@@ -282,7 +282,7 @@ export type Database = {
           action: string
           company_id: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
         }
         Update: {
@@ -292,7 +292,7 @@ export type Database = {
           action?: string
           company_id?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
         }
         Relationships: []
@@ -603,7 +603,7 @@ export type Database = {
           accessed_by: string
           company_id: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           user_agent: string | null
           user_role: Database["public"]["Enums"]["user_role"] | null
         }
@@ -613,7 +613,7 @@ export type Database = {
           accessed_by: string
           company_id: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
         }
@@ -623,7 +623,7 @@ export type Database = {
           accessed_by?: string
           company_id?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_role?: Database["public"]["Enums"]["user_role"] | null
         }
@@ -2224,25 +2224,25 @@ export type Database = {
       }
       migration_fk_backup: {
         Row: {
-          column_name: unknown | null
-          constraint_name: unknown | null
-          foreign_column_name: unknown | null
-          foreign_table_name: unknown | null
-          table_name: unknown | null
+          column_name: unknown
+          constraint_name: unknown
+          foreign_column_name: unknown
+          foreign_table_name: unknown
+          table_name: unknown
         }
         Insert: {
-          column_name?: unknown | null
-          constraint_name?: unknown | null
-          foreign_column_name?: unknown | null
-          foreign_table_name?: unknown | null
-          table_name?: unknown | null
+          column_name?: unknown
+          constraint_name?: unknown
+          foreign_column_name?: unknown
+          foreign_table_name?: unknown
+          table_name?: unknown
         }
         Update: {
-          column_name?: unknown | null
-          constraint_name?: unknown | null
-          foreign_column_name?: unknown | null
-          foreign_table_name?: unknown | null
-          table_name?: unknown | null
+          column_name?: unknown
+          constraint_name?: unknown
+          foreign_column_name?: unknown
+          foreign_table_name?: unknown
+          table_name?: unknown
         }
         Relationships: []
       }
@@ -2660,7 +2660,7 @@ export type Database = {
           action_type: string
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_values: Json | null
           old_values: Json | null
           record_id: string | null
@@ -2672,7 +2672,7 @@ export type Database = {
           action_type: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string | null
@@ -2684,7 +2684,7 @@ export type Database = {
           action_type?: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string | null
@@ -3205,22 +3205,13 @@ export type Database = {
         Args: { target_period_id: string; target_user_id: string }
         Returns: Json
       }
-      approve_fuel_expenses_for_paid_drivers: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      archive_company_document: {
-        Args: { document_id: string }
-        Returns: Json
-      }
+      approve_fuel_expenses_for_paid_drivers: { Args: never; Returns: Json }
+      archive_company_document: { Args: { document_id: string }; Returns: Json }
       archive_document_with_validation: {
         Args: { archive_reason?: string; document_id_param: string }
         Returns: Json
       }
-      archive_old_loads: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      archive_old_loads: { Args: never; Returns: number }
       assign_equipment_to_driver_with_validation: {
         Args: { assignment_data: Json }
         Returns: Json
@@ -3268,15 +3259,15 @@ export type Database = {
         Args: { period_calculation_id: string }
         Returns: Json
       }
-      calculate_driver_payment_period_v2: {
-        Args:
-          | {
+      calculate_driver_payment_period_v2:
+        | {
+            Args: {
               company_payment_period_id_param: string
               driver_user_id_param: string
             }
-          | { period_calculation_id: string }
-        Returns: Json
-      }
+            Returns: Json
+          }
+        | { Args: { period_calculation_id: string }; Returns: Json }
       calculate_driver_period_totals: {
         Args: {
           company_payment_period_id_param: string
@@ -3300,12 +3291,15 @@ export type Database = {
           transaction_count: number
         }[]
       }
-      calculate_payment_date: {
-        Args:
-          | { company_id_param: string; target_date?: string }
-          | { payment_day: string; period_end_date: string }
-        Returns: string
-      }
+      calculate_payment_date:
+        | {
+            Args: { payment_day: string; period_end_date: string }
+            Returns: string
+          }
+        | {
+            Args: { company_id_param: string; target_date?: string }
+            Returns: string
+          }
       calculate_user_payment_period_with_validation: {
         Args: { calculation_id: string }
         Returns: Json
@@ -3330,10 +3324,7 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: boolean
       }
-      can_access_load: {
-        Args: { load_id_param: string }
-        Returns: boolean
-      }
+      can_access_load: { Args: { load_id_param: string }; Returns: boolean }
       can_access_owner_details: {
         Args: { company_id_param: string }
         Returns: boolean
@@ -3346,10 +3337,7 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
-      can_close_payment_period: {
-        Args: { period_id: string }
-        Returns: Json
-      }
+      can_close_payment_period: { Args: { period_id: string }; Returns: Json }
       can_delete_test_company: {
         Args: { company_id_param: string }
         Returns: Json
@@ -3358,18 +3346,12 @@ export type Database = {
         Args: { target_company_id: string }
         Returns: boolean
       }
-      can_modify_financial_data: {
-        Args: { period_id: string }
-        Returns: Json
-      }
+      can_modify_financial_data: { Args: { period_id: string }; Returns: Json }
       can_modify_financial_data_with_user_check: {
         Args: { period_id: string; user_id_param?: string }
         Returns: Json
       }
-      can_modify_period: {
-        Args: { period_id: string }
-        Returns: boolean
-      }
+      can_modify_period: { Args: { period_id: string }; Returns: boolean }
       can_user_be_permanently_deleted: {
         Args: { user_id_param: string }
         Returns: Json
@@ -3382,16 +3364,13 @@ export type Database = {
         Args: { operation?: string; table_name: string }
         Returns: boolean
       }
-      check_is_superadmin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      check_is_superadmin: { Args: never; Returns: boolean }
       check_load_number_exists: {
         Args: { exclude_load_id_param?: string; load_number_param: string }
         Returns: boolean
       }
       check_mass_period_creation: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           alert_level: string
           company_id: string
@@ -3410,10 +3389,7 @@ export type Database = {
         Args: { target_company_id: string }
         Returns: Json
       }
-      cleanup_empty_legacy_periods: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      cleanup_empty_legacy_periods: { Args: never; Returns: Json }
       cleanup_empty_payment_period: {
         Args: { target_period_id: string }
         Returns: Json
@@ -3422,28 +3398,19 @@ export type Database = {
         Args: { target_payroll_id: string }
         Returns: Json
       }
-      cleanup_expired_backups: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      cleanup_expired_reset_tokens: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      cleanup_expired_backups: { Args: never; Returns: number }
+      cleanup_expired_reset_tokens: { Args: never; Returns: number }
       cleanup_incorrect_recurring_instances: {
         Args: { period_id: string }
         Returns: Json
       }
-      cleanup_load_percentage_deductions: {
-        Args:
-          | { load_id_param: string }
-          | { load_id_param: string; load_number_param: string }
-        Returns: number
-      }
-      cleanup_old_recurring_expense_descriptions: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      cleanup_load_percentage_deductions:
+        | {
+            Args: { load_id_param: string; load_number_param: string }
+            Returns: number
+          }
+        | { Args: { load_id_param: string }; Returns: undefined }
+      cleanup_old_recurring_expense_descriptions: { Args: never; Returns: Json }
       cleanup_period_and_orphaned_data: {
         Args: {
           target_company_id: string
@@ -3452,10 +3419,7 @@ export type Database = {
         }
         Returns: Json
       }
-      cleanup_unnecessary_periods_created_today: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      cleanup_unnecessary_periods_created_today: { Args: never; Returns: Json }
       cleanup_user_data_with_validation: {
         Args: { user_id_param: string }
         Returns: Json
@@ -3579,16 +3543,19 @@ export type Database = {
         Args: { income_data: Json }
         Returns: Json
       }
-      create_payment_period_if_needed: {
-        Args:
-          | {
+      create_payment_period_if_needed:
+        | {
+            Args: {
               created_by_user_id: string
               target_company_id: string
               target_date: string
             }
-          | { target_company_id: string; target_date: string }
-        Returns: string
-      }
+            Returns: string
+          }
+        | {
+            Args: { target_company_id: string; target_date: string }
+            Returns: string
+          }
       create_percentage_deduction_safe: {
         Args: {
           p_amount: number
@@ -3600,9 +3567,33 @@ export type Database = {
         }
         Returns: string
       }
-      create_percentage_deductions_for_load: {
-        Args:
-          | {
+      create_percentage_deductions_for_load:
+        | {
+            Args: {
+              driver_user_id_param: string
+              is_update_mode?: boolean
+              load_id_param: string
+              load_number_param: string
+              target_payment_period_id: string
+              total_amount_param: number
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              created_by_param?: string
+              dispatching_pct_param?: number
+              driver_user_id_param: string
+              factoring_pct_param?: number
+              leasing_pct_param?: number
+              load_amount_param: number
+              load_number_param: string
+              payment_period_id_param: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
               created_by_param: string
               dispatching_pct_param: number
               driver_user_id_param: string
@@ -3613,26 +3604,8 @@ export type Database = {
               load_number_param: string
               payment_period_id_param: string
             }
-          | {
-              created_by_param?: string
-              dispatching_pct_param?: number
-              driver_user_id_param: string
-              factoring_pct_param?: number
-              leasing_pct_param?: number
-              load_amount_param: number
-              load_number_param: string
-              payment_period_id_param: string
-            }
-          | {
-              driver_user_id_param: string
-              is_update_mode?: boolean
-              load_id_param: string
-              load_number_param: string
-              target_payment_period_id: string
-              total_amount_param: number
-            }
-        Returns: Json
-      }
+            Returns: undefined
+          }
       create_user_with_company_role_validation: {
         Args: { company_role_data: Json; user_data: Json }
         Returns: Json
@@ -3649,10 +3622,7 @@ export type Database = {
         }
         Returns: Json
       }
-      debug_percentage_deduction_creation: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      debug_percentage_deduction_creation: { Args: never; Returns: Json }
       delete_client_contact_with_validation: {
         Args: { contact_id_param: string }
         Returns: Json
@@ -3686,13 +3656,10 @@ export type Database = {
         Returns: Json
       }
       delete_recent_fuel_expenses_with_timezone_issues: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Json
       }
-      delete_test_company: {
-        Args: { company_id_param: string }
-        Returns: Json
-      }
+      delete_test_company: { Args: { company_id_param: string }; Returns: Json }
       diagnose_payment_calculation_issues: {
         Args: {
           target_company_payment_period_id: string
@@ -3700,22 +3667,10 @@ export type Database = {
         }
         Returns: Json
       }
-      diagnose_payment_period_calculations: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      disable_service_operation: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      enable_service_operation: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      ensure_critical_triggers_exist: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      diagnose_payment_period_calculations: { Args: never; Returns: Json }
+      disable_service_operation: { Args: never; Returns: undefined }
+      enable_service_operation: { Args: never; Returns: undefined }
+      ensure_critical_triggers_exist: { Args: never; Returns: Json }
       ensure_driver_period_calculation_exists: {
         Args: { p_driver_user_id: string; p_payment_period_id: string }
         Returns: string
@@ -3737,40 +3692,39 @@ export type Database = {
         }
         Returns: Json
       }
-      fix_fuel_expenses_separation: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      fix_fuel_expenses_separation_v2: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      fix_fuel_expenses_separation: { Args: never; Returns: undefined }
+      fix_fuel_expenses_separation_v2: { Args: never; Returns: undefined }
       fix_missing_percentage_deductions_retroactive: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Json
       }
-      fix_payment_period_calculations_safe: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      fix_payment_period_calculations_safe: { Args: never; Returns: Json }
       force_assign_payment_period: {
         Args: { load_id_param: string; period_id_param: string }
         Returns: boolean
       }
-      force_create_percentage_deductions_week35: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      force_create_percentage_deductions_week35: { Args: never; Returns: Json }
       force_recalculate_driver_deductions: {
         Args: { driver_id_param: string; period_id_param: string }
         Returns: Json
       }
-      generate_company_payment_periods: {
-        Args:
-          | { company_id_param: string; from_date: string; to_date: string }
-          | { company_id_param: string; from_date: string; to_date: string }
-        Returns: Json
-      }
+      generate_company_payment_periods:
+        | {
+            Args: {
+              company_id_param: string
+              from_date: string
+              to_date: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              company_id_param: string
+              from_date: string
+              to_date: string
+            }
+            Returns: Json
+          }
       generate_company_payment_periods_with_calculations: {
         Args: {
           end_date: string
@@ -3780,12 +3734,9 @@ export type Database = {
         }
         Returns: Json
       }
-      generate_deductions_for_existing_loads: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      generate_deductions_for_existing_loads: { Args: never; Returns: Json }
       generate_deductions_for_existing_loads_safe: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Json
       }
       generate_load_percentage_deductions_v2: {
@@ -3827,37 +3778,68 @@ export type Database = {
           zip_code: string
         }[]
       }
-      get_companies_financial_data: {
-        Args: Record<PropertyKey, never> | { target_company_id?: string }
-        Returns: {
-          city: string
-          contract_start_date: string
-          created_at: string
-          default_dispatching_percentage: number
-          default_factoring_percentage: number
-          default_leasing_percentage: number
-          default_payment_frequency: string
-          dot_number: string
-          ein: string
-          email: string
-          id: string
-          load_assignment_criteria: string
-          logo_url: string
-          max_users: number
-          max_vehicles: number
-          mc_number: string
-          name: string
-          payment_cycle_start_day: number
-          payment_day: string
-          phone: string
-          plan_type: string
-          state_id: string
-          status: string
-          street_address: string
-          updated_at: string
-          zip_code: string
-        }[]
-      }
+      get_companies_financial_data:
+        | {
+            Args: { target_company_id?: string }
+            Returns: {
+              city: string
+              contract_start_date: string
+              created_at: string
+              default_dispatching_percentage: number
+              default_factoring_percentage: number
+              default_leasing_percentage: number
+              default_payment_frequency: string
+              dot_number: string
+              ein: string
+              email: string
+              id: string
+              load_assignment_criteria: string
+              logo_url: string
+              max_users: number
+              max_vehicles: number
+              mc_number: string
+              name: string
+              payment_cycle_start_day: number
+              payment_day: string
+              phone: string
+              plan_type: string
+              state_id: string
+              status: string
+              street_address: string
+              updated_at: string
+              zip_code: string
+            }[]
+          }
+        | {
+            Args: never
+            Returns: {
+              city: string
+              created_at: string
+              default_dispatching_percentage: number
+              default_factoring_percentage: number
+              default_leasing_percentage: number
+              default_payment_frequency: string
+              dot_number: string
+              ein: string
+              email: string
+              id: string
+              mc_number: string
+              name: string
+              owner_email: string
+              owner_name: string
+              owner_phone: string
+              owner_title: string
+              payment_cycle_start_day: number
+              payment_day: string
+              phone: string
+              plan_type: string
+              state_id: string
+              status: string
+              street_address: string
+              updated_at: string
+              zip_code: string
+            }[]
+          }
       get_company_current_payment_period: {
         Args: { company_id_param: string; target_date?: string }
         Returns: string
@@ -3876,30 +3858,12 @@ export type Database = {
         Args: { driver_user_id_param: string; target_date?: string }
         Returns: string
       }
-      get_current_user_email: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_email_for_rls: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_for_rls: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_id_optimized: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_current_user_email: { Args: never; Returns: string }
+      get_current_user_email_for_rls: { Args: never; Returns: string }
+      get_current_user_for_rls: { Args: never; Returns: string }
+      get_current_user_id: { Args: never; Returns: string }
+      get_current_user_id_optimized: { Args: never; Returns: string }
+      get_current_user_role: { Args: never; Returns: string }
       get_driver_basic_info: {
         Args: { target_user_id: string }
         Returns: {
@@ -3910,7 +3874,7 @@ export type Database = {
         }[]
       }
       get_driver_data_security_summary: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           access_method: string
           audit_logging: boolean
@@ -4030,7 +3994,7 @@ export type Database = {
         }[]
       }
       get_real_companies: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           id: string
         }[]
@@ -4055,10 +4019,7 @@ export type Database = {
         Args: { user_id_param?: string }
         Returns: string[]
       }
-      get_user_email_by_id: {
-        Args: { user_id_param: string }
-        Returns: string
-      }
+      get_user_email_by_id: { Args: { user_id_param: string }; Returns: string }
       get_user_emails_for_company: {
         Args: { company_id_param: string }
         Returns: {
@@ -4087,10 +4048,7 @@ export type Database = {
           updated_at: string
         }[]
       }
-      get_week_of_month: {
-        Args: { check_date: string }
-        Returns: number
-      }
+      get_week_of_month: { Args: { check_date: string }; Returns: number }
       handle_load_stops: {
         Args: { load_id: string; operation_type: string; stops_data: Json[] }
         Returns: Json[]
@@ -4110,62 +4068,29 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_authenticated_company_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_non_anon: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_non_anon_for_rls: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_non_anonymous: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_optimized: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_superadmin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_authenticated_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_authenticated_company_user: { Args: never; Returns: boolean }
+      is_authenticated_non_anon: { Args: never; Returns: boolean }
+      is_authenticated_non_anon_for_rls: { Args: never; Returns: boolean }
+      is_authenticated_non_anonymous: { Args: never; Returns: boolean }
+      is_authenticated_optimized: { Args: never; Returns: boolean }
+      is_authenticated_superadmin: { Args: never; Returns: boolean }
+      is_authenticated_user: { Args: never; Returns: boolean }
       is_company_owner_in_company: {
         Args: { company_id_param: string }
         Returns: boolean
       }
-      is_current_user_anonymous: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_current_user_anonymous: { Args: never; Returns: boolean }
       is_financial_data_protected: {
         Args: { target_period_id: string; target_user_id: string }
         Returns: boolean
       }
-      is_payment_period_empty: {
-        Args: { period_id: string }
-        Returns: boolean
-      }
+      is_payment_period_empty: { Args: { period_id: string }; Returns: boolean }
       is_payment_period_locked: {
         Args: { target_period_id: string }
         Returns: boolean
       }
-      is_period_locked: {
-        Args: { period_id: string }
-        Returns: boolean
-      }
-      is_superadmin: {
-        Args: { user_id_param?: string }
-        Returns: boolean
-      }
+      is_period_locked: { Args: { period_id: string }; Returns: boolean }
+      is_superadmin: { Args: { user_id_param?: string }; Returns: boolean }
       is_user_admin_in_company_safe: {
         Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
@@ -4182,24 +4107,21 @@ export type Database = {
         Args: { target_period_id: string; target_user_id: string }
         Returns: boolean
       }
-      is_user_superadmin: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
+      is_user_superadmin: { Args: { user_id_param: string }; Returns: boolean }
       is_user_superadmin_safe: {
         Args: { user_id_param?: string }
         Returns: boolean
       }
-      lock_payment_period: {
-        Args:
-          | {
+      lock_payment_period:
+        | {
+            Args: {
               payment_method_used?: string
               payment_ref?: string
               period_id: string
             }
-          | { period_id_param: string }
-        Returns: Json
-      }
+            Returns: Json
+          }
+        | { Args: { period_id_param: string }; Returns: Json }
       log_business_data_access: {
         Args: { access_action?: string; entity_id: string; entity_type: string }
         Returns: undefined
@@ -4270,14 +4192,8 @@ export type Database = {
         Args: { access_type_param: string; company_id_param: string }
         Returns: undefined
       }
-      lovable_ai_safety_check: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      maintenance_cleanup: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      lovable_ai_safety_check: { Args: never; Returns: string }
+      maintenance_cleanup: { Args: never; Returns: undefined }
       mark_driver_as_paid_with_validation: {
         Args: {
           p_calculation_id: string
@@ -4297,23 +4213,14 @@ export type Database = {
         Returns: Json
       }
       move_to_archive: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           moved_records: number
         }[]
       }
-      move_to_archive_with_logging: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      needs_initial_setup: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      normalize_text_case: {
-        Args: { input_text: string }
-        Returns: string
-      }
+      move_to_archive_with_logging: { Args: never; Returns: Json }
+      needs_initial_setup: { Args: never; Returns: boolean }
+      normalize_text_case: { Args: { input_text: string }; Returns: string }
       permanently_delete_user_with_validation: {
         Args: { confirmation_email: string; user_id_param: string }
         Returns: Json
@@ -4326,21 +4233,21 @@ export type Database = {
         Args: { load_id_param: string; target_company_period_id: string }
         Returns: Json
       }
-      reassign_to_payment_period: {
-        Args:
-          | {
+      reassign_to_payment_period:
+        | {
+            Args: { load_id_param: string; new_period_id_param: string }
+            Returns: Json
+          }
+        | {
+            Args: {
               element_id: string
               element_type: string
               new_period_id: string
               reassigned_by?: string
             }
-          | { load_id_param: string; new_period_id_param: string }
-        Returns: Json
-      }
-      recalculate_all_historical_periods: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+            Returns: Json
+          }
+      recalculate_all_historical_periods: { Args: never; Returns: Json }
       recalculate_driver_payment_period: {
         Args: {
           company_payment_period_id_param: string
@@ -4382,18 +4289,12 @@ export type Database = {
         }
         Returns: Json
       }
-      require_authenticated_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      require_authenticated_user: { Args: never; Returns: boolean }
       reset_load_status_to_assigned: {
         Args: { load_id_param: string }
         Returns: Json
       }
-      restore_company_document: {
-        Args: { document_id: string }
-        Returns: Json
-      }
+      restore_company_document: { Args: { document_id: string }; Returns: Json }
       restore_document_with_validation: {
         Args: { document_id_param: string }
         Returns: Json
@@ -4402,31 +4303,35 @@ export type Database = {
         Args: { period_id: string; target_user_id: string; template_id: string }
         Returns: Json
       }
-      simple_load_operation: {
-        Args:
-          | { load_data: Json; load_id_param?: string; operation_type: string }
-          | {
+      simple_load_operation:
+        | {
+            Args: { load_data: Json; operation_mode?: string; stops_data: Json }
+            Returns: Json
+          }
+        | {
+            Args: {
               load_data: Json
               load_id_param?: string
               operation_type: string
               stops_data?: Json[]
             }
-          | { load_data: Json; operation_mode?: string; stops_data: Json }
-          | { operation_data: Json }
-        Returns: Json
-      }
+            Returns: Json
+          }
+        | {
+            Args: {
+              load_data: Json
+              load_id_param?: string
+              operation_type: string
+            }
+            Returns: Json
+          }
+        | { Args: { operation_data: Json }; Returns: Json }
       simple_load_operation_with_deductions: {
         Args: { load_data: Json; load_id_param?: string; stops_data?: Json }
         Returns: Json
       }
-      sync_existing_user_profiles: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      test_recurring_expenses_system: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      sync_existing_user_profiles: { Args: never; Returns: undefined }
+      test_recurring_expenses_system: { Args: never; Returns: Json }
       unassign_equipment_with_validation: {
         Args: { assignment_id: string; unassignment_reason?: string }
         Returns: Json
@@ -4447,10 +4352,7 @@ export type Database = {
         }
         Returns: Json
       }
-      update_existing_spanish_deduction_titles: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      update_existing_spanish_deduction_titles: { Args: never; Returns: Json }
       update_fuel_expense_with_validation: {
         Args: { expense_id: string; update_data: Json }
         Returns: Json
@@ -4484,10 +4386,7 @@ export type Database = {
         }
         Returns: Json
       }
-      use_reset_token: {
-        Args: { token_param: string }
-        Returns: Json
-      }
+      use_reset_token: { Args: { token_param: string }; Returns: Json }
       user_belongs_to_company: {
         Args: { company_id_param: string }
         Returns: boolean
@@ -4500,10 +4399,7 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
-      user_has_admin_role: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
+      user_has_admin_role: { Args: { user_id_param: string }; Returns: boolean }
       user_has_company_access: {
         Args: { company_id_param: string; user_id_param: string }
         Returns: boolean
@@ -4528,10 +4424,7 @@ export type Database = {
         Args: { company_id_param: string }
         Returns: boolean
       }
-      user_is_superadmin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      user_is_superadmin: { Args: never; Returns: boolean }
       validate_business_data_access: {
         Args: {
           company_id_param: string
