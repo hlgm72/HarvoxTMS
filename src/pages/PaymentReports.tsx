@@ -358,7 +358,7 @@ export default function PaymentReports() {
     if (calculation.payment_status === 'failed') {
       return <Badge variant="destructive">{t('reports.status.failed')}</Badge>;
     }
-    if (calculation.has_negative_balance) {
+    if (calculation.net_payment < 0) {
       return <Badge variant="destructive">{t('reports.status.negative_balance')}</Badge>;
     }
     return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.ready_payment')}</Badge>;

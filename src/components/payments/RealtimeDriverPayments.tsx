@@ -21,7 +21,6 @@ interface DriverPayment {
   total_deductions: number;
   net_payment: number;
   status: 'calculated' | 'paid' | 'pending';
-  has_negative_balance: boolean;
   payment_notes?: string;
 }
 
@@ -128,7 +127,6 @@ export function RealtimeDriverPayments() {
             total_deductions: calculation.total_deductions || 0,
             net_payment: calculation.net_payment || 0,
             status: calculation.payment_status || 'calculated',
-            has_negative_balance: calculation.has_negative_balance || false,
             payment_notes: calculation.payment_notes,
           };
         });
@@ -221,7 +219,7 @@ export function RealtimeDriverPayments() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t('owner.payments.net_payment')}</p>
-                    <p className={`font-bold ${payment.has_negative_balance ? 'text-red-600' : 'text-green-600'}`}>
+                    <p className={`font-bold ${payment.net_payment < 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {formatCurrency(payment.net_payment)}
                     </p>
                   </div>

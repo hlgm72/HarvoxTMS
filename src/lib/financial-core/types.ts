@@ -59,7 +59,6 @@ export interface FinancialCalculationResult {
   readonly total_expenses: number;
   readonly total_deductions: number;
   readonly net_payment: number;
-  readonly has_negative_balance: boolean;
   readonly calculation_timestamp: number;
   readonly integrity_hash: string;
 }

@@ -202,7 +202,6 @@ export function calculateCompleteFinancialResult(calculation: PaymentCalculation
       total_expenses: totalExpenses,
       total_deductions: calculation.total_deductions,
       net_payment: netPayment,
-      has_negative_balance: hasNegativeBalance,
       calculation_timestamp: Date.now(),
       integrity_hash: ''
     };
