@@ -298,7 +298,7 @@
       "biweekly": "Biweekly",
       "monthly": "Monthly", 
       "indefinite": "Indefinite",
-      "notes_optional": "Notes (Optional)",
+      "notes_optional": "Notes",
       "cancel": "Cancel",
       "inactive_template_exists": "An inactive template already exists for this driver and expense type:",
       "type_label": "Type:",
