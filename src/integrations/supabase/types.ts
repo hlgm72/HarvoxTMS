@@ -4280,6 +4280,10 @@ export type Database = {
         Args: { target_period_id: string; target_user_id: string }
         Returns: undefined
       }
+      recalculate_user_payroll_complete: {
+        Args: { p_driver_user_id: string; p_payment_period_id: string }
+        Returns: Json
+      }
       refresh_user_period_deductions: {
         Args: { period_id_param: string; user_id_param: string }
         Returns: Json
