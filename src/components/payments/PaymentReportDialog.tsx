@@ -268,7 +268,6 @@ export function PaymentReportDialog({
         .select(`
           id,
           amount,
-          description,
           notes,
           expense_date,
           status,
@@ -420,7 +419,7 @@ export function PaymentReportDialog({
         price_per_gallon: expense.price_per_gallon || 0
       })),
       deductions: deductions.map(deduction => ({
-        name: deduction.expense_types?.name || deduction.description,
+        name: deduction.expense_types?.name || 'Deducción',
         notes: deduction.notes,
         amount: deduction.amount,
         expense_date: deduction.expense_date
@@ -907,7 +906,7 @@ export function PaymentReportDialog({
                     <div key={deduction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">
-                          {deduction.expense_types?.name || deduction.description}
+                          {deduction.expense_types?.name || 'Deducción'}
                           {deduction.notes && deduction.notes.trim() && (
                             <span className="text-muted-foreground font-normal"> ({deduction.notes})</span>
                           )}

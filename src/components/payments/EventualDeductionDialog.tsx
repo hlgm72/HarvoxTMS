@@ -33,7 +33,7 @@ interface EventualDeductionDialogProps {
     user_id: string;
     expense_type_id: string;
     amount: number;
-    description: string;
+    notes: string;
     expense_date: string;
     applied_to_role: string;
   } | null;
@@ -56,7 +56,7 @@ export function EventualDeductionDialog({
     user_id: '',
     expense_type_id: '',
     amount: '',
-    description: ''
+    notes: ''
   });
   
   const [expenseDate, setExpenseDate] = useState<Date | undefined>(undefined);
@@ -95,7 +95,7 @@ export function EventualDeductionDialog({
           user_id: editingDeduction.user_id,
           expense_type_id: editingDeduction.expense_type_id,
           amount: editingDeduction.amount.toString(),
-          description: editingDeduction.description
+          notes: editingDeduction.notes || ''
         });
         setExpenseDate(parseISO(editingDeduction.expense_date));
         atmInput.setValue(editingDeduction.amount);
@@ -106,7 +106,7 @@ export function EventualDeductionDialog({
           user_id: '',
           expense_type_id: '',
           amount: '',
-          description: ''
+          notes: ''
         });
         setExpenseDate(undefined);
         atmInput.setValue(0);
@@ -371,7 +371,7 @@ export function EventualDeductionDialog({
             user_id: formData.user_id,
             expense_type_id: formData.expense_type_id,
             amount: parseFloat(formData.amount),
-            description: formData.description,
+            notes: formData.notes || null,
             expense_date: formatDateInUserTimeZone(expenseDate),
             applied_to_role: selectedRole
           })
@@ -405,7 +405,7 @@ export function EventualDeductionDialog({
             user_id: formData.user_id,
             expense_type_id: formData.expense_type_id,
             amount: parseFloat(formData.amount),
-            description: formData.description,
+            notes: formData.notes || null,
             expense_date: formatDateInUserTimeZone(expenseDate),
             status: 'planned',
             applied_to_role: selectedRole,
@@ -716,11 +716,11 @@ export function EventualDeductionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">{t("deductions.period_dialog.description_label")}</Label>
+                <Label htmlFor="notes">{t("deductions.form.notes_optional")}</Label>
                 <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder={t("deductions.period_dialog.placeholder")}
                   rows={3}
                 />

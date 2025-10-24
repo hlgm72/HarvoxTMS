@@ -161,9 +161,11 @@ export function ExpenseInstancesView() {
                     {getStatusIcon(instance.status)}
                     {instance.expense_types?.name || 'Tipo no definido'}
                   </CardTitle>
-                  <CardDescription>
-                    {instance.description || 'Sin descripción'}
-                  </CardDescription>
+                  {instance.notes && (
+                    <CardDescription>
+                      {instance.notes}
+                    </CardDescription>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">

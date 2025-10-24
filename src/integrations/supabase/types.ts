@@ -993,7 +993,6 @@ export type Database = {
           applied_to_role: Database["public"]["Enums"]["user_role"] | null
           created_at: string
           created_by: string | null
-          description: string | null
           expense_date: string | null
           expense_type_id: string
           id: string
@@ -1011,7 +1010,6 @@ export type Database = {
           applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           created_by?: string | null
-          description?: string | null
           expense_date?: string | null
           expense_type_id: string
           id?: string
@@ -1029,7 +1027,6 @@ export type Database = {
           applied_to_role?: Database["public"]["Enums"]["user_role"] | null
           created_at?: string
           created_by?: string | null
-          description?: string | null
           expense_date?: string | null
           expense_type_id?: string
           id?: string

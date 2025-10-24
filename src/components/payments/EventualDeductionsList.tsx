@@ -344,7 +344,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       user_id: expense.user_id,
       expense_type_id: expense.expense_type_id,
       amount: expense.amount,
-      description: expense.description || '',
+      notes: expense.notes || '',
       expense_date: expense.expense_date,
       applied_to_role: expense.applied_to_role || 'driver'
     });
@@ -604,13 +604,6 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
                 </div>
               </div>
 
-              {deduction.description && (
-                <div className="pt-1">
-                  <span className="text-sm text-muted-foreground">{t("deductions.labels.description")}</span>
-                  <span className="text-sm ml-1">{deduction.description}</span>
-                </div>
-              )}
-              
               {deduction.notes && (
                 <div className="pt-1">
                   <span className="text-sm text-muted-foreground">{t("deductions.labels.notes")}</span>
