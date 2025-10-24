@@ -90,16 +90,41 @@ export function PDFAnalyzer() {
     });
   };
 
+  const convertPDFToImage = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const typedarray = new Uint8Array(reader.result as ArrayBuffer);
+          const pdf = await (window as any).pdfjsLib.getDocument({ data: typedarray }).promise;
+          const page = await pdf.getPage(1);
+          const viewport = page.getViewport({ scale: 2.0 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const context = canvas.getContext('2d');
+          await page.render({ canvasContext: context, viewport }).promise;
+          const imageBase64 = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
+          resolve(imageBase64);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
   const analyzePDF = async () => {
     if (!selectedFile) return;
 
     setIsAnalyzing(true);
     try {
-      // Convert PDF to base64 and send to backend for processing
-      const base64Data = await convertFileToBase64(selectedFile);
+      // Convert first page of PDF to image
+      const imageBase64 = await convertPDFToImage(selectedFile);
       
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { pdfBase64: base64Data }
+        body: { imageBase64 }
       });
 
       if (error) {

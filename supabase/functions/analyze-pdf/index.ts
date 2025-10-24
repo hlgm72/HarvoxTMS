@@ -15,13 +15,13 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting PDF analysis...');
+    console.log('Starting PDF image analysis...');
     
-    const { pdfBase64 } = await req.json();
+    const { imageBase64 } = await req.json();
 
-    if (!pdfBase64) {
+    if (!imageBase64) {
       return new Response(
-        JSON.stringify({ error: 'PDF base64 data is required' }),
+        JSON.stringify({ error: 'Image base64 data is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -33,44 +33,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('PDF received, converting for OpenAI...');
-    
-    // Convert PDF pages to images and send to OpenAI vision
-    // Use a PDF to image conversion service
-    const pdfToImageResponse = await fetch('https://v2.convertapi.com/convert/pdf/to/jpg', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        Parameters: [
-          {
-            Name: 'File',
-            FileValue: {
-              Name: 'document.pdf',
-              Data: pdfBase64
-            }
-          },
-          {
-            Name: 'PageRange',
-            Value: '1'
-          }
-        ]
-      })
-    });
-
-    if (!pdfToImageResponse.ok) {
-      console.error('PDF conversion error:', await pdfToImageResponse.text());
-      return new Response(
-        JSON.stringify({ error: 'Failed to convert PDF to image for analysis' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const conversionResult = await pdfToImageResponse.json();
-    const imageBase64 = conversionResult.Files[0].FileData;
-
-    console.log('PDF converted to image, analyzing with OpenAI Vision...');
+    console.log('Image received, analyzing with OpenAI Vision...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -88,40 +51,44 @@ serve(async (req) => {
                 type: 'text',
                 text: `Eres un asistente experto en análisis de documentos de combustible. Analiza esta imagen de un documento y extrae TODAS las transacciones de combustible que veas.
 
-IMPORTANTE:
-- Lee CUIDADOSAMENTE cada fila de la tabla
-- Extrae TODAS las transacciones que aparezcan
-- Para números de tarjeta: extrae el número completo de CADA fila
-- Para ubicaciones: separa el nombre de la estación, ciudad y estado
-- Para montos: escribe el número completo (si ves $156.45, escribe 156.45)
-- Para fechas: usa formato YYYY-MM-DD
+CRÍTICO - INSTRUCCIONES DE EXTRACCIÓN:
+1. Lee CADA FILA de la tabla cuidadosamente
+2. Extrae TODAS las transacciones que aparezcan (no solo una muestra)
+3. Para números de tarjeta: extrae el número COMPLETO de CADA fila individual
+4. Para ubicaciones: separa nombre de estación, ciudad y estado
+5. Para montos: escribe el número COMPLETO (si ves $156.45, escribe 156.45 NO 56.45)
+6. Para fechas: convierte a formato YYYY-MM-DD
 
-Responde SOLO con JSON válido en este formato:
+REGLAS IMPORTANTES:
+- NO asumas que todas las filas tienen el mismo número de tarjeta
+- Verifica CADA fila individualmente
+- Lee TODOS los dígitos de los montos
+- NO inventes datos que no veas
+
+Responde SOLO con JSON válido:
 {
-  "columnsFound": ["lista de columnas que ves en el documento"],
+  "columnsFound": ["lista_de_todas_las_columnas_que_ves"],
   "hasAuthorizationCode": true/false,
-  "authorizationCodeField": "nombre del campo de autorización o null",
+  "authorizationCodeField": "nombre_del_campo_de_autorización o null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "número de tarjeta completo",
-      "unit": "número de unidad",
-      "invoice": "número de factura",
-      "location_name": "nombre de la estación",
+      "card": "número_de_tarjeta_completo_de_esta_fila",
+      "unit": "número_de_unidad",
+      "invoice": "número_de_factura",
+      "location_name": "nombre_exacto_de_la_estación",
       "city": "ciudad",
-      "state": "código de estado (TX, FL, etc)",
+      "state": "código_de_estado_2_letras",
       "qty": cantidad_galones_número,
       "gross_ppg": precio_por_galón_número,
-      "gross_amt": monto_bruto_número_completo,
+      "gross_amt": monto_bruto_número_COMPLETO,
       "disc_amt": descuento_número,
       "fees": comisiones_número,
-      "total_amt": total_número_completo
+      "total_amt": total_número_COMPLETO
     }
   ],
-  "analysis": "Breve descripción de lo que encontraste"
-}
-
-NO inventes datos. Solo extrae lo que REALMENTE ves en el documento.`
+  "analysis": "Descripción de cuántas transacciones encontraste y de qué columnas"
+}`
               },
               {
                 type: 'image_url',
@@ -193,7 +160,7 @@ NO inventes datos. Solo extrae lo que REALMENTE ves en el documento.`
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Error processing PDF', 
+        error: 'Error processing image', 
         details: error.message 
       }),
       {
