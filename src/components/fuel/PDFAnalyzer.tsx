@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
+import { formatPeriodLabel } from '@/utils/periodUtils';
 import { useTranslation } from 'react-i18next';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
@@ -440,7 +441,12 @@ export function PDFAnalyzer() {
 
         if (matchingPeriod && matchingPeriod.period) {
           enrichedTransaction.payment_period_id = matchingPeriod.id;
-          enrichedTransaction.payment_period_dates = `${matchingPeriod.period.period_start_date} - ${matchingPeriod.period.period_end_date}`;
+          const startDate = matchingPeriod.period.period_start_date;
+          const endDate = matchingPeriod.period.period_end_date;
+          const formattedLabel = formatPeriodLabel(startDate, endDate);
+          const shortStart = startDate.substring(5); // MM-DD
+          const shortEnd = endDate.substring(5); // MM-DD
+          enrichedTransaction.payment_period_dates = `${formattedLabel} (${shortStart} - ${shortEnd})`;
           enrichedTransaction.period_mapping_status = 'found';
           enrichedTransaction.period_status = matchingPeriod.payment_status;
           
@@ -452,7 +458,10 @@ export function PDFAnalyzer() {
           // Calcular qué período se crearía (sin crearlo)
           if (enrichedTransaction.driver_user_id && companyId) {
             const calculatedPeriod = calculatePeriodDates(periodTransactionDate, companyId);
-            enrichedTransaction.payment_period_dates = `${calculatedPeriod.start} - ${calculatedPeriod.end} (nuevo período)`;
+            const formattedLabel = formatPeriodLabel(calculatedPeriod.start, calculatedPeriod.end);
+            const shortStart = calculatedPeriod.start.substring(5); // MM-DD
+            const shortEnd = calculatedPeriod.end.substring(5); // MM-DD
+            enrichedTransaction.payment_period_dates = `${formattedLabel} (${shortStart} - ${shortEnd}) - nuevo período`;
             enrichedTransaction.period_mapping_status = 'will_create';
           } else {
             enrichedTransaction.period_mapping_status = 'not_found';
