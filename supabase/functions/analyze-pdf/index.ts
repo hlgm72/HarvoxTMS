@@ -1,6 +1,8 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -25,50 +27,38 @@ serve(async (req) => {
       );
     }
 
-    if (!openAIApiKey) {
+    if (!lovableApiKey) {
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        JSON.stringify({ error: 'Lovable AI key not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('PDF received, length:', pdfBase64.length);
+    console.log('PDF received, converting to data URL for analysis...');
 
-    // Decode base64 to Uint8Array
-    const pdfBytes = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
-    
-    // Create a blob from the bytes
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    
-    // Use FormData to send to OpenAI with vision
-    const formData = new FormData();
-    formData.append('file', blob, 'document.pdf');
-    formData.append('model', 'gpt-4o');
-    formData.append('purpose', 'assistants');
+    // Create data URL for the PDF
+    const pdfDataUrl = `data:application/pdf;base64,${pdfBase64}`;
 
-    console.log('Sending to OpenAI for analysis...');
+    console.log('Analyzing with Lovable AI...');
 
-    // First, we'll convert the PDF to text using a simple approach
-    // For production, you might want to use a dedicated PDF parsing service
-    const extractedText = new TextDecoder().decode(pdfBytes);
-    
-    console.log('Text extracted, analyzing with OpenAI...');
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
-            content: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible de un PDF.
+            content: [
+              {
+                type: 'text',
+                text: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible de un PDF.
 
-PASO 1 - ANÁLISIS INICIAL DEL TEXTO:
-Primero lee TODO el texto del PDF y identifica:
+PASO 1 - ANÁLISIS INICIAL DEL DOCUMENTO:
+Primero lee TODO el documento y identifica:
 - ¿Dónde están las filas de transacciones de combustible?
 - ¿Cuál es la estructura exacta de la tabla?
 - ¿Qué columnas existen realmente?
@@ -102,9 +92,6 @@ REGLAS CRÍTICAS PARA NÚMEROS DE TARJETA:
 - IMPORTANTE: Diferentes filas pueden tener diferentes números de tarjeta
 - NO copies el número de tarjeta de una fila a otra
 
-Texto completo del PDF para analizar:
-${extractedText}
-
 ANÁLISIS PASO A PASO:
 1. Primero identifica las secciones del PDF
 2. Localiza la tabla de transacciones de combustible
@@ -137,8 +124,16 @@ Responde SOLO con JSON válido en este formato:
 }
 
 CRÍTICO: 
-- Solo extrae datos que REALMENTE aparezcan en el texto del PDF. NO inventes números.
+- Solo extrae datos que REALMENTE aparezcan en el documento. NO inventes números.
 - MANTÉN los montos COMPLETOS sin cortar dígitos.`
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: pdfDataUrl
+                }
+              }
+            ]
           }
         ],
         max_tokens: 2000,
@@ -148,9 +143,24 @@ CRÍTICO:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
+      console.error('Lovable AI error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'Payment required. Please add credits to your workspace.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
       return new Response(
-        JSON.stringify({ error: 'OpenAI API error', details: errorText }),
+        JSON.stringify({ error: 'AI analysis error', details: errorText }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -158,7 +168,7 @@ CRÍTICO:
     const data = await response.json();
     const responseText = data.choices[0].message.content;
     
-    console.log('OpenAI response:', responseText);
+    console.log('AI response:', responseText);
 
     let analysisResult;
     try {
@@ -185,7 +195,7 @@ CRÍTICO:
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Failed to parse OpenAI response',
+          error: 'Failed to parse AI response',
           details: parseError.message,
           rawResponse: responseText
         }),
