@@ -264,9 +264,9 @@ export function PDFAnalyzer() {
       // @ts-ignore - Avoiding TypeScript deep instantiation error with complex Supabase query
       const { data: userPayrolls } = await supabase
         .from('user_payrolls')
-        .select('id, user_id, company_payment_period_id, status, company_id')
+        .select('id, user_id, company_payment_period_id, payment_status, company_id')
         .eq('company_id', companyId)
-        .eq('status', 'open');
+        .eq('payment_status', 'open');
       
       // Define type for enriched payroll data
       type PayrollWithPeriod = {
