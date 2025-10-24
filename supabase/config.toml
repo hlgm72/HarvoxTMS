@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.activate-driver-account]
 verify_jwt = false
+
+[functions.analyze-pdf]
+verify_jwt = false
