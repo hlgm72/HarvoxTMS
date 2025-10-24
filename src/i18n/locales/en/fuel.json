@@ -296,6 +296,7 @@
     "stats": {
       "transactions": "Transactions",
       "already_imported": "Already imported",
+      "period_paid": "Period paid (blocked)",
       "ready_to_import": "Ready to import",
       "no_driver_identified": "Driver not identified"
     },
@@ -322,6 +323,7 @@
       "vehicle_validated": "Vehicle validated from PDF",
       "vehicle_not_found": "Vehicle not found",
       "already_imported": "Already imported",
+      "period_paid": "Period paid (cannot modify)",
       "not_imported": "Not imported"
     },
     "table": {

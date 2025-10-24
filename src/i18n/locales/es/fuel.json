@@ -295,7 +295,8 @@
     },
     "stats": {
       "transactions": "Transacciones",
-      "already_imported": "Ya importadas", 
+      "already_imported": "Ya importadas",
+      "period_paid": "Período pagado (bloqueado)",
       "ready_to_import": "Listas para importar",
       "no_driver_identified": "Sin conductor identificado"
     },
@@ -322,6 +323,7 @@
       "vehicle_validated": "Vehículo validado desde PDF",
       "vehicle_not_found": "Vehículo no encontrado",
       "already_imported": "Ya importado",
+      "period_paid": "Período pagado (no modificable)",
       "not_imported": "No importado"
     },
     "table": {

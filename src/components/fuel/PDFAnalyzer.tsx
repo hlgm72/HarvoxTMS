@@ -46,10 +46,11 @@ interface EnrichedTransaction {
   vehicle_number?: string; // Para mostrar el número de equipo en la UI
   card_mapping_status: 'found' | 'not_found' | 'multiple';
   period_mapping_status: 'found' | 'not_found' | 'will_create';
-  import_status: 'not_imported' | 'already_imported';
+  import_status: 'not_imported' | 'already_imported' | 'period_paid';
   equipment_mapping_method?: 'assigned_to_driver' | 'pdf_unit_validated' | 'unit_not_found';
   needs_attention?: boolean;
   attention_reason?: string;
+  period_status?: string; // Estado del período (open, calculated, paid)
 }
 
 export function PDFAnalyzer() {
@@ -441,6 +442,12 @@ export function PDFAnalyzer() {
           enrichedTransaction.payment_period_id = matchingPeriod.id;
           enrichedTransaction.payment_period_dates = `${matchingPeriod.period.period_start_date} - ${matchingPeriod.period.period_end_date}`;
           enrichedTransaction.period_mapping_status = 'found';
+          enrichedTransaction.period_status = matchingPeriod.payment_status;
+          
+          // Bloquear importación si el período está pagado
+          if (matchingPeriod.payment_status === 'paid') {
+            enrichedTransaction.import_status = 'period_paid';
+          }
         } else {
           // Calcular qué período se crearía (sin crearlo)
           if (enrichedTransaction.driver_user_id && companyId) {
@@ -515,7 +522,8 @@ export function PDFAnalyzer() {
     try {
       const validTransactions = enrichedTransactions.filter(
         t => t.card_mapping_status === 'found' && 
-             t.import_status === 'not_imported'
+             t.import_status === 'not_imported' &&
+             t.period_status !== 'paid' // Excluir períodos pagados
       );
       
       console.log('📦 [PDF Analyzer] Transacciones filtradas:', validTransactions.length);
@@ -729,6 +737,12 @@ export function PDFAnalyzer() {
                   <div className="text-sm text-muted-foreground">{t('analyzer.stats.already_imported')}</div>
                 </div>
                 <div className="text-center p-3 border rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">
+                    {enrichedTransactions.filter(t => t.import_status === 'period_paid').length}
+                  </div>
+                  <div className="text-sm text-muted-foreground">{t('analyzer.stats.period_paid')}</div>
+                </div>
+                <div className="text-center p-3 border rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
                     {enrichedTransactions.filter(t => 
                       t.card_mapping_status === 'found' && 
@@ -801,6 +815,8 @@ export function PDFAnalyzer() {
                         <div className="flex gap-1">
                           {transaction.import_status === 'already_imported' ? (
                             <Badge variant="secondary">{t('analyzer.mapping.already_imported')}</Badge>
+                          ) : transaction.import_status === 'period_paid' ? (
+                            <Badge variant="destructive">{t('analyzer.mapping.period_paid')}</Badge>
                           ) : (
                             <Badge variant={transaction.card_mapping_status === 'found' ? 'default' : 'destructive'}>
                               {transaction.card_mapping_status === 'found' ? t('analyzer.mapping.driver_found') : 
