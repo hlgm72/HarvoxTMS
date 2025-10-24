@@ -269,6 +269,7 @@ export function PaymentReportDialog({
           id,
           amount,
           description,
+          notes,
           expense_date,
           status,
           payment_period_id,
@@ -420,7 +421,7 @@ export function PaymentReportDialog({
       })),
       deductions: deductions.map(deduction => ({
         name: deduction.expense_types?.name || deduction.description,
-        description: deduction.description,
+        notes: deduction.notes,
         amount: deduction.amount,
         expense_date: deduction.expense_date
       }))
@@ -907,8 +908,8 @@ export function PaymentReportDialog({
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="font-medium truncate text-sm sm:text-base">
                           {deduction.expense_types?.name || deduction.description}
-                          {deduction.description && deduction.description.trim() && (
-                            <span className="text-muted-foreground font-normal"> ({deduction.description})</span>
+                          {deduction.notes && deduction.notes.trim() && (
+                            <span className="text-muted-foreground font-normal"> ({deduction.notes})</span>
                           )}
                         </div>
                         <div className="text-xs sm:text-sm text-muted-foreground">

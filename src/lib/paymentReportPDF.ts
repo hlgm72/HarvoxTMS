@@ -73,7 +73,7 @@ interface PaymentReportData {
   }>;
   deductions?: Array<{
     name: string;
-    description: string;
+    notes?: string;
     amount: number;
     expense_date: string;
   }>;
@@ -752,10 +752,10 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   if (data.deductions && data.deductions.length > 0) {
     data.deductions.forEach(deduction => {
-      // Construir el texto de la deducción con descripción entre paréntesis si existe
-      let deductionText = deduction.name || deduction.description;
-      if (deduction.description && deduction.description.trim()) {
-        deductionText += ` (${deduction.description})`;
+      // Construir el texto de la deducción con notas entre paréntesis si existe
+      let deductionText = deduction.name;
+      if (deduction.notes && deduction.notes.trim()) {
+        deductionText += ` (${deduction.notes})`;
       }
       
       addText(deductionText, margin + 2, currentY, {
