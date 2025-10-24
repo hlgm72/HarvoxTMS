@@ -9,6 +9,32 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+async function extractTextFromPDF(base64: string): Promise<string> {
+  try {
+    // Use PDFCo's free text extraction API (no API key needed for basic extraction)
+    const response = await fetch('https://api.pdf.co/v1/pdf/convert/to/text', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: `data:application/pdf;base64,${base64}`,
+        inline: true
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`PDFCo API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.body || '';
+  } catch (error) {
+    console.error('PDF text extraction error:', error);
+    throw new Error('Failed to extract text from PDF');
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -33,31 +59,20 @@ serve(async (req) => {
       );
     }
 
-    console.log('PDF received, length:', pdfBase64.length);
-
-    // Simple text extraction from PDF bytes
-    const pdfBytes = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
-    const decoder = new TextDecoder('utf-8', { fatal: false });
-    let extractedText = decoder.decode(pdfBytes);
+    console.log('PDF received, extracting text...');
     
-    // Clean up the extracted text - remove binary junk, keep readable text
-    extractedText = extractedText
-      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const extractedText = await extractTextFromPDF(pdfBase64);
 
-    console.log('Text extracted, length:', extractedText.length);
-    console.log('Sample:', extractedText.substring(0, 500));
-
-    if (!extractedText || extractedText.length < 100) {
+    if (!extractedText || extractedText.trim().length < 50) {
       return new Response(
         JSON.stringify({ 
-          error: 'Could not extract readable text from PDF. The PDF might be image-based or encrypted.' 
+          error: 'Could not extract meaningful text from PDF. The PDF might be image-based or encrypted.' 
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Text extracted successfully, length:', extractedText.length);
     console.log('Analyzing with OpenAI...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -71,31 +86,29 @@ serve(async (req) => {
         messages: [
           {
             role: 'user',
-            content: `Eres un asistente experto en análisis de documentos de combustible. Tu tarea es extraer datos de transacciones de combustible del siguiente texto extraído de un PDF.
-
-IMPORTANTE: El texto puede estar desordenado o contener caracteres extraños. Busca patrones y datos coherentes.
+            content: `Eres un asistente experto en análisis de documentos de combustible. Extrae datos de transacciones del siguiente texto.
 
 PASO 1 - ANÁLISIS:
 - Identifica transacciones de combustible
-- Encuentra la estructura de tabla
+- Encuentra la estructura de tabla  
 - Identifica columnas
 
 PASO 2 - EXTRACCIÓN:
 Para cada transacción extrae:
 - Números de tarjeta (completos)
 - Ubicación (estación, ciudad, estado separados)
-- Montos (números completos, si ves "156.45" escribe 156.45)
+- Montos (números completos)
 - Fechas (formato YYYY-MM-DD)
 
 REGLAS:
-- Lee todos los dígitos de montos
+- Lee todos los dígitos
 - NO inventes datos
 - Si no encuentras un campo, usa null
 
-Texto del PDF:
-${extractedText.substring(0, 15000)}
+Texto:
+${extractedText.substring(0, 12000)}
 
-Responde SOLO con JSON válido:
+Responde SOLO con JSON:
 {
   "columnsFound": ["columnas"],
   "hasAuthorizationCode": true/false,
@@ -138,7 +151,7 @@ Responde SOLO con JSON válido:
     const data = await response.json();
     const responseText = data.choices[0].message.content;
     
-    console.log('OpenAI response received');
+    console.log('OpenAI analysis complete');
 
     let analysisResult;
     try {
