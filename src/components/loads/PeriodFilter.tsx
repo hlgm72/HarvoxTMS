@@ -182,6 +182,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
             )
           : t('periods.specific');
       case 'week':
+        if (value.selectedWeek && value.selectedYear && value.startDate && value.endDate) {
+          const dateRange = formatPaymentPeriodBadge(value.startDate, value.endDate);
+          return `Week: W${value.selectedWeek}/${value.selectedYear} (${dateRange})`;
+        }
         const weekLabel = value.selectedWeek && value.selectedYear 
           ? `W${value.selectedWeek}/${value.selectedYear}`
           : 'Week';
@@ -396,13 +400,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                                     size="sm"
                                     className="w-full justify-start text-sm"
                                     onClick={() => {
+                                      const dateRange = formatPaymentPeriodBadge(startDate, endDate);
                                       handleOptionSelect({
                                         type: 'week',
                                         selectedYear: selectedWeekYear,
                                         selectedWeek: weekNumber,
                                         startDate,
                                         endDate,
-                                        label: `W${weekNumber}/${selectedWeekYear}`
+                                        label: `W${weekNumber}/${selectedWeekYear} (${dateRange})`
                                       });
                                       setShowWeekYearSelector(false);
                                       setSelectedWeekYear(null);
