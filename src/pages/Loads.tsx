@@ -15,6 +15,8 @@ import { useDriversList } from "@/hooks/useDriversList";
 import { useCurrentPaymentPeriod } from "@/hooks/usePaymentPeriods";
 import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
+import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
+import { getISOWeek } from "date-fns";
 
 export default function Loads() {
   const { t } = useTranslation('loads');
@@ -24,18 +26,41 @@ export default function Loads() {
   // Hooks para obtener datos de períodos
   const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
+  const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
   
-  // Inicializar con período actual simple (sin fechas pre-calculadas)
-  const getCurrentPeriodWithDates = (): PeriodFilterValue => {
+  // Inicializar con semana actual
+  const getCurrentWeek = (): PeriodFilterValue => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentWeekNumber = getISOWeek(today);
+    const currentMonth = today.getMonth() + 1;
+    
+    // Buscar la semana actual en availableWeeks
+    const weekData = availableWeeks
+      ?.find(w => w.year === currentYear)
+      ?.months.find(m => m.month === currentMonth)
+      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+    
+    if (weekData) {
+      return {
+        type: 'week',
+        selectedYear: currentYear,
+        selectedWeek: currentWeekNumber,
+        startDate: weekData.startDate,
+        endDate: weekData.endDate,
+        label: `W${currentWeekNumber}/${currentYear}`
+      };
+    }
+    
+    // Fallback si no hay datos de semana disponibles
     return {
-      type: 'current',
-      periodId: undefined,
-      startDate: undefined, 
-      endDate: undefined
+      type: 'week',
+      selectedYear: currentYear,
+      selectedWeek: currentWeekNumber
     };
   };
   
-  const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentPeriodWithDates());
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentWeek());
   
   // ✅ CORRECCIÓN: Usar nombres consistentes driver/broker en lugar de driverId/brokerId
   const [filters, setFilters] = useState({
@@ -46,23 +71,33 @@ export default function Loads() {
     sortBy: 'date_desc'
   });
 
-  // ✅ INICIALIZACIÓN AUTOMÁTICA: Poblar período actual cuando esté disponible
+  // ✅ INICIALIZACIÓN AUTOMÁTICA: Poblar semana actual cuando esté disponible
   useEffect(() => {
-    // Solo inicializar si el periodo actual aún no tiene datos
-    if (periodFilter.type === 'current' && !periodFilter.periodId && !periodFilter.startDate) {
-      // SIEMPRE usar período calculado para la inicialización
-      const displayPeriod = calculatedPeriods?.current;
+    // Solo inicializar si la semana actual aún no tiene fechas
+    if (periodFilter.type === 'week' && !periodFilter.startDate && availableWeeks) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentWeekNumber = getISOWeek(today);
+      const currentMonth = today.getMonth() + 1;
       
-      if (displayPeriod) {
-        // Usar solo fechas calculadas, sin ID de BD
+      // Buscar la semana actual en availableWeeks
+      const weekData = availableWeeks
+        ?.find(w => w.year === currentYear)
+        ?.months.find(m => m.month === currentMonth)
+        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+      
+      if (weekData) {
         setPeriodFilter({
-          type: 'current',
-          startDate: displayPeriod.period_start_date,
-          endDate: displayPeriod.period_end_date
+          type: 'week',
+          selectedYear: currentYear,
+          selectedWeek: currentWeekNumber,
+          startDate: weekData.startDate,
+          endDate: weekData.endDate,
+          label: `W${currentWeekNumber}/${currentYear}`
         });
       }
     }
-  }, [calculatedPeriods, periodFilter.type, periodFilter.periodId, periodFilter.startDate]);
+  }, [availableWeeks, periodFilter.type, periodFilter.startDate]);
 
   // ✅ OPTIMIZACIÓN: Obtener loads una sola vez y calcular stats en el cliente
   const loadsFilters = periodFilter ? {

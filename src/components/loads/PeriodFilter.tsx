@@ -291,162 +291,6 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm text-muted-foreground">{t('period_filter.quick_filters')}</h4>
                   
-                   <Button
-                     variant={value.type === 'current' ? 'default' : 'ghost'}
-                     className="w-full justify-start"
-                     disabled={!calculatedPeriods?.current}
-                     onClick={() => {
-                       // ✅ CRÍTICO: Solo pasar type, NO startDate/endDate
-                       // Esto permite que PaymentReports use currentPeriod.company_payment_period_id
-                       handleOptionSelect({ 
-                         type: 'current'
-                       });
-                     }}
-                   >
-                      <Clock className="h-4 w-4 mr-2" />
-                      {(() => {
-                        const displayPeriod = calculatedPeriods?.current;
-                        if (displayPeriod) {
-                          const periodLabel = formatDetailedPaymentPeriod(
-                            displayPeriod.period_start_date, 
-                            displayPeriod.period_end_date, 
-                            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                          );
-                          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-                          const dateRange = formatPaymentPeriodBadge(displayPeriod.period_start_date, displayPeriod.period_end_date);
-                          return `Current: ${periodNumber} (${dateRange})`;
-                        }
-                        return 'Current';
-                      })()}
-                   </Button>
-
-                     <Button
-                     variant={value.type === 'previous' ? 'default' : 'ghost'}
-                     className="w-full justify-start"
-                      onClick={() => {
-                        // ✅ CRÍTICO: Solo pasar type, NO startDate/endDate/periodId
-                        // Esto permite que PaymentReports use previousPeriod.company_payment_period_id
-                        handleOptionSelect({ 
-                          type: 'previous'
-                        });
-                      }}
-                     disabled={!calculatedPeriods?.previous}
-                    >
-                        <Clock className="h-4 w-4 mr-2" />
-                        {(() => {
-                          // SIEMPRE usar períodos calculados para Previous
-                          const displayPrevious = calculatedPeriods?.previous;
-                          
-                          if (displayPrevious) {
-                            const periodLabel = formatDetailedPaymentPeriod(
-                              displayPrevious.period_start_date, 
-                              displayPrevious.period_end_date, 
-                              Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-                            );
-                            const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-                            const dateRange = formatPaymentPeriodBadge(displayPrevious.period_start_date, displayPrevious.period_end_date);
-                            return `Previous: ${periodNumber} (${dateRange})`;
-                          }
-                          return 'Previous';
-                        })()}
-                     </Button>
-
-                  {/* Nuevo selector de Month con sub-menú de dos niveles */}
-                  <div className="relative">
-                    <Button
-                      variant={value.type === 'month' ? 'default' : 'ghost'}
-                      className="w-full justify-between"
-                      onClick={() => {
-                        setShowMonthYearSelector(!showMonthYearSelector);
-                        setSelectedMonthYear(null);
-                      }}
-                    >
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Month {value.type === 'month' && value.selectedMonth && value.selectedYear 
-                          ? `(${formatMonthName(new Date(value.selectedYear, value.selectedMonth - 1))} ${value.selectedYear})` 
-                          : ''}
-                      </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${showMonthYearSelector ? 'rotate-180' : ''}`} />
-                    </Button>
-                    
-                    {showMonthYearSelector && (
-                      <div className="ml-6 mt-1 space-y-1 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-md p-2 shadow-lg">
-                        {!selectedMonthYear ? (
-                          // Nivel 1: Selector de años
-                          <>
-                            <div className="text-xs text-muted-foreground px-2 py-1">Select Year:</div>
-                            {availableMonths.length > 0 ? (
-                              availableMonths.map(({ year }) => (
-                                <Button
-                                  key={year}
-                                  variant="ghost"
-                                  size="sm"
-                                  className="w-full justify-start text-sm"
-                                  onClick={() => setSelectedMonthYear(year)}
-                                >
-                                  {year}
-                                </Button>
-                              ))
-                            ) : (
-                              <div className="text-sm text-muted-foreground px-3 py-2">
-                                No months available
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          // Nivel 2: Selector de meses del año seleccionado
-                          <>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="w-full justify-start text-xs text-muted-foreground mb-1"
-                              onClick={() => setSelectedMonthYear(null)}
-                            >
-                              ← Back to years
-                            </Button>
-                            <div className="text-xs text-muted-foreground px-2 py-1">
-                              Select Month ({selectedMonthYear}):
-                            </div>
-                            {availableMonths
-                              .find(m => m.year === selectedMonthYear)
-                              ?.months.map(month => {
-                                const monthStart = new Date(selectedMonthYear, month - 1, 1);
-                                const monthEnd = new Date(selectedMonthYear, month, 0);
-                                return (
-                                  <Button
-                                    key={month}
-                                    variant={
-                                      value.selectedYear === selectedMonthYear && 
-                                      value.selectedMonth === month 
-                                        ? 'default' 
-                                        : 'ghost'
-                                    }
-                                    size="sm"
-                                    className="w-full justify-start text-sm"
-                                    onClick={() => {
-                                      handleOptionSelect({
-                                        type: 'month',
-                                        selectedYear: selectedMonthYear,
-                                        selectedMonth: month,
-                                        startDate: formatDateInUserTimeZone(monthStart),
-                                        endDate: formatDateInUserTimeZone(monthEnd),
-                                        label: `${formatMonthName(monthStart)} ${selectedMonthYear}`
-                                      });
-                                      setShowMonthYearSelector(false);
-                                      setSelectedMonthYear(null);
-                                    }}
-                                  >
-                                    {formatMonthName(monthStart)} {selectedMonthYear}
-                                  </Button>
-                                );
-                              })}
-                          </>
-                        )}
-                      </div>
-                      )}
-                   </div>
-
                   {/* Nuevo selector de Week con sub-menú de tres niveles */}
                   <div className="relative">
                     <Button
@@ -574,6 +418,102 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                       </div>
                     )}
                   </div>
+
+                  {/* Nuevo selector de Month con sub-menú de dos niveles */}
+                  <div className="relative">
+                    <Button
+                      variant={value.type === 'month' ? 'default' : 'ghost'}
+                      className="w-full justify-between"
+                      onClick={() => {
+                        setShowMonthYearSelector(!showMonthYearSelector);
+                        setSelectedMonthYear(null);
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Month {value.type === 'month' && value.selectedMonth && value.selectedYear 
+                          ? `(${formatMonthName(new Date(value.selectedYear, value.selectedMonth - 1))} ${value.selectedYear})` 
+                          : ''}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${showMonthYearSelector ? 'rotate-180' : ''}`} />
+                    </Button>
+                    
+                    {showMonthYearSelector && (
+                      <div className="ml-6 mt-1 space-y-1 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-md p-2 shadow-lg">
+                        {!selectedMonthYear ? (
+                          // Nivel 1: Selector de años
+                          <>
+                            <div className="text-xs text-muted-foreground px-2 py-1">Select Year:</div>
+                            {availableMonths.length > 0 ? (
+                              availableMonths.map(({ year }) => (
+                                <Button
+                                  key={year}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start text-sm"
+                                  onClick={() => setSelectedMonthYear(year)}
+                                >
+                                  {year}
+                                </Button>
+                              ))
+                            ) : (
+                              <div className="text-sm text-muted-foreground px-3 py-2">
+                                No months available
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          // Nivel 2: Selector de meses del año seleccionado
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start text-xs text-muted-foreground mb-1"
+                              onClick={() => setSelectedMonthYear(null)}
+                            >
+                              ← Back to years
+                            </Button>
+                            <div className="text-xs text-muted-foreground px-2 py-1">
+                              Select Month ({selectedMonthYear}):
+                            </div>
+                            {availableMonths
+                              .find(m => m.year === selectedMonthYear)
+                              ?.months.map(month => {
+                                const monthStart = new Date(selectedMonthYear, month - 1, 1);
+                                const monthEnd = new Date(selectedMonthYear, month, 0);
+                                return (
+                                  <Button
+                                    key={month}
+                                    variant={
+                                      value.selectedYear === selectedMonthYear && 
+                                      value.selectedMonth === month 
+                                        ? 'default' 
+                                        : 'ghost'
+                                    }
+                                    size="sm"
+                                    className="w-full justify-start text-sm"
+                                    onClick={() => {
+                                      handleOptionSelect({
+                                        type: 'month',
+                                        selectedYear: selectedMonthYear,
+                                        selectedMonth: month,
+                                        startDate: formatDateInUserTimeZone(monthStart),
+                                        endDate: formatDateInUserTimeZone(monthEnd),
+                                        label: `${formatMonthName(monthStart)} ${selectedMonthYear}`
+                                      });
+                                      setShowMonthYearSelector(false);
+                                      setSelectedMonthYear(null);
+                                    }}
+                                  >
+                                    {formatMonthName(monthStart)} {selectedMonthYear}
+                                  </Button>
+                                );
+                              })}
+                          </>
+                        )}
+                      </div>
+                      )}
+                   </div>
 
                   {/* Nuevo selector de Quarter con sub-menú de dos niveles */}
                   <div className="relative">
