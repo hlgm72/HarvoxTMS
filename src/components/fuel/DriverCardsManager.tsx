@@ -434,7 +434,7 @@ export function DriverCardsManager() {
       </Card>
 
       {/* Cards List */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         {driverCards?.map((card) => (
           <Card key={card.id}>
             <CardHeader className="pb-3">
