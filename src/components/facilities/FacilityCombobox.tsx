@@ -74,7 +74,11 @@ export function FacilityCombobox({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[400px] p-0" align="start">
+        <PopoverContent 
+          className="w-[400px] p-0" 
+          align="start"
+          onWheel={(e) => e.stopPropagation()}
+        >
           <div className="flex items-center border-b px-3">
             <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
             <Input
@@ -94,7 +98,10 @@ export function FacilityCombobox({
               </Button>
             )}
           </div>
-          <div className="max-h-[300px] overflow-y-auto">
+          <div 
+            className="max-h-[300px] overflow-y-auto"
+            onWheel={(e) => e.stopPropagation()}
+          >
             {/* Loading state */}
             {isLoading && (
               <div className="px-2 py-6 text-center text-sm text-muted-foreground">
