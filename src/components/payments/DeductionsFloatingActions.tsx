@@ -64,20 +64,20 @@ export function DeductionsFloatingActions({
       driverId: 'all',
       status: 'all',
       expenseTypeId: 'all',
-      periodFilter: { type: 'current' }
+      periodFilter: { type: 'week' } // Will be populated by parent component
     });
   };
 
   const hasActiveFilters = filters.driverId !== 'all' || 
                           filters.status !== 'all' ||
                           filters.expenseTypeId !== 'all' ||
-                          filters.periodFilter.type !== 'current';
+                          filters.periodFilter.type !== 'week';
 
   const activeFiltersCount = [
     filters.driverId !== 'all',
     filters.status !== 'all',
     filters.expenseTypeId !== 'all',
-    filters.periodFilter.type !== 'current'
+    filters.periodFilter.type !== 'week'
   ].filter(Boolean).length;
 
   // Define tabs
@@ -198,7 +198,7 @@ export function DeductionsFloatingActions({
                             {t('filters.active_badges.status')} {statusOptions.find(s => s.value === filters.status)?.label}
                           </Badge>
                         )}
-                        {(filters.periodFilter.type !== 'current' || filters.periodFilter.label) && (
+                        {(filters.periodFilter.type !== 'week' || filters.periodFilter.label) && (
                           <Badge variant="secondary">
                             {t('filters.active_badges.period')} {filters.periodFilter.label || filters.periodFilter.type}
                           </Badge>

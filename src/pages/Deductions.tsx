@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,14 @@ import { DeductionsFloatingActions, DeductionsFiltersType } from "@/components/p
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatCurrency, formatDetailedPaymentPeriod, formatPaymentPeriodBadge } from '@/lib/dateFormatting';
+import { formatCurrency, formatDetailedPaymentPeriod, formatPaymentPeriodBadge, formatMonthName } from '@/lib/dateFormatting';
 import { useConsolidatedDrivers } from "@/hooks/useConsolidatedDrivers";
 import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
 import { useCompanyFinancialData } from "@/hooks/useSecureCompanyData";
+import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
+import { getISOWeek } from "date-fns";
+import { PeriodFilterValue } from "@/components/loads/PeriodFilter";
 
 export default function Deductions() {
   const { t } = useTranslation('payments');
@@ -26,12 +29,48 @@ export default function Deductions() {
   const [isEventualDialogOpen, setIsEventualDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("period");
   
+  // Get company data and available weeks
+  const { userCompany } = useCompanyCache();
+  const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
+  
+  // Initialize with current week
+  const getCurrentWeek = (): PeriodFilterValue => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentWeekNumber = getISOWeek(today);
+    const currentMonth = today.getMonth() + 1;
+    
+    // Find current week in availableWeeks
+    const weekData = availableWeeks
+      ?.find(w => w.year === currentYear)
+      ?.months.find(m => m.month === currentMonth)
+      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+    
+    if (weekData) {
+      return {
+        type: 'week',
+        selectedYear: currentYear,
+        selectedWeek: currentWeekNumber,
+        startDate: weekData.startDate,
+        endDate: weekData.endDate,
+        label: `W${currentWeekNumber}/${currentYear}`
+      };
+    }
+    
+    // Fallback if no week data available
+    return {
+      type: 'week',
+      selectedYear: currentYear,
+      selectedWeek: currentWeekNumber
+    };
+  };
+  
   // Estado de filtros
   const [filters, setFilters] = useState<DeductionsFiltersType>({
     status: "all",
     driverId: "all",
     expenseTypeId: "all",
-    periodFilter: { type: 'current' }
+    periodFilter: getCurrentWeek()
   });
 
   // ✅ Pasar tab activo y filtros al hook de estadísticas
@@ -53,9 +92,39 @@ export default function Deductions() {
   }));
 
   // Get calculated periods and company data for filter labels
-  const { userCompany } = useCompanyCache();
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
+  
+  // Populate current week dates when available
+  useEffect(() => {
+    // Only initialize if current week doesn't have dates yet
+    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentWeekNumber = getISOWeek(today);
+      const currentMonth = today.getMonth() + 1;
+      
+      // Find current week in availableWeeks
+      const weekData = availableWeeks
+        ?.find(w => w.year === currentYear)
+        ?.months.find(m => m.month === currentMonth)
+        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+      
+      if (weekData) {
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            type: 'week',
+            selectedYear: currentYear,
+            selectedWeek: currentWeekNumber,
+            startDate: weekData.startDate,
+            endDate: weekData.endDate,
+            label: `W${currentWeekNumber}/${currentYear}`
+          }
+        }));
+      }
+    }
+  }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
 
   // Estado de configuración de vista
   const [viewConfig, setViewConfig] = useState({
@@ -129,6 +198,24 @@ export default function Deductions() {
         parts.push(t("deductions.filters.specificPeriod"));
       } else if (pf.type === 'all') {
         parts.push(t("deductions.filters.allPeriods"));
+      } else if (pf.type === 'week') {
+        const weekLabel = pf.selectedWeek && pf.selectedYear 
+          ? `W${pf.selectedWeek}/${pf.selectedYear}`
+          : 'Week';
+        parts.push(`Week: ${weekLabel}`);
+      } else if (pf.type === 'month') {
+        const monthLabel = pf.selectedMonth && pf.selectedYear 
+          ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
+          : 'Month';
+        parts.push(`Month: ${monthLabel}`);
+      } else if (pf.type === 'quarter') {
+        const quarterLabel = pf.selectedQuarter && pf.selectedYear 
+          ? `Q${pf.selectedQuarter} ${pf.selectedYear}`
+          : 'Quarter';
+        parts.push(`Quarter: ${quarterLabel}`);
+      } else if (pf.type === 'year') {
+        const yearLabel = pf.selectedYear || new Date().getFullYear();
+        parts.push(`Year: ${yearLabel}`);
       }
     }
     
