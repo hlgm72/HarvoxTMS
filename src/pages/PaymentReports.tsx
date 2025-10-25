@@ -129,7 +129,7 @@ export default function PaymentReports() {
       
       case 'custom':
       case 'this_month':
-      case 'this_quarter':
+      case 'quarter':
       case 'this_year':
         return [];
       
@@ -167,7 +167,7 @@ export default function PaymentReports() {
         filters.periodFilter.periodId?.startsWith('calculated-') ||
         filters.periodFilter.type === 'custom' ||
         filters.periodFilter.type === 'this_month' ||
-        filters.periodFilter.type === 'this_quarter' ||
+        filters.periodFilter.type === 'quarter' ||
         filters.periodFilter.type === 'this_year' ||
         (filters.periodFilter.startDate && filters.periodFilter.endDate);
 
@@ -214,7 +214,7 @@ export default function PaymentReports() {
         });
       } else if ((filters.periodFilter.type === 'custom' ||
            filters.periodFilter.type === 'this_month' ||
-           filters.periodFilter.type === 'this_quarter' ||
+           filters.periodFilter.type === 'quarter' ||
            filters.periodFilter.type === 'this_year') &&
           filters.periodFilter.startDate && 
           filters.periodFilter.endDate) {

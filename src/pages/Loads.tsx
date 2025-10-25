@@ -71,7 +71,8 @@ export default function Loads() {
       periodId: periodFilter.periodId,
       startDate: periodFilter.startDate,
       endDate: periodFilter.endDate,
-      selectedYear: periodFilter.selectedYear
+      selectedYear: periodFilter.selectedYear,
+      selectedQuarter: periodFilter.selectedQuarter
     }
   } : undefined;
   
@@ -121,10 +122,8 @@ export default function Loads() {
         return t('periods.this_month');
       case 'last_month':
         return t('periods.last_month');
-      case 'this_quarter':
-        return t('periods.this_quarter');
-      case 'last_quarter':
-        return t('periods.last_quarter');
+      case 'quarter':
+        return `Quarter: Q${periodFilter.selectedQuarter || '?'} ${periodFilter.selectedYear || '?'}`;
       case 'this_year':
         return t('periods.this_year');
       case 'last_year':

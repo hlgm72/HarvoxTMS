@@ -13,14 +13,16 @@ import { calculatePreviousPeriod } from '@/utils/periodCalculations';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 import { useAvailableYears } from '@/hooks/useAvailableYears';
+import { useAvailableQuarters } from '@/hooks/useAvailableQuarters';
 
 export interface PeriodFilterValue {
-  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year' | 'year';
+  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'quarter' | 'this_year' | 'last_year' | 'year';
   periodId?: string;
   startDate?: string;
   endDate?: string;
   label?: string;
   selectedYear?: number;
+  selectedQuarter?: number;
 }
 
 interface PeriodFilterProps {
@@ -33,11 +35,14 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const { t, i18n } = useTranslation(['loads', 'common']);
   const [open, setOpen] = useState(false);
   const [showYearSelector, setShowYearSelector] = useState(false);
+  const [showQuarterYearSelector, setShowQuarterYearSelector] = useState(false);
+  const [selectedQuarterYear, setSelectedQuarterYear] = useState<number | null>(null);
   
   // Importar el useCompanyCache para obtener el company_id
   const { userCompany } = useCompanyCache();
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   const { data: availableYears = [] } = useAvailableYears(userCompany?.company_id);
+  const { data: availableQuarters = [] } = useAvailableQuarters(userCompany?.company_id);
   
   // Pasar el companyId a todos los hooks de períodos
   const { data: groupedPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
@@ -66,18 +71,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
           label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
         };
-      case 'this_quarter':
+      case 'quarter':
+        // Para filtro de trimestre específico
+        const quarterYear = value.selectedYear || now.getFullYear();
+        const targetQuarter = value.selectedQuarter || Math.ceil((now.getMonth() + 1) / 3);
+        const quarterStart = new Date(quarterYear, (targetQuarter - 1) * 3, 1);
+        const quarterEnd = new Date(quarterYear, targetQuarter * 3, 0);
         return {
-          startDate: formatDateInUserTimeZone(startOfQuarter(now)),
-          endDate: formatDateInUserTimeZone(endOfQuarter(now)),
-          label: `${t('periods.this_quarter')} (Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()})`
-        };
-      case 'last_quarter':
-        const lastQuarter = subQuarters(now, 1);
-        return {
-          startDate: formatDateInUserTimeZone(startOfQuarter(lastQuarter)),
-          endDate: formatDateInUserTimeZone(endOfQuarter(lastQuarter)),
-          label: `${t('periods.last_quarter')} (Q${Math.ceil((lastQuarter.getMonth() + 1) / 3)} ${lastQuarter.getFullYear()})`
+          startDate: formatDateInUserTimeZone(quarterStart),
+          endDate: formatDateInUserTimeZone(quarterEnd),
+          label: `Q${targetQuarter} ${quarterYear}`
         };
       case 'this_year':
         return {
@@ -94,13 +97,13 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
         };
       case 'year':
         // Para filtro de año específico, usar el año seleccionado o el actual
-        const targetYear = value.selectedYear || now.getFullYear();
-        const yearStart = new Date(targetYear, 0, 1);
-        const yearEnd = new Date(targetYear, 11, 31);
+        const yearFilterYear = value.selectedYear || now.getFullYear();
+        const yearStart = new Date(yearFilterYear, 0, 1);
+        const yearEnd = new Date(yearFilterYear, 11, 31);
         return {
           startDate: formatDateInUserTimeZone(yearStart),
           endDate: formatDateInUserTimeZone(yearEnd),
-          label: `${targetYear}`
+          label: `${yearFilterYear}`
         };
       default:
         return null;
@@ -160,12 +163,15 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           : t('periods.specific');
       case 'this_month':
       case 'last_month':
-      case 'this_quarter':
-      case 'last_quarter':
       case 'this_year':
       case 'last_year':
         const dateRange = getDateRangeForType(value.type);
         return dateRange?.label || t('periods.custom');
+      case 'quarter':
+        const quarterLabel = value.selectedQuarter && value.selectedYear 
+          ? `Q${value.selectedQuarter} ${value.selectedYear}`
+          : 'Quarter';
+        return `Quarter: ${quarterLabel}`;
       case 'year':
         const yearLabel = value.selectedYear || new Date().getFullYear();
         return `Year: ${yearLabel}`;
@@ -333,18 +339,101 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     })()}
                   </Button>
 
-                  <Button
-                    variant={value.type === 'this_quarter' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => handleDateRangeSelect('this_quarter')}
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {(() => {
-                      const now = new Date();
-                      const quarter = Math.ceil((now.getMonth() + 1) / 3);
-                      return `This Quarter (Q${quarter} ${now.getFullYear()})`;
-                    })()}
-                  </Button>
+                  {/* Nuevo selector de Quarter con sub-menú de dos niveles */}
+                  <div className="relative">
+                    <Button
+                      variant={value.type === 'quarter' ? 'default' : 'ghost'}
+                      className="w-full justify-between"
+                      onClick={() => {
+                        setShowQuarterYearSelector(!showQuarterYearSelector);
+                        setSelectedQuarterYear(null); // Reset al abrir
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Quarter {value.type === 'quarter' && value.selectedQuarter && value.selectedYear 
+                          ? `(Q${value.selectedQuarter} ${value.selectedYear})` 
+                          : ''}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${showQuarterYearSelector ? 'rotate-180' : ''}`} />
+                    </Button>
+                    
+                    {showQuarterYearSelector && (
+                      <div className="ml-6 mt-1 space-y-1 max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md p-2 shadow-lg">
+                        {!selectedQuarterYear ? (
+                          // Nivel 1: Selector de años
+                          <>
+                            <div className="text-xs text-muted-foreground px-2 py-1">Select Year:</div>
+                            {availableQuarters.length > 0 ? (
+                              availableQuarters.map(({ year }) => (
+                                <Button
+                                  key={year}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start text-sm"
+                                  onClick={() => setSelectedQuarterYear(year)}
+                                >
+                                  {year}
+                                </Button>
+                              ))
+                            ) : (
+                              <div className="text-sm text-muted-foreground px-3 py-2">
+                                No quarters available
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          // Nivel 2: Selector de trimestres del año seleccionado
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start text-xs text-muted-foreground mb-1"
+                              onClick={() => setSelectedQuarterYear(null)}
+                            >
+                              ← Back to years
+                            </Button>
+                            <div className="text-xs text-muted-foreground px-2 py-1">
+                              Select Quarter ({selectedQuarterYear}):
+                            </div>
+                            {availableQuarters
+                              .find(q => q.year === selectedQuarterYear)
+                              ?.quarters.map(quarter => {
+                                const quarterStart = new Date(selectedQuarterYear, (quarter - 1) * 3, 1);
+                                const quarterEnd = new Date(selectedQuarterYear, quarter * 3, 0);
+                                return (
+                                  <Button
+                                    key={quarter}
+                                    variant={
+                                      value.selectedYear === selectedQuarterYear && 
+                                      value.selectedQuarter === quarter 
+                                        ? 'default' 
+                                        : 'ghost'
+                                    }
+                                    size="sm"
+                                    className="w-full justify-start text-sm"
+                                    onClick={() => {
+                                      handleOptionSelect({
+                                        type: 'quarter',
+                                        selectedYear: selectedQuarterYear,
+                                        selectedQuarter: quarter,
+                                        startDate: formatDateInUserTimeZone(quarterStart),
+                                        endDate: formatDateInUserTimeZone(quarterEnd),
+                                        label: `Q${quarter} ${selectedQuarterYear}`
+                                      });
+                                      setShowQuarterYearSelector(false);
+                                      setSelectedQuarterYear(null);
+                                    }}
+                                  >
+                                    Q{quarter} {selectedQuarterYear}
+                                  </Button>
+                                );
+                              })}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Nuevo selector de año con sub-menú */}
                   <div className="relative">
