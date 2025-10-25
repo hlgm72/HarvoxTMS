@@ -1205,6 +1205,75 @@ export type Database = {
           },
         ]
       }
+      facilities: {
+        Row: {
+          address: string
+          city: string
+          company_id: string
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          facility_type: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          state: string
+          updated_at: string
+          zip_code: string
+        }
+        Insert: {
+          address: string
+          city: string
+          company_id: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          facility_type: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          state: string
+          updated_at?: string
+          zip_code: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          company_id?: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          facility_type?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          state?: string
+          updated_at?: string
+          zip_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facilities_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_state_fkey"
+            columns: ["state"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fuel_card_providers: {
         Row: {
           created_at: string
@@ -1734,6 +1803,7 @@ export type Database = {
           estimated_arrival_time: string | null
           eta_date: string | null
           eta_time: string | null
+          facility_id: string | null
           id: string
           last_status_update: string | null
           load_id: string
@@ -1768,6 +1838,7 @@ export type Database = {
           estimated_arrival_time?: string | null
           eta_date?: string | null
           eta_time?: string | null
+          facility_id?: string | null
           id?: string
           last_status_update?: string | null
           load_id: string
@@ -1802,6 +1873,7 @@ export type Database = {
           estimated_arrival_time?: string | null
           eta_date?: string | null
           eta_time?: string | null
+          facility_id?: string | null
           id?: string
           last_status_update?: string | null
           load_id?: string
@@ -1820,6 +1892,13 @@ export type Database = {
           zip_code?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "load_stops_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "load_stops_load_id_fkey"
             columns: ["load_id"]
