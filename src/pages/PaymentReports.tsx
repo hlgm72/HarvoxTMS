@@ -130,6 +130,7 @@ export default function PaymentReports() {
       case 'custom':
       case 'month':
       case 'quarter':
+      case 'week':
       case 'year':
         return [];
       
@@ -168,6 +169,7 @@ export default function PaymentReports() {
         filters.periodFilter.type === 'custom' ||
         filters.periodFilter.type === 'month' ||
         filters.periodFilter.type === 'quarter' ||
+        filters.periodFilter.type === 'week' ||
         filters.periodFilter.type === 'year' ||
         (filters.periodFilter.startDate && filters.periodFilter.endDate);
 
@@ -215,6 +217,7 @@ export default function PaymentReports() {
       } else if ((filters.periodFilter.type === 'custom' ||
            filters.periodFilter.type === 'month' ||
            filters.periodFilter.type === 'quarter' ||
+           filters.periodFilter.type === 'week' ||
            filters.periodFilter.type === 'year') &&
           filters.periodFilter.startDate && 
           filters.periodFilter.endDate) {

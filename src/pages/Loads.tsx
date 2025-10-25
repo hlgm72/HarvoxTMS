@@ -73,7 +73,8 @@ export default function Loads() {
       endDate: periodFilter.endDate,
       selectedYear: periodFilter.selectedYear,
       selectedQuarter: periodFilter.selectedQuarter,
-      selectedMonth: periodFilter.selectedMonth
+      selectedMonth: periodFilter.selectedMonth,
+      selectedWeek: periodFilter.selectedWeek
     }
   } : undefined;
   
@@ -119,6 +120,11 @@ export default function Loads() {
         return t('periods.next');
       case 'all':
         return t('periods.all');
+      case 'week':
+        const weekLabel = periodFilter.selectedWeek && periodFilter.selectedYear 
+          ? `W${periodFilter.selectedWeek}/${periodFilter.selectedYear}`
+          : 'Week';
+        return `Week: ${weekLabel}`;
       case 'month':
         const monthLabel = periodFilter.selectedMonth && periodFilter.selectedYear 
           ? `${formatMonthName(new Date(periodFilter.selectedYear, periodFilter.selectedMonth - 1))} ${periodFilter.selectedYear}`

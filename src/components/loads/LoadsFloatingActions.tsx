@@ -28,7 +28,7 @@ interface LoadsFloatingActionsProps {
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   periodFilter?: { 
-    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'year';
+    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'week' | 'year';
     periodId?: string; 
     startDate?: string;
     endDate?: string;
@@ -36,6 +36,7 @@ interface LoadsFloatingActionsProps {
     selectedYear?: number;
     selectedQuarter?: number;
     selectedMonth?: number;
+    selectedWeek?: number;
   };
   onFiltersChange: (filters: any) => void;
   onPeriodFilterChange?: (filter: any) => void;

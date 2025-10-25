@@ -147,7 +147,7 @@ export const useLoadsStats = ({ periodFilter }: UseLoadsStatsProps = {}) => {
             targetPeriodId = matchingPayrolls.map((p: any) => p.id);
           }
           // console.log('📅 Current period found:', targetPeriodId);
-        } else if (periodFilter?.type === 'previous' || periodFilter?.type === 'month' || periodFilter?.type === 'quarter' || periodFilter?.type === 'year') {
+        } else if (periodFilter?.type === 'previous' || periodFilter?.type === 'month' || periodFilter?.type === 'quarter' || periodFilter?.type === 'week' || periodFilter?.type === 'year') {
           // Para filtros basados en fechas, usar date-filter
           if (periodFilter.startDate && periodFilter.endDate) {
             targetPeriodId = 'date-filter';

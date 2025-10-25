@@ -15,9 +15,10 @@ import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 import { useAvailableYears } from '@/hooks/useAvailableYears';
 import { useAvailableQuarters } from '@/hooks/useAvailableQuarters';
 import { useAvailableMonths } from '@/hooks/useAvailableMonths';
+import { useAvailableWeeks } from '@/hooks/useAvailableWeeks';
 
 export interface PeriodFilterValue {
-  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'year';
+  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'week' | 'year';
   periodId?: string;
   startDate?: string;
   endDate?: string;
@@ -25,6 +26,7 @@ export interface PeriodFilterValue {
   selectedYear?: number;
   selectedQuarter?: number;
   selectedMonth?: number;
+  selectedWeek?: number;
 }
 
 interface PeriodFilterProps {
@@ -41,6 +43,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const [selectedQuarterYear, setSelectedQuarterYear] = useState<number | null>(null);
   const [showMonthYearSelector, setShowMonthYearSelector] = useState(false);
   const [selectedMonthYear, setSelectedMonthYear] = useState<number | null>(null);
+  const [showWeekYearSelector, setShowWeekYearSelector] = useState(false);
+  const [selectedWeekYear, setSelectedWeekYear] = useState<number | null>(null);
+  const [selectedWeekMonth, setSelectedWeekMonth] = useState<number | null>(null);
   
   // Importar el useCompanyCache para obtener el company_id
   const { userCompany } = useCompanyCache();
@@ -48,6 +53,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const { data: availableYears = [] } = useAvailableYears(userCompany?.company_id);
   const { data: availableQuarters = [] } = useAvailableQuarters(userCompany?.company_id);
   const { data: availableMonths = [] } = useAvailableMonths(userCompany?.company_id);
+  const { data: availableWeeks = [] } = useAvailableWeeks(userCompany?.company_id);
   
   // Pasar el companyId a todos los hooks de períodos
   const { data: groupedPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
@@ -63,6 +69,17 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     const now = new Date();
     
     switch (type) {
+      case 'week':
+        // Para filtro de semana específica
+        // Si tenemos startDate/endDate guardados, usarlos
+        if (value.startDate && value.endDate) {
+          return {
+            startDate: value.startDate,
+            endDate: value.endDate,
+            label: `Week ${value.selectedWeek || '?'} ${value.selectedYear || '?'}`
+          };
+        }
+        return null;
       case 'month':
         // Para filtro de mes específico
         const monthYear = value.selectedYear || now.getFullYear();
@@ -164,6 +181,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
             )
           : t('periods.specific');
+      case 'week':
+        const weekLabel = value.selectedWeek && value.selectedYear 
+          ? `W${value.selectedWeek}/${value.selectedYear}`
+          : 'Week';
+        return `Week: ${weekLabel}`;
       case 'month':
         const monthLabel = value.selectedMonth && value.selectedYear 
           ? `${formatMonthName(new Date(value.selectedYear, value.selectedMonth - 1))} ${value.selectedYear}`
@@ -422,8 +444,136 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           </>
                         )}
                       </div>
-                     )}
+                      )}
                    </div>
+
+                  {/* Nuevo selector de Week con sub-menú de tres niveles */}
+                  <div className="relative">
+                    <Button
+                      variant={value.type === 'week' ? 'default' : 'ghost'}
+                      className="w-full justify-between"
+                      onClick={() => {
+                        setShowWeekYearSelector(!showWeekYearSelector);
+                        setSelectedWeekYear(null);
+                        setSelectedWeekMonth(null);
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Week {value.type === 'week' && value.selectedWeek && value.selectedYear 
+                          ? `(W${value.selectedWeek}/${value.selectedYear})` 
+                          : ''}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${showWeekYearSelector ? 'rotate-180' : ''}`} />
+                    </Button>
+                    
+                    {showWeekYearSelector && (
+                      <div className="ml-6 mt-1 space-y-1 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-md p-2 shadow-lg">
+                        {!selectedWeekYear ? (
+                          // Nivel 1: Selector de años
+                          <>
+                            <div className="text-xs text-muted-foreground px-2 py-1">Select Year:</div>
+                            {availableWeeks.length > 0 ? (
+                              availableWeeks.map(({ year }) => (
+                                <Button
+                                  key={year}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start text-sm"
+                                  onClick={() => setSelectedWeekYear(year)}
+                                >
+                                  {year}
+                                </Button>
+                              ))
+                            ) : (
+                              <div className="text-sm text-muted-foreground px-3 py-2">
+                                No weeks available
+                              </div>
+                            )}
+                          </>
+                        ) : !selectedWeekMonth ? (
+                          // Nivel 2: Selector de meses del año seleccionado
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start text-xs text-muted-foreground mb-1"
+                              onClick={() => setSelectedWeekYear(null)}
+                            >
+                              ← Back to years
+                            </Button>
+                            <div className="text-xs text-muted-foreground px-2 py-1">
+                              Select Month ({selectedWeekYear}):
+                            </div>
+                            {availableWeeks
+                              .find(w => w.year === selectedWeekYear)
+                              ?.months.map(({ month }) => {
+                                const monthDate = new Date(selectedWeekYear, month - 1, 1);
+                                return (
+                                  <Button
+                                    key={month}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full justify-start text-sm"
+                                    onClick={() => setSelectedWeekMonth(month)}
+                                  >
+                                    {formatMonthName(monthDate)} {selectedWeekYear}
+                                  </Button>
+                                );
+                              })}
+                          </>
+                        ) : (
+                          // Nivel 3: Selector de semanas del mes seleccionado
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start text-xs text-muted-foreground mb-1"
+                              onClick={() => setSelectedWeekMonth(null)}
+                            >
+                              ← Back to months
+                            </Button>
+                            <div className="text-xs text-muted-foreground px-2 py-1">
+                              Select Week ({formatMonthName(new Date(selectedWeekYear, selectedWeekMonth - 1))} {selectedWeekYear}):
+                            </div>
+                            {availableWeeks
+                              .find(w => w.year === selectedWeekYear)
+                              ?.months.find(m => m.month === selectedWeekMonth)
+                              ?.weeks.map(({ weekNumber, startDate, endDate }) => {
+                                return (
+                                  <Button
+                                    key={weekNumber}
+                                    variant={
+                                      value.selectedYear === selectedWeekYear && 
+                                      value.selectedWeek === weekNumber 
+                                        ? 'default' 
+                                        : 'ghost'
+                                    }
+                                    size="sm"
+                                    className="w-full justify-start text-sm"
+                                    onClick={() => {
+                                      handleOptionSelect({
+                                        type: 'week',
+                                        selectedYear: selectedWeekYear,
+                                        selectedWeek: weekNumber,
+                                        startDate,
+                                        endDate,
+                                        label: `W${weekNumber}/${selectedWeekYear}`
+                                      });
+                                      setShowWeekYearSelector(false);
+                                      setSelectedWeekYear(null);
+                                      setSelectedWeekMonth(null);
+                                    }}
+                                  >
+                                    Week {weekNumber} ({formatPaymentPeriodBadge(startDate, endDate)})
+                                  </Button>
+                                );
+                              })}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Nuevo selector de Quarter con sub-menú de dos niveles */}
                   <div className="relative">
