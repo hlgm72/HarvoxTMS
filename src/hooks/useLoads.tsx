@@ -178,6 +178,7 @@ const getRelevantPeriodIds = (
     case 'last_quarter':
     case 'this_year':
     case 'last_year':
+    case 'year':
     case 'custom':
       // Para filtros basados en fechas, usar las fechas directamente
       if (periodFilter.startDate && periodFilter.endDate) {

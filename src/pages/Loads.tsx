@@ -70,7 +70,8 @@ export default function Loads() {
       type: periodFilter.type,
       periodId: periodFilter.periodId,
       startDate: periodFilter.startDate,
-      endDate: periodFilter.endDate
+      endDate: periodFilter.endDate,
+      selectedYear: periodFilter.selectedYear
     }
   } : undefined;
   
@@ -128,6 +129,8 @@ export default function Loads() {
         return t('periods.this_year');
       case 'last_year':
         return t('periods.last_year');
+      case 'year':
+        return `Year: ${periodFilter.selectedYear || new Date().getFullYear()}`;
       case 'specific':
         return t('periods.specific');
       case 'custom':
