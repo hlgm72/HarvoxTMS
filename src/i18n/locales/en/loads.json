@@ -85,6 +85,8 @@
           "scheduled_time": "Scheduled Time",
           "select_time": "Select time",
           "company_info": "Company Information",
+          "facility_label": "Select Facility",
+          "facility_help": "Select a registered facility or enter company details manually below",
           "company_required": "Company name is required",
           "company_placeholder": "Enter company name...",
           "reference_number": "Reference Number",

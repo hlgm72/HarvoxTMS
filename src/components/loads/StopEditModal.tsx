@@ -18,6 +18,9 @@ import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
 import { useTranslation } from 'react-i18next';
+import { FacilityCombobox } from '@/components/facilities/FacilityCombobox';
+import { CreateFacilityDialog } from '@/components/facilities/CreateFacilityDialog';
+import { Facility } from '@/hooks/useFacilities';
 
 interface StopEditModalProps {
   stop: LoadStop | null;
@@ -39,6 +42,7 @@ export function StopEditModal({
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<LoadStop>>({});
   const [isDateOpen, setIsDateOpen] = useState(false);
+  const [showCreateFacility, setShowCreateFacility] = useState(false);
 
   // Initialize form data when stop changes
   React.useEffect(() => {
@@ -59,6 +63,28 @@ export function StopEditModal({
     onClose();
   };
 
+  const handleFacilitySelect = (facilityId: string | null, facility?: Facility) => {
+    if (facility) {
+      setFormData(prev => ({
+        ...prev,
+        facility_id: facilityId,
+        company_name: facility.name,
+        address: facility.address,
+        city: facility.city || '',
+        state: facility.state,
+        zip_code: facility.zip_code,
+        contact_name: facility.contact_name || prev.contact_name || '',
+        contact_phone: facility.contact_phone || prev.contact_phone || ''
+      }));
+    } else {
+      // Clear facility but keep other data
+      setFormData(prev => ({
+        ...prev,
+        facility_id: null
+      }));
+    }
+  };
+
   const handleCompanySelect = (company: {
     value: string;
     label: string;
@@ -70,6 +96,7 @@ export function StopEditModal({
   }) => {
     setFormData(prev => ({
       ...prev,
+      facility_id: null, // Clear facility when manually entering company
       company_name: company.label,
       address: company.address || '',
       city: company.city || '',
@@ -165,7 +192,7 @@ export function StopEditModal({
                       <Calendar
                         mode="single"
                         selected={formData.scheduled_date}
-                        defaultMonth={formData.scheduled_date || new Date()}
+                        defaultMonth={formData.scheduled_date}
                         onSelect={(date) => {
                           updateField('scheduled_date', date);
                           setIsDateOpen(false);
@@ -220,11 +247,27 @@ export function StopEditModal({
               {t("loads:create_wizard.phases.route_details.edit_modal.company_info")}
             </h3>
             
+            {/* Facility Selector */}
+            <div className="space-y-2">
+              <Label>{t("loads:create_wizard.phases.route_details.edit_modal.facility_label")}</Label>
+              <FacilityCombobox
+                value={formData.facility_id || null}
+                onValueChange={handleFacilitySelect}
+                onCreateNew={() => setShowCreateFacility(true)}
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("loads:create_wizard.phases.route_details.edit_modal.facility_help")}
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <CompanyAutocompleteInput
                   value={formData.company_name || ''}
-                  onChange={(value) => updateField('company_name', value)}
+                  onChange={(value) => {
+                    updateField('company_name', value);
+                    updateField('facility_id', null); // Clear facility when manually editing
+                  }}
                   onCompanySelect={handleCompanySelect}
                   placeholder={t("loads:create_wizard.phases.route_details.edit_modal.company_placeholder")}
                   label={t("loads:create_wizard.phases.route_details.edit_modal.company_required")}
@@ -344,6 +387,12 @@ export function StopEditModal({
           </Button>
         </div>
       </DialogContent>
+
+      {/* Create Facility Dialog */}
+      <CreateFacilityDialog
+        isOpen={showCreateFacility}
+        onClose={() => setShowCreateFacility(false)}
+      />
     </Dialog>
   );
 }

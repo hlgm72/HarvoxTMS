@@ -109,6 +109,13 @@
     "cancel": "Cancelar",
     "inactivate": "Inactivar"
   },
+  "combobox": {
+    "select_facility": "Seleccionar instalación...",
+    "search_placeholder": "Buscar instalaciones...",
+    "loading": "Cargando instalaciones...",
+    "no_results": "No se encontraron instalaciones",
+    "create_new": "Crear nueva instalación"
+  },
   "messages": {
     "loading": "Cargando instalaciones...",
     "no_facilities": "Aún no hay instalaciones",

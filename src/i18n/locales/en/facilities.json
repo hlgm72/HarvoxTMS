@@ -109,6 +109,13 @@
     "cancel": "Cancel",
     "inactivate": "Inactivate"
   },
+  "combobox": {
+    "select_facility": "Select facility...",
+    "search_placeholder": "Search facilities...",
+    "loading": "Loading facilities...",
+    "no_results": "No facilities found",
+    "create_new": "Create new facility"
+  },
   "messages": {
     "loading": "Loading facilities...",
     "no_facilities": "No facilities yet",

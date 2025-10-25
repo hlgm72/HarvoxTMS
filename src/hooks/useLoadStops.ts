@@ -7,6 +7,7 @@ export interface LoadStop {
   id: string;
   stop_number: number;
   stop_type: 'pickup' | 'delivery';
+  facility_id?: string | null;
   company_name: string;
   address: string;
   city: string;
