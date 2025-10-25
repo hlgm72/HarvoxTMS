@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Check, ChevronsUpDown, Plus, Building2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Building2, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
@@ -82,57 +75,72 @@ export function FacilityCombobox({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0" align="start">
-          <Command shouldFilter={false}>
-            <CommandInput
+          <div className="flex items-center border-b px-3">
+            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+            <Input
               placeholder={t('combobox.search_placeholder')}
               value={searchQuery}
-              onValueChange={setSearchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-            <CommandList>
-              <CommandEmpty>
-                {isLoading ? (
-                  <div className="py-6 text-center text-sm">
-                    {t('combobox.loading')}
-                  </div>
-                ) : (
-                  <div className="py-6 text-center text-sm">
-                    {t('combobox.no_results')}
-                  </div>
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => setSearchQuery('')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <div className="max-h-[300px] overflow-y-auto">
+            {/* Loading state */}
+            {isLoading && (
+              <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                {t('combobox.loading')}
+              </div>
+            )}
+
+            {/* No results */}
+            {!isLoading && filteredFacilities.length === 0 && (
+              <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                {t('combobox.no_results')}
+              </div>
+            )}
+
+            {/* Results */}
+            {!isLoading && filteredFacilities.map((facility) => (
+              <div
+                key={facility.id}
+                className={cn(
+                  'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground',
+                  value === facility.id && 'bg-accent'
                 )}
-              </CommandEmpty>
-              {filteredFacilities.length > 0 && (
-                <CommandGroup>
-                  {filteredFacilities.map((facility) => (
-                    <CommandItem
-                      key={facility.id}
-                      value={facility.id}
-                      onSelect={() => {
-                        onValueChange(
-                          facility.id === value ? null : facility.id,
-                          facility.id === value ? undefined : facility
-                        );
-                        setOpen(false);
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          value === facility.id ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="font-medium truncate">{facility.name}</span>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {facility.address}
-                          {facility.city && `, ${facility.city}, ${facility.state}`}
-                        </span>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </CommandList>
-          </Command>
+                onClick={() => {
+                  onValueChange(
+                    facility.id === value ? null : facility.id,
+                    facility.id === value ? undefined : facility
+                  );
+                  setOpen(false);
+                }}
+              >
+                <Check
+                  className={cn(
+                    'mr-2 h-4 w-4',
+                    value === facility.id ? 'opacity-100' : 'opacity-0'
+                  )}
+                />
+                <div className="flex flex-col flex-1 min-w-0">
+                  <span className="font-medium truncate">{facility.name}</span>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {facility.address}
+                    {facility.city && `, ${facility.city}, ${facility.state}`}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </PopoverContent>
       </Popover>
       
