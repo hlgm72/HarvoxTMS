@@ -89,10 +89,10 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
       </PopoverTrigger>
       <PopoverContent className="w-full min-w-[300px] p-0" side={side} align="start">
         <Command filter={filterClients}>
-          <div className="flex items-center border-b px-3">
+          <div className="flex items-center justify-between border-b px-3 gap-2">
             <CommandInput 
               placeholder={t('actions.search_client')} 
-              className="flex-1"
+              className="flex-1 border-0"
               value={searchValue}
               onValueChange={setSearchValue}
             />
@@ -104,7 +104,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                   setOpen(false);
                   onCreateNew(searchValue);
                 }}
-                className="ml-2 h-8 shrink-0"
+                className="h-8 shrink-0"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 {t('actions.create')}
