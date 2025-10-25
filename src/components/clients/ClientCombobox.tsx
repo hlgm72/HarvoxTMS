@@ -86,32 +86,33 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full min-w-[300px] max-h-[400px] p-0" side={side}>
-        <Command filter={filterClients} className="h-full">
-          <div className="flex items-center border-b px-3">
-            <CommandInput 
-              placeholder={t('actions.search_client')} 
-              className="flex-1"
-              value={searchValue}
-              onValueChange={setSearchValue}
-            />
-            {onCreateNew && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setOpen(false);
-                  onCreateNew(searchValue);
-                }}
-                className="ml-2 h-8 shrink-0"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                {t('actions.create')}
-              </Button>
-            )}
-          </div>
-          <CommandList className="overflow-y-auto">
-            <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
+      <PopoverContent className="w-full min-w-[300px] p-0" side={side} align="start">
+        <Command filter={filterClients}>
+          <CommandInput 
+            placeholder={t('actions.search_client')} 
+            value={searchValue}
+            onValueChange={setSearchValue}
+          />
+          <CommandList>
+            <CommandEmpty>
+              <div className="py-6 text-center text-sm">
+                {t('messages.no_clients_found')}
+                {onCreateNew && searchValue && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setOpen(false);
+                      onCreateNew(searchValue);
+                    }}
+                    className="mt-2"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    {t('actions.create')}
+                  </Button>
+                )}
+              </div>
+            </CommandEmpty>
             <CommandGroup>
               {clients.map((client) => (
                 <CommandItem
