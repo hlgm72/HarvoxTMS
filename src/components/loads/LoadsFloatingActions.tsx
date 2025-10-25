@@ -168,8 +168,8 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     <label className="text-sm font-medium">Client/Broker</label>
                     <ClientCombobox
                       value={filters.broker}
+                      displayLabel={(filters as any).brokerName}
                       onValueChange={(value, name) => {
-                        selectedClientName = name || "";
                         onFiltersChange({
                           ...filters,
                           broker: value,

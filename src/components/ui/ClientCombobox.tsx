@@ -16,6 +16,7 @@ interface ClientComboboxProps {
   onValueChange: (value: string, name?: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  displayLabel?: string; // Label to display when value is set
 }
 
 export function ClientCombobox({
@@ -23,6 +24,7 @@ export function ClientCombobox({
   onValueChange,
   placeholder = "Search client...",
   disabled = false,
+  displayLabel,
 }: ClientComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,17 +36,19 @@ export function ClientCombobox({
     open && debouncedSearchTerm.length >= 3
   );
 
-  // Update selected label when value changes
+  // Update selected label when value or displayLabel changes
   useEffect(() => {
     if (value === "all") {
       setSelectedLabel("All");
+    } else if (value && displayLabel) {
+      setSelectedLabel(displayLabel);
     } else if (value && clients.length > 0) {
       const selected = clients.find(c => c.id === value);
       if (selected) {
         setSelectedLabel(selected.name);
       }
     }
-  }, [value, clients]);
+  }, [value, displayLabel, clients]);
 
   const handleSelect = (clientId: string, clientName: string) => {
     onValueChange(clientId, clientName);
