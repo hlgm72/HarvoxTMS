@@ -304,6 +304,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                         setShowWeekYearSelector(!showWeekYearSelector);
                         setSelectedWeekYear(null);
                         setSelectedWeekMonth(null);
+                        // Cerrar todos los demás dropdowns
+                        setShowMonthYearSelector(false);
+                        setShowQuarterYearSelector(false);
+                        setShowYearSelector(false);
                       }}
                     >
                       <div className="flex items-center">
@@ -432,6 +436,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                       onClick={() => {
                         setShowMonthYearSelector(!showMonthYearSelector);
                         setSelectedMonthYear(null);
+                        // Cerrar todos los demás dropdowns
+                        setShowWeekYearSelector(false);
+                        setShowQuarterYearSelector(false);
+                        setShowYearSelector(false);
                       }}
                     >
                       <div className="flex items-center">
@@ -528,6 +536,10 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                       onClick={() => {
                         setShowQuarterYearSelector(!showQuarterYearSelector);
                         setSelectedQuarterYear(null); // Reset al abrir
+                        // Cerrar todos los demás dropdowns
+                        setShowWeekYearSelector(false);
+                        setShowMonthYearSelector(false);
+                        setShowYearSelector(false);
                       }}
                     >
                       <div className="flex items-center">
@@ -621,7 +633,13 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     <Button
                       variant={value.type === 'year' ? 'default' : 'ghost'}
                       className="w-full justify-between"
-                      onClick={() => setShowYearSelector(!showYearSelector)}
+                      onClick={() => {
+                        setShowYearSelector(!showYearSelector);
+                        // Cerrar todos los demás dropdowns
+                        setShowWeekYearSelector(false);
+                        setShowMonthYearSelector(false);
+                        setShowQuarterYearSelector(false);
+                      }}
                     >
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-2" />
