@@ -260,7 +260,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       <div className="relative">
         <Button 
           variant="outline" 
-          className="justify-between min-w-[200px] sm:min-w-[200px] w-full sm:w-auto bg-white hover:bg-gray-50 border-gray-300 shadow-sm"
+          className="justify-between w-screen max-w-sm sm:w-[21rem] bg-white hover:bg-gray-50 border-gray-300 shadow-sm"
           disabled={isLoading}
           onClick={() => setOpen(!open)}
         >
