@@ -4,6 +4,7 @@
     "subtitle": {
     "loading": "Cargando estadísticas...",
     "active_loads": "cargas activas",
+    "total_value": "valor total",
     "in_transit": "en tránsito",
     "pending_assignment": "pendientes de asignación"
   },
