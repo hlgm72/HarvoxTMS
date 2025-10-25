@@ -13,7 +13,7 @@ import { useDebounce } from "use-debounce";
 
 interface ClientComboboxProps {
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string, name?: string) => void;
   placeholder?: string;
   disabled?: boolean;
 }
@@ -47,14 +47,14 @@ export function ClientCombobox({
   }, [value, clients]);
 
   const handleSelect = (clientId: string, clientName: string) => {
-    onValueChange(clientId);
+    onValueChange(clientId, clientName);
     setSelectedLabel(clientName);
     setOpen(false);
     setSearchTerm("");
   };
 
   const handleClear = () => {
-    onValueChange("all");
+    onValueChange("all", "All");
     setSelectedLabel("All");
     setSearchTerm("");
   };

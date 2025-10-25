@@ -68,6 +68,7 @@ export default function Loads() {
     status: "all",
     driver: "all", 
     broker: "all",
+    brokerName: "", // Nombre del cliente para mostrar en el badge
     sortBy: 'date_desc'
   });
 
@@ -245,7 +246,7 @@ export default function Loads() {
             )}
             {filters.broker !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {t('filters.broker')}: {filters.broker}
+                Client: {filters.brokerName || filters.broker}
               </Badge>
             )}
           </div>
@@ -317,7 +318,8 @@ export default function Loads() {
             ...prev,
             status: newFilters.status,
             driver: newFilters.driver,
-            broker: newFilters.broker
+            broker: newFilters.broker,
+            brokerName: newFilters.brokerName || "" // Guardar el nombre del cliente
           }));
         }}
         onPeriodFilterChange={(newPeriodFilter) => {

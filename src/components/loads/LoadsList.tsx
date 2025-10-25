@@ -292,7 +292,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
       // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
       if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
       
-      if (filters.broker !== "all" && load.broker_name !== filters.broker) return false;
+      // Comparar por client_id (UUID del cliente)
+      if (filters.broker !== "all" && load.client_id !== filters.broker) return false;
       
       // Filtro por rango de fechas
       if (filters.dateRange.from && filters.dateRange.to) {

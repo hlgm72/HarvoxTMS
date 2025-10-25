@@ -43,6 +43,9 @@ interface LoadsFloatingActionsProps {
   onPeriodFilterChange?: (filter: any) => void;
 }
 
+// Estado local para mantener el nombre del cliente seleccionado
+let selectedClientName = "";
+
 export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, onPeriodFilterChange }: LoadsFloatingActionsProps) {
   const { t } = useTranslation(['loads', 'common']);
   
@@ -165,7 +168,14 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     <label className="text-sm font-medium">Client/Broker</label>
                     <ClientCombobox
                       value={filters.broker}
-                      onValueChange={(value) => handleFilterChange("broker", value)}
+                      onValueChange={(value, name) => {
+                        selectedClientName = name || "";
+                        onFiltersChange({
+                          ...filters,
+                          broker: value,
+                          brokerName: name
+                        });
+                      }}
                       placeholder="Type to search by name, DOT, or MC..."
                     />
                   </div>
