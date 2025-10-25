@@ -45,14 +45,14 @@ export function FloatingActionsSheet({
             </SheetDescription>
           </SheetHeader>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
-            <TabsList className="grid grid-cols-2 w-full h-auto gap-1">
+            <TabsList className="grid w-full h-auto gap-1 p-1 bg-muted/30 rounded-lg min-h-[60px]" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
               {tabs.map((tab) => (
                 <TabsTrigger 
                   key={tab.id} 
                   value={tab.id}
-                  className="relative"
+                  className="relative flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
                 >
-                  <tab.icon className="h-4 w-4 mr-2" />
+                  <tab.icon className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline">{tab.label}</span>
                   {tab.badge && (
                     <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
