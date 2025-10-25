@@ -550,23 +550,23 @@ export function DeductionsManager({
   return (
     <div className="space-y-6">
       <Tabs defaultValue="period" onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto gap-1">
-          <TabsTrigger value="period" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+        <TabsList className="grid w-full grid-cols-4 h-auto gap-1 p-1 bg-muted/30 rounded-lg min-h-[60px]">
+          <TabsTrigger value="period" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <CalendarCheck className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.period_deductions")}</span>
             <span className="sm:hidden">{t("deductions.tabs.period_deductions_short")}</span>
           </TabsTrigger>
-          <TabsTrigger value="recurring" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="recurring" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.recurring_deductions")}</span>
             <span className="sm:hidden">{t("deductions.tabs.recurring_deductions_short")}</span>
           </TabsTrigger>
-          <TabsTrigger value="expense-types" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="expense-types" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <Tags className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.expense_types")}</span>
             <span className="sm:hidden">{t("deductions.tabs.expense_types_short")}</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="history" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <History className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t("deductions.tabs.history")}</span>
             <span className="sm:hidden">{t("deductions.tabs.history")}</span>
@@ -583,13 +583,13 @@ export function DeductionsManager({
 
         <TabsContent value="recurring" className="space-y-4 mt-6 md:mt-8">
           <Tabs defaultValue="active" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 h-auto gap-1">
-              <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <TabsList className="grid w-full grid-cols-2 h-auto gap-1 p-1 bg-muted/30 rounded-lg min-h-[60px]">
+              <TabsTrigger value="active" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
                 <Repeat className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t("deductions.tabs.active_templates")}</span>
                 <span className="sm:hidden">{t("deductions.tabs.active_templates_short")}</span>
               </TabsTrigger>
-              <TabsTrigger value="inactive" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+              <TabsTrigger value="inactive" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
                 <Archive className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{t("deductions.tabs.inactive_templates")}</span>
                 <span className="sm:hidden">{t("deductions.tabs.inactive_templates_short")}</span>
