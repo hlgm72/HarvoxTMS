@@ -126,6 +126,8 @@ export function useCreateOtherIncome() {
       queryClient.invalidateQueries({ 
         queryKey: ['all-payment-periods-summary'] 
       });
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
     },
     onError: (error) => {
       console.error('Error creating other income:', error);
@@ -180,6 +182,8 @@ export function useUpdateOtherIncome() {
       queryClient.invalidateQueries({ 
         queryKey: ['all-payment-periods-summary'] 
       });
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
     },
     onError: (error) => {
       console.error('Error updating other income:', error);
@@ -233,6 +237,8 @@ export function useDeleteOtherIncome() {
       queryClient.invalidateQueries({ 
         queryKey: ['all-payment-periods-summary'] 
       });
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
     },
     onError: (error) => {
       console.error('Error deleting other income:', error);

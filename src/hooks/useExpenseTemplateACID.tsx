@@ -73,6 +73,8 @@ export const useExpenseTemplateACID = () => {
       queryClient.invalidateQueries({ queryKey: ['expense-template-history'] });
       queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
       queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
       
       // Mostrar mensaje de éxito específico
       const isCreate = data.operation === 'CREATE';
@@ -142,6 +144,8 @@ export const useDeactivateExpenseTemplate = () => {
       // Invalidar queries relacionadas
       queryClient.invalidateQueries({ queryKey: ['expense-recurring-templates'] });
       queryClient.invalidateQueries({ queryKey: ['expense-template-history'] });
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
       
       showSuccess(
         t('messages.templates.deactivated'),

@@ -41,6 +41,9 @@ export function useCreateExpenseInstance() {
       queryClient.invalidateQueries({ 
         queryKey: ['payment-period-summary', variables.payment_period_id] 
       });
+      
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
     },
     onError: (error: any) => {
       console.error('Error creating expense instance:', error);

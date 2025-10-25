@@ -72,6 +72,8 @@ export const useFuelExpenseACID = () => {
       // 🚨 CRÍTICO - Invalidar resúmenes de períodos para reflejar recálculos automáticos
       queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
       queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
+      // Invalidar semanas disponibles para actualizar filtros
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
       
       showSuccess(
         isUpdate 
