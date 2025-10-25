@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, ChevronsUpDown, Building2, Plus } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -93,7 +94,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
             value={searchValue}
             onValueChange={setSearchValue}
           />
-          <CommandList className="max-h-[300px] overflow-y-scroll">
+          <CommandList>
             <CommandEmpty>
               <div className="py-6 text-center text-sm">
                 {t('messages.no_clients_found')}
@@ -113,7 +114,8 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                 )}
               </div>
             </CommandEmpty>
-            <CommandGroup>
+            <ScrollArea className="h-60 overflow-auto" onWheel={(e) => e.stopPropagation()}>
+              <CommandGroup>
               {clients.map((client) => (
                 <CommandItem
                   key={client.id}
@@ -142,7 +144,8 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                   </div>
                 </CommandItem>
               ))}
-            </CommandGroup>
+              </CommandGroup>
+            </ScrollArea>
           </CommandList>
         </Command>
       </PopoverContent>
