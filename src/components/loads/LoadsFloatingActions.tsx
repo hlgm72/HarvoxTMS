@@ -26,6 +26,7 @@ interface LoadsFloatingActionsProps {
     status: string;
     driver: string;
     broker: string;
+    brokerName?: string; // Añadir brokerName al tipo
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   periodFilter?: { 
@@ -168,7 +169,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     <label className="text-sm font-medium">Client/Broker</label>
                     <ClientCombobox
                       value={filters.broker}
-                      displayLabel={(filters as any).brokerName}
+                      displayLabel={filters.brokerName}
                       onValueChange={(value, name) => {
                         onFiltersChange({
                           ...filters,

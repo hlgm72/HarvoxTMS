@@ -324,6 +324,7 @@ export default function Loads() {
           status: filters.status,
           driver: filters.driver,
           broker: filters.broker,
+          brokerName: filters.brokerName, // Pasar el nombre del cliente
           dateRange: { from: undefined, to: undefined }
         }}
         periodFilter={periodFilter}
