@@ -434,6 +434,7 @@ export const useCreateLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
       queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
       queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
       
       // Refetch inmediato para sincronización rápida
       await queryClient.refetchQueries({ queryKey: ['loads'] });
