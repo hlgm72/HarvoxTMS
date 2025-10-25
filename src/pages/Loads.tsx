@@ -119,21 +119,35 @@ export default function Loads() {
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
   
-  // ✅ OPTIMIZACIÓN: Calcular stats desde los loads ya cargados (sin query adicional)
+  // ✅ OPTIMIZACIÓN: Calcular stats desde los loads ya cargados aplicando filtros
   const loadsStats = useMemo(() => {
-    const totalActive = loads.filter(l => 
+    // Aplicar filtros a los loads
+    const filteredLoads = loads.filter(load => {
+      // Filtro de status
+      if (filters.status !== "all" && load.status !== filters.status) return false;
+      
+      // Filtro de driver
+      if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
+      
+      // Filtro de broker/client
+      if (filters.broker !== "all" && load.client_id !== filters.broker) return false;
+      
+      return true;
+    });
+    
+    const totalActive = filteredLoads.filter(l => 
       l.status !== 'completed' && l.status !== 'cancelled'
     ).length;
     
-    const totalInTransit = loads.filter(l => 
+    const totalInTransit = filteredLoads.filter(l => 
       l.status === 'in_transit'
     ).length;
     
-    const pendingAssignment = loads.filter(l => 
+    const pendingAssignment = filteredLoads.filter(l => 
       l.status === 'created' || l.status === 'route_planned'
     ).length;
     
-    const totalAmount = loads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
+    const totalAmount = filteredLoads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
     
     return {
       totalActive,
@@ -141,7 +155,7 @@ export default function Loads() {
       pendingAssignment,
       totalAmount
     };
-  }, [loads]);
+  }, [loads, filters.status, filters.driver, filters.broker]);
 
   const getPeriodDescription = () => {
     // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
