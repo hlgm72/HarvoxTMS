@@ -20,7 +20,6 @@ export default function Facilities() {
 
   const [filters, setFilters] = useState({
     status: "all",
-    type: "all",
     state: "",
     city: "",
   });
@@ -41,9 +40,6 @@ export default function Facilities() {
         (filters.status === "active" && facility.is_active) ||
         (filters.status === "inactive" && !facility.is_active);
 
-      // Type filter
-      const matchesType = filters.type === "all" || facility.facility_type === filters.type;
-
       // State filter
       const matchesState = !filters.state || 
         facility.state.toLowerCase().includes(filters.state.toLowerCase());
@@ -52,7 +48,7 @@ export default function Facilities() {
       const matchesCity = !filters.city || 
         facility.city.toLowerCase().includes(filters.city.toLowerCase());
 
-      return matchesSearch && matchesStatus && matchesType && matchesState && matchesCity;
+      return matchesSearch && matchesStatus && matchesState && matchesCity;
     });
   }, [facilities, searchTerm, filters]);
 
@@ -68,7 +64,6 @@ export default function Facilities() {
 
   const hasActiveFilters = 
     filters.status !== "all" || 
-    filters.type !== "all" ||
     filters.state !== "" ||
     filters.city !== "";
 

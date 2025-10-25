@@ -13,14 +13,8 @@
     "active": "Activo",
     "inactive": "Inactivo"
   },
-  "facility_type": {
-    "shipper": "Embarcador",
-    "receiver": "Receptor",
-    "both": "Ambos"
-  },
   "labels": {
     "name": "Nombre",
-    "type": "Tipo",
     "address": "Dirección",
     "city": "Ciudad",
     "state": "Estado",
@@ -41,13 +35,11 @@
     "title": "Filtrar Instalaciones",
     "labels": {
       "status": "Estado",
-      "type": "Tipo",
       "state": "Estado",
       "city": "Ciudad"
     },
     "placeholders": {
       "status": "Seleccionar estado",
-      "type": "Seleccionar tipo",
       "state": "Ingresar estado",
       "city": "Ingresar ciudad"
     },
@@ -56,12 +48,6 @@
         "all": "Todos",
         "active": "Activo",
         "inactive": "Inactivo"
-      },
-      "type": {
-        "all": "Todos los tipos",
-        "shipper": "Embarcador",
-        "receiver": "Receptor",
-        "both": "Ambos"
       }
     },
     "actions": {
@@ -76,7 +62,6 @@
     "edit_description": "Actualizar información de la instalación",
     "form": {
       "name_required": "Nombre de la Instalación",
-      "type_required": "Tipo de Instalación",
       "address_required": "Dirección",
       "city_required": "Ciudad",
       "state_required": "Estado",

@@ -8,7 +8,6 @@ export interface Facility {
   id: string;
   company_id: string;
   name: string;
-  facility_type: 'shipper' | 'receiver' | 'both';
   address: string;
   city: string;
   state: string;

@@ -13,14 +13,8 @@
     "active": "Active",
     "inactive": "Inactive"
   },
-  "facility_type": {
-    "shipper": "Shipper",
-    "receiver": "Receiver",
-    "both": "Both"
-  },
   "labels": {
     "name": "Name",
-    "type": "Type",
     "address": "Address",
     "city": "City",
     "state": "State",
@@ -41,13 +35,11 @@
     "title": "Filter Facilities",
     "labels": {
       "status": "Status",
-      "type": "Type",
       "state": "State",
       "city": "City"
     },
     "placeholders": {
       "status": "Select status",
-      "type": "Select type",
       "state": "Enter state",
       "city": "Enter city"
     },
@@ -56,12 +48,6 @@
         "all": "All",
         "active": "Active",
         "inactive": "Inactive"
-      },
-      "type": {
-        "all": "All types",
-        "shipper": "Shipper",
-        "receiver": "Receiver",
-        "both": "Both"
       }
     },
     "actions": {
@@ -76,7 +62,6 @@
     "edit_description": "Update facility information",
     "form": {
       "name_required": "Facility Name",
-      "type_required": "Facility Type",
       "address_required": "Address",
       "city_required": "City",
       "state_required": "State",

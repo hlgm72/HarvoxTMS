@@ -1214,7 +1214,6 @@ export type Database = {
           contact_phone: string | null
           created_at: string
           created_by: string | null
-          facility_type: string
           id: string
           is_active: boolean
           name: string
@@ -1231,7 +1230,6 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           created_by?: string | null
-          facility_type: string
           id?: string
           is_active?: boolean
           name: string
@@ -1248,7 +1246,6 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           created_by?: string | null
-          facility_type?: string
           id?: string
           is_active?: boolean
           name?: string

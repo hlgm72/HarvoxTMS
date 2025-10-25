@@ -9,13 +9,11 @@ import { useTranslation } from "react-i18next";
 interface FacilityFiltersProps {
   filters: {
     status: string;
-    type: string;
     state: string;
     city: string;
   };
   onFiltersChange: (filters: { 
     status: string; 
-    type: string;
     state: string;
     city: string;
   }) => void;
@@ -36,7 +34,6 @@ export function FacilityFilters({ filters, onFiltersChange, open, onOpenChange }
   const clearFilters = () => {
     onFiltersChange({
       status: "all",
-      type: "all",
       state: "",
       city: "",
     });
@@ -44,13 +41,11 @@ export function FacilityFilters({ filters, onFiltersChange, open, onOpenChange }
 
   const hasActiveFilters = 
     filters.status !== "all" || 
-    filters.type !== "all" ||
     filters.state !== "" ||
     filters.city !== "";
 
   const activeFilterCount = [
     filters.status !== "all",
-    filters.type !== "all",
     filters.state !== "",
     filters.city !== "",
   ].filter(Boolean).length;
@@ -90,25 +85,6 @@ export function FacilityFilters({ filters, onFiltersChange, open, onOpenChange }
                 <SelectItem value="all">{t('filters.options.status.all')}</SelectItem>
                 <SelectItem value="active">{t('filters.options.status.active')}</SelectItem>
                 <SelectItem value="inactive">{t('filters.options.status.inactive')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Facility Type */}
-          <div className="space-y-2">
-            <Label htmlFor="type">{t('filters.labels.type')}</Label>
-            <Select
-              value={filters.type}
-              onValueChange={(value) => handleFilterChange("type", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('filters.placeholders.type')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('filters.options.type.all')}</SelectItem>
-                <SelectItem value="shipper">{t('filters.options.type.shipper')}</SelectItem>
-                <SelectItem value="receiver">{t('filters.options.type.receiver')}</SelectItem>
-                <SelectItem value="both">{t('filters.options.type.both')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

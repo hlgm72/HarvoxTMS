@@ -28,7 +28,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
 
   const facilitySchema = z.object({
     name: z.string().min(1, t('create_facility_dialog.validation.name_required')),
-    facility_type: z.enum(['shipper', 'receiver', 'both']),
     address: z.string().min(1, t('create_facility_dialog.validation.address_required')),
     city: z.string().min(1, t('create_facility_dialog.validation.city_required')),
     state: z.string().min(1, t('create_facility_dialog.validation.state_required')),
@@ -46,7 +45,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
     resolver: zodResolver(facilitySchema),
     defaultValues: {
       name: '',
-      facility_type: 'both',
       address: '',
       city: '',
       state: '',
@@ -64,7 +62,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
       if (facility) {
         form.reset({
           name: facility.name,
-          facility_type: facility.facility_type,
           address: facility.address,
           city: facility.city,
           state: facility.state,
@@ -78,7 +75,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
       } else {
         form.reset({
           name: '',
-          facility_type: 'both',
           address: '',
           city: '',
           state: '',
@@ -127,49 +123,24 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.name_required')}</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder={t('create_facility_dialog.placeholders.name')} 
-                        {...field}
-                        value={field.value.toUpperCase()}
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="facility_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.type_required')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('create_facility_dialog.form.type_required')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="shipper">{t('facility_type.shipper')}</SelectItem>
-                        <SelectItem value="receiver">{t('facility_type.receiver')}</SelectItem>
-                        <SelectItem value="both">{t('facility_type.both')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('create_facility_dialog.form.name_required')}</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder={t('create_facility_dialog.placeholders.name')} 
+                      {...field}
+                      value={field.value.toUpperCase()}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
