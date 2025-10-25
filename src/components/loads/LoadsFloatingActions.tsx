@@ -121,7 +121,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       id: 'filters',
       label: t('floating_actions.filters.title'),
       icon: Filter,
-      badge: hasActiveFilters ? '●' : undefined,
       content: (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
