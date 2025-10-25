@@ -98,6 +98,12 @@
     "cancel": "Cancel",
     "delete": "Delete"
   },
+  "confirm_inactivate": {
+    "title": "Facility In Use",
+    "description": "{{facilityName}} is associated with {{count}} load stop(s) and cannot be deleted. Would you like to inactivate this facility instead?",
+    "cancel": "Cancel",
+    "inactivate": "Inactivate"
+  },
   "messages": {
     "loading": "Loading facilities...",
     "no_facilities": "No facilities yet",
@@ -108,6 +114,8 @@
     "update_success_description": "The facility has been updated successfully",
     "delete_success": "Facility deleted",
     "delete_success_description": "The facility has been deleted successfully",
+    "inactivate_success": "Facility inactivated",
+    "inactivate_success_description": "The facility has been inactivated successfully",
     "error_title": "Error",
     "error_description": "An error occurred. Please try again."
   },

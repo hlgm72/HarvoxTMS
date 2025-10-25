@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Facility, useDeleteFacility } from "@/hooks/useFacilities";
+import { Facility, useDeleteFacility, useValidateFacilityDeletion, useInactivateFacility } from "@/hooks/useFacilities";
 import { CreateFacilityDialog } from "./CreateFacilityDialog";
 import { useTranslation } from 'react-i18next';
 
@@ -32,18 +32,37 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showInUseDialog, setShowInUseDialog] = useState(false);
   const [facilityToDelete, setFacilityToDelete] = useState<Facility | null>(null);
+  const [inUseInfo, setInUseInfo] = useState<{ load_stops_count: number } | null>(null);
 
   const deleteFacility = useDeleteFacility();
+  const validateDeletion = useValidateFacilityDeletion();
+  const inactivateFacility = useInactivateFacility();
 
   const handleEdit = (facility: Facility) => {
     setSelectedFacility(facility);
     setShowEditDialog(true);
   };
 
-  const handleDelete = (facility: Facility) => {
+  const handleDelete = async (facility: Facility) => {
     setFacilityToDelete(facility);
-    setShowDeleteDialog(true);
+    
+    // Validate if facility can be deleted
+    try {
+      const validationResult = await validateDeletion.mutateAsync(facility.id);
+      
+      if (validationResult.is_in_use) {
+        // Show in-use dialog
+        setInUseInfo({ load_stops_count: validationResult.load_stops_count });
+        setShowInUseDialog(true);
+      } else {
+        // Show normal delete dialog
+        setShowDeleteDialog(true);
+      }
+    } catch (error) {
+      console.error('Error validating facility deletion:', error);
+    }
   };
 
   const confirmDelete = async () => {
@@ -51,6 +70,15 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
       await deleteFacility.mutateAsync(facilityToDelete.id);
       setShowDeleteDialog(false);
       setFacilityToDelete(null);
+    }
+  };
+
+  const confirmInactivate = async () => {
+    if (facilityToDelete) {
+      await inactivateFacility.mutateAsync(facilityToDelete.id);
+      setShowInUseDialog(false);
+      setFacilityToDelete(null);
+      setInUseInfo(null);
     }
   };
 
@@ -145,6 +173,36 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t('confirm_delete.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Facility In Use Dialog */}
+      <AlertDialog open={showInUseDialog} onOpenChange={setShowInUseDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('confirm_inactivate.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('confirm_inactivate.description', { 
+                facilityName: facilityToDelete?.name,
+                count: inUseInfo?.load_stops_count || 0
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowInUseDialog(false);
+              setFacilityToDelete(null);
+              setInUseInfo(null);
+            }}>
+              {t('confirm_inactivate.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmInactivate}
+              className="bg-warning text-warning-foreground hover:bg-warning/90"
+            >
+              {t('confirm_inactivate.inactivate')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

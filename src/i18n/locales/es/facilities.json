@@ -98,6 +98,12 @@
     "cancel": "Cancelar",
     "delete": "Eliminar"
   },
+  "confirm_inactivate": {
+    "title": "Instalación en Uso",
+    "description": "{{facilityName}} está asociada con {{count}} parada(s) de carga y no puede ser eliminada. ¿Deseas inactivar esta instalación en su lugar?",
+    "cancel": "Cancelar",
+    "inactivate": "Inactivar"
+  },
   "messages": {
     "loading": "Cargando instalaciones...",
     "no_facilities": "Aún no hay instalaciones",
@@ -108,6 +114,8 @@
     "update_success_description": "La instalación ha sido actualizada exitosamente",
     "delete_success": "Instalación eliminada",
     "delete_success_description": "La instalación ha sido eliminada exitosamente",
+    "inactivate_success": "Instalación inactivada",
+    "inactivate_success_description": "La instalación ha sido inactivada exitosamente",
     "error_title": "Error",
     "error_description": "Ocurrió un error. Por favor, inténtalo de nuevo."
   },

@@ -122,6 +122,24 @@ export const useUpdateFacility = () => {
   });
 };
 
+// Hook para validar si una facility puede ser eliminada
+export const useValidateFacilityDeletion = () => {
+  return useMutation({
+    mutationFn: async (facilityId: string) => {
+      const { data, error } = await supabase
+        .rpc('validate_facility_deletion', { facility_id_param: facilityId });
+
+      if (error) throw error;
+      return data as {
+        can_delete: boolean;
+        is_in_use: boolean;
+        load_stops_count: number;
+        message: string;
+      };
+    },
+  });
+};
+
 // Hook para eliminar una facility
 export const useDeleteFacility = () => {
   const queryClient = useQueryClient();
@@ -146,6 +164,41 @@ export const useDeleteFacility = () => {
     },
     onError: (error) => {
       console.error('Error deleting facility:', error);
+      showError(
+        t('messages.error_title'),
+        t('messages.error_description')
+      );
+    },
+  });
+};
+
+// Hook para inactivar una facility
+export const useInactivateFacility = () => {
+  const queryClient = useQueryClient();
+  const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('facilities');
+
+  return useMutation({
+    mutationFn: async (facilityId: string) => {
+      const { data, error } = await supabase
+        .from('facilities')
+        .update({ is_active: false })
+        .eq('id', facilityId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['facilities'] });
+      showSuccess(
+        t('messages.inactivate_success'),
+        t('messages.inactivate_success_description')
+      );
+    },
+    onError: (error) => {
+      console.error('Error inactivating facility:', error);
       showError(
         t('messages.error_title'),
         t('messages.error_description')
