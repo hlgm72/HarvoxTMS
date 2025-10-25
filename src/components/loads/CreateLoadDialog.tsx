@@ -1048,24 +1048,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                            <FormItem>
                              <FormLabel>{t("loads:create_wizard.form.total_amount")} {t("loads:create_wizard.form.total_amount_required")}</FormLabel>
                              <FormControl>
-                                <Input 
+                                 <Input 
                                   type="text"
                                   inputMode="decimal"
                                   pattern="[0-9]*"
                                   value={atmInput.displayValue}
-                                  onChange={(e) => {
-                                    // Handle onChange to prevent React warning
-                                    // The actual value handling is done by ATM input handlers
-                                    field.onChange(e.target.value);
-                                  }}
+                                  readOnly
                                   onKeyDown={atmInput.handleKeyDown}
                                   onPaste={atmInput.handlePaste}
                                   onFocus={atmInput.handleFocus}
                                   onClick={atmInput.handleClick}
                                   placeholder={t("loads:create_wizard.form.total_amount_placeholder")}
-                                  className="text-right"
+                                  className="text-right cursor-text"
                                   autoComplete="off"
-                                />
+                                 />
                              </FormControl>
                              <FormMessage />
                            </FormItem>
