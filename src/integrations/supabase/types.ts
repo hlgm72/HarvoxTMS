@@ -4526,6 +4526,10 @@ export type Database = {
         Args: { target_calculation_id: string }
         Returns: Json
       }
+      validate_facility_deletion: {
+        Args: { facility_id_param: string }
+        Returns: Json
+      }
       validate_invitation_token: {
         Args: { token_param: string }
         Returns: {
