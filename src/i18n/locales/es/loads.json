@@ -98,6 +98,7 @@
           "contact_phone": "Teléfono de Contacto",
           "contact_phone_placeholder": "Ingresa el número de teléfono...",
           "special_instructions": "Instrucciones Especiales",
+          "instructions_label": "Instrucciones:",
           "instructions_placeholder": "Ingresa cualquier instrucción especial...",
           "cancel": "Cancelar",
           "save_changes": "Guardar Cambios"
