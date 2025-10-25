@@ -79,6 +79,7 @@
           "pickup_label": "Recogida",
           "delivery_label": "Entrega",
           "scheduling": "Programación",
+          "scheduled_date": "Fecha programada",
           "scheduled_date_required": "La fecha programada es requerida",
           "select_date": "Seleccionar fecha",
           "scheduled_time": "Hora Programada",
