@@ -14,7 +14,6 @@ export interface Facility {
   zip_code: string;
   contact_name?: string;
   contact_phone?: string;
-  contact_email?: string;
   notes?: string;
   is_active: boolean;
   created_at: string;

@@ -21,7 +21,6 @@
     "zip_code": "Código Postal",
     "contact_name": "Nombre de Contacto",
     "contact_phone": "Teléfono de Contacto",
-    "contact_email": "Email de Contacto",
     "notes": "Notas"
   },
   "stats": {
@@ -68,7 +67,6 @@
       "zip_code_required": "Código Postal",
       "contact_name": "Nombre de Contacto",
       "contact_phone": "Teléfono de Contacto",
-      "contact_email": "Email de Contacto",
       "notes": "Notas"
     },
     "placeholders": {
@@ -79,7 +77,6 @@
       "zip_code": "Ingresar código postal",
       "contact_name": "Ingresar nombre del contacto",
       "contact_phone": "Ingresar número de teléfono",
-      "contact_email": "Ingresar correo electrónico",
       "notes": "Notas adicionales..."
     },
     "validation": {
@@ -87,8 +84,7 @@
       "address_required": "La dirección es requerida",
       "city_required": "La ciudad es requerida",
       "state_required": "El estado es requerido",
-      "zip_code_required": "El código postal es requerido",
-      "email_invalid": "Correo electrónico inválido"
+      "zip_code_required": "El código postal es requerido"
     },
     "buttons": {
       "cancel": "Cancelar",

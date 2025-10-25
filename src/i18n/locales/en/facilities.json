@@ -21,7 +21,6 @@
     "zip_code": "ZIP Code",
     "contact_name": "Contact Name",
     "contact_phone": "Contact Phone",
-    "contact_email": "Contact Email",
     "notes": "Notes"
   },
   "stats": {
@@ -68,7 +67,6 @@
       "zip_code_required": "ZIP Code",
       "contact_name": "Contact Name",
       "contact_phone": "Contact Phone",
-      "contact_email": "Contact Email",
       "notes": "Notes"
     },
     "placeholders": {
@@ -79,7 +77,6 @@
       "zip_code": "Enter ZIP code",
       "contact_name": "Enter contact name",
       "contact_phone": "Enter phone number",
-      "contact_email": "Enter email address",
       "notes": "Additional notes..."
     },
     "validation": {
@@ -87,8 +84,7 @@
       "address_required": "Address is required",
       "city_required": "City is required",
       "state_required": "State is required",
-      "zip_code_required": "ZIP code is required",
-      "email_invalid": "Invalid email address"
+      "zip_code_required": "ZIP code is required"
     },
     "buttons": {
       "cancel": "Cancel",

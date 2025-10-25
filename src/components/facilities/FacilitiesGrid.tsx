@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, MapPin, MoreHorizontal, Edit, Trash2, Phone, Mail } from "lucide-react";
+import { Building2, MapPin, MoreHorizontal, Edit, Trash2, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -113,13 +113,6 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-3 w-3 text-muted-foreground" />
                   <span className="truncate">{facility.contact_phone}</span>
-                </div>
-              )}
-              
-              {facility.contact_email && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-3 w-3 text-muted-foreground" />
-                  <span className="truncate">{facility.contact_email}</span>
                 </div>
               )}
             </CardContent>

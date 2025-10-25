@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AddressForm } from '@/components/ui/AddressForm';
 import { Facility, useCreateFacility, useUpdateFacility } from '@/hooks/useFacilities';
 
 interface CreateFacilityDialogProps {
@@ -29,12 +29,11 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
   const facilitySchema = z.object({
     name: z.string().min(1, t('create_facility_dialog.validation.name_required')),
     address: z.string().min(1, t('create_facility_dialog.validation.address_required')),
-    city: z.string().min(1, t('create_facility_dialog.validation.city_required')),
+    city: z.string().optional(),
     state: z.string().min(1, t('create_facility_dialog.validation.state_required')),
     zip_code: z.string().min(1, t('create_facility_dialog.validation.zip_code_required')),
     contact_name: z.string().optional(),
     contact_phone: z.string().optional(),
-    contact_email: z.string().email(t('create_facility_dialog.validation.email_invalid')).optional().or(z.literal("")),
     notes: z.string().optional(),
     is_active: z.boolean().default(true),
   });
@@ -51,7 +50,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
       zip_code: '',
       contact_name: '',
       contact_phone: '',
-      contact_email: '',
       notes: '',
       is_active: true,
     },
@@ -63,12 +61,11 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
         form.reset({
           name: facility.name,
           address: facility.address,
-          city: facility.city,
+          city: facility.city || '',
           state: facility.state,
           zip_code: facility.zip_code,
           contact_name: facility.contact_name || '',
           contact_phone: facility.contact_phone || '',
-          contact_email: facility.contact_email || '',
           notes: facility.notes || '',
           is_active: facility.is_active,
         });
@@ -81,7 +78,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
           zip_code: '',
           contact_name: '',
           contact_phone: '',
-          contact_email: '',
           notes: '',
           is_active: true,
         });
@@ -110,8 +106,9 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl p-0 gap-0 max-h-[90vh] flex flex-col">
+        {/* Fixed Header */}
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
             {isEditMode ? t('create_facility_dialog.edit_title') : t('create_facility_dialog.title')}
@@ -121,69 +118,22 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('create_facility_dialog.form.name_required')}</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder={t('create_facility_dialog.placeholders.name')} 
-                      {...field}
-                      value={field.value.toUpperCase()}
-                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('create_facility_dialog.form.address_required')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('create_facility_dialog.placeholders.address')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Scrollable Content with white background */}
+        <div className="flex-1 overflow-y-auto bg-white px-6 py-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="city"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.city_required')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('create_facility_dialog.placeholders.city')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.state_required')}</FormLabel>
+                    <FormLabel>{t('create_facility_dialog.form.name_required')}</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder={t('create_facility_dialog.placeholders.state')} 
+                        placeholder={t('create_facility_dialog.placeholders.name')} 
                         {...field}
                         value={field.value.toUpperCase()}
                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                        maxLength={2}
                       />
                     </FormControl>
                     <FormMessage />
@@ -191,96 +141,88 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
                 )}
               />
 
+              {/* Address Form Component */}
+              <div className="space-y-4">
+                <AddressForm
+                  streetAddress={form.watch('address')}
+                  onStreetAddressChange={(value) => form.setValue('address', value)}
+                  stateId={form.watch('state')}
+                  onStateChange={(value) => form.setValue('state', value || '')}
+                  city={form.watch('city')}
+                  onCityChange={(value) => form.setValue('city', value || '')}
+                  zipCode={form.watch('zip_code')}
+                  onZipCodeChange={(value) => form.setValue('zip_code', value)}
+                  required={true}
+                />
+              </div>
+
+              {/* Contact Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="contact_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('create_facility_dialog.form.contact_name')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('create_facility_dialog.placeholders.contact_name')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="contact_phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('create_facility_dialog.form.contact_phone')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('create_facility_dialog.placeholders.contact_phone')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
-                name="zip_code"
+                name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.zip_code_required')}</FormLabel>
+                    <FormLabel>{t('create_facility_dialog.form.notes')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('create_facility_dialog.placeholders.zip_code')} {...field} />
+                      <Textarea 
+                        placeholder={t('create_facility_dialog.placeholders.notes')} 
+                        {...field} 
+                        rows={3}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
+            </form>
+          </Form>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="contact_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.contact_name')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('create_facility_dialog.placeholders.contact_name')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="contact_phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.contact_phone')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('create_facility_dialog.placeholders.contact_phone')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="contact_email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('create_facility_dialog.form.contact_email')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder={t('create_facility_dialog.placeholders.contact_email')} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('create_facility_dialog.form.notes')}</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder={t('create_facility_dialog.placeholders.notes')} 
-                      {...field} 
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-2 justify-end pt-4">
-              <Button type="button" variant="outline" onClick={handleClose}>
-                {t('create_facility_dialog.buttons.cancel')}
-              </Button>
-              <Button type="submit" disabled={createFacility.isPending || updateFacility.isPending}>
-                {isEditMode 
-                  ? t('create_facility_dialog.buttons.update') 
-                  : t('create_facility_dialog.buttons.create')
-                }
-              </Button>
-            </div>
-          </form>
-        </Form>
+        {/* Fixed Footer */}
+        <div className="px-6 py-4 border-t bg-muted/50 flex gap-2 justify-end">
+          <Button type="button" variant="outline" onClick={handleClose}>
+            {t('create_facility_dialog.buttons.cancel')}
+          </Button>
+          <Button 
+            onClick={form.handleSubmit(handleSubmit)} 
+            disabled={createFacility.isPending || updateFacility.isPending}
+          >
+            {isEditMode 
+              ? t('create_facility_dialog.buttons.update') 
+              : t('create_facility_dialog.buttons.create')
+            }
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
