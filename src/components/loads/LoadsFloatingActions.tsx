@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useDriversList } from "@/hooks/useDriversList";
 import { PeriodFilter } from "@/components/loads/PeriodFilter";
+import { ClientCombobox } from "@/components/ui/ClientCombobox";
 import { 
   Filter, 
   FilterX, 
@@ -55,12 +56,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
     { value: "completed", label: t('common:status.completed') }
   ];
 
-  const brokerOptions = [
-    { value: "all", label: t('floating_actions.filters.options.broker.all') },
-    { value: "broker1", label: "ABC Logistics" },
-    { value: "broker2", label: "XYZ Freight" },
-    { value: "broker3", label: "Global Transport" }
-  ];
 
   const sortOptions = [
     { value: "date_desc", label: t('floating_actions.view.options.sort.date_desc') },
@@ -165,24 +160,14 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     </Select>
                   </div>
 
-                  {/* Broker Filter */}
+                  {/* Client/Broker Filter */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">{t('floating_actions.filters.broker')}</label>
-                    <Select 
-                      value={filters.broker} 
+                    <label className="text-sm font-medium">Client/Broker</label>
+                    <ClientCombobox
+                      value={filters.broker}
                       onValueChange={(value) => handleFilterChange("broker", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('floating_actions.filters.placeholders.broker')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brokerOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      placeholder="Type to search by name, DOT, or MC..."
+                    />
                   </div>
 
                   {/* Status Filter */}
