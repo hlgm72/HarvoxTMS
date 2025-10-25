@@ -143,26 +143,6 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                     />
                   </div>
 
-                  {/* Status Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">{t('floating_actions.filters.status')}</label>
-                    <Select 
-                      value={filters.status} 
-                      onValueChange={(value) => handleFilterChange("status", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('floating_actions.filters.placeholders.status')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statusOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Driver Filter */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">{t('floating_actions.filters.driver')}</label>
@@ -197,6 +177,26 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
                       </SelectTrigger>
                       <SelectContent>
                         {brokerOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Status Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t('floating_actions.filters.status')}</label>
+                    <Select 
+                      value={filters.status} 
+                      onValueChange={(value) => handleFilterChange("status", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('floating_actions.filters.placeholders.status')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statusOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
                           </SelectItem>
