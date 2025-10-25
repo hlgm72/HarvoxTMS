@@ -412,23 +412,35 @@ export default function FuelManagement() {
       <div className="p-2 md:p-4 space-y-4 md:space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-auto gap-1">
-            <TabsTrigger value="expenses" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsList className="grid w-full grid-cols-4 h-auto gap-1 bg-white/90 dark:bg-gray-900/90 border border-border shadow-sm">
+            <TabsTrigger 
+              value="expenses" 
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
               <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.expenses_full')}</span>
               <span className="sm:hidden">{t('fuel:page.tabs.expenses')}</span>
             </TabsTrigger>
-            <TabsTrigger value="cards" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <TabsTrigger 
+              value="cards" 
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
               <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.fuel_cards_full')}</span>
               <span className="sm:hidden">{t('fuel:page.tabs.cards')}</span>
             </TabsTrigger>
-            <TabsTrigger value="sync" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <TabsTrigger 
+              value="sync" 
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
               <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">FleetOne Sync</span>
               <span className="sm:hidden">Sync</span>
             </TabsTrigger>
-            <TabsTrigger value="analyzer" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+            <TabsTrigger 
+              value="analyzer" 
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.pdf_analyzer')}</span>
               <span className="sm:hidden">{t('fuel:page.tabs.pdf')}</span>
