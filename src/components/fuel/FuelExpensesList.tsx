@@ -192,7 +192,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
         <CardContent className="relative p-0 sm:p-6">
           {/* Vista Cards */}
           {viewMode === 'cards' && (
-            <div className="space-y-3 p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             {expenses.map((expense) => (
               <div key={expense.id} className="border rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
