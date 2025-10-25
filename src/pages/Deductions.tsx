@@ -12,7 +12,8 @@ import { DeductionsFloatingActions, DeductionsFiltersType } from "@/components/p
 import { useDeductionsStats } from "@/hooks/useDeductionsStats";
 import { useExpenseTypes } from "@/hooks/useExpenseTypes";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatCurrency, formatDetailedPaymentPeriod, formatPaymentPeriodBadge, formatMonthName } from '@/lib/dateFormatting';
+import { formatCurrency, formatDetailedPaymentPeriod, formatPaymentPeriodBadge, formatMonthName, formatPaymentPeriodCompact } from '@/lib/dateFormatting';
+import { Badge } from "@/components/ui/badge";
 import { useConsolidatedDrivers } from "@/hooks/useConsolidatedDrivers";
 import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
@@ -153,137 +154,174 @@ export default function Deductions() {
     queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
   };
 
-  // ✅ Generar descripción de filtros activos con formato detallado
-  const getFilterDescription = () => {
-    const parts: string[] = [];
+  // Get period description (similar to Load Management)
+  const getPeriodDescription = () => {
+    if (!filters.periodFilter) return '';
     
-    // Filtro de período
-    if (filters.periodFilter) {
-      const pf = filters.periodFilter as any;
-      
-      // Si hay un label, usarlo directamente (para this_month, this_quarter, this_year, etc.)
-      if (pf.label) {
-        parts.push(pf.label);
-      } else if (pf.type === 'current') {
-        // Usar el mismo formato que PeriodFilter para "Current"
-        const displayCurrentPeriod = calculatedPeriods?.current;
-        if (displayCurrentPeriod) {
-          const periodLabel = formatDetailedPaymentPeriod(
-            displayCurrentPeriod.period_start_date, 
-            displayCurrentPeriod.period_end_date, 
-            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          );
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
-          parts.push(`Current: ${periodNumber} (${dateRange})`);
-        } else {
-          parts.push(t("deductions.filters.currentPeriod"));
-        }
-      } else if (pf.type === 'previous') {
-        // Usar el mismo formato que PeriodFilter para "Previous"
-        const displayPreviousPeriod = calculatedPeriods?.previous;
-        if (displayPreviousPeriod) {
-          const periodLabel = formatDetailedPaymentPeriod(
-            displayPreviousPeriod.period_start_date, 
-            displayPreviousPeriod.period_end_date, 
-            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          );
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
-          parts.push(`Previous: ${periodNumber} (${dateRange})`);
-        } else {
-          parts.push(t("deductions.filters.previousPeriod"));
-        }
-      } else if (pf.type === 'specific' && pf.periodId) {
-        parts.push(t("deductions.filters.specificPeriod"));
-      } else if (pf.type === 'all') {
-        parts.push(t("deductions.filters.allPeriods"));
-      } else if (pf.type === 'week') {
+    const pf = filters.periodFilter;
+    
+    switch (pf.type) {
+      case 'week':
         const weekLabel = pf.selectedWeek && pf.selectedYear 
           ? `W${pf.selectedWeek}/${pf.selectedYear}`
           : 'Week';
-        parts.push(`Week: ${weekLabel}`);
-      } else if (pf.type === 'month') {
+        return `Week: ${weekLabel}`;
+      case 'month':
         const monthLabel = pf.selectedMonth && pf.selectedYear 
           ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
           : 'Month';
-        parts.push(`Month: ${monthLabel}`);
-      } else if (pf.type === 'quarter') {
-        const quarterLabel = pf.selectedQuarter && pf.selectedYear 
-          ? `Q${pf.selectedQuarter} ${pf.selectedYear}`
-          : 'Quarter';
-        parts.push(`Quarter: ${quarterLabel}`);
-      } else if (pf.type === 'year') {
-        const yearLabel = pf.selectedYear || new Date().getFullYear();
-        parts.push(`Year: ${yearLabel}`);
-      }
+        return `Month: ${monthLabel}`;
+      case 'quarter':
+        return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
+      case 'year':
+        return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
+      case 'current':
+        return t("deductions.filters.currentPeriod");
+      case 'previous':
+        return t("deductions.filters.previousPeriod");
+      case 'all':
+        return t("deductions.filters.allPeriods");
+      default:
+        return '';
     }
-    
-    // Filtro de conductor
-    if (filters.driverId && filters.driverId !== 'all') {
-      const driver = drivers.find(d => d.id === filters.driverId);
-      if (driver) {
-        parts.push(`${t("deductions.filters.driver")}: ${driver.first_name} ${driver.last_name}`);
-      }
-    }
-    
-    // Filtro de tipo de gasto
-    if (filters.expenseTypeId && filters.expenseTypeId !== 'all') {
-      const expenseType = expenseTypes.find(et => et.id === filters.expenseTypeId);
-      if (expenseType) {
-        parts.push(`${t("deductions.filters.expenseType")}: ${expenseType.name}`);
-      }
-    }
-    
-    // Filtro de estado (solo para period tab)
-    if (activeTab === 'period' && filters.status && filters.status !== 'all') {
-      const statusLabels: Record<string, string> = {
-        planned: t("deductions.status_labels.planned"),
-        applied: t("deductions.status_labels.applied"),
-        deferred: t("deductions.status_labels.deferred")
-      };
-      parts.push(`${t("deductions.filters.status")}: ${statusLabels[filters.status] || filters.status}`);
-    }
-    
-    if (parts.length === 0) {
-      return t("deductions.filters.noFilters");
-    }
-    
-    return parts.join(' • ');
   };
 
-  // ✅ Generar subtitle dinámico según el tab activo
+  const getPeriodDateRange = () => {
+    if (!filters.periodFilter) return '';
+    
+    if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+      const formatted = formatPaymentPeriodBadge(
+        filters.periodFilter.startDate, 
+        filters.periodFilter.endDate
+      );
+      return formatted;
+    }
+    
+    return '';
+  };
+
+  // ✅ Generar subtitle dinámico según el tab activo (similar a Load Management)
   const getSubtitle = () => {
     if (statsLoading || !stats) {
-      return <div>{t("deductions.loadingStats")}</div>;
+      return <div className="text-sm text-muted-foreground">{t("deductions.loadingStats")}</div>;
     }
 
     const { activeTemplates, totalMonthlyAmount, affectedDrivers } = stats;
     
-    // Primera línea: estadísticas según el tab activo
-    let statsLine = '';
+    // Stats display (primera línea)
+    let statsDisplay;
     if (activeTab === 'period') {
-      statsLine = `${activeTemplates} ${t("deductions.periodDeductions")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.totalAmount")} • ${affectedDrivers} ${t("deductions.drivers")}`;
+      statsDisplay = (
+        <div className="flex items-center gap-4 text-sm flex-wrap">
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{activeTemplates}</span>
+            <span className="text-muted-foreground">{t("deductions.periodDeductions")}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{formatCurrency(totalMonthlyAmount)}</span>
+            <span className="text-muted-foreground">{t("deductions.totalAmount")}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{affectedDrivers}</span>
+            <span className="text-muted-foreground">{t("deductions.drivers")}</span>
+          </span>
+        </div>
+      );
     } else if (activeTab === 'recurring') {
-      statsLine = `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
+      statsDisplay = (
+        <div className="flex items-center gap-4 text-sm flex-wrap">
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{activeTemplates}</span>
+            <span className="text-muted-foreground">{t("deductions.activeTemplates")}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{formatCurrency(totalMonthlyAmount)}</span>
+            <span className="text-muted-foreground">{t("deductions.monthlyTotal")}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{affectedDrivers}</span>
+            <span className="text-muted-foreground">{t("deductions.affectedDrivers")}</span>
+          </span>
+        </div>
+      );
     } else if (activeTab === 'expense-types') {
       return <div>{t("deductions.expenseTypesSubtitle")}</div>;
     } else if (activeTab === 'history') {
       return <div>{t("deductions.historySubtitle")}</div>;
     } else {
-      statsLine = `${activeTemplates} ${t("deductions.activeTemplates")} • ${formatCurrency(totalMonthlyAmount)} ${t("deductions.monthlyTotal")} • ${affectedDrivers} ${t("deductions.affectedDrivers")}`;
+      statsDisplay = (
+        <div className="flex items-center gap-4 text-sm flex-wrap">
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{activeTemplates}</span>
+            <span className="text-muted-foreground">{t("deductions.activeTemplates")}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{formatCurrency(totalMonthlyAmount)}</span>
+            <span className="text-muted-foreground">{t("deductions.monthlyTotal")}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{affectedDrivers}</span>
+            <span className="text-muted-foreground">{t("deductions.affectedDrivers")}</span>
+          </span>
+        </div>
+      );
     }
     
-    // Segunda línea: filtros activos
-    const filterDescription = getFilterDescription();
+    // Check if there are active filters
+    const hasActiveFilters = filters.driverId !== 'all' || 
+                            filters.status !== 'all' ||
+                            filters.expenseTypeId !== 'all';
     
-    return (
-      <>
-        <div>{statsLine}</div>
-        <div className="text-xs text-muted-foreground/80">
-          {filterDescription}
+    const periodDesc = getPeriodDescription();
+    const dateRange = getPeriodDateRange();
+    
+    if (hasActiveFilters) {
+      return (
+        <div className="space-y-2">
+          {statsDisplay}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">{t('active_filters')}:</span>
+            {periodDesc && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {periodDesc}{dateRange && `: ${dateRange}`}
+              </Badge>
+            )}
+            {filters.driverId !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("deductions.filters.driver")}: {(() => {
+                  const driver = drivers.find(d => d.id === filters.driverId);
+                  return driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId;
+                })()}
+              </Badge>
+            )}
+            {filters.expenseTypeId !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("deductions.filters.expenseType")}: {(() => {
+                  const expenseType = expenseTypes.find(et => et.id === filters.expenseTypeId);
+                  return expenseType ? expenseType.name : filters.expenseTypeId;
+                })()}
+              </Badge>
+            )}
+            {activeTab === 'period' && filters.status !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t('filters.status')}: {filters.status}
+              </Badge>
+            )}
+          </div>
         </div>
-      </>
+      );
+    }
+    
+    // No active filters - just show period info
+    return (
+      <div className="space-y-1">
+        {statsDisplay}
+        {(periodDesc || dateRange) && (
+          <div className="text-xs text-muted-foreground">
+            {periodDesc} {dateRange && `• ${dateRange}`}
+          </div>
+        )}
+      </div>
     );
   };
 
