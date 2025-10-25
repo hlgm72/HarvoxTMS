@@ -110,7 +110,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
               </Button>
             )}
           </div>
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto">
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
             <CommandGroup>
               {clients.map((client) => (
