@@ -112,15 +112,27 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   }, [onValueChange]);
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-    // Move cursor to the end immediately
+    // Hide cursor initially and move to end
     const input = e.target;
+    input.style.caretColor = 'transparent';
     input.setSelectionRange(input.value.length, input.value.length);
+    
+    // Show cursor after positioning
+    requestAnimationFrame(() => {
+      input.style.caretColor = '';
+    });
   }, []);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-    // Move cursor to the end immediately
+    // Hide cursor briefly during repositioning
     const input = e.target as HTMLInputElement;
+    input.style.caretColor = 'transparent';
     input.setSelectionRange(input.value.length, input.value.length);
+    
+    // Show cursor after positioning
+    requestAnimationFrame(() => {
+      input.style.caretColor = '';
+    });
   }, []);
 
   const reset = useCallback(() => {
