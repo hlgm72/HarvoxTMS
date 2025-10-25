@@ -18,7 +18,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
     if (filters.driverId && filters.driverId !== 'all') count++;
     if (filters.status && filters.status !== 'all') count++;
     if (filters.vehicleId && filters.vehicleId !== 'all') count++;
-    if (filters.periodFilter.type !== 'current') count++;
+    if (filters.periodFilter.type !== 'week') count++;
     return count;
   };
 
@@ -26,7 +26,7 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
 
   const clearAllFilters = () => {
     onFiltersChange({
-      periodFilter: { type: 'current' },
+      periodFilter: { type: 'week' },
       driverId: 'all',
       status: 'all',
       vehicleId: 'all'

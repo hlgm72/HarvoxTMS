@@ -14,7 +14,7 @@ import { FuelExpenseDialog } from '@/components/fuel/FuelExpenseDialog';
 import { ViewFuelExpenseDialog } from '@/components/fuel/ViewFuelExpenseDialog';
 import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { FleetOneSync } from '@/components/fuel/FleetOneSync';
-import { formatDateInUserTimeZone, formatCurrency, formatPaymentPeriodBadge, formatDetailedPaymentPeriod } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatCurrency, formatPaymentPeriodBadge, formatDetailedPaymentPeriod, formatMonthName } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
 import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { useConsolidatedDrivers } from '@/hooks/useConsolidatedDrivers';
@@ -23,6 +23,8 @@ import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { useFuelStats } from '@/hooks/useFuelStats';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
+import { useAvailableWeeks } from '@/hooks/useAvailableWeeks';
+import { getISOWeek } from 'date-fns';
 
 export default function FuelManagement() {
   const { t } = useTranslation(['fuel', 'common']);
@@ -42,11 +44,44 @@ export default function FuelManagement() {
   }));
   
   // Obtener el período actual y todos los períodos para fallback
-  const { data: currentPeriod } = useCurrentPaymentPeriod();
+  const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
   const { data: periods = [] } = usePaymentPeriods();
-  const { data: calculatedPeriods } = useCalculatedPeriods();
+  const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
+  const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
+  
+  // Initialize with current week
+  const getCurrentWeek = (): PeriodFilterValue => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentWeekNumber = getISOWeek(today);
+    const currentMonth = today.getMonth() + 1;
+    
+    // Find current week in availableWeeks
+    const weekData = availableWeeks
+      ?.find(w => w.year === currentYear)
+      ?.months.find(m => m.month === currentMonth)
+      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+    
+    if (weekData) {
+      return {
+        type: 'week',
+        selectedYear: currentYear,
+        selectedWeek: currentWeekNumber,
+        startDate: weekData.startDate,
+        endDate: weekData.endDate,
+        label: `W${currentWeekNumber}/${currentYear}`
+      };
+    }
+    
+    // Fallback if no week data available
+    return {
+      type: 'week',
+      selectedYear: currentYear,
+      selectedWeek: currentWeekNumber
+    };
+  };
 
-  // Estado de filtros con período actual por defecto
+  // Estado de filtros con semana actual por defecto
   const [filters, setFilters] = useState<{
     search: string;
     driverId: string;
@@ -58,28 +93,39 @@ export default function FuelManagement() {
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
-    periodFilter: { 
-      type: 'current'
-    }
+    periodFilter: getCurrentWeek()
   });
 
-  // Actualizar periodId cuando se carga el período actual
+  // Populate current week dates when available
   useEffect(() => {
-    if (filters.periodFilter.type === 'current' && !filters.periodFilter.periodId) {
-      if (currentPeriod) {
+    // Only initialize if current week doesn't have dates yet
+    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentWeekNumber = getISOWeek(today);
+      const currentMonth = today.getMonth() + 1;
+      
+      // Find current week in availableWeeks
+      const weekData = availableWeeks
+        ?.find(w => w.year === currentYear)
+        ?.months.find(m => m.month === currentMonth)
+        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+      
+      if (weekData) {
         setFilters(prev => ({
           ...prev,
           periodFilter: {
-            ...prev.periodFilter,
-            periodId: currentPeriod.id
+            type: 'week',
+            selectedYear: currentYear,
+            selectedWeek: currentWeekNumber,
+            startDate: weekData.startDate,
+            endDate: weekData.endDate,
+            label: `W${currentWeekNumber}/${currentYear}`
           }
         }));
-      } else {
-        // Si no hay período real, mantener periodId como undefined
-        // Esto permitirá filtrar por fechas calculadas sin romper las consultas
       }
     }
-  }, [currentPeriod, filters.periodFilter.type, filters.periodFilter.periodId]);
+  }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
   
   const [activeTab, setActiveTab] = useState('expenses');
 
@@ -171,53 +217,55 @@ export default function FuelManagement() {
   // Obtener estadísticas con los filtros aplicados
   const { data: stats, isLoading: statsLoading } = useFuelStats(queryFilters);
 
+  // Get period description (similar to Load Management)
+  const getPeriodDescription = () => {
+    if (!filters.periodFilter) return '';
+    
+    const pf = filters.periodFilter;
+    
+    switch (pf.type) {
+      case 'week':
+        const weekLabel = pf.selectedWeek && pf.selectedYear 
+          ? `W${pf.selectedWeek}/${pf.selectedYear}`
+          : 'Week';
+        return `Week: ${weekLabel}`;
+      case 'month':
+        const monthLabel = pf.selectedMonth && pf.selectedYear 
+          ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
+          : 'Month';
+        return `Month: ${monthLabel}`;
+      case 'quarter':
+        return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
+      case 'year':
+        return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
+      case 'current':
+        return t("common:periods.current");
+      case 'previous':
+        return t("common:periods.previous");
+      case 'all':
+        return t("common:periods.all");
+      default:
+        return '';
+    }
+  };
+
+  const getPeriodDateRange = () => {
+    if (!filters.periodFilter) return '';
+    
+    if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+      const formatted = formatPaymentPeriodBadge(
+        filters.periodFilter.startDate, 
+        filters.periodFilter.endDate
+      );
+      return formatted;
+    }
+    
+    return '';
+  };
+  
   // ✅ Generar descripción de filtros activos
   const getFilterDescription = () => {
     const parts: string[] = [];
-    
-    // Filtro de período
-    if (filters.periodFilter) {
-      const pf = filters.periodFilter as any;
-      
-      // ✅ PRIMERO verificar current/previous para SIEMPRE usar cálculo dinámico
-      if (pf.type === 'current') {
-        // ✅ SIEMPRE usar período calculado dinámico
-        const displayCurrentPeriod = calculatedPeriods?.current;
-        if (displayCurrentPeriod) {
-          const periodLabel = formatDetailedPaymentPeriod(
-            displayCurrentPeriod.period_start_date, 
-            displayCurrentPeriod.period_end_date, 
-            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          );
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
-          parts.push(`Current: ${periodNumber} (${dateRange})`);
-        } else {
-          parts.push(t("common:periods.current"));
-        }
-      } else if (pf.type === 'previous') {
-        // ✅ SIEMPRE usar período calculado dinámico
-        const displayPreviousPeriod = calculatedPeriods?.previous;
-        if (displayPreviousPeriod) {
-          const periodLabel = formatDetailedPaymentPeriod(
-            displayPreviousPeriod.period_start_date, 
-            displayPreviousPeriod.period_end_date, 
-            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          );
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
-          parts.push(`Previous: ${periodNumber} (${dateRange})`);
-        } else {
-          parts.push(t("common:periods.previous"));
-        }
-      } else if (pf.type === 'all') {
-        parts.push(t("common:periods.all"));
-      } else if (pf.label) {
-        parts.push(pf.label);
-      } else if (pf.type === 'specific' && pf.periodId) {
-        parts.push(t("common:periods.specific"));
-      }
-    }
     
     // Filtro de conductor
     if (filters.driverId && filters.driverId !== 'all') {
@@ -248,30 +296,92 @@ export default function FuelManagement() {
     return parts.join(' • ');
   };
 
-  // ✅ Generar subtitle dinámico con estadísticas y filtros
+  // ✅ Generar subtitle dinámico (similar a Load Management)
   const getSubtitle = () => {
-    // ✅ Esperar a que calculatedPeriods esté cargado para Current/Previous
-    const needsCalculatedPeriods = filters.periodFilter?.type === 'current' || filters.periodFilter?.type === 'previous';
-    
-    if (statsLoading || !stats || (needsCalculatedPeriods && !calculatedPeriods)) {
-      return <div>{t("fuel:page.loading")}</div>;
+    if (statsLoading || !stats) {
+      return <div className="text-sm text-muted-foreground">{t("fuel:page.loading")}</div>;
     }
 
     const { totalExpenses, totalAmount, totalGallons, pending } = stats;
     
-    // Primera línea: estadísticas
-    const statsLine = `${totalExpenses || 0} ${t("fuel:stats.transactions")} • ${formatCurrency(totalAmount || 0)} ${t("fuel:stats.total")} • ${totalGallons?.toFixed(1) || '0.0'} gal • ${pending || 0} ${t("fuel:stats.pending")}`;
+    // Stats display (primera línea)
+    const statsDisplay = (
+      <div className="flex items-center gap-4 text-sm flex-wrap">
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{totalExpenses || 0}</span>
+          <span className="text-muted-foreground">{t("fuel:stats.transactions")}</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{formatCurrency(totalAmount || 0)}</span>
+          <span className="text-muted-foreground">{t("fuel:stats.total")}</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{totalGallons?.toFixed(1) || '0.0'} gal</span>
+        </span>
+        {pending > 0 && (
+          <span className="flex items-center gap-1">
+            <span className="font-medium text-orange-600">{pending}</span>
+            <span className="text-muted-foreground">{t("fuel:stats.pending")}</span>
+          </span>
+        )}
+      </div>
+    );
     
-    // Segunda línea: filtros activos
-    const filterDescription = getFilterDescription();
+    // Check if there are active filters
+    const hasActiveFilters = filters.driverId !== 'all' || 
+                            filters.status !== 'all' ||
+                            filters.vehicleId !== 'all';
     
-    return (
-      <>
-        <div>{statsLine}</div>
-        <div className="text-xs text-muted-foreground/80">
-          {filterDescription}
+    const periodDesc = getPeriodDescription();
+    const dateRange = getPeriodDateRange();
+    
+    if (hasActiveFilters) {
+      return (
+        <div className="space-y-2">
+          {statsDisplay}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">{t('common:active_filters')}:</span>
+            {periodDesc && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {periodDesc}{dateRange && `: ${dateRange}`}
+              </Badge>
+            )}
+            {filters.driverId !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("common:filters.driver")}: {(() => {
+                  const driver = drivers.find(d => d.user_id === filters.driverId);
+                  return driver ? `${driver.first_name} ${driver.last_name}` : t("fuel:filters.selected");
+                })()}
+              </Badge>
+            )}
+            {filters.vehicleId !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("common:filters.vehicle")}: {(() => {
+                  const vehicle = vehicles.find(v => v.id === filters.vehicleId);
+                  return vehicle ? vehicle.plate_number : t("fuel:filters.selected");
+                })()}
+              </Badge>
+            )}
+            {filters.status !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("common:filters.status")}: {filters.status}
+              </Badge>
+            )}
+          </div>
         </div>
-      </>
+      );
+    }
+    
+    // No active filters - just show period info
+    return (
+      <div className="space-y-1">
+        {statsDisplay}
+        {(periodDesc || dateRange) && (
+          <div className="text-xs text-muted-foreground">
+            {periodDesc} {dateRange && `• ${dateRange}`}
+          </div>
+        )}
+      </div>
     );
   };
 
