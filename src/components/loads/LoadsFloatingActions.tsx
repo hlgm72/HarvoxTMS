@@ -97,14 +97,14 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       broker: "all",
       dateRange: { from: undefined, to: undefined }
     });
-    // Reset period filter to current
-    onPeriodFilterChange?.({ type: 'current' });
+    // Reset period filter to week
+    onPeriodFilterChange?.({ type: 'week' });
   };
 
   const hasActiveFilters = filters.status !== "all" || 
                           filters.driver !== "all" || 
                           filters.broker !== "all" ||
-                          periodFilter?.type !== 'current';
+                          periodFilter?.type !== 'week';
 
   const mockStats = {
     totalLoads: 156,
