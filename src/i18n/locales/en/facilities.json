@@ -118,6 +118,9 @@
     "delete": "Delete"
   },
   "messages": {
+    "loading": "Loading facilities...",
+    "no_facilities": "No facilities yet",
+    "start_adding": "Start by adding your first facility",
     "create_success": "Facility created",
     "create_success_description": "The facility has been created successfully",
     "update_success": "Facility updated",

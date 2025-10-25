@@ -118,6 +118,9 @@
     "delete": "Eliminar"
   },
   "messages": {
+    "loading": "Cargando instalaciones...",
+    "no_facilities": "Aún no hay instalaciones",
+    "start_adding": "Comienza agregando tu primera instalación",
     "create_success": "Instalación creada",
     "create_success_description": "La instalación ha sido creada exitosamente",
     "update_success": "Instalación actualizada",
