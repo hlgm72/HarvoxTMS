@@ -86,8 +86,8 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full min-w-[300px] p-0" side={side}>
-        <Command filter={filterClients}>
+      <PopoverContent className="w-full min-w-[300px] max-h-[400px] p-0" side={side}>
+        <Command filter={filterClients} className="h-full">
           <div className="flex items-center border-b px-3">
             <CommandInput 
               placeholder={t('actions.search_client')} 
@@ -110,7 +110,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
               </Button>
             )}
           </div>
-          <CommandList className="max-h-[300px] overflow-y-auto">
+          <CommandList className="overflow-y-auto">
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
             <CommandGroup>
               {clients.map((client) => (
