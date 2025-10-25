@@ -172,6 +172,7 @@ export function StopEditModal({
                       <Calendar
                         mode="single"
                         selected={formData.scheduled_date}
+                        defaultMonth={formData.scheduled_date || new Date()}
                         onSelect={(date) => {
                           updateField('scheduled_date', date);
                           setIsDateOpen(false);
