@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, ChevronsUpDown, Users, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClientContact, useClientContacts } from "@/hooks/useClients";
@@ -91,22 +92,22 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full min-w-[280px] p-0">
+      <PopoverContent className="w-full min-w-[280px] p-0" side="bottom" align="start">
         <Command filter={filterContacts}>
-          <div className="flex items-center border-b px-3">
+          <div className="flex items-center justify-between border-b px-3 gap-2">
             <CommandInput 
               placeholder={t('actions.search_placeholder')} 
-              className="flex-1"
+              className="flex-1 border-0"
             />
             {onCreateNew && (
               <Button
-                variant="ghost"
+                variant="default"
                 size="sm"
                 onClick={() => {
                   setOpen(false);
                   onCreateNew();
                 }}
-                className="ml-2 h-8 shrink-0"
+                className="h-8 shrink-0"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 New Contact
@@ -115,7 +116,8 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
           </div>
           <CommandList>
             <CommandEmpty>{t('messages.no_clients_found')}</CommandEmpty>
-            <CommandGroup>
+            <ScrollArea className="h-60 overflow-auto" onWheel={(e) => e.stopPropagation()}>
+              <CommandGroup>
               {contacts.map((contact) => (
                 <CommandItem
                   key={contact.id}
@@ -142,7 +144,8 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
                   </div>
                 </CommandItem>
               ))}
-            </CommandGroup>
+              </CommandGroup>
+            </ScrollArea>
           </CommandList>
         </Command>
       </PopoverContent>
