@@ -879,20 +879,13 @@ export function FuelExpenseDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('fuel:create_dialog.fields.state')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_state')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {states.map((state) => (
-                            <SelectItem key={state.id} value={state.id}>
-                              {state.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <StateCombobox
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder={t('fuel:create_dialog.placeholders.select_state')}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
