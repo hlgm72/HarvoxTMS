@@ -109,7 +109,8 @@ export default function Facilities() {
           </div>
         }
       />
-      <div className="flex-1 space-y-6 p-2 md:p-4">
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-6 p-2 md:p-4">
 
         {/* Stats Cards */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
@@ -228,6 +229,7 @@ export default function Facilities() {
           isOpen={showCreateDialog}
           onClose={() => setShowCreateDialog(false)}
         />
+        </div>
       </div>
     </Layout>
   );
