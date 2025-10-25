@@ -24,6 +24,7 @@ import Landing from "./pages/Landing";
 import Drivers from "./pages/Drivers";
 import Settings from "./pages/Settings";
 import Clients from "./pages/Clients";
+import Facilities from "./pages/Facilities";
 import Documents from "./pages/Documents";
 import Payments from "./pages/Payments";
 import Deductions from "./pages/Deductions";
@@ -219,6 +220,16 @@ function AppContent() {
               } 
             />
         <Route 
+          path="/facilities" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Facilities />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route
           path="/equipment" 
           element={
             <ProtectedRoute>

@@ -1,0 +1,138 @@
+{
+  "page_title": "Facilities Management",
+  "page_subtitle": "Manage shippers and receivers",
+  "search_placeholder": "Search facilities...",
+  "actions": {
+    "new_facility": "New Facility",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view_details": "View Details",
+    "clear_filters": "Clear Filters"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "facility_type": {
+    "shipper": "Shipper",
+    "receiver": "Receiver",
+    "both": "Both"
+  },
+  "labels": {
+    "name": "Name",
+    "type": "Type",
+    "address": "Address",
+    "city": "City",
+    "state": "State",
+    "zip_code": "ZIP Code",
+    "contact_name": "Contact Name",
+    "contact_phone": "Contact Phone",
+    "contact_email": "Contact Email",
+    "notes": "Notes"
+  },
+  "stats": {
+    "total": "Total Facilities",
+    "shippers": "Shippers",
+    "receivers": "Receivers",
+    "active": "Active"
+  },
+  "filters": {
+    "button": "Filters",
+    "title": "Filter Facilities",
+    "labels": {
+      "status": "Status",
+      "type": "Type",
+      "state": "State",
+      "city": "City"
+    },
+    "placeholders": {
+      "status": "Select status",
+      "type": "Select type",
+      "state": "Enter state",
+      "city": "Enter city"
+    },
+    "options": {
+      "status": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "type": {
+        "all": "All types",
+        "shipper": "Shipper",
+        "receiver": "Receiver",
+        "both": "Both"
+      }
+    },
+    "actions": {
+      "clear": "Clear",
+      "apply": "Apply"
+    }
+  },
+  "create_facility_dialog": {
+    "title": "New Facility",
+    "edit_title": "Edit Facility",
+    "description": "Add a new facility to your network",
+    "edit_description": "Update facility information",
+    "form": {
+      "name_required": "Facility Name",
+      "type_required": "Facility Type",
+      "address_required": "Address",
+      "city_required": "City",
+      "state_required": "State",
+      "zip_code_required": "ZIP Code",
+      "contact_name": "Contact Name",
+      "contact_phone": "Contact Phone",
+      "contact_email": "Contact Email",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "name": "Enter facility name",
+      "address": "Enter street address",
+      "city": "Enter city",
+      "state": "Enter state",
+      "zip_code": "Enter ZIP code",
+      "contact_name": "Enter contact name",
+      "contact_phone": "Enter phone number",
+      "contact_email": "Enter email address",
+      "notes": "Additional notes..."
+    },
+    "validation": {
+      "name_required": "Name is required",
+      "address_required": "Address is required",
+      "city_required": "City is required",
+      "state_required": "State is required",
+      "zip_code_required": "ZIP code is required",
+      "email_invalid": "Invalid email address"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create Facility",
+      "update": "Update Facility"
+    }
+  },
+  "confirm_delete": {
+    "title": "Delete Facility",
+    "description": "Are you sure you want to delete {{facilityName}}? This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "messages": {
+    "create_success": "Facility created",
+    "create_success_description": "The facility has been created successfully",
+    "update_success": "Facility updated",
+    "update_success_description": "The facility has been updated successfully",
+    "delete_success": "Facility deleted",
+    "delete_success_description": "The facility has been deleted successfully",
+    "error_title": "Error",
+    "error_description": "An error occurred. Please try again."
+  },
+  "view_mode": {
+    "list": "List",
+    "grid": "Grid"
+  },
+  "empty_state": {
+    "no_facilities": "No facilities found",
+    "no_results": "No facilities match your search"
+  }
+}
