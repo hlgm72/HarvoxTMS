@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, Grid, List, Building2, TrendingUp, Package, MapPin } from "lucide-react";
+import { Plus, Search, Grid, List, Building2, XCircle, CheckCircle, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,11 +59,11 @@ export default function Facilities() {
   // Statistics
   const stats = useMemo(() => {
     const total = facilities.length;
-    const shippers = facilities.filter(f => f.facility_type === 'shipper' || f.facility_type === 'both').length;
-    const receivers = facilities.filter(f => f.facility_type === 'receiver' || f.facility_type === 'both').length;
     const active = facilities.filter(f => f.is_active).length;
+    const inactive = facilities.filter(f => !f.is_active).length;
+    const states = new Set(facilities.map(f => f.state)).size;
 
-    return { total, shippers, receivers, active };
+    return { total, active, inactive, states };
   }, [facilities]);
 
   const hasActiveFilters = 
@@ -120,33 +120,7 @@ export default function Facilities() {
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-primary">{stats.total}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.active} {t('status.active')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">{t('stats.shippers')}</CardTitle>
-              <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.shippers}</div>
-              <p className="text-xs text-muted-foreground">
-                {t('facility_type.shipper')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">{t('stats.receivers')}</CardTitle>
-              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.receivers}</div>
-              <p className="text-xs text-muted-foreground">
-                {t('facility_type.receiver')}
+                {t('page_title')}
               </p>
             </CardContent>
           </Card>
@@ -154,12 +128,38 @@ export default function Facilities() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">{t('stats.active')}</CardTitle>
-              <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-primary">{stats.active}</div>
               <p className="text-xs text-muted-foreground">
                 {t('status.active')}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('stats.inactive')}</CardTitle>
+              <XCircle className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.inactive}</div>
+              <p className="text-xs text-muted-foreground">
+                {t('status.inactive')}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('stats.states')}</CardTitle>
+              <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.states}</div>
+              <p className="text-xs text-muted-foreground">
+                {t('labels.state')}
               </p>
             </CardContent>
           </Card>

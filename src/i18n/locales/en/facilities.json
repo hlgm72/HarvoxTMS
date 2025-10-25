@@ -32,9 +32,9 @@
   },
   "stats": {
     "total": "Total Facilities",
-    "shippers": "Shippers",
-    "receivers": "Receivers",
-    "active": "Active"
+    "active": "Active",
+    "inactive": "Inactive",
+    "states": "States"
   },
   "filters": {
     "button": "Filters",

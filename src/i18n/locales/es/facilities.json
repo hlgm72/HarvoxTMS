@@ -32,9 +32,9 @@
   },
   "stats": {
     "total": "Total de Instalaciones",
-    "shippers": "Embarcadores",
-    "receivers": "Receptores",
-    "active": "Activos"
+    "active": "Activas",
+    "inactive": "Inactivas",
+    "states": "Estados"
   },
   "filters": {
     "button": "Filtros",
