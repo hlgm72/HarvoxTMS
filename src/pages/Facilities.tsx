@@ -132,7 +132,7 @@ export default function Facilities() {
               <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-blue-600">{stats.shippers}</div>
+              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.shippers}</div>
               <p className="text-xs text-muted-foreground">
                 {t('facility_type.shipper')}
               </p>
@@ -145,7 +145,7 @@ export default function Facilities() {
               <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-green-600">{stats.receivers}</div>
+              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.receivers}</div>
               <p className="text-xs text-muted-foreground">
                 {t('facility_type.receiver')}
               </p>
@@ -158,7 +158,7 @@ export default function Facilities() {
               <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-orange-600">{stats.active}</div>
+              <div className="text-lg sm:text-2xl font-bold text-primary">{stats.active}</div>
               <p className="text-xs text-muted-foreground">
                 {t('status.active')}
               </p>
