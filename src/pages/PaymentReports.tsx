@@ -128,9 +128,9 @@ export default function PaymentReports() {
         return [];
       
       case 'custom':
-      case 'this_month':
+      case 'month':
       case 'quarter':
-      case 'this_year':
+      case 'year':
         return [];
       
       default:
@@ -166,9 +166,9 @@ export default function PaymentReports() {
         filters.periodFilter.type === 'next' ||
         filters.periodFilter.periodId?.startsWith('calculated-') ||
         filters.periodFilter.type === 'custom' ||
-        filters.periodFilter.type === 'this_month' ||
+        filters.periodFilter.type === 'month' ||
         filters.periodFilter.type === 'quarter' ||
-        filters.periodFilter.type === 'this_year' ||
+        filters.periodFilter.type === 'year' ||
         (filters.periodFilter.startDate && filters.periodFilter.endDate);
 
       if (needsClientSideFiltering) {
@@ -213,9 +213,9 @@ export default function PaymentReports() {
           return periodStart === targetPeriod.period_start_date && periodEnd === targetPeriod.period_end_date;
         });
       } else if ((filters.periodFilter.type === 'custom' ||
-           filters.periodFilter.type === 'this_month' ||
+           filters.periodFilter.type === 'month' ||
            filters.periodFilter.type === 'quarter' ||
-           filters.periodFilter.type === 'this_year') &&
+           filters.periodFilter.type === 'year') &&
           filters.periodFilter.startDate && 
           filters.periodFilter.endDate) {
         filteredData = filteredData.filter((calc: any) => {

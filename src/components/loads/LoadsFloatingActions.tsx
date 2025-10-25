@@ -28,13 +28,14 @@ interface LoadsFloatingActionsProps {
     dateRange: { from: Date | undefined; to: Date | undefined };
   };
   periodFilter?: { 
-    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'quarter' | 'this_year' | 'last_year' | 'year';
+    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'year';
     periodId?: string; 
     startDate?: string;
     endDate?: string;
     label?: string;
     selectedYear?: number;
     selectedQuarter?: number;
+    selectedMonth?: number;
   };
   onFiltersChange: (filters: any) => void;
   onPeriodFilterChange?: (filter: any) => void;

@@ -69,12 +69,13 @@ export interface Load {
 
 interface LoadsFilters {
   periodFilter?: {
-    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'quarter' | 'this_year' | 'last_year' | 'year';
+    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'year';
     periodId?: string;
     startDate?: string;
     endDate?: string;
     selectedYear?: number;
     selectedQuarter?: number;
+    selectedMonth?: number;
   };
 }
 
@@ -173,11 +174,8 @@ const getRelevantPeriodIds = (
         useDateFilter: false 
       };
     
-    case 'this_month':
-    case 'last_month':
+    case 'month':
     case 'quarter':
-    case 'this_year':
-    case 'last_year':
     case 'year':
     case 'custom':
       // Para filtros basados en fechas, usar las fechas directamente

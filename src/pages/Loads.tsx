@@ -9,7 +9,7 @@ import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
-import { formatPaymentPeriodCompact, formatCurrency } from "@/lib/dateFormatting";
+import { formatPaymentPeriodCompact, formatCurrency, formatMonthName } from "@/lib/dateFormatting";
 import { useLoads } from "@/hooks/useLoads";
 import { useDriversList } from "@/hooks/useDriversList";
 import { useCurrentPaymentPeriod } from "@/hooks/usePaymentPeriods";
@@ -72,7 +72,8 @@ export default function Loads() {
       startDate: periodFilter.startDate,
       endDate: periodFilter.endDate,
       selectedYear: periodFilter.selectedYear,
-      selectedQuarter: periodFilter.selectedQuarter
+      selectedQuarter: periodFilter.selectedQuarter,
+      selectedMonth: periodFilter.selectedMonth
     }
   } : undefined;
   
@@ -118,16 +119,13 @@ export default function Loads() {
         return t('periods.next');
       case 'all':
         return t('periods.all');
-      case 'this_month':
-        return t('periods.this_month');
-      case 'last_month':
-        return t('periods.last_month');
+      case 'month':
+        const monthLabel = periodFilter.selectedMonth && periodFilter.selectedYear 
+          ? `${formatMonthName(new Date(periodFilter.selectedYear, periodFilter.selectedMonth - 1))} ${periodFilter.selectedYear}`
+          : 'Month';
+        return `Month: ${monthLabel}`;
       case 'quarter':
         return `Quarter: Q${periodFilter.selectedQuarter || '?'} ${periodFilter.selectedYear || '?'}`;
-      case 'this_year':
-        return t('periods.this_year');
-      case 'last_year':
-        return t('periods.last_year');
       case 'year':
         return `Year: ${periodFilter.selectedYear || new Date().getFullYear()}`;
       case 'specific':

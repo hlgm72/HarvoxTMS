@@ -14,15 +14,17 @@ import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
 import { useAvailableYears } from '@/hooks/useAvailableYears';
 import { useAvailableQuarters } from '@/hooks/useAvailableQuarters';
+import { useAvailableMonths } from '@/hooks/useAvailableMonths';
 
 export interface PeriodFilterValue {
-  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'quarter' | 'this_year' | 'last_year' | 'year';
+  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'month' | 'quarter' | 'year';
   periodId?: string;
   startDate?: string;
   endDate?: string;
   label?: string;
   selectedYear?: number;
   selectedQuarter?: number;
+  selectedMonth?: number;
 }
 
 interface PeriodFilterProps {
@@ -37,12 +39,15 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
   const [showYearSelector, setShowYearSelector] = useState(false);
   const [showQuarterYearSelector, setShowQuarterYearSelector] = useState(false);
   const [selectedQuarterYear, setSelectedQuarterYear] = useState<number | null>(null);
+  const [showMonthYearSelector, setShowMonthYearSelector] = useState(false);
+  const [selectedMonthYear, setSelectedMonthYear] = useState<number | null>(null);
   
   // Importar el useCompanyCache para obtener el company_id
   const { userCompany } = useCompanyCache();
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   const { data: availableYears = [] } = useAvailableYears(userCompany?.company_id);
   const { data: availableQuarters = [] } = useAvailableQuarters(userCompany?.company_id);
+  const { data: availableMonths = [] } = useAvailableMonths(userCompany?.company_id);
   
   // Pasar el companyId a todos los hooks de períodos
   const { data: groupedPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
@@ -58,18 +63,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
     const now = new Date();
     
     switch (type) {
-      case 'this_month':
+      case 'month':
+        // Para filtro de mes específico
+        const monthYear = value.selectedYear || now.getFullYear();
+        const targetMonth = value.selectedMonth || (now.getMonth() + 1);
+        const monthStart = new Date(monthYear, targetMonth - 1, 1);
+        const monthEnd = new Date(monthYear, targetMonth, 0);
         return {
-          startDate: formatDateInUserTimeZone(startOfMonth(now)),
-          endDate: formatDateInUserTimeZone(endOfMonth(now)),
-          label: `${t('periods.this_month')} (${formatMonthName(now)} ${now.getFullYear()})`
-        };
-      case 'last_month':
-        const lastMonth = subMonths(now, 1);
-        return {
-          startDate: formatDateInUserTimeZone(startOfMonth(lastMonth)),
-          endDate: formatDateInUserTimeZone(endOfMonth(lastMonth)),
-          label: `${t('periods.last_month')} (${formatMonthName(lastMonth)} ${lastMonth.getFullYear()})`
+          startDate: formatDateInUserTimeZone(monthStart),
+          endDate: formatDateInUserTimeZone(monthEnd),
+          label: `${formatMonthName(monthStart)} ${monthYear}`
         };
       case 'quarter':
         // Para filtro de trimestre específico
@@ -161,12 +164,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
               Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
             )
           : t('periods.specific');
-      case 'this_month':
-      case 'last_month':
-      case 'this_year':
-      case 'last_year':
-        const dateRange = getDateRangeForType(value.type);
-        return dateRange?.label || t('periods.custom');
+      case 'month':
+        const monthLabel = value.selectedMonth && value.selectedYear 
+          ? `${formatMonthName(new Date(value.selectedYear, value.selectedMonth - 1))} ${value.selectedYear}`
+          : 'Month';
+        return `Month: ${monthLabel}`;
       case 'quarter':
         const quarterLabel = value.selectedQuarter && value.selectedYear 
           ? `Q${value.selectedQuarter} ${value.selectedYear}`
@@ -325,19 +327,103 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                           }
                           return 'Previous';
                         })()}
-                    </Button>
+                     </Button>
 
-                  <Button
-                    variant={value.type === 'this_month' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => handleDateRangeSelect('this_month')}
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {(() => {
-                      const now = new Date();
-                      return `This Month (${formatMonthName(now)} ${now.getFullYear()})`;
-                    })()}
-                  </Button>
+                  {/* Nuevo selector de Month con sub-menú de dos niveles */}
+                  <div className="relative">
+                    <Button
+                      variant={value.type === 'month' ? 'default' : 'ghost'}
+                      className="w-full justify-between"
+                      onClick={() => {
+                        setShowMonthYearSelector(!showMonthYearSelector);
+                        setSelectedMonthYear(null);
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Month {value.type === 'month' && value.selectedMonth && value.selectedYear 
+                          ? `(${formatMonthName(new Date(value.selectedYear, value.selectedMonth - 1))} ${value.selectedYear})` 
+                          : ''}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${showMonthYearSelector ? 'rotate-180' : ''}`} />
+                    </Button>
+                    
+                    {showMonthYearSelector && (
+                      <div className="ml-6 mt-1 space-y-1 max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-md p-2 shadow-lg">
+                        {!selectedMonthYear ? (
+                          // Nivel 1: Selector de años
+                          <>
+                            <div className="text-xs text-muted-foreground px-2 py-1">Select Year:</div>
+                            {availableMonths.length > 0 ? (
+                              availableMonths.map(({ year }) => (
+                                <Button
+                                  key={year}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full justify-start text-sm"
+                                  onClick={() => setSelectedMonthYear(year)}
+                                >
+                                  {year}
+                                </Button>
+                              ))
+                            ) : (
+                              <div className="text-sm text-muted-foreground px-3 py-2">
+                                No months available
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          // Nivel 2: Selector de meses del año seleccionado
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start text-xs text-muted-foreground mb-1"
+                              onClick={() => setSelectedMonthYear(null)}
+                            >
+                              ← Back to years
+                            </Button>
+                            <div className="text-xs text-muted-foreground px-2 py-1">
+                              Select Month ({selectedMonthYear}):
+                            </div>
+                            {availableMonths
+                              .find(m => m.year === selectedMonthYear)
+                              ?.months.map(month => {
+                                const monthStart = new Date(selectedMonthYear, month - 1, 1);
+                                const monthEnd = new Date(selectedMonthYear, month, 0);
+                                return (
+                                  <Button
+                                    key={month}
+                                    variant={
+                                      value.selectedYear === selectedMonthYear && 
+                                      value.selectedMonth === month 
+                                        ? 'default' 
+                                        : 'ghost'
+                                    }
+                                    size="sm"
+                                    className="w-full justify-start text-sm"
+                                    onClick={() => {
+                                      handleOptionSelect({
+                                        type: 'month',
+                                        selectedYear: selectedMonthYear,
+                                        selectedMonth: month,
+                                        startDate: formatDateInUserTimeZone(monthStart),
+                                        endDate: formatDateInUserTimeZone(monthEnd),
+                                        label: `${formatMonthName(monthStart)} ${selectedMonthYear}`
+                                      });
+                                      setShowMonthYearSelector(false);
+                                      setSelectedMonthYear(null);
+                                    }}
+                                  >
+                                    {formatMonthName(monthStart)} {selectedMonthYear}
+                                  </Button>
+                                );
+                              })}
+                          </>
+                        )}
+                      </div>
+                     )}
+                   </div>
 
                   {/* Nuevo selector de Quarter con sub-menú de dos niveles */}
                   <div className="relative">
