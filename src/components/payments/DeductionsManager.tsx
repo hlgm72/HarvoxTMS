@@ -428,7 +428,7 @@ export function DeductionsManager({
         <h3 className="text-base md:text-lg font-semibold text-muted-foreground border-b pb-2 mb-3 mt-10">
           {title}
         </h3>
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {templates.map((template) => (
             <Card key={template.id} className={`hover:shadow-md transition-shadow ${isInactive ? 'border-muted' : ''}`}>
               <CardContent className="p-6">
