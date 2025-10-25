@@ -18,7 +18,7 @@ export function FloatingActionButton({
       className={cn(
         "fixed right-0 top-1/2 -translate-y-1/2 z-40",
         "flex items-center justify-center",
-        "bg-primary text-primary-foreground",
+        "bg-secondary text-secondary-foreground",
         "rounded-l-lg",
         "shadow-[0_8px_25px_rgba(0,0,0,0.3),0_4px_10px_rgba(0,0,0,0.2)]",
         "hover:shadow-[0_12px_40px_rgba(0,0,0,0.4),0_6px_15px_rgba(0,0,0,0.3)]",
