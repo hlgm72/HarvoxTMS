@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, MapPin, MoreHorizontal, Edit, Trash2, Phone } from "lucide-react";
+import { Building2, MapPin, MoreHorizontal, Edit, Trash2, Phone, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,15 +19,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Facility, useDeleteFacility, useValidateFacilityDeletion, useInactivateFacility } from "@/hooks/useFacilities";
+import { Facility, useDeleteFacility, useValidateFacilityDeletion, useInactivateFacility, useReactivateFacility } from "@/hooks/useFacilities";
 import { CreateFacilityDialog } from "./CreateFacilityDialog";
 import { useTranslation } from 'react-i18next';
 
 interface FacilitiesGridProps {
   facilities: Facility[];
+  showReactivate?: boolean;
 }
 
-export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
+export function FacilitiesGrid({ facilities, showReactivate = false }: FacilitiesGridProps) {
   const { t } = useTranslation('facilities');
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -39,6 +40,7 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
   const deleteFacility = useDeleteFacility();
   const validateDeletion = useValidateFacilityDeletion();
   const inactivateFacility = useInactivateFacility();
+  const reactivateFacility = useReactivateFacility();
 
   const handleEdit = (facility: Facility) => {
     setSelectedFacility(facility);
@@ -82,6 +84,10 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
     }
   };
 
+  const handleReactivate = async (facility: Facility) => {
+    await reactivateFacility.mutateAsync(facility.id);
+  };
+
 
   return (
     <>
@@ -103,17 +109,26 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleEdit(facility)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      {t('actions.edit')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => handleDelete(facility)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      {t('actions.delete')}
-                    </DropdownMenuItem>
+                    {showReactivate ? (
+                      <DropdownMenuItem onClick={() => handleReactivate(facility)}>
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        {t('actions.reactivate')}
+                      </DropdownMenuItem>
+                    ) : (
+                      <>
+                        <DropdownMenuItem onClick={() => handleEdit(facility)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          {t('actions.edit')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(facility)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          {t('actions.delete')}
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

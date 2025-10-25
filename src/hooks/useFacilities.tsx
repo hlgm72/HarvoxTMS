@@ -206,3 +206,38 @@ export const useInactivateFacility = () => {
     },
   });
 };
+
+// Hook para reactivar una facility
+export const useReactivateFacility = () => {
+  const queryClient = useQueryClient();
+  const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('facilities');
+
+  return useMutation({
+    mutationFn: async (facilityId: string) => {
+      const { data, error } = await supabase
+        .from('facilities')
+        .update({ is_active: true })
+        .eq('id', facilityId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['facilities'] });
+      showSuccess(
+        t('messages.reactivate_success'),
+        t('messages.reactivate_success_description')
+      );
+    },
+    onError: (error) => {
+      console.error('Error reactivating facility:', error);
+      showError(
+        t('messages.error_title'),
+        t('messages.error_description')
+      );
+    },
+  });
+};

@@ -6,8 +6,13 @@
     "new_facility": "New Facility",
     "edit": "Edit",
     "delete": "Delete",
+    "reactivate": "Reactivate",
     "view_details": "View Details",
     "clear_filters": "Clear Filters"
+  },
+  "tabs": {
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "status": {
     "active": "Active",
@@ -116,6 +121,8 @@
     "delete_success_description": "The facility has been deleted successfully",
     "inactivate_success": "Facility inactivated",
     "inactivate_success_description": "The facility has been inactivated successfully",
+    "reactivate_success": "Facility reactivated",
+    "reactivate_success_description": "The facility has been reactivated successfully",
     "error_title": "Error",
     "error_description": "An error occurred. Please try again."
   },
@@ -125,6 +132,8 @@
   },
   "empty_state": {
     "no_facilities": "No facilities found",
-    "no_results": "No facilities match your search"
+    "no_results": "No facilities match your search",
+    "no_inactive": "No inactive facilities",
+    "no_inactive_description": "All your facilities are active"
   }
 }

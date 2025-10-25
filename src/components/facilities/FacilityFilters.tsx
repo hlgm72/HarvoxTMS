@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Filter } from "lucide-react";
@@ -8,12 +7,10 @@ import { useTranslation } from "react-i18next";
 
 interface FacilityFiltersProps {
   filters: {
-    status: string;
     state: string;
     city: string;
   };
   onFiltersChange: (filters: { 
-    status: string; 
     state: string;
     city: string;
   }) => void;
@@ -33,19 +30,16 @@ export function FacilityFilters({ filters, onFiltersChange, open, onOpenChange }
 
   const clearFilters = () => {
     onFiltersChange({
-      status: "all",
       state: "",
       city: "",
     });
   };
 
   const hasActiveFilters = 
-    filters.status !== "all" || 
     filters.state !== "" ||
     filters.city !== "";
 
   const activeFilterCount = [
-    filters.status !== "all",
     filters.state !== "",
     filters.city !== "",
   ].filter(Boolean).length;
@@ -71,24 +65,6 @@ export function FacilityFilters({ filters, onFiltersChange, open, onOpenChange }
           <SheetTitle>{t('filters.title')}</SheetTitle>
         </SheetHeader>
         <div className="mt-6 space-y-6">
-          {/* Status */}
-          <div className="space-y-2">
-            <Label htmlFor="status">{t('filters.labels.status')}</Label>
-            <Select
-              value={filters.status}
-              onValueChange={(value) => handleFilterChange("status", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('filters.placeholders.status')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('filters.options.status.all')}</SelectItem>
-                <SelectItem value="active">{t('filters.options.status.active')}</SelectItem>
-                <SelectItem value="inactive">{t('filters.options.status.inactive')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* State */}
           <div className="space-y-2">
             <Label htmlFor="state">{t('filters.labels.state')}</Label>

@@ -6,8 +6,13 @@
     "new_facility": "Nueva Instalación",
     "edit": "Editar",
     "delete": "Eliminar",
+    "reactivate": "Reactivar",
     "view_details": "Ver Detalles",
     "clear_filters": "Limpiar Filtros"
+  },
+  "tabs": {
+    "active": "Activas",
+    "inactive": "Inactivas"
   },
   "status": {
     "active": "Activo",
@@ -116,6 +121,8 @@
     "delete_success_description": "La instalación ha sido eliminada exitosamente",
     "inactivate_success": "Instalación inactivada",
     "inactivate_success_description": "La instalación ha sido inactivada exitosamente",
+    "reactivate_success": "Instalación reactivada",
+    "reactivate_success_description": "La instalación ha sido reactivada exitosamente",
     "error_title": "Error",
     "error_description": "Ocurrió un error. Por favor, inténtalo de nuevo."
   },
@@ -125,6 +132,8 @@
   },
   "empty_state": {
     "no_facilities": "No se encontraron instalaciones",
-    "no_results": "No hay instalaciones que coincidan con tu búsqueda"
+    "no_results": "No hay instalaciones que coincidan con tu búsqueda",
+    "no_inactive": "No hay instalaciones inactivas",
+    "no_inactive_description": "Todas tus instalaciones están activas"
   }
 }

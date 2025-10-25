@@ -4,6 +4,7 @@ import { Plus, Search, Grid, List, Building2, XCircle, CheckCircle, MapPin } fro
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useFacilities } from "@/hooks/useFacilities";
 import { FacilitiesList } from "@/components/facilities/FacilitiesList";
@@ -17,28 +18,25 @@ export default function Facilities() {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState("active");
 
   const [filters, setFilters] = useState({
-    status: "all",
     state: "",
     city: "",
   });
 
   const { data: facilities = [], isLoading } = useFacilities();
 
-  // Filter and search logic
-  const filteredFacilities = useMemo(() => {
+  // Separate facilities by status
+  const activeFacilities = useMemo(() => {
     return facilities.filter((facility) => {
+      if (!facility.is_active) return false;
+      
       // Search filter
       const matchesSearch = facility.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         facility.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
         facility.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
         facility.address.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // Status filter
-      const matchesStatus = filters.status === "all" || 
-        (filters.status === "active" && facility.is_active) ||
-        (filters.status === "inactive" && !facility.is_active);
 
       // State filter
       const matchesState = !filters.state || 
@@ -48,7 +46,29 @@ export default function Facilities() {
       const matchesCity = !filters.city || 
         facility.city.toLowerCase().includes(filters.city.toLowerCase());
 
-      return matchesSearch && matchesStatus && matchesState && matchesCity;
+      return matchesSearch && matchesState && matchesCity;
+    });
+  }, [facilities, searchTerm, filters]);
+
+  const inactiveFacilities = useMemo(() => {
+    return facilities.filter((facility) => {
+      if (facility.is_active) return false;
+      
+      // Search filter
+      const matchesSearch = facility.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        facility.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        facility.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        facility.address.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // State filter
+      const matchesState = !filters.state || 
+        facility.state.toLowerCase().includes(filters.state.toLowerCase());
+
+      // City filter
+      const matchesCity = !filters.city || 
+        facility.city.toLowerCase().includes(filters.city.toLowerCase());
+
+      return matchesSearch && matchesState && matchesCity;
     });
   }, [facilities, searchTerm, filters]);
 
@@ -63,9 +83,10 @@ export default function Facilities() {
   }, [facilities]);
 
   const hasActiveFilters = 
-    filters.status !== "all" || 
     filters.state !== "" ||
     filters.city !== "";
+
+  const currentFacilities = activeTab === "active" ? activeFacilities : inactiveFacilities;
 
   return (
     <>
@@ -179,43 +200,86 @@ export default function Facilities() {
           />
         </div>
 
-        {/* Facilities List/Grid */}
-        <Card>
-          <CardContent className="p-6">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-muted-foreground">{t('messages.loading')}</div>
-              </div>
-            ) : filteredFacilities.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-center">
-                <MapPin className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  {searchTerm || hasActiveFilters ? t('empty_state.no_results') : t('empty_state.no_facilities')}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {searchTerm || hasActiveFilters 
-                    ? t('empty_state.no_results')
-                    : t('empty_state.no_facilities')
-                  }
-                </p>
-                {!searchTerm && !hasActiveFilters && (
-                  <Button onClick={() => setShowCreateDialog(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t('actions.new_facility')}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <>
-                {viewMode === "list" ? (
-                  <FacilitiesList facilities={filteredFacilities} />
+        {/* Facilities Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="active">
+              {t('tabs.active')} ({activeFacilities.length})
+            </TabsTrigger>
+            <TabsTrigger value="inactive">
+              {t('tabs.inactive')} ({inactiveFacilities.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="active">
+            <Card>
+              <CardContent className="p-6">
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-muted-foreground">{t('messages.loading')}</div>
+                  </div>
+                ) : currentFacilities.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-center">
+                    <MapPin className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      {searchTerm || hasActiveFilters ? t('empty_state.no_results') : t('empty_state.no_facilities')}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {searchTerm || hasActiveFilters 
+                        ? t('empty_state.no_results')
+                        : t('empty_state.no_facilities')
+                      }
+                    </p>
+                    {!searchTerm && !hasActiveFilters && (
+                      <Button onClick={() => setShowCreateDialog(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        {t('actions.new_facility')}
+                      </Button>
+                    )}
+                  </div>
                 ) : (
-                  <FacilitiesGrid facilities={filteredFacilities} />
+                  <>
+                    {viewMode === "list" ? (
+                      <FacilitiesList facilities={currentFacilities} showReactivate={false} />
+                    ) : (
+                      <FacilitiesGrid facilities={currentFacilities} showReactivate={false} />
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="inactive">
+            <Card>
+              <CardContent className="p-6">
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-muted-foreground">{t('messages.loading')}</div>
+                  </div>
+                ) : currentFacilities.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-center">
+                    <XCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      {t('empty_state.no_inactive')}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {t('empty_state.no_inactive_description')}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {viewMode === "list" ? (
+                      <FacilitiesList facilities={currentFacilities} showReactivate={true} />
+                    ) : (
+                      <FacilitiesGrid facilities={currentFacilities} showReactivate={true} />
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* Create Facility Dialog */}
         <CreateFacilityDialog 
