@@ -301,7 +301,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-1">
                       <Fuel className="h-3 w-3 text-muted-foreground" />
-                      <span>{expense.gallons_purchased?.toFixed(1)} gal</span>
+                      <span>{expense.gallons_purchased?.toFixed(2)} gal</span>
                     </div>
                     <div className="text-xs text-muted-foreground pl-4">
                       ${expense.price_per_gallon?.toFixed(3)}/gal
