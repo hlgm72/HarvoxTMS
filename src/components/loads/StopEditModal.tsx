@@ -149,7 +149,9 @@ export function StopEditModal({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="scheduled-date">{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_date_required")}</Label>
+                <Label htmlFor="scheduled-date">
+                  {t("loads:create_wizard.phases.route_details.edit_modal.scheduled_date")} <span className="text-destructive">*</span>
+                </Label>
                 <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
