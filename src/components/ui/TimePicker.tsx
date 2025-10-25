@@ -97,7 +97,7 @@ export function TimePicker({ value, onChange, placeholder = "Select time", label
             {/* Hours */}
             <div className="flex flex-col gap-1">
               <div className="text-xs font-medium text-center pb-1 text-muted-foreground">Hour</div>
-              <ScrollArea className="h-48 w-16">
+              <ScrollArea className="h-48 w-16" onWheel={(e) => e.stopPropagation()}>
                 <div className="flex flex-col gap-1 pr-3">
                   {hours.map((h) => (
                     <Button
@@ -117,7 +117,7 @@ export function TimePicker({ value, onChange, placeholder = "Select time", label
             {/* Minutes */}
             <div className="flex flex-col gap-1">
               <div className="text-xs font-medium text-center pb-1 text-muted-foreground">Min</div>
-              <ScrollArea className="h-48 w-16">
+              <ScrollArea className="h-48 w-16" onWheel={(e) => e.stopPropagation()}>
                 <div className="flex flex-col gap-1 pr-3">
                   {minutes.map((m) => (
                     <Button
