@@ -4,7 +4,6 @@ import { Plus, Search, Grid, List, Building2, TrendingUp, Package, MapPin } from
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layout } from "@/components/layout/Layout";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { useFacilities } from "@/hooks/useFacilities";
 import { FacilitiesList } from "@/components/facilities/FacilitiesList";
@@ -74,7 +73,7 @@ export default function Facilities() {
     filters.city !== "";
 
   return (
-    <Layout>
+    <>
       <PageToolbar
         icon={MapPin}
         title={t('page_title')}
@@ -229,6 +228,6 @@ export default function Facilities() {
           onClose={() => setShowCreateDialog(false)}
         />
       </div>
-    </Layout>
+    </>
   );
 }
