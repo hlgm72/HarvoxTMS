@@ -64,18 +64,18 @@ export function PaymentReportsFloatingActions({
     onFiltersChange({
       driverId: 'all',
       status: 'all',
-      periodFilter: { type: 'current' }
+      periodFilter: { type: 'week' }
     });
   };
 
   const hasActiveFilters = filters.driverId !== 'all' || 
                           filters.status !== 'all' ||
-                          filters.periodFilter.type !== 'current';
+                          filters.periodFilter.type !== 'week';
 
   const activeFiltersCount = [
     filters.driverId !== 'all',
     filters.status !== 'all',
-    filters.periodFilter.type !== 'current'
+    filters.periodFilter.type !== 'week'
   ].filter(Boolean).length;
 
   // Define tabs
@@ -167,7 +167,7 @@ export function PaymentReportsFloatingActions({
                             {t('filters.active_badges.status')} {statusOptions.find(s => s.value === filters.status)?.label}
                           </Badge>
                         )}
-                        {(filters.periodFilter.type !== 'current' || filters.periodFilter.label) && (
+                        {(filters.periodFilter.type !== 'week' || filters.periodFilter.label) && (
                           <Badge variant="secondary">
                             {t('filters.active_badges.period')} {filters.periodFilter.label || filters.periodFilter.type}
                           </Badge>

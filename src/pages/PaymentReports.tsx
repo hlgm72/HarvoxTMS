@@ -8,7 +8,7 @@ import { PageToolbar } from "@/components/layout/PageToolbar";
 import { FileText, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
-import { formatPaymentPeriod, formatDateAuto, formatCurrency, formatDateSafe, formatDetailedPaymentPeriod, formatPaymentPeriodBadge } from "@/lib/dateFormatting";
+import { formatPaymentPeriod, formatDateAuto, formatCurrency, formatDateSafe, formatDetailedPaymentPeriod, formatPaymentPeriodBadge, formatMonthName } from "@/lib/dateFormatting";
 import { useFleetNotifications } from "@/components/notifications";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
@@ -25,6 +25,8 @@ import { formatPeriodLabel } from "@/utils/periodUtils";
 import { usePaymentReportsStats } from "@/hooks/usePaymentReportsStats";
 import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useCompanyFinancialData } from "@/hooks/useSecureCompanyData";
+import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
+import { getISOWeek } from "date-fns";
 
 export default function PaymentReports() {
   const { t } = useTranslation(['payments', 'common']);
@@ -38,12 +40,6 @@ export default function PaymentReports() {
   const { data: nextPeriod } = useNextPaymentPeriod();
   const { data: allPeriods } = usePaymentPeriods();
   
-  const [filters, setFilters] = useState<PaymentFiltersType>({
-    driverId: 'all',
-    status: 'all',
-    periodFilter: { type: 'current' }
-  });
-  
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedCalculationId, setSelectedCalculationId] = useState<string | null>(null);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -56,7 +52,45 @@ export default function PaymentReports() {
   // Obtener períodos calculados y datos de compañía para formateo de filtros
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
-
+  const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
+  
+  // Initialize with current week
+  const getCurrentWeek = () => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentWeekNumber = getISOWeek(today);
+    const currentMonth = today.getMonth() + 1;
+    
+    // Find current week in availableWeeks
+    const weekData = availableWeeks
+      ?.find(w => w.year === currentYear)
+      ?.months.find(m => m.month === currentMonth)
+      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+    
+    if (weekData) {
+      return {
+        type: 'week' as const,
+        selectedYear: currentYear,
+        selectedWeek: currentWeekNumber,
+        startDate: weekData.startDate,
+        endDate: weekData.endDate,
+        label: `W${currentWeekNumber}/${currentYear}`
+      };
+    }
+    
+    // Fallback if no week data available
+    return {
+      type: 'week' as const,
+      selectedYear: currentYear,
+      selectedWeek: currentWeekNumber
+    };
+  };
+  
+  const [filters, setFilters] = useState<PaymentFiltersType>({
+    driverId: 'all',
+    status: 'all',
+    periodFilter: getCurrentWeek()
+  });
   // Hook de estadísticas con filtros aplicados
   const { data: stats, isLoading: statsLoading } = usePaymentReportsStats({
     driverId: filters.driverId,
@@ -83,7 +117,36 @@ export default function PaymentReports() {
     }
   };
   
-  const { markDriverAsPaid, calculateUserPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
+  // Populate current week dates when available
+  useEffect(() => {
+    // Only initialize if current week doesn't have dates yet
+    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentWeekNumber = getISOWeek(today);
+      const currentMonth = today.getMonth() + 1;
+      
+      // Find current week in availableWeeks
+      const weekData = availableWeeks
+        ?.find(w => w.year === currentYear)
+        ?.months.find(m => m.month === currentMonth)
+        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+      
+      if (weekData) {
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            type: 'week',
+            selectedYear: currentYear,
+            selectedWeek: currentWeekNumber,
+            startDate: weekData.startDate,
+            endDate: weekData.endDate,
+            label: `W${currentWeekNumber}/${currentYear}`
+          }
+        }));
+      }
+    }
+  }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
 
   // Validación de integridad financiera para el período actual
   const currentPeriodId = useMemo(() => {
@@ -97,15 +160,8 @@ export default function PaymentReports() {
     isLoading: isValidationLoading 
   } = useFinancialDataValidation(currentPeriodId);
 
-  // Actualizar filtro de período cuando se carga el período actual
-  useEffect(() => {
-    // Solo actualizar una vez cuando currentPeriod se carga inicialmente
-    if (currentPeriod && filters.periodFilter.type === 'current') {
-      console.log('🔄 PaymentReports - Updating periodFilter with currentPeriod:', currentPeriod.id);
-      // No necesitamos actualizar el estado si ya está configurado correctamente
-      // El queryKey ya incluye currentPeriod.id, por lo que la query se re-ejecutará automáticamente
-    }
-  }, [currentPeriod?.id, filters.periodFilter.type]);
+  
+  const { markDriverAsPaid, calculateUserPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
 
 
   // ✅ SOLUCIÓN: Usar períodos calculados para filtrar en cliente, no en BD
@@ -383,54 +439,55 @@ export default function PaymentReports() {
     // El modal ya maneja la invalidación de queries, no necesitamos refetch adicional
   };
 
+  // Get period description (similar to Load Management)
+  const getPeriodDescription = () => {
+    if (!filters.periodFilter) return '';
+    
+    const pf = filters.periodFilter;
+    
+    switch (pf.type) {
+      case 'week':
+        const weekLabel = pf.selectedWeek && pf.selectedYear 
+          ? `W${pf.selectedWeek}/${pf.selectedYear}`
+          : 'Week';
+        return `Week: ${weekLabel}`;
+      case 'month':
+        const monthLabel = pf.selectedMonth && pf.selectedYear 
+          ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
+          : 'Month';
+        return `Month: ${monthLabel}`;
+      case 'quarter':
+        return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
+      case 'year':
+        return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
+      case 'current':
+        return t("common:periods.current");
+      case 'previous':
+        return t("common:periods.previous");
+      case 'all':
+        return t("common:periods.all");
+      default:
+        return '';
+    }
+  };
+
+  const getPeriodDateRange = () => {
+    if (!filters.periodFilter) return '';
+    
+    if (filters.periodFilter.startDate && filters.periodFilter.endDate) {
+      const formatted = formatPaymentPeriodBadge(
+        filters.periodFilter.startDate, 
+        filters.periodFilter.endDate
+      );
+      return formatted;
+    }
+    
+    return '';
+  };
+  
   // ✅ Generar descripción de filtros activos
   const getFilterDescription = () => {
     const parts: string[] = [];
-    
-    // Filtro de período
-    if (filters.periodFilter) {
-      const pf = filters.periodFilter as any;
-      
-      // ✅ PRIMERO verificar current/previous para SIEMPRE usar cálculo dinámico
-      if (pf.type === 'current') {
-        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.label
-        const displayCurrentPeriod = calculatedPeriods?.current;
-        if (displayCurrentPeriod) {
-          const periodLabel = formatDetailedPaymentPeriod(
-            displayCurrentPeriod.period_start_date, 
-            displayCurrentPeriod.period_end_date, 
-            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          );
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(displayCurrentPeriod.period_start_date, displayCurrentPeriod.period_end_date);
-          parts.push(`Current: ${periodNumber} (${dateRange})`);
-        } else {
-          parts.push(t("common:periods.current"));
-        }
-      } else if (pf.type === 'previous') {
-        // ✅ SIEMPRE usar período calculado dinámico, NUNCA usar pf.label
-        const displayPreviousPeriod = calculatedPeriods?.previous;
-        if (displayPreviousPeriod) {
-          const periodLabel = formatDetailedPaymentPeriod(
-            displayPreviousPeriod.period_start_date, 
-            displayPreviousPeriod.period_end_date, 
-            Array.isArray(companyData) ? companyData[0]?.default_payment_frequency : companyData?.default_payment_frequency
-          );
-          const periodNumber = periodLabel.split(':')[0].replace('Week ', 'W');
-          const dateRange = formatPaymentPeriodBadge(displayPreviousPeriod.period_start_date, displayPreviousPeriod.period_end_date);
-          parts.push(`Previous: ${periodNumber} (${dateRange})`);
-        } else {
-          parts.push(t("common:periods.previous"));
-        }
-      } else if (pf.type === 'specific' && pf.periodId) {
-        parts.push(t("common:periods.specific"));
-      } else if (pf.type === 'all') {
-        parts.push(t("common:periods.all"));
-      } else if (pf.label) {
-        // Solo usar label para otros tipos (this_month, this_quarter, etc.)
-        parts.push(pf.label);
-      }
-    }
     
     // Filtro de conductor
     if (filters.driverId && filters.driverId !== 'all') {
@@ -460,30 +517,84 @@ export default function PaymentReports() {
     return parts.join(' • ');
   };
 
-  // ✅ Generar subtitle dinámico con estadísticas y filtros
+  // ✅ Generar subtitle dinámico (similar a Load Management)
   const getSubtitle = () => {
-    // ✅ Esperar a que calculatedPeriods esté cargado para Current/Previous
-    const needsCalculatedPeriods = filters.periodFilter?.type === 'current' || filters.periodFilter?.type === 'previous';
-    
-    if (statsLoading || !stats || (needsCalculatedPeriods && !calculatedPeriods)) {
-      return <div>{t("reports.loading")}</div>;
+    if (statsLoading || !stats) {
+      return <div className="text-sm text-muted-foreground">{t("reports.loading")}</div>;
     }
 
     const { totalReports, totalDrivers, totalNetPayment, pendingReports } = stats;
     
-    // Primera línea: estadísticas
-    const statsLine = `${totalReports} ${t("reports.stats.total_reports")} • ${totalDrivers} ${t("reports.stats.drivers")} • ${formatCurrency(totalNetPayment)} ${t("reports.stats.total_net_payment")} • ${pendingReports} ${t("reports.stats.pending")}`;
+    // Stats display (primera línea)
+    const statsDisplay = (
+      <div className="flex items-center gap-4 text-sm flex-wrap">
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{totalReports}</span>
+          <span className="text-muted-foreground">{t("reports.stats.total_reports")}</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{totalDrivers}</span>
+          <span className="text-muted-foreground">{t("reports.stats.drivers")}</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="font-medium">{formatCurrency(totalNetPayment)}</span>
+          <span className="text-muted-foreground">{t("reports.stats.total_net_payment")}</span>
+        </span>
+        {pendingReports > 0 && (
+          <span className="flex items-center gap-1">
+            <span className="font-medium text-orange-600">{pendingReports}</span>
+            <span className="text-muted-foreground">{t("reports.stats.pending")}</span>
+          </span>
+        )}
+      </div>
+    );
     
-    // Segunda línea: filtros activos
-    const filterDescription = getFilterDescription();
+    // Check if there are active filters
+    const hasActiveFilters = filters.driverId !== 'all' || 
+                            filters.status !== 'all';
     
-    return (
-      <>
-        <div>{statsLine}</div>
-        <div className="text-xs text-muted-foreground/80">
-          {filterDescription}
+    const periodDesc = getPeriodDescription();
+    const dateRange = getPeriodDateRange();
+    
+    if (hasActiveFilters) {
+      return (
+        <div className="space-y-2">
+          {statsDisplay}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">{t('common:active_filters')}:</span>
+            {periodDesc && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {periodDesc}{dateRange && `: ${dateRange}`}
+              </Badge>
+            )}
+            {filters.driverId !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("filters.driver", { ns: 'common' })}: {(() => {
+                  const driver = drivers.find(d => d.user_id === filters.driverId);
+                  return driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId;
+                })()}
+              </Badge>
+            )}
+            {filters.status !== 'all' && (
+              <Badge variant="secondary" className="text-xs font-normal">
+                {t("filters.status", { ns: 'common' })}: {filters.status}
+              </Badge>
+            )}
+          </div>
         </div>
-      </>
+      );
+    }
+    
+    // No active filters - just show period info
+    return (
+      <div className="space-y-1">
+        {statsDisplay}
+        {(periodDesc || dateRange) && (
+          <div className="text-xs text-muted-foreground">
+            {periodDesc} {dateRange && `• ${dateRange}`}
+          </div>
+        )}
+      </div>
     );
   };
 
