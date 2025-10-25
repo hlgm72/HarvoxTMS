@@ -101,8 +101,8 @@ function CustomCaption(props: CaptionProps & { fromYear: number; toYear: number 
   return (
     <div className="flex justify-center items-center gap-2 py-2 pointer-events-auto bg-muted px-3">
       <div className="flex items-center gap-1 pointer-events-auto">
-        <span className="text-sm font-medium min-w-[100px] text-center pointer-events-none">
-          {months[currentMonth]}
+        <span className="text-sm font-medium min-w-[120px] text-center pointer-events-none">
+          {(currentMonth + 1).toString().padStart(2, '0')} - {months[currentMonth]}
         </span>
         <div className="flex flex-col pointer-events-auto">
           <button
