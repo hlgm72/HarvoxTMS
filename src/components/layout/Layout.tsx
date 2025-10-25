@@ -34,8 +34,8 @@ export function Layout({ children }: LayoutProps) {
         <AppSidebar />
         <SidebarInset className="flex flex-col flex-1 min-w-0" style={{ marginLeft: '0px', padding: 0 }}>
           <Header />
-          <main className="flex-1 bg-gradient-subtle overflow-hidden mt-14 md:mt-16">
-            <div className="h-full overflow-y-auto">
+          <main className="flex-1 bg-gradient-subtle overflow-hidden">
+            <div className="h-full overflow-y-auto pt-14 md:pt-16">
               <div className="animate-fade-in min-h-full flex flex-col">
                 {children}
               </div>
