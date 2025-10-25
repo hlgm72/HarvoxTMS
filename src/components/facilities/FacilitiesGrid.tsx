@@ -54,18 +54,6 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
     }
   };
 
-  const getFacilityTypeColor = (type: string) => {
-    switch (type) {
-      case 'shipper':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'receiver':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'both':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      default:
-        return '';
-    }
-  };
 
   return (
     <>
@@ -74,9 +62,12 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
           <Card key={facility.id} className="hover:shadow-md transition-shadow duration-200">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <Badge className={`${getFacilityTypeColor(facility.facility_type)} text-xs`}>
-                  {t(`facility_type.${facility.facility_type}`)}
-                </Badge>
+                <div>
+                  <CardTitle className="text-lg">{facility.name}</CardTitle>
+                  <Badge variant={facility.is_active ? "default" : "secondary"} className="text-xs mt-2">
+                    {facility.is_active ? t('status.active') : t('status.inactive')}
+                  </Badge>
+                </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
@@ -97,12 +88,6 @@ export function FacilitiesGrid({ facilities }: FacilitiesGridProps) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-              <div>
-                <CardTitle className="text-lg">{facility.name}</CardTitle>
-                <Badge variant={facility.is_active ? "default" : "secondary"} className="text-xs mt-2">
-                  {facility.is_active ? t('status.active') : t('status.inactive')}
-                </Badge>
               </div>
             </CardHeader>
             

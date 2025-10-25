@@ -54,18 +54,6 @@ export function FacilitiesList({ facilities }: FacilitiesListProps) {
     }
   };
 
-  const getFacilityTypeColor = (type: string) => {
-    switch (type) {
-      case 'shipper':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'receiver':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'both':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      default:
-        return '';
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -77,9 +65,6 @@ export function FacilitiesList({ facilities }: FacilitiesListProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-base">{facility.name}</h3>
-                  <Badge className={`${getFacilityTypeColor(facility.facility_type)} text-xs mt-1`}>
-                    {t(`facility_type.${facility.facility_type}`)}
-                  </Badge>
                 </div>
                 <Badge variant={facility.is_active ? "default" : "secondary"} className="text-xs">
                   {facility.is_active ? t('status.active') : t('status.inactive')}
@@ -137,9 +122,6 @@ export function FacilitiesList({ facilities }: FacilitiesListProps) {
                 <div className="flex-1 space-y-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-lg truncate">{facility.name}</h3>
-                    <Badge className={getFacilityTypeColor(facility.facility_type)}>
-                      {t(`facility_type.${facility.facility_type}`)}
-                    </Badge>
                     <Badge variant={facility.is_active ? "default" : "secondary"}>
                       {facility.is_active ? t('status.active') : t('status.inactive')}
                     </Badge>
