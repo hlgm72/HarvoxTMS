@@ -1053,13 +1053,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                   inputMode="decimal"
                                   pattern="[0-9]*"
                                   value={atmInput.displayValue}
-                                  readOnly
+                                  onChange={(e) => {
+                                    // Handle onChange to prevent React warning
+                                    // The actual value handling is done by ATM input handlers
+                                    field.onChange(e.target.value);
+                                  }}
                                   onKeyDown={atmInput.handleKeyDown}
                                   onPaste={atmInput.handlePaste}
                                   onFocus={atmInput.handleFocus}
-                                  onClick={atmInput.handleClick}
+                                  onMouseDown={atmInput.handleMouseDown}
                                   placeholder={t("loads:create_wizard.form.total_amount_placeholder")}
-                                  className="text-right cursor-text"
+                                  className="text-right"
                                   autoComplete="off"
                                  />
                              </FormControl>

@@ -112,14 +112,19 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   }, [onValueChange]);
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-    // With readOnly, cursor positioning is instant and imperceptible
     const input = e.target;
-    input.setSelectionRange(input.value.length, input.value.length);
+    // Defer to next tick to ensure React has finished rendering
+    setTimeout(() => {
+      if (document.activeElement === input) {
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+    }, 0);
   }, []);
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-    // With readOnly, cursor positioning is instant and imperceptible
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const input = e.target as HTMLInputElement;
+    input.focus();
     input.setSelectionRange(input.value.length, input.value.length);
   }, []);
 
@@ -141,7 +146,7 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     handleInput,
     handlePaste,
     handleFocus,
-    handleClick,
+    handleMouseDown,
     reset,
     setValue: setExternalValue,
   };

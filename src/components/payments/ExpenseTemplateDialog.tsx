@@ -625,7 +625,7 @@ export function ExpenseTemplateDialog({
               onInput={atmInput.handleInput}
               onPaste={atmInput.handlePaste}
               onFocus={atmInput.handleFocus}
-              onClick={atmInput.handleClick}
+              onMouseDown={atmInput.handleMouseDown}
               placeholder="$0.00"
               className="text-right"
               autoComplete="off"
