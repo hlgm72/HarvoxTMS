@@ -434,7 +434,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
   return (
     <div className="space-y-4">
       {/* Lista de deducciones */}
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {eventualDeductions.map((deduction) => (
           <Card key={deduction.id}>
             <CardHeader className="pb-3">
