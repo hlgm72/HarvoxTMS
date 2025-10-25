@@ -12,13 +12,15 @@ import { formatPaymentPeriod, formatPaymentPeriodCompact, formatPaymentPeriodBad
 import { calculatePreviousPeriod } from '@/utils/periodCalculations';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
 import { useCompanyFinancialData } from '@/hooks/useSecureCompanyData';
+import { useAvailableYears } from '@/hooks/useAvailableYears';
 
 export interface PeriodFilterValue {
-  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+  type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year' | 'year';
   periodId?: string;
   startDate?: string;
   endDate?: string;
   label?: string;
+  selectedYear?: number;
 }
 
 interface PeriodFilterProps {
@@ -30,10 +32,12 @@ interface PeriodFilterProps {
 export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilterProps) {
   const { t, i18n } = useTranslation(['loads', 'common']);
   const [open, setOpen] = useState(false);
+  const [showYearSelector, setShowYearSelector] = useState(false);
   
   // Importar el useCompanyCache para obtener el company_id
   const { userCompany } = useCompanyCache();
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
+  const { data: availableYears = [] } = useAvailableYears(userCompany?.company_id);
   
   // Pasar el companyId a todos los hooks de períodos
   const { data: groupedPeriods = [] } = useCompanyPaymentPeriods(userCompany?.company_id);
@@ -87,6 +91,16 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
           startDate: formatDateInUserTimeZone(startOfYear(lastYear)),
           endDate: formatDateInUserTimeZone(endOfYear(lastYear)),
           label: `${t('periods.last_year')} (${lastYear.getFullYear()})`
+        };
+      case 'year':
+        // Para filtro de año específico, usar el año seleccionado o el actual
+        const targetYear = value.selectedYear || now.getFullYear();
+        const yearStart = new Date(targetYear, 0, 1);
+        const yearEnd = new Date(targetYear, 11, 31);
+        return {
+          startDate: formatDateInUserTimeZone(yearStart),
+          endDate: formatDateInUserTimeZone(yearEnd),
+          label: `${targetYear}`
         };
       default:
         return null;
@@ -152,6 +166,9 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
       case 'last_year':
         const dateRange = getDateRangeForType(value.type);
         return dateRange?.label || t('periods.custom');
+      case 'year':
+        const yearLabel = value.selectedYear || new Date().getFullYear();
+        return `Year: ${yearLabel}`;
       case 'custom':
         return value.label || t('periods.custom');
       default:
@@ -329,17 +346,53 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                     })()}
                   </Button>
 
-                  <Button
-                    variant={value.type === 'this_year' ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => handleDateRangeSelect('this_year')}
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {(() => {
-                      const now = new Date();
-                      return `This Year (${now.getFullYear()})`;
-                    })()}
-                  </Button>
+                  {/* Nuevo selector de año con sub-menú */}
+                  <div className="relative">
+                    <Button
+                      variant={value.type === 'year' ? 'default' : 'ghost'}
+                      className="w-full justify-between"
+                      onClick={() => setShowYearSelector(!showYearSelector)}
+                    >
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Year {value.type === 'year' && value.selectedYear ? `(${value.selectedYear})` : ''}
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${showYearSelector ? 'rotate-180' : ''}`} />
+                    </Button>
+                    
+                    {showYearSelector && (
+                      <div className="ml-6 mt-1 space-y-1 max-h-48 overflow-y-auto">
+                        {availableYears.length > 0 ? (
+                          availableYears.map(year => (
+                            <Button
+                              key={year}
+                              variant={value.selectedYear === year ? 'default' : 'ghost'}
+                              size="sm"
+                              className="w-full justify-start text-sm"
+                              onClick={() => {
+                                const yearStart = new Date(year, 0, 1);
+                                const yearEnd = new Date(year, 11, 31);
+                                handleOptionSelect({
+                                  type: 'year',
+                                  selectedYear: year,
+                                  startDate: formatDateInUserTimeZone(yearStart),
+                                  endDate: formatDateInUserTimeZone(yearEnd),
+                                  label: `${year}`
+                                });
+                                setShowYearSelector(false);
+                              }}
+                            >
+                              {year}
+                            </Button>
+                          ))
+                        ) : (
+                          <div className="text-sm text-muted-foreground px-3 py-2">
+                            No years available
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   <Button
                     variant={value.type === 'all' ? 'default' : 'ghost'}

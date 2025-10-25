@@ -69,10 +69,11 @@ export interface Load {
 
 interface LoadsFilters {
   periodFilter?: {
-    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year';
+    type: 'current' | 'previous' | 'next' | 'all' | 'specific' | 'custom' | 'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' | 'this_year' | 'last_year' | 'year';
     periodId?: string;
     startDate?: string;
     endDate?: string;
+    selectedYear?: number;
   };
 }
 
