@@ -118,7 +118,7 @@ export function AddressForm({
         <div className="space-y-2 md:col-span-2">
           <Label htmlFor="street-address">
             {streetAddressLabel || t('address.street_address', i18n.language === 'es' ? 'Dirección' : 'Street Address')}
-            {required && " *"}
+            {required && <span className="text-destructive"> *</span>}
           </Label>
           <Input
             id="street-address"
@@ -133,7 +133,7 @@ export function AddressForm({
         <div className="space-y-2">
           <Label htmlFor="zip-code">
             {zipCodeLabel || t('address.zip_code', i18n.language === 'es' ? 'Código Postal' : 'ZIP Code')}
-            {required && " *"}
+            {required && <span className="text-destructive"> *</span>}
           </Label>
           <Input
             id="zip-code"
@@ -159,7 +159,7 @@ export function AddressForm({
         <div className="space-y-2">
           <Label>
             {stateLabel || t('address.state', i18n.language === 'es' ? 'Estado' : 'State')}
-            {required && " *"}
+            {required && <span className="text-destructive"> *</span>}
           </Label>
           <StateCombobox
             value={stateId}
