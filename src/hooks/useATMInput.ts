@@ -112,19 +112,15 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   }, [onValueChange]);
 
   const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-    // Move cursor to the end
+    // Move cursor to the end immediately
     const input = e.target;
-    setTimeout(() => {
-      input.setSelectionRange(input.value.length, input.value.length);
-    }, 0);
+    input.setSelectionRange(input.value.length, input.value.length);
   }, []);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-    // Move cursor to the end
+    // Move cursor to the end immediately
     const input = e.target as HTMLInputElement;
-    setTimeout(() => {
-      input.setSelectionRange(input.value.length, input.value.length);
-    }, 0);
+    input.setSelectionRange(input.value.length, input.value.length);
   }, []);
 
   const reset = useCallback(() => {
