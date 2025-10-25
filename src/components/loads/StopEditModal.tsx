@@ -194,20 +194,14 @@ export function StopEditModal({
               </div>
 
               <div className="space-y-2">
-                <Label>{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_time")}</Label>
-                <Select 
-                  value={formData.scheduled_time || ''} 
-                  onValueChange={(value) => updateField('scheduled_time', value === '' ? null : value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIME_OPTIONS.map(time => (
-                      <SelectItem key={time} value={time}>{time}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="scheduled-time">{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_time")}</Label>
+                <Input
+                  id="scheduled-time"
+                  type="time"
+                  value={formData.scheduled_time || ''}
+                  onChange={(e) => updateField('scheduled_time', e.target.value || null)}
+                  placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")}
+                />
               </div>
             </div>
           </div>
