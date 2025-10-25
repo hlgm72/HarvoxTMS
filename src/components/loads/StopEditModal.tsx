@@ -11,10 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { StateCombobox } from '@/components/ui/StateCombobox';
-import { CityCombobox } from '@/components/ui/CityCombobox';
 import { AddressForm } from '@/components/ui/AddressForm';
 import { CompanyAutocompleteInput } from '@/components/ui/CompanyAutocompleteInput';
+import { TimePicker } from '@/components/ui/TimePicker';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { createTextHandlers, createPhoneHandlers } from '@/lib/textUtils';
@@ -29,15 +28,7 @@ interface StopEditModalProps {
   isLast?: boolean;
 }
 
-const TIME_OPTIONS = Array.from({ length: 24 }, (_, hour) => {
-  const h = hour.toString().padStart(2, '0');
-  return [
-    `${h}:00`,
-    `${h}:30`
-  ];
-}).flat();
-
-export function StopEditModal({ 
+export function StopEditModal({
   stop, 
   isOpen, 
   onClose, 
@@ -193,16 +184,13 @@ export function StopEditModal({
                 </Popover>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="scheduled-time">{t("loads:create_wizard.phases.route_details.edit_modal.scheduled_time")}</Label>
-                <Input
-                  id="scheduled-time"
-                  type="time"
-                  value={formData.scheduled_time || ''}
-                  onChange={(e) => updateField('scheduled_time', e.target.value || null)}
-                  placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")}
-                />
-              </div>
+              <TimePicker
+                id="scheduled-time"
+                value={formData.scheduled_time || ''}
+                onChange={(value) => updateField('scheduled_time', value)}
+                placeholder={t("loads:create_wizard.phases.route_details.edit_modal.select_time")}
+                label={t("loads:create_wizard.phases.route_details.edit_modal.scheduled_time")}
+              />
             </div>
           </div>
 
