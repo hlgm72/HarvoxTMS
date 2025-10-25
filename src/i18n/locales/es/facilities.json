@@ -1,0 +1,138 @@
+{
+  "page_title": "Gestión de Instalaciones",
+  "page_subtitle": "Gestiona embarcadores y receptores",
+  "search_placeholder": "Buscar instalaciones...",
+  "actions": {
+    "new_facility": "Nueva Instalación",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view_details": "Ver Detalles",
+    "clear_filters": "Limpiar Filtros"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "facility_type": {
+    "shipper": "Embarcador",
+    "receiver": "Receptor",
+    "both": "Ambos"
+  },
+  "labels": {
+    "name": "Nombre",
+    "type": "Tipo",
+    "address": "Dirección",
+    "city": "Ciudad",
+    "state": "Estado",
+    "zip_code": "Código Postal",
+    "contact_name": "Nombre de Contacto",
+    "contact_phone": "Teléfono de Contacto",
+    "contact_email": "Email de Contacto",
+    "notes": "Notas"
+  },
+  "stats": {
+    "total": "Total de Instalaciones",
+    "shippers": "Embarcadores",
+    "receivers": "Receptores",
+    "active": "Activos"
+  },
+  "filters": {
+    "button": "Filtros",
+    "title": "Filtrar Instalaciones",
+    "labels": {
+      "status": "Estado",
+      "type": "Tipo",
+      "state": "Estado",
+      "city": "Ciudad"
+    },
+    "placeholders": {
+      "status": "Seleccionar estado",
+      "type": "Seleccionar tipo",
+      "state": "Ingresar estado",
+      "city": "Ingresar ciudad"
+    },
+    "options": {
+      "status": {
+        "all": "Todos",
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "type": {
+        "all": "Todos los tipos",
+        "shipper": "Embarcador",
+        "receiver": "Receptor",
+        "both": "Ambos"
+      }
+    },
+    "actions": {
+      "clear": "Limpiar",
+      "apply": "Aplicar"
+    }
+  },
+  "create_facility_dialog": {
+    "title": "Nueva Instalación",
+    "edit_title": "Editar Instalación",
+    "description": "Agregar una nueva instalación a tu red",
+    "edit_description": "Actualizar información de la instalación",
+    "form": {
+      "name_required": "Nombre de la Instalación",
+      "type_required": "Tipo de Instalación",
+      "address_required": "Dirección",
+      "city_required": "Ciudad",
+      "state_required": "Estado",
+      "zip_code_required": "Código Postal",
+      "contact_name": "Nombre de Contacto",
+      "contact_phone": "Teléfono de Contacto",
+      "contact_email": "Email de Contacto",
+      "notes": "Notas"
+    },
+    "placeholders": {
+      "name": "Ingresar nombre de la instalación",
+      "address": "Ingresar dirección",
+      "city": "Ingresar ciudad",
+      "state": "Ingresar estado",
+      "zip_code": "Ingresar código postal",
+      "contact_name": "Ingresar nombre del contacto",
+      "contact_phone": "Ingresar número de teléfono",
+      "contact_email": "Ingresar correo electrónico",
+      "notes": "Notas adicionales..."
+    },
+    "validation": {
+      "name_required": "El nombre es requerido",
+      "address_required": "La dirección es requerida",
+      "city_required": "La ciudad es requerida",
+      "state_required": "El estado es requerido",
+      "zip_code_required": "El código postal es requerido",
+      "email_invalid": "Correo electrónico inválido"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "create": "Crear Instalación",
+      "update": "Actualizar Instalación"
+    }
+  },
+  "confirm_delete": {
+    "title": "Eliminar Instalación",
+    "description": "¿Estás seguro de que quieres eliminar {{facilityName}}? Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
+  },
+  "messages": {
+    "create_success": "Instalación creada",
+    "create_success_description": "La instalación ha sido creada exitosamente",
+    "update_success": "Instalación actualizada",
+    "update_success_description": "La instalación ha sido actualizada exitosamente",
+    "delete_success": "Instalación eliminada",
+    "delete_success_description": "La instalación ha sido eliminada exitosamente",
+    "error_title": "Error",
+    "error_description": "Ocurrió un error. Por favor, inténtalo de nuevo."
+  },
+  "view_mode": {
+    "list": "Lista",
+    "grid": "Cuadrícula"
+  },
+  "empty_state": {
+    "no_facilities": "No se encontraron instalaciones",
+    "no_results": "No hay instalaciones que coincidan con tu búsqueda"
+  }
+}

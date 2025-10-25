@@ -94,6 +94,13 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
     section: "commercial"
   },
   { 
+    title: t('company.sidebar.navigation.facilities'), 
+    url: "/facilities", 
+    icon: MapPin,
+    description: t('company.sidebar.descriptions.facilities_management'),
+    section: "commercial"
+  },
+  { 
     title: t('company.sidebar.navigation.billing'), 
     url: "/billing", 
     icon: CreditCard,
@@ -306,6 +313,13 @@ const getDispatcherNavigationItems = (driversCount: number, equipmentCount: numb
     url: "/clients", 
     icon: Building2,
     description: t('company.sidebar.descriptions.client_base'),
+    section: "commercial"
+  },
+  { 
+    title: t('company.sidebar.navigation.facilities'), 
+    url: "/facilities", 
+    icon: MapPin,
+    description: t('company.sidebar.descriptions.facilities_management'),
     section: "commercial"
   },
   { 

@@ -13,6 +13,7 @@ import paymentsEn from './locales/en/payments.json';
 import loadsEn from './locales/en/loads.json';
 import onboardingEn from './locales/en/onboarding.json';
 import clientsEn from './locales/en/clients.json';
+import facilitiesEn from './locales/en/facilities.json';
 import documentsEn from './locales/en/documents.json';
 import fuelEn from './locales/en/fuel.json';
 import usersEn from './locales/en/users.json';
@@ -36,6 +37,7 @@ import paymentsEs from './locales/es/payments.json';
 import loadsEs from './locales/es/loads.json';
 import onboardingEs from './locales/es/onboarding.json';
 import clientsEs from './locales/es/clients.json';
+import facilitiesEs from './locales/es/facilities.json';
 import documentsEs from './locales/es/documents.json';
 import fuelEs from './locales/es/fuel.json';
 import usersEs from './locales/es/users.json';
@@ -61,6 +63,7 @@ const resources = {
     loads: loadsEn,
     onboarding: onboardingEn,
     clients: clientsEn,
+    facilities: facilitiesEn,
     documents: documentsEn,
     fuel: fuelEn,
     users: usersEn,
@@ -85,6 +88,7 @@ const resources = {
     loads: loadsEs,
     onboarding: onboardingEs,
     clients: clientsEs,
+    facilities: facilitiesEs,
     documents: documentsEs,
     fuel: fuelEs,
     users: usersEs,
@@ -108,7 +112,7 @@ i18n
     fallbackLng: 'en',
     
     // Namespaces
-    ns: ['common', 'landing', 'auth', 'fleet', 'equipment', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients', 'documents', 'fuel', 'users', 'settings', 'invitation', 'errors'],
+    ns: ['common', 'landing', 'auth', 'fleet', 'equipment', 'dashboard', 'admin', 'legal', 'payments', 'loads', 'onboarding', 'clients', 'facilities', 'documents', 'fuel', 'users', 'settings', 'invitation', 'errors'],
     defaultNS: 'common',
     
     // Configuration
