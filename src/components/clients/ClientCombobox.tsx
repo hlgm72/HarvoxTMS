@@ -93,7 +93,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
             value={searchValue}
             onValueChange={setSearchValue}
           />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-scroll">
             <CommandEmpty>
               <div className="py-6 text-center text-sm">
                 {t('messages.no_clients_found')}
