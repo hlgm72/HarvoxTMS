@@ -9,7 +9,7 @@ import { LoadDocumentsProvider } from "@/contexts/LoadDocumentsContext";
 import { LoadsFloatingActions } from "@/components/loads/LoadsFloatingActions";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { PeriodFilter, PeriodFilterValue } from "@/components/loads/PeriodFilter";
-import { formatPaymentPeriodCompact, formatCurrency, formatMonthName } from "@/lib/dateFormatting";
+import { formatPaymentPeriodBadge, formatCurrency, formatMonthName } from "@/lib/dateFormatting";
 import { useLoads } from "@/hooks/useLoads";
 import { useDriversList } from "@/hooks/useDriversList";
 import { useCurrentPaymentPeriod } from "@/hooks/usePaymentPeriods";
@@ -182,7 +182,7 @@ export default function Loads() {
     if (!periodFilter) return '';
     
     if (periodFilter.startDate && periodFilter.endDate) {
-      const formatted = formatPaymentPeriodCompact(periodFilter.startDate, periodFilter.endDate);
+      const formatted = formatPaymentPeriodBadge(periodFilter.startDate, periodFilter.endDate);
       return formatted;
     }
     
