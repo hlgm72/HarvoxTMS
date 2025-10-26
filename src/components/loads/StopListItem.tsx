@@ -202,6 +202,28 @@ export function StopListItem({
           </div>
         )}
 
+        {/* Date and Time */}
+        {(stop.scheduled_date || stop.scheduled_time) && (
+          <div className="flex items-center gap-4">
+            {stop.scheduled_date && (
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">
+                  {formatMediumDate(stop.scheduled_date)}
+                </span>
+              </div>
+            )}
+            {stop.scheduled_time && (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">
+                  {stop.scheduled_time}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Special Instructions */}
         {stop.special_instructions && (
           <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
