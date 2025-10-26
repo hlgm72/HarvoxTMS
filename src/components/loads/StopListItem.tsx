@@ -144,7 +144,7 @@ export function StopListItem({
       hasDateError && "border-destructive bg-destructive/5"
     )}>
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">{t("loads:create_wizard.phases.route_details.stop_number", { number: stop.stop_number })}</span>
@@ -156,6 +156,19 @@ export function StopListItem({
             <Badge variant="destructive" className="text-xs">
               {t("loads:create_wizard.phases.route_details.date_error")}
             </Badge>
+          )}
+          {/* Date and Time inline */}
+          {stop.scheduled_date && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>{formatMediumDate(stop.scheduled_date)}</span>
+            </div>
+          )}
+          {stop.scheduled_time && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{stop.scheduled_time}</span>
+            </div>
           )}
         </div>
         
@@ -199,28 +212,6 @@ export function StopListItem({
                 : facilityData.contact_name || facilityData.contact_phone
               }
             </span>
-          </div>
-        )}
-
-        {/* Date and Time */}
-        {(stop.scheduled_date || stop.scheduled_time) && (
-          <div className="flex items-center gap-4">
-            {stop.scheduled_date && (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">
-                  {formatMediumDate(stop.scheduled_date)}
-                </span>
-              </div>
-            )}
-            {stop.scheduled_time && (
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">
-                  {stop.scheduled_time}
-                </span>
-              </div>
-            )}
           </div>
         )}
 
