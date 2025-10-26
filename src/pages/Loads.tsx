@@ -100,62 +100,18 @@ export default function Loads() {
     }
   }, [availableWeeks, periodFilter.type, periodFilter.startDate]);
 
-  // ✅ OPTIMIZACIÓN: Obtener loads una sola vez y calcular stats en el cliente
-  const loadsFilters = periodFilter ? {
-    periodFilter: {
-      type: periodFilter.type,
-      periodId: periodFilter.periodId,
-      startDate: periodFilter.startDate,
-      endDate: periodFilter.endDate,
-      selectedYear: periodFilter.selectedYear,
-      selectedQuarter: periodFilter.selectedQuarter,
-      selectedMonth: periodFilter.selectedMonth,
-      selectedWeek: periodFilter.selectedWeek
-    }
-  } : undefined;
-  
-  const { data: loads = [], isLoading: loadsLoading } = useLoads(loadsFilters);
-  
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
   
-  // ✅ OPTIMIZACIÓN: Calcular stats desde los loads ya cargados aplicando filtros
-  const loadsStats = useMemo(() => {
-    // Aplicar filtros a los loads
-    const filteredLoads = loads.filter(load => {
-      // Filtro de status
-      if (filters.status !== "all" && load.status !== filters.status) return false;
-      
-      // Filtro de driver
-      if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
-      
-      // Filtro de broker/client
-      if (filters.broker !== "all" && load.client_id !== filters.broker) return false;
-      
-      return true;
-    });
-    
-    const totalActive = filteredLoads.filter(l => 
-      l.status !== 'completed' && l.status !== 'cancelled'
-    ).length;
-    
-    const totalInTransit = filteredLoads.filter(l => 
-      l.status === 'in_transit'
-    ).length;
-    
-    const pendingAssignment = filteredLoads.filter(l => 
-      l.status === 'created' || l.status === 'route_planned'
-    ).length;
-    
-    const totalAmount = filteredLoads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
-    
-    return {
-      totalActive,
-      totalInTransit,
-      pendingAssignment,
-      totalAmount
-    };
-  }, [loads, filters.status, filters.driver, filters.broker]);
+  // ✅ OPTIMIZACIÓN: No obtener loads aquí, dejar que LoadsList lo haga
+  // Usamos un estado para recibir las estadísticas desde LoadsList
+  const [loadsStats, setLoadsStats] = useState({
+    totalActive: 0,
+    totalInTransit: 0,
+    pendingAssignment: 0,
+    totalAmount: 0,
+    isLoading: true
+  });
 
   const getPeriodDescription = () => {
     // console.log('🔍 getPeriodDescription - periodFilter:', periodFilter);
@@ -208,7 +164,7 @@ export default function Loads() {
   const subtitle = useMemo(() => {
     const needsCalculatedPeriods = periodFilter?.type === 'current' || periodFilter?.type === 'previous';
     
-    if (loadsLoading || (needsCalculatedPeriods && !calculatedPeriods)) {
+    if (loadsStats.isLoading || (needsCalculatedPeriods && !calculatedPeriods)) {
       return <div className="text-sm text-muted-foreground">{t('subtitle.loading')}</div>;
     }
     
@@ -278,7 +234,7 @@ export default function Loads() {
         )}
       </div>
     );
-  }, [loadsLoading, calculatedPeriods, periodFilter, loadsStats, filters, drivers, t, getPeriodDescription, getPeriodDateRange]);
+  }, [loadsStats.isLoading, calculatedPeriods, periodFilter, loadsStats, filters, drivers, t, getPeriodDescription, getPeriodDateRange]);
   
   // console.log('🎯 Final values:', { periodDateRange, periodDescription, periodFilter });
 
@@ -308,6 +264,7 @@ export default function Loads() {
             }}
             periodFilter={periodFilter}
             onCreateLoad={() => setIsCreateDialogOpen(true)}
+            onStatsChange={setLoadsStats}
           />
         </LoadDocumentsProvider>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -147,7 +147,7 @@ const getStatusLabel = (status: string, t: any) => {
 
 interface LoadsListProps {
   filters: {
-    search?: string; // Añadir el filtro de búsqueda
+    search?: string;
     status: string;
     driver: string;
     broker: string;
@@ -155,9 +155,16 @@ interface LoadsListProps {
   };
   periodFilter?: PeriodFilterValue;
   onCreateLoad?: () => void;
+  onStatsChange?: (stats: {
+    totalActive: number;
+    totalInTransit: number;
+    pendingAssignment: number;
+    totalAmount: number;
+    isLoading: boolean;
+  }) => void;
 }
 
-export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProps) {
+export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }: LoadsListProps) {
   const { t } = useTranslation(['loads']);
   const { refreshTrigger } = useLoadDocuments();
   const { userRole } = useAuth();
@@ -307,6 +314,33 @@ export function LoadsList({ filters, periodFilter, onCreateLoad }: LoadsListProp
       // Ordenar por número de carga en orden descendente
       return b.load_number.localeCompare(a.load_number, undefined, { numeric: true, sensitivity: 'base' });
     });
+
+  // ✅ OPTIMIZACIÓN: Calcular estadísticas y notificar al componente padre
+  useEffect(() => {
+    if (onStatsChange) {
+      const totalActive = filteredLoads.filter(l => 
+        l.status !== 'completed' && l.status !== 'cancelled'
+      ).length;
+      
+      const totalInTransit = filteredLoads.filter(l => 
+        l.status === 'in_transit'
+      ).length;
+      
+      const pendingAssignment = filteredLoads.filter(l => 
+        l.status === 'created' || l.status === 'route_planned'
+      ).length;
+      
+      const totalAmount = filteredLoads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
+      
+      onStatsChange({
+        totalActive,
+        totalInTransit,
+        pendingAssignment,
+        totalAmount,
+        isLoading
+      });
+    }
+  }, [filteredLoads, isLoading, onStatsChange]);
 
   if (isLoading) {
     return <LoadingState t={t} />;
