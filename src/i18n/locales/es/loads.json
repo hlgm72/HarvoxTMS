@@ -68,6 +68,7 @@
           "delivery": "D{{number}}: Falta Fecha programada"
         },
         "add_intermediate_stop": "Agregar Parada Intermedia",
+        "instructions_label": "Instrucciones:",
         "instructions": {
           "click_edit": "Haz clic en cualquier parada para editar sus detalles",
           "drag_reorder": "Arrastra las paradas para reordenarlas",

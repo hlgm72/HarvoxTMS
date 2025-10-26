@@ -68,6 +68,7 @@
           "delivery": "D{{number}}: Missing Scheduled Date"
         },
         "add_intermediate_stop": "Add Intermediate Stop",
+        "instructions_label": "Instructions:",
         "instructions": {
           "click_edit": "Click on any stop to edit its details",
           "drag_reorder": "Drag stops to reorder them",
