@@ -12,14 +12,7 @@ interface LoadActionButtonProps {
       load_id?: string;
       stop_number: number;
       stop_type: 'pickup' | 'delivery';
-      company_name?: string;
-      address?: string;
-      city: string;
-      state: string;
-      zip_code?: string;
-      contact_name?: string;
-      contact_phone?: string;
-      reference_number?: string;
+      facility_id?: string;
       scheduled_date?: string;
       scheduled_time?: string;
       special_instructions?: string;

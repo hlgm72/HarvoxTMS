@@ -6,9 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { 
   Truck, 
   MapPin, 
-  Clock, 
-  Phone, 
-  Navigation,
+  Clock,
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
@@ -140,11 +138,11 @@ export const DriverLoadsInterface = () => {
     
     if (load.status === 'assigned' || load.status === 'en_route_pickup' || load.status === 'at_pickup') {
       const nextPickup = pickupStops[0];
-      return nextPickup ? `${nextPickup.company_name || nextPickup.city}, ${nextPickup.state}` : 'Ubicación de recogida';
+      return nextPickup ? `Parada #${nextPickup.stop_number} - Pickup` : 'Ubicación de recogida';
     }
     
     const nextDelivery = deliveryStops[0];
-    return nextDelivery ? `${nextDelivery.company_name || nextDelivery.city}, ${nextDelivery.state}` : 'Ubicación de entrega';
+    return nextDelivery ? `Parada #${nextDelivery.stop_number} - Delivery` : 'Ubicación de entrega';
   };
 
   if (isLoading) {
@@ -245,48 +243,24 @@ export const DriverLoadsInterface = () => {
                   id: load.id,
                   status: load.status,
                   stops: load.stops?.map(stop => ({
-                    ...stop,
-                    stop_type: stop.stop_type as 'pickup' | 'delivery' // Type assertion for compatibility
+                    id: stop.id,
+                    stop_number: stop.stop_number,
+                    stop_type: stop.stop_type as 'pickup' | 'delivery',
+                    facility_id: stop.facility_id,
+                    scheduled_date: stop.scheduled_date,
+                    scheduled_time: stop.scheduled_time
                   })) || []
                 }}
                 onUpdateStatus={handleStatusUpdate}
                 isPending={updateLoadStatus.isPending}
               />
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const destination = getNextDestination(load);
-                  if (destination && destination !== 'Destino no disponible') {
-                    // Direct call - openInMaps expects just the address string
-                    window.open(`https://maps.google.com/maps?q=${encodeURIComponent(destination)}`, '_blank');
-                  }
-                }}
-              >
-                <Navigation className="h-4 w-4 mr-2" />
-                {t('common:navigate')}
-              </Button>
             </div>
 
-            {/* Contact info if available */}
+            {/* Stop count info */}
             {load.stops && load.stops.length > 0 && (
               <div className="text-xs text-muted-foreground">
-                {load.stops.map((stop, index) => 
-                  stop.contact_phone && (
-                    <div key={index} className="flex items-center justify-between">
-                      <span>{stop.company_name || `${stop.city}, ${stop.state}`}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(`tel:${stop.contact_phone}`)}
-                      >
-                        <Phone className="h-3 w-3 mr-1" />
-                        {stop.contact_phone}
-                      </Button>
-                    </div>
-                  )
-                )}
+                <Clock className="h-3 w-3 inline mr-1" />
+                {load.stops.length} parada{load.stops.length > 1 ? 's' : ''} total{load.stops.length > 1 ? 'es' : ''}
               </div>
             )}
           </CardContent>
