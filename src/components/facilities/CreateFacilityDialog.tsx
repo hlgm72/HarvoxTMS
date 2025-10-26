@@ -194,6 +194,26 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
     onClose();
   };
 
+  // Formatear número de teléfono a (xxx) xxx-xxxx
+  const formatPhoneNumber = (value: string) => {
+    // Eliminar todo excepto números
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Aplicar formato
+    if (phoneNumber.length <= 3) {
+      return phoneNumber;
+    } else if (phoneNumber.length <= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    }
+  };
+
+  const handlePhoneChange = (value: string, onChange: (value: string) => void) => {
+    const formatted = formatPhoneNumber(value);
+    onChange(formatted);
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -268,7 +288,12 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
                     <FormItem>
                       <FormLabel>{t('create_facility_dialog.form.contact_phone')}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t('create_facility_dialog.placeholders.contact_phone')} {...field} />
+                        <Input 
+                          placeholder="(555) 555-5555" 
+                          value={field.value}
+                          onChange={(e) => handlePhoneChange(e.target.value, field.onChange)}
+                          maxLength={14}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
