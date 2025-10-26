@@ -112,7 +112,15 @@ export function StopEditModal({
     if (stopType === 'pickup') {
       return t("loads:create_wizard.phases.route_details.edit_modal.shipper_facility_info");
     }
-    return t("loads:create_wizard.phases.route_details.edit_modal.receiver_facility_info");
+    return t("loads:create_wizard.phases.route_details.edit_modal.consignee_facility_info");
+  };
+
+  const getInstructionsLabel = () => {
+    const stopType = isFirst ? 'pickup' : isLast ? 'delivery' : (formData.stop_type || stop.stop_type);
+    if (stopType === 'pickup') {
+      return t("loads:create_wizard.phases.route_details.edit_modal.shipper_instructions");
+    }
+    return t("loads:create_wizard.phases.route_details.edit_modal.consignee_instructions");
   };
 
   const contactNameHandlers = createTextHandlers(
@@ -368,7 +376,7 @@ export function StopEditModal({
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              {t("loads:create_wizard.phases.route_details.edit_modal.special_instructions")}
+              {getInstructionsLabel()}
             </h3>
             
             <div className="space-y-2">
