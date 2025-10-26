@@ -339,10 +339,10 @@ export default function PaymentReports() {
     if (filters.status !== 'all') {
       switch (filters.status) {
         case 'pending':
-          matchesStatus = !calc.calculated_at;
+          matchesStatus = !calc.payment_status || calc.payment_status === 'pending';
           break;
         case 'calculated':
-          matchesStatus = !!calc.calculated_at && calc.payment_status !== 'paid';
+          matchesStatus = calc.payment_status === 'calculated';
           break;
         case 'paid':
           matchesStatus = calc.payment_status === 'paid';
@@ -366,7 +366,7 @@ export default function PaymentReports() {
   const totalReports = filteredCalculations.length;
   const totalEarnings = filteredCalculations.reduce((sum, calc) => sum + calculateNetPayment(calc), 0);
   const totalDrivers = new Set(filteredCalculations.map(calc => calc.user_id)).size;
-  const pendingReports = filteredCalculations.filter(calc => !calc.calculated_at).length;
+  const pendingReports = filteredCalculations.filter(calc => !calc.payment_status || calc.payment_status === 'pending').length;
 
   const handleGenerateReport = async (calculation: any) => {
     setIsGenerating(true);
@@ -416,14 +416,19 @@ export default function PaymentReports() {
       return <Badge variant="destructive">{t('reports.status.failed')}</Badge>;
     }
     
-    // Prioridad 2: Verificar si está pendiente de cálculo
-    if (!calculation.calculated_at) {
-      return <Badge variant="outline">{t('reports.status.pending')}</Badge>;
-    }
-    
-    // Prioridad 3: Verificar balance negativo
+    // Prioridad 2: Verificar balance negativo
     if (calculation.net_payment < 0) {
       return <Badge variant="destructive">{t('reports.status.negative_balance')}</Badge>;
+    }
+    
+    // Prioridad 3: Si payment_status es 'calculated', está listo para pago
+    if (calculation.payment_status === 'calculated') {
+      return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.ready_payment')}</Badge>;
+    }
+    
+    // Prioridad 4: Si no tiene payment_status o es null, está pendiente
+    if (!calculation.payment_status || calculation.payment_status === 'pending') {
+      return <Badge variant="outline">{t('reports.status.pending')}</Badge>;
     }
     
     // Default: Listo para pago
