@@ -50,7 +50,7 @@ const formSchema = z.object({
   // Información de la estación
   station_name: z.string().optional(),
   station_city: z.string().optional(),
-  station_state: z.string().optional(),
+  station_state: z.string().min(1, 'Selecciona el estado'),
   
   // Información de pago/tarjeta
   driver_card_id: z.string().optional(),

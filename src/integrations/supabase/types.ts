@@ -1322,7 +1322,7 @@ export type Database = {
           receipt_url: string | null
           station_city: string | null
           station_name: string | null
-          station_state: string | null
+          station_state: string
           status: string
           total_amount: number
           transaction_date: string
@@ -1351,7 +1351,7 @@ export type Database = {
           receipt_url?: string | null
           station_city?: string | null
           station_name?: string | null
-          station_state?: string | null
+          station_state: string
           status?: string
           total_amount: number
           transaction_date: string
@@ -1380,7 +1380,7 @@ export type Database = {
           receipt_url?: string | null
           station_city?: string | null
           station_name?: string | null
-          station_state?: string | null
+          station_state?: string
           status?: string
           total_amount?: number
           transaction_date?: string
