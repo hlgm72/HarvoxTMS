@@ -25,11 +25,8 @@ import { useNavigationMaps } from '@/hooks/useNavigationMaps';
 interface LoadStop {
   id?: string;
   stop_number: number;
-  stop_type: string; // Changed from union type to string to match DB
-  city: string;
-  state: string;
-  company_name?: string;
-  contact_phone?: string;
+  stop_type: string;
+  facility_id?: string;
   scheduled_date?: string;
   scheduled_time?: string;
 }
@@ -72,10 +69,7 @@ export const DriverLoadsInterface = () => {
             id,
             stop_number,
             stop_type,
-            city,
-            state,
-            company_name,
-            contact_phone,
+            facility_id,
             scheduled_date,
             scheduled_time
           )

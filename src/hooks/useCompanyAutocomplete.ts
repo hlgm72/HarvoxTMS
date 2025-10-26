@@ -70,22 +70,20 @@ export const useCompanyAutocomplete = (searchTerm: string) => {
           return;
         }
 
-        const loadIds = userLoads.map(l => l.id);
-
-        // Now get load_stops for these loads
+        // Now get facilities for these companies
         const { data, error } = await supabase
-          .from('load_stops')
+          .from('facilities')
           .select(`
-            company_name,
+            id,
+            name,
             address,
             city,
             state,
-            zip_code
+            zip_code,
+            company_id
           `)
-          .in('load_id', loadIds)
-          .ilike('company_name', `%${debouncedSearchTerm}%`)
-          .not('company_name', 'is', null)
-          .not('company_name', 'eq', '')
+          .in('company_id', companyIds)
+          .ilike('name', `%${debouncedSearchTerm}%`)
           .limit(20);
 
         if (error) {
@@ -97,15 +95,15 @@ export const useCompanyAutocomplete = (searchTerm: string) => {
         // Remove duplicates and convert to options format
         const uniqueCompanies = new Map();
         
-        data?.forEach(stop => {
-          if (stop.company_name && !uniqueCompanies.has(stop.company_name)) {
-            uniqueCompanies.set(stop.company_name, {
-              value: stop.company_name,
-              label: stop.company_name,
-              address: stop.address || '',
-              city: stop.city || '',
-              state: stop.state || '',
-              zipCode: stop.zip_code || ''
+        data?.forEach(facility => {
+          if (facility.name && !uniqueCompanies.has(facility.name)) {
+            uniqueCompanies.set(facility.name, {
+              value: facility.name,
+              label: facility.name,
+              address: facility.address || '',
+              city: facility.city || '',
+              state: facility.state || '',
+              zipCode: facility.zip_code || ''
             });
           }
         });

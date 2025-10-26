@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Edit, Calendar, Clock, Building, Phone, FileText } from 'lucide-react';
+import { MapPin, Edit, Calendar, Clock, Building, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { format } from 'date-fns';
@@ -32,6 +32,8 @@ export function StopListItem({
     city: string;
     state: string;
     zip_code: string;
+    contact_name?: string;
+    contact_phone?: string;
   } | null>(null);
 
   // Fetch facility data if facility_id exists
@@ -41,7 +43,7 @@ export function StopListItem({
         try {
           const { data, error } = await supabase
             .from('facilities')
-            .select('name, address, city, state, zip_code')
+            .select('name, address, city, state, zip_code, contact_name, contact_phone')
             .eq('id', stop.facility_id)
             .single();
 
@@ -62,17 +64,17 @@ export function StopListItem({
   }, [stop.facility_id]);
 
   useEffect(() => {
-    const fetchCityName = async () => {
-      // Use facility data if available, otherwise use stop data
-      const cityToFetch = facilityData ? facilityData.city : stop.city;
-      
-      if (cityToFetch && cityToFetch.includes('-') && cityToFetch.length > 30) {
-        // This looks like a UUID, fetch the city name
+    // Use city from facility data if available
+    const cityToUse = facilityData ? facilityData.city : '';
+    
+    if (cityToUse && cityToUse.includes('-') && cityToUse.length > 30) {
+      // This looks like a UUID, fetch the city name
+      const fetchCityName = async () => {
         try {
           const { data, error } = await supabase
             .from('state_cities')
             .select('name')
-            .eq('id', cityToFetch)
+            .eq('id', cityToUse)
             .single();
 
           if (data && !error) {
@@ -83,14 +85,13 @@ export function StopListItem({
         } catch {
           setCityName('');
         }
-      } else {
-        // This is already a city name or empty
-        setCityName(cityToFetch || '');
-      }
-    };
-
-    fetchCityName();
-  }, [stop.city, facilityData]);
+      };
+      fetchCityName();
+    } else {
+      // This is already a city name or empty
+      setCityName(cityToUse || '');
+    }
+  }, [facilityData]);
 
   const getStopTypeLabel = () => {
     if (isFirst) return t("loads:create_wizard.phases.route_details.pickup");
@@ -109,38 +110,33 @@ export function StopListItem({
   };
 
   // Format the address properly, ensuring city is displayed correctly
-  // Use facility data if available, otherwise use stop data
+  // Use facility data if available
   const formatAddress = () => {
+    if (!facilityData) return '';
+    
     const parts = [];
     
-    const addressData = facilityData || {
-      address: stop.address,
-      city: cityName,
-      state: stop.state,
-      zip_code: stop.zip_code
-    };
-    
-    if (addressData.address) {
-      parts.push(addressData.address);
+    if (facilityData.address) {
+      parts.push(facilityData.address);
     }
     
     if (cityName) {
       parts.push(cityName);
     }
     
-    if (addressData.state) {
-      parts.push(addressData.state);
+    if (facilityData.state) {
+      parts.push(facilityData.state);
     }
     
-    if (addressData.zip_code) {
-      parts.push(addressData.zip_code);
+    if (facilityData.zip_code) {
+      parts.push(facilityData.zip_code);
     }
     
     return parts.join(', ');
   };
 
-  // Get company name from facility data or stop data
-  const companyName = facilityData ? facilityData.name : stop.company_name;
+  // Get company name from facility data
+  const companyName = facilityData?.name || '';
 
   return (
     <div className={cn(
@@ -193,40 +189,14 @@ export function StopListItem({
           </div>
         )}
 
-        {/* Reference Number */}
-        {stop.reference_number && (
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">{stop.reference_number}</span>
-          </div>
-        )}
-
-        {/* Date and Time */}
-        {(stop.scheduled_date || stop.scheduled_time) && (
-          <div className="flex items-center gap-4 text-muted-foreground">
-            {stop.scheduled_date && (
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>{formatMediumDate(stop.scheduled_date)}</span>
-              </div>
-            )}
-            {stop.scheduled_time && (
-              <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                <span>{stop.scheduled_time}</span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Contact Info */}
-        {(stop.contact_name || stop.contact_phone) && (
+        {/* Contact Info from facility */}
+        {(facilityData?.contact_name || facilityData?.contact_phone) && (
           <div className="flex items-center gap-2">
             <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <span className="text-muted-foreground">
-              {stop.contact_name && stop.contact_phone 
-                ? `${stop.contact_name} - ${stop.contact_phone}`
-                : stop.contact_name || stop.contact_phone
+              {facilityData.contact_name && facilityData.contact_phone 
+                ? `${facilityData.contact_name} - ${facilityData.contact_phone}`
+                : facilityData.contact_name || facilityData.contact_phone
               }
             </span>
           </div>

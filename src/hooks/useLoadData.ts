@@ -32,19 +32,13 @@ export interface LoadStop {
   load_id: string;
   stop_number: number;
   stop_type: 'pickup' | 'delivery';
-  company_name?: string;
-  address: string;
-  city: string;
-  state: string;
-  zip_code?: string;
-  contact_name?: string;
-  contact_phone?: string;
-  reference_number?: string;
+  facility_id?: string | null;
   scheduled_date?: string;
   scheduled_time?: string;
   actual_date?: string;
   actual_time?: string;
   special_instructions?: string;
+  driver_notes?: string;
 }
 
 export const useLoadData = (loadId?: string) => {
@@ -90,29 +84,10 @@ export const useLoadData = (loadId?: string) => {
           // Don't throw error for stops, just log and continue
         }
 
-        // Get unique city names from stops and fetch city info
-        const cityNamesFromStops = [...new Set((stops || []).map(s => s.city).filter(Boolean))];
-        let cityNames: { [key: string]: string } = {};
-        
-        if (cityNamesFromStops.length > 0) {
-          const { data: cities, error: citiesError } = await supabase
-            .from('state_cities')
-            .select('id, name')
-            .in('name', cityNamesFromStops);
-            
-          if (!citiesError && cities) {
-            cityNames = cities.reduce((acc, city) => {
-              acc[city.name] = city.name; // Map city name to itself since we're already using names
-              return acc;
-            }, {} as { [key: string]: string });
-          }
-        }
-
         const loadWithStops: LoadData = {
           ...load,
           stops: (stops || []).map(stop => ({
             ...stop,
-            city: cityNames[stop.city] || stop.city, // Use city name if available, otherwise keep UUID
             stop_type: stop.stop_type as 'pickup' | 'delivery'
           }))
         };

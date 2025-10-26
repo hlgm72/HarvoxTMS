@@ -8,17 +8,12 @@ export interface LoadStop {
   stop_number: number;
   stop_type: 'pickup' | 'delivery';
   facility_id?: string | null;
-  company_name: string;
-  address: string;
-  city: string;
-  state: string;
-  zip_code: string;
-  contact_name?: string;
-  contact_phone?: string;
-  reference_number?: string;
   scheduled_date?: Date;
   scheduled_time?: string;
   special_instructions?: string;
+  driver_notes?: string;
+  pickup_timezone?: string;
+  delivery_timezone?: string;
 }
 
 export interface LoadStopsValidation {
@@ -33,21 +28,11 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       id: 'stop-1',
       stop_number: 1,
       stop_type: 'pickup',
-      company_name: '',
-      address: '',
-      city: '',
-      state: '',
-      zip_code: '',
     },
     {
       id: 'stop-2', 
       stop_number: 2,
       stop_type: 'delivery',
-      company_name: '',
-      address: '',
-      city: '',
-      state: '',
-      zip_code: '',
     }
   ];
 
@@ -158,11 +143,6 @@ export function useLoadStops(initialStops?: LoadStop[]) {
       id: `stop-${newStopNumber}`,
       stop_number: newStopNumber,
       stop_type: 'delivery', // Default to delivery for intermediate stops
-      company_name: '',
-      address: '',
-      city: '',
-      state: '',
-      zip_code: '',
     };
 
     // Insert before the last stop (which should remain delivery)

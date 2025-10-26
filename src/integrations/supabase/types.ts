@@ -1788,12 +1788,7 @@ export type Database = {
           actual_date: string | null
           actual_datetime: string | null
           actual_time: string | null
-          address: string | null
-          city: string | null
-          company_name: string | null
           completion_datetime: string | null
-          contact_name: string | null
-          contact_phone: string | null
           created_at: string
           delivery_timezone: string | null
           driver_notes: string | null
@@ -1805,30 +1800,22 @@ export type Database = {
           last_status_update: string | null
           load_id: string
           pickup_timezone: string | null
-          reference_number: string | null
           scheduled_date: string | null
           scheduled_datetime: string | null
           scheduled_time: string | null
           special_instructions: string | null
-          state: string | null
           status_updated_at: string | null
           status_updated_by: string | null
           stop_number: number
           stop_type: string
           updated_at: string
-          zip_code: string | null
         }
         Insert: {
           actual_arrival_datetime?: string | null
           actual_date?: string | null
           actual_datetime?: string | null
           actual_time?: string | null
-          address?: string | null
-          city?: string | null
-          company_name?: string | null
           completion_datetime?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
           created_at?: string
           delivery_timezone?: string | null
           driver_notes?: string | null
@@ -1840,30 +1827,22 @@ export type Database = {
           last_status_update?: string | null
           load_id: string
           pickup_timezone?: string | null
-          reference_number?: string | null
           scheduled_date?: string | null
           scheduled_datetime?: string | null
           scheduled_time?: string | null
           special_instructions?: string | null
-          state?: string | null
           status_updated_at?: string | null
           status_updated_by?: string | null
           stop_number: number
           stop_type: string
           updated_at?: string
-          zip_code?: string | null
         }
         Update: {
           actual_arrival_datetime?: string | null
           actual_date?: string | null
           actual_datetime?: string | null
           actual_time?: string | null
-          address?: string | null
-          city?: string | null
-          company_name?: string | null
           completion_datetime?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
           created_at?: string
           delivery_timezone?: string | null
           driver_notes?: string | null
@@ -1875,18 +1854,15 @@ export type Database = {
           last_status_update?: string | null
           load_id?: string
           pickup_timezone?: string | null
-          reference_number?: string | null
           scheduled_date?: string | null
           scheduled_datetime?: string | null
           scheduled_time?: string | null
           special_instructions?: string | null
-          state?: string | null
           status_updated_at?: string | null
           status_updated_by?: string | null
           stop_number?: number
           stop_type?: string
           updated_at?: string
-          zip_code?: string | null
         }
         Relationships: [
           {
