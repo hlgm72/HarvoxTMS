@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -273,75 +273,87 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     return actions;
   };
   
-  // Aplicar filtros a los datos reales y ordenar por período de pago
-  const filteredLoads = loads
-    .filter(load => {
-      // Filtro de búsqueda por número de carga, PO, broker, etc.
-      if (filters.search && filters.search.trim()) {
-        const searchTerm = filters.search.toLowerCase().trim();
-        const searchableFields = [
-          load.load_number,
-          load.po_number,
-          load.broker_name,
-          load.customer_name,
-          load.commodity
-        ].filter(Boolean).map(field => field?.toLowerCase());
+  // ✅ Memoizar filteredLoads para evitar recalcular en cada render
+  const filteredLoads = useMemo(() => {
+    return loads
+      .filter(load => {
+        // Filtro de búsqueda por número de carga, PO, broker, etc.
+        if (filters.search && filters.search.trim()) {
+          const searchTerm = filters.search.toLowerCase().trim();
+          const searchableFields = [
+            load.load_number,
+            load.po_number,
+            load.broker_name,
+            load.customer_name,
+            load.commodity
+          ].filter(Boolean).map(field => field?.toLowerCase());
+          
+          const matchesSearch = searchableFields.some(field => 
+            field?.includes(searchTerm)
+          );
+          
+          if (!matchesSearch) return false;
+        }
         
-        const matchesSearch = searchableFields.some(field => 
-          field?.includes(searchTerm)
-        );
+        if (filters.status !== "all" && load.status !== filters.status) return false;
         
-        if (!matchesSearch) return false;
-      }
-      
-      if (filters.status !== "all" && load.status !== filters.status) return false;
-      
-      // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
-      if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
-      
-      // Comparar por client_id (UUID del cliente)
-      if (filters.broker !== "all" && load.client_id !== filters.broker) return false;
-      
-      // Filtro por rango de fechas
-      if (filters.dateRange.from && filters.dateRange.to) {
-        const loadDate = new Date(load.created_at);
-        if (loadDate < filters.dateRange.from || loadDate > filters.dateRange.to) return false;
-      }
-      
-      return true;
-    })
-    .sort((a, b) => {
-      // Ordenar por número de carga en orden descendente
-      return b.load_number.localeCompare(a.load_number, undefined, { numeric: true, sensitivity: 'base' });
-    });
+        // CORRECCIÓN: Comparar por driver_user_id en lugar de driver_name
+        if (filters.driver !== "all" && load.driver_user_id !== filters.driver) return false;
+        
+        // Comparar por client_id (UUID del cliente)
+        if (filters.broker !== "all" && load.client_id !== filters.broker) return false;
+        
+        // Filtro por rango de fechas
+        if (filters.dateRange.from && filters.dateRange.to) {
+          const loadDate = new Date(load.created_at);
+          if (loadDate < filters.dateRange.from || loadDate > filters.dateRange.to) return false;
+        }
+        
+        return true;
+      })
+      .sort((a, b) => {
+        // Ordenar por número de carga en orden descendente
+        return b.load_number.localeCompare(a.load_number, undefined, { numeric: true, sensitivity: 'base' });
+      });
+  }, [loads, filters.search, filters.status, filters.driver, filters.broker, filters.dateRange.from, filters.dateRange.to]);
 
-  // ✅ OPTIMIZACIÓN: Calcular estadísticas y notificar al componente padre
+  // ✅ Memoizar estadísticas para evitar recalcular en cada render
+  const stats = useMemo(() => {
+    const totalActive = filteredLoads.filter(l => 
+      l.status !== 'completed' && l.status !== 'cancelled'
+    ).length;
+    
+    const totalInTransit = filteredLoads.filter(l => 
+      l.status === 'in_transit'
+    ).length;
+    
+    const pendingAssignment = filteredLoads.filter(l => 
+      l.status === 'created' || l.status === 'route_planned'
+    ).length;
+    
+    const totalAmount = filteredLoads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
+    
+    return {
+      totalActive,
+      totalInTransit,
+      pendingAssignment,
+      totalAmount,
+      isLoading
+    };
+  }, [filteredLoads, isLoading]);
+
+  // ✅ Usar useRef para evitar llamadas repetidas con los mismos valores
+  const prevStatsRef = useRef<string>('');
+  
   useEffect(() => {
     if (onStatsChange) {
-      const totalActive = filteredLoads.filter(l => 
-        l.status !== 'completed' && l.status !== 'cancelled'
-      ).length;
-      
-      const totalInTransit = filteredLoads.filter(l => 
-        l.status === 'in_transit'
-      ).length;
-      
-      const pendingAssignment = filteredLoads.filter(l => 
-        l.status === 'created' || l.status === 'route_planned'
-      ).length;
-      
-      const totalAmount = filteredLoads.reduce((sum, l) => sum + (l.total_amount || 0), 0);
-      
-      onStatsChange({
-        totalActive,
-        totalInTransit,
-        pendingAssignment,
-        totalAmount,
-        isLoading
-      });
+      const statsKey = JSON.stringify(stats);
+      if (prevStatsRef.current !== statsKey) {
+        prevStatsRef.current = statsKey;
+        onStatsChange(stats);
+      }
     }
-    // ✅ No incluir onStatsChange en dependencias - es estable (setState)
-  }, [filteredLoads, isLoading]);
+  }, [stats, onStatsChange]);
 
   if (isLoading) {
     return <LoadingState t={t} />;
