@@ -26,16 +26,53 @@ export function StopListItem({
 }: StopListItemProps) {
   const { t } = useTranslation();
   const [cityName, setCityName] = useState<string>('');
+  const [facilityData, setFacilityData] = useState<{
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zip_code: string;
+  } | null>(null);
+
+  // Fetch facility data if facility_id exists
+  useEffect(() => {
+    const fetchFacilityData = async () => {
+      if (stop.facility_id) {
+        try {
+          const { data, error } = await supabase
+            .from('facilities')
+            .select('name, address, city, state, zip_code')
+            .eq('id', stop.facility_id)
+            .single();
+
+          if (data && !error) {
+            setFacilityData(data);
+          } else {
+            setFacilityData(null);
+          }
+        } catch {
+          setFacilityData(null);
+        }
+      } else {
+        setFacilityData(null);
+      }
+    };
+
+    fetchFacilityData();
+  }, [stop.facility_id]);
 
   useEffect(() => {
     const fetchCityName = async () => {
-      if (stop.city && stop.city.includes('-') && stop.city.length > 30) {
+      // Use facility data if available, otherwise use stop data
+      const cityToFetch = facilityData ? facilityData.city : stop.city;
+      
+      if (cityToFetch && cityToFetch.includes('-') && cityToFetch.length > 30) {
         // This looks like a UUID, fetch the city name
         try {
           const { data, error } = await supabase
             .from('state_cities')
             .select('name')
-            .eq('id', stop.city)
+            .eq('id', cityToFetch)
             .single();
 
           if (data && !error) {
@@ -48,12 +85,12 @@ export function StopListItem({
         }
       } else {
         // This is already a city name or empty
-        setCityName(stop.city || '');
+        setCityName(cityToFetch || '');
       }
     };
 
     fetchCityName();
-  }, [stop.city]);
+  }, [stop.city, facilityData]);
 
   const getStopTypeLabel = () => {
     if (isFirst) return t("loads:create_wizard.phases.route_details.pickup");
@@ -72,27 +109,38 @@ export function StopListItem({
   };
 
   // Format the address properly, ensuring city is displayed correctly
+  // Use facility data if available, otherwise use stop data
   const formatAddress = () => {
     const parts = [];
     
-    if (stop.address) {
-      parts.push(stop.address);
+    const addressData = facilityData || {
+      address: stop.address,
+      city: cityName,
+      state: stop.state,
+      zip_code: stop.zip_code
+    };
+    
+    if (addressData.address) {
+      parts.push(addressData.address);
     }
     
     if (cityName) {
       parts.push(cityName);
     }
     
-    if (stop.state) {
-      parts.push(stop.state);
+    if (addressData.state) {
+      parts.push(addressData.state);
     }
     
-    if (stop.zip_code) {
-      parts.push(stop.zip_code);
+    if (addressData.zip_code) {
+      parts.push(addressData.zip_code);
     }
     
     return parts.join(', ');
   };
+
+  // Get company name from facility data or stop data
+  const companyName = facilityData ? facilityData.name : stop.company_name;
 
   return (
     <div className={cn(
@@ -128,10 +176,10 @@ export function StopListItem({
 
       <div className="space-y-2 text-sm">
         {/* Company */}
-        {stop.company_name && (
+        {companyName && (
           <div className="flex items-center gap-2">
             <Building className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <span className="font-medium">{stop.company_name}</span>
+            <span className="font-medium">{companyName}</span>
           </div>
         )}
 
