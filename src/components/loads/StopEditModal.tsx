@@ -105,6 +105,14 @@ export function StopEditModal({
     return 'bg-blue-100 text-blue-800'; // Azul para paradas intermedias
   };
 
+  const getCompanyInfoLabel = () => {
+    const stopType = isFirst ? 'pickup' : isLast ? 'delivery' : (formData.stop_type || stop.stop_type);
+    if (stopType === 'pickup') {
+      return t("loads:create_wizard.phases.route_details.edit_modal.shipper_facility_info");
+    }
+    return t("loads:create_wizard.phases.route_details.edit_modal.receiver_facility_info");
+  };
+
   const contactNameHandlers = createTextHandlers(
     (value) => updateField('contact_name', value),
     'text'
@@ -226,7 +234,7 @@ export function StopEditModal({
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
               <Building className="h-4 w-4" />
-              {t("loads:create_wizard.phases.route_details.edit_modal.company_info")}
+              {getCompanyInfoLabel()}
             </h3>
             
             {/* Facility Selector */}

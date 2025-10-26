@@ -86,6 +86,8 @@
           "select_time": "Seleccionar hora",
           "stop_type": "Tipo de Parada",
           "company_info": "Información de la Empresa",
+          "shipper_facility_info": "Información de la Instalación del Embarcador",
+          "receiver_facility_info": "Información de la Instalación del Receptor",
           "facility_label": "Seleccionar Instalación",
           "facility_help": "Selecciona una instalación registrada o ingresa los detalles de la empresa manualmente abajo",
           "facility_selected_help": "La información de la empresa proviene de la instalación seleccionada. Haz clic en el botón editar para modificar la instalación.",
