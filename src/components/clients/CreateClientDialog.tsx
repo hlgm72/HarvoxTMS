@@ -492,7 +492,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                        render={({ field }) => {
                          const handleEmailDomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                            let value = e.target.value;
-                           
+                            
                            // Limpiar espacios
                            value = value.replace(/\s/g, '');
                            
@@ -514,6 +514,25 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                            field.onChange(value);
                          };
 
+                         const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+                           const pastedText = e.clipboardData.getData('text');
+                           
+                           // Si el texto pegado contiene '@', extraer solo el dominio
+                           if (pastedText.includes('@')) {
+                             e.preventDefault();
+                             
+                             // Extraer la parte después del '@'
+                             const domain = pastedText.split('@').pop() || '';
+                             
+                             // Limpiar espacios y convertir a minúsculas
+                             const cleanDomain = domain.trim().toLowerCase().replace(/\s/g, '');
+                             
+                             if (cleanDomain) {
+                               field.onChange('@' + cleanDomain);
+                             }
+                           }
+                         };
+
                          const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
                            // Prevenir borrar el @ si el cursor está al principio
                            if ((e.key === 'Backspace' || e.key === 'Delete') && 
@@ -531,6 +550,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                                  placeholder={t('create_client_dialog.placeholders.email_domain')} 
                                  value={field.value}
                                  onChange={handleEmailDomainChange}
+                                 onPaste={handlePaste}
                                  onKeyDown={handleKeyDown}
                                  tabIndex={4}
                                />
