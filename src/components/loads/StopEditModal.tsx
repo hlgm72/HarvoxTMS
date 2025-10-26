@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AddressForm } from '@/components/ui/AddressForm';
-import { CompanyAutocompleteInput } from '@/components/ui/CompanyAutocompleteInput';
 import { TimePicker } from '@/components/ui/TimePicker';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
@@ -93,21 +92,6 @@ export function StopEditModal({
     setEditingFacility(undefined);
   };
 
-  const handleCompanySelect = (company: {
-    value: string;
-    label: string;
-    address?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-    phone?: string;
-  }) => {
-    setFormData(prev => ({
-      ...prev,
-      facility_id: null, // Clear facility when manually entering company
-      company_name: company.label
-    }));
-  };
 
   const getStopTypeLabel = () => {
     if (isFirst) return t("loads:create_wizard.phases.route_details.edit_modal.pickup_label");
@@ -128,11 +112,6 @@ export function StopEditModal({
 
   const phoneHandlers = createPhoneHandlers(
     (value) => updateField('contact_phone', value)
-  );
-
-  const referenceHandlers = createTextHandlers(
-    (value) => updateField('reference_number', value.replace(/\s/g, '')),
-    'text'
   );
 
   
@@ -268,39 +247,6 @@ export function StopEditModal({
                   : t("loads:create_wizard.phases.route_details.edit_modal.facility_help")
                 }
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <CompanyAutocompleteInput
-                  value={formData.company_name || ''}
-                  onChange={(value) => {
-                    if (!formData.facility_id) {
-                      updateField('company_name', value);
-                    }
-                  }}
-                  onCompanySelect={handleCompanySelect}
-                  placeholder={t("loads:create_wizard.phases.route_details.edit_modal.company_placeholder")}
-                  label={t("loads:create_wizard.phases.route_details.edit_modal.company_required")}
-                  required
-                />
-                {formData.facility_id && (
-                  <p className="text-xs text-muted-foreground">
-                    {t("loads:create_wizard.phases.route_details.edit_modal.company_from_facility")}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reference">{t("loads:create_wizard.phases.route_details.edit_modal.reference_number")}</Label>
-                <Input
-                  id="reference"
-                  placeholder={t("loads:create_wizard.phases.route_details.edit_modal.reference_placeholder")}
-                  value={formData.reference_number || ''}
-                  onChange={referenceHandlers.onChange}
-                  onBlur={referenceHandlers.onBlur}
-                />
-              </div>
             </div>
           </div>
 
