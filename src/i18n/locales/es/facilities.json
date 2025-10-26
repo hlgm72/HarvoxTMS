@@ -114,7 +114,8 @@
     "search_placeholder": "Buscar instalaciones...",
     "loading": "Cargando instalaciones...",
     "no_results": "No se encontraron instalaciones",
-    "create_new": "Crear nueva instalación"
+    "create_new": "Crear nueva instalación",
+    "edit_facility": "Editar instalación"
   },
   "messages": {
     "loading": "Cargando instalaciones...",

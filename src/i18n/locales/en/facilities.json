@@ -114,7 +114,8 @@
     "search_placeholder": "Search facilities...",
     "loading": "Loading facilities...",
     "no_results": "No facilities found",
-    "create_new": "Create new facility"
+    "create_new": "Create new facility",
+    "edit_facility": "Edit facility"
   },
   "messages": {
     "loading": "Loading facilities...",

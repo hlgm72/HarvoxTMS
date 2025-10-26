@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, ChevronsUpDown, Plus, Building2, Search, X } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Building2, Search, X, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -15,6 +15,7 @@ interface FacilityComboboxProps {
   value?: string | null;
   onValueChange: (facilityId: string | null, facility?: Facility) => void;
   onCreateNew: () => void;
+  onEdit?: (facility: Facility) => void;
   disabled?: boolean;
 }
 
@@ -22,6 +23,7 @@ export function FacilityCombobox({
   value,
   onValueChange,
   onCreateNew,
+  onEdit,
   disabled = false,
 }: FacilityComboboxProps) {
   const { t } = useTranslation('facilities');
@@ -52,7 +54,7 @@ export function FacilityCombobox({
             className="flex-1 justify-between"
             disabled={disabled}
           >
-            <div className="flex items-center gap-2 truncate">
+            <div className="flex items-center gap-2 truncate flex-1">
               <Building2 className="h-4 w-4 flex-shrink-0" />
               <span className="truncate">
                 {selectedFacility ? (
@@ -71,6 +73,21 @@ export function FacilityCombobox({
                 )}
               </span>
             </div>
+            {selectedFacility && onEdit && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-accent"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(selectedFacility);
+                }}
+                title={t('combobox.edit_facility')}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
