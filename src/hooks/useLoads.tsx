@@ -349,6 +349,51 @@ export const useLoads = (filters?: LoadsFilters) => {
               .order('stop_number', { ascending: true })
           : { data: [], error: null };
 
+        if (stopsResult.error) {
+          console.error('Error obteniendo paradas:', stopsResult.error);
+        }
+
+        const stopsData = stopsResult.data || [];
+        
+        // Obtener facility_ids únicos de los stops
+        const facilityIds = [...new Set(stopsData.map(s => s.facility_id).filter(Boolean))];
+        
+        // Obtener información de facilities
+        const facilitiesResult = facilityIds.length > 0
+          ? await supabase
+              .from('facilities')
+              .select('id, name, address, city, state, zip_code, contact_name, contact_phone')
+              .in('id', facilityIds)
+          : { data: [], error: null };
+
+        if (facilitiesResult.error) {
+          console.error('Error obteniendo facilities:', facilitiesResult.error);
+        }
+
+        const facilitiesData = facilitiesResult.data || [];
+        
+        // Obtener city UUIDs de facilities para buscar nombres
+        const cityUUIDs = [...new Set(
+          facilitiesData
+            .map(f => f.city)
+            .filter(city => city && city.length === 36 && city.includes('-'))
+        )];
+        
+        // Obtener nombres de ciudades desde state_cities
+        let cities: any[] = [];
+        if (cityUUIDs.length > 0) {
+          const { data: citiesFromDB, error: citiesError } = await supabase
+            .from('state_cities')
+            .select('id, name, state_id')
+            .in('id', cityUUIDs);
+          
+          if (citiesError) {
+            console.error('Error obteniendo ciudades:', citiesError);
+          } else {
+            cities = citiesFromDB || [];
+          }
+        }
+
         // Obtener documentos de las cargas
         const documentsResult = loadIds.length > 0
           ? await supabase
@@ -376,10 +421,6 @@ export const useLoads = (filters?: LoadsFilters) => {
               .order('changed_at', { ascending: false })
           : { data: [], error: null };
 
-        if (stopsResult.error) {
-          console.error('Error obteniendo paradas:', stopsResult.error);
-        }
-
         if (documentsResult.error) {
           console.error('Error obteniendo documentos:', documentsResult.error);
         }
@@ -392,42 +433,9 @@ export const useLoads = (filters?: LoadsFilters) => {
           console.error('Error obteniendo historial de estado:', statusHistoryResult.error);
         }
 
-        const stopsData = stopsResult.data || [];
         const documentsData = documentsResult.data || [];
         const companyData = companiesResult.data;
         const statusHistoryData = statusHistoryResult.data || [];
-        // Processing stops data
-        
-        // Separar paradas con UUIDs vs nombres de texto
-        const stopsWithUUIDs = stopsData.filter(stop => {
-          // Un UUID tiene 36 caracteres con guiones
-          return stop.city && stop.city.length === 36 && stop.city.includes('-');
-        });
-
-        const stopsWithTextNames = stopsData.filter(stop => {
-          // No es un UUID, es texto directo
-          return stop.city && (stop.city.length !== 36 || !stop.city.includes('-'));
-        });
-
-        // Processing UUID vs text names
-
-        // Obtener nombres de ciudades solo para los UUIDs
-        let cities: any[] = [];
-        
-        if (stopsWithUUIDs.length > 0) {
-          const cityUUIDs = [...new Set(stopsWithUUIDs.map(s => s.city))];
-          
-          const { data: citiesFromDB, error: citiesError } = await supabase
-            .from('state_cities')
-            .select('id, name, state_id')
-            .in('id', cityUUIDs);
-          
-          if (citiesError) {
-            console.error('Error obteniendo ciudades:', citiesError);
-          } else {
-            cities = citiesFromDB || [];
-          }
-        }
         
         const [profilesResult, brokersResult, contactsResult, dispatchersResult, periodsResult] = await Promise.allSettled([
           driverIds.length > 0 
@@ -484,24 +492,30 @@ export const useLoads = (filters?: LoadsFilters) => {
 
           // Processing pickup and delivery stops
 
-          // Función auxiliar para obtener el display de la ciudad
+          // Función auxiliar para obtener el display de la ciudad desde facility
           const getCityDisplay = (stop: any) => {
-            if (!stop || !stop.city || !stop.state) {
+            if (!stop || !stop.facility_id) {
+              return 'Sin definir';
+            }
+
+            // Buscar facility correspondiente
+            const facility = facilitiesData.find(f => f.id === stop.facility_id);
+            if (!facility || !facility.city || !facility.state) {
               return 'Sin definir';
             }
 
             // Si es un UUID, buscar en la tabla de ciudades
-            if (stop.city.length === 36 && stop.city.includes('-')) {
-              const cityFromDB = cities.find(c => c.id === stop.city);
+            if (facility.city.length === 36 && facility.city.includes('-')) {
+              const cityFromDB = cities.find(c => c.id === facility.city);
               if (cityFromDB) {
-                return `${cityFromDB.name}, ${cityFromDB.state_id}`;
+                return `${cityFromDB.name}, ${facility.state}`;
               } else {
-                console.warn(`🚛 Load ${load.load_number} - City UUID not found:`, stop.city);
+                console.warn(`🚛 Load ${load.load_number} - City UUID not found:`, facility.city);
                 return 'Ciudad no encontrada';
               }
             } else {
               // Es texto directo
-              return `${stop.city}, ${stop.state}`;
+              return `${facility.city}, ${facility.state}`;
             }
           };
 
@@ -518,20 +532,29 @@ export const useLoads = (filters?: LoadsFilters) => {
             brokerDisplayName = companyData.name;
           }
 
-          // Procesar paradas para esta carga específica
+          // Procesar paradas para esta carga específica con información de facilities
           const processedStops = loadStops.map(stop => {
-            // Si es un UUID, buscar en la tabla de ciudades
-            let cityDisplay = stop.city;
-            if (stop.city && stop.city.length === 36 && stop.city.includes('-')) {
-              const cityFromDB = cities.find(c => c.id === stop.city);
-              if (cityFromDB) {
-                cityDisplay = cityFromDB.name;
+            const facility = facilitiesData.find(f => f.id === stop.facility_id);
+            let cityDisplay = 'Sin definir';
+            let stateDisplay = '';
+            
+            if (facility) {
+              // Si es un UUID, buscar en la tabla de ciudades
+              if (facility.city && facility.city.length === 36 && facility.city.includes('-')) {
+                const cityFromDB = cities.find(c => c.id === facility.city);
+                if (cityFromDB) {
+                  cityDisplay = cityFromDB.name;
+                }
+              } else if (facility.city) {
+                cityDisplay = facility.city;
               }
+              stateDisplay = facility.state || '';
             }
             
             return {
               ...stop,
-              city: cityDisplay
+              city: cityDisplay,
+              state: stateDisplay
             };
           });
 
