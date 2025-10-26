@@ -418,7 +418,7 @@ export default function PaymentReports() {
     }
     
     // Estado: Calculado y listo para pago
-    return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.ready_payment')}</Badge>;
+    return <Badge variant="default" className="bg-amber-100 text-amber-800">{t('reports.status.ready_payment')}</Badge>;
   };
 
   const handleMarkAsPaid = (calculation: any) => {
