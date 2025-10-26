@@ -77,30 +77,42 @@ export function FacilityCombobox({
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-        <PopoverContent 
-          className="w-[400px] p-0" 
-          align="start"
-          onWheel={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center border-b px-3">
-            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-            <Input
-              placeholder={t('combobox.search_placeholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            {searchQuery && (
+          <PopoverContent 
+            className="w-[400px] p-0" 
+            align="start"
+            onWheel={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center border-b px-3 gap-2">
+              <Search className="h-4 w-4 shrink-0 opacity-50" />
+              <Input
+                placeholder={t('combobox.search_placeholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setSearchQuery('')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0"
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  onCreateNew();
+                  setOpen(false);
+                }}
+                title={t('combobox.create_new')}
               >
-                <X className="h-4 w-4" />
+                <Plus className="h-4 w-4" />
               </Button>
-            )}
-          </div>
+            </div>
           <div 
             className="max-h-[300px] overflow-y-auto"
             onWheel={(e) => e.stopPropagation()}
@@ -167,17 +179,6 @@ export function FacilityCombobox({
         </Button>
       )}
       </div>
-      
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={onCreateNew}
-        disabled={disabled}
-        title={t('combobox.create_new')}
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
