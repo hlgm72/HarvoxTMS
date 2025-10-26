@@ -19,9 +19,10 @@ interface CreateFacilityDialogProps {
   onClose: () => void;
   facility?: Facility;
   initialName?: string;
+  onSuccess?: (facility: Facility) => void;
 }
 
-export function CreateFacilityDialog({ isOpen, onClose, facility, initialName }: CreateFacilityDialogProps) {
+export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, onSuccess }: CreateFacilityDialogProps) {
   const { t } = useTranslation('facilities');
   const isEditMode = !!facility;
 
@@ -111,8 +112,11 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName }:
           }
         }
         
-        await updateFacility.mutateAsync({ id: facility.id, ...data });
+        const updatedFacility = await updateFacility.mutateAsync({ id: facility.id, ...data });
         form.reset();
+        if (updatedFacility && onSuccess) {
+          onSuccess(updatedFacility as Facility);
+        }
         onClose();
       } else {
         // Verificar si ya existe una facility con el mismo nombre
@@ -127,8 +131,11 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName }:
           setShowDuplicateDialog(true);
         } else {
           // No hay duplicados, crear directamente
-          await createFacility.mutateAsync(data as any);
+          const newFacility = await createFacility.mutateAsync(data as any);
           form.reset();
+          if (newFacility && onSuccess) {
+            onSuccess(newFacility as Facility);
+          }
           onClose();
         }
       }
@@ -147,17 +154,21 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName }:
   const handleConfirmCreate = async () => {
     try {
       if (pendingData) {
+        let savedFacility;
         if (pendingData.id) {
           // Es una actualización
-          await updateFacility.mutateAsync(pendingData);
+          savedFacility = await updateFacility.mutateAsync(pendingData);
         } else {
           // Es una creación
-          await createFacility.mutateAsync(pendingData as any);
+          savedFacility = await createFacility.mutateAsync(pendingData as any);
         }
         form.reset();
         setShowDuplicateDialog(false);
         setPendingData(null);
         setDuplicateFacilities([]);
+        if (savedFacility && onSuccess) {
+          onSuccess(savedFacility as Facility);
+        }
         onClose();
       }
     } catch (error: any) {

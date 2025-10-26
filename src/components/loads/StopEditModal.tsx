@@ -83,6 +83,14 @@ export function StopEditModal({
     setInitialFacilityName('');
   };
 
+  const handleFacilityCreated = (facility: Facility) => {
+    // Actualizar formData con la nueva facility
+    setFormData(prev => ({
+      ...prev,
+      facility_id: facility.id
+    }));
+  };
+
 
   const getStopTypeLabel = () => {
     if (isFirst) return t("loads:create_wizard.phases.route_details.edit_modal.pickup_label");
@@ -325,6 +333,7 @@ export function StopEditModal({
         onClose={handleCloseFacilityDialog}
         facility={editingFacility}
         initialName={initialFacilityName}
+        onSuccess={handleFacilityCreated}
       />
     </Dialog>
   );
