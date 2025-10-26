@@ -45,13 +45,6 @@ export function GenerateLoadOrderDialog({
   const [isGenerating, setIsGenerating] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   
-  console.log('🔍 GenerateLoadOrderDialog - Rendering with props:', { isOpen, loadData });
-  
-  // Watch for changes in isOpen
-  useEffect(() => {
-    console.log('🔍 GenerateLoadOrderDialog - isOpen changed to:', isOpen);
-  }, [isOpen]);
-  
   const form = useForm<z.infer<typeof loadOrderSchema>>({
     resolver: zodResolver(loadOrderSchema),
     defaultValues: {
@@ -84,45 +77,31 @@ export function GenerateLoadOrderDialog({
     }
 
     setIsGenerating(true);
-    console.log('🔄 GenerateLoadOrderDialog - Starting PDF generation...');
     
     try {
-      // Generar el PDF del Load Order
-      console.log('📄 GenerateLoadOrderDialog - Calling generateLoadOrderPDF with data:', {
-        ...loadData,
-        customAmount: values.customAmount
-      });
-      
       const pdfBlob = await generateLoadOrderPDF({
         ...loadData,
         customAmount: values.customAmount
       });
 
-      console.log('✅ GenerateLoadOrderDialog - PDF generated successfully');
-
-      // Notificar que se generó el Load Order
-      console.log('📢 GenerateLoadOrderDialog - Calling onLoadOrderGenerated...');
       onLoadOrderGenerated({
         blob: pdfBlob,
         amount: values.customAmount
       });
 
-       console.log('🎉 GenerateLoadOrderDialog - Load Order generated successfully');
        showSuccess(
          t('generate_load_order.success'),
          `${t('generate_load_order.success')} $${values.customAmount.toFixed(2)}`
       );
 
-      console.log('🚪 GenerateLoadOrderDialog - Closing modal...');
       onClose();
     } catch (error) {
-       console.error('❌ GenerateLoadOrderDialog - Error generating Load Order:', error);
+       console.error('Error generating Load Order:', error);
        showError(
          "Error",
          t('generate_load_order.error')
       );
     } finally {
-      console.log('🏁 GenerateLoadOrderDialog - Finishing, setting isGenerating to false');
       setIsGenerating(false);
     }
   };

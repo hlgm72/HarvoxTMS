@@ -171,10 +171,7 @@ const generateDocumentFileName = (loadNumber: string, documentType: string, orig
 
 // Helper function to check if load order can be generated
 const canGenerateLoadOrder = (loadData: any): boolean => {
-  console.log('🔍 canGenerateLoadOrder - Checking loadData:', loadData);
-  
   if (!loadData) {
-    console.log('❌ canGenerateLoadOrder - No loadData provided');
     return false;
   }
   
@@ -194,14 +191,6 @@ const canGenerateLoadOrder = (loadData: any): boolean => {
     stop.city && 
     stop.state
   );
-  
-  console.log('🔍 canGenerateLoadOrder - Results:', {
-    hasBasicInfo,
-    hasStops,
-    stopsHaveInfo,
-    stopsCount: stops?.length || 0,
-    finalResult: hasBasicInfo && hasStops && stopsHaveInfo
-  });
   
   return hasBasicInfo && hasStops && stopsHaveInfo;
 };
@@ -1104,9 +1093,6 @@ const [uploading, setUploading] = useState<string | null>(null);
             <div className="w-full sm:w-1/4">
               <Button
                 onClick={() => {
-                  console.log('🔄 Load Order button clicked');
-                  console.log('📄 Load data:', loadData);
-                  console.log('✅ Can generate:', canGenerateLoadOrder(loadData));
                   setShowGenerateLoadOrder(true);
                 }}
                 disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
