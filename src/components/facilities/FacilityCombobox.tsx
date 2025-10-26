@@ -45,52 +45,38 @@ export function FacilityCombobox({
 
   return (
     <div className="flex gap-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="flex-1 justify-between"
-            disabled={disabled}
-          >
-            <div className="flex items-center gap-2 truncate flex-1">
-              <Building2 className="h-4 w-4 flex-shrink-0" />
-              <span className="truncate">
-                {selectedFacility ? (
-                  <span className="font-normal">
-                    {selectedFacility.name}
-                    {selectedFacility.city && (
-                      <span className="text-muted-foreground ml-1">
-                        - {selectedFacility.city}, {selectedFacility.state}
-                      </span>
-                    )}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">
-                    {t('combobox.select_facility')}
-                  </span>
-                )}
-              </span>
-            </div>
-            {selectedFacility && onEdit && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-accent"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(selectedFacility);
-                }}
-                title={t('combobox.edit_facility')}
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-            )}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
+      <div className="flex-1 flex gap-2">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="flex-1 justify-between"
+              disabled={disabled}
+            >
+              <div className="flex items-center gap-2 truncate">
+                <Building2 className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">
+                  {selectedFacility ? (
+                    <span className="font-normal">
+                      {selectedFacility.name}
+                      {selectedFacility.city && (
+                        <span className="text-muted-foreground ml-1">
+                          - {selectedFacility.city}, {selectedFacility.state}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">
+                      {t('combobox.select_facility')}
+                    </span>
+                  )}
+                </span>
+              </div>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
         <PopoverContent 
           className="w-[400px] p-0" 
           align="start"
@@ -167,6 +153,20 @@ export function FacilityCombobox({
           </div>
         </PopoverContent>
       </Popover>
+      
+      {selectedFacility && onEdit && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => onEdit(selectedFacility)}
+          disabled={disabled}
+          title={t('combobox.edit_facility')}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+      )}
+      </div>
       
       <Button
         type="button"
