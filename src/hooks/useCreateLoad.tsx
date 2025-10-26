@@ -205,28 +205,25 @@ export const useCreateLoad = () => {
       console.log('🔍 useCreateLoad - Dispatcher in loadData:', loadData.internal_dispatcher_id);
       
       // Prepare stops data with sanitization
+      // ✅ Solo incluir campos que existen en la tabla load_stops
       const stopsData = (data.stops || []).map(stop => ({
         stop_number: stop.stop_number,
         stop_type: stop.stop_type,
-        company_name: sanitizeText(stop.company_name || ''),
-        address: sanitizeText(stop.address || ''),
-        city: sanitizeText(stop.city || ''),
-        state: stop.state,
-        zip_code: sanitizeText(stop.zip_code || ''),
-        reference_number: sanitizeText(stop.reference_number || ''),
-        contact_name: sanitizeText(stop.contact_name || ''),
-        contact_phone: stop.contact_phone || '',
+        facility_id: stop.facility_id || null,
         special_instructions: sanitizeText(stop.special_instructions || ''),
+        driver_notes: sanitizeText(stop.driver_notes || ''),
         scheduled_date: stop.scheduled_date ? 
           (stop.scheduled_date instanceof Date ? 
             formatDateInUserTimeZone(stop.scheduled_date) : 
             stop.scheduled_date) : null,
-        // ✅ CORREGIDO: Enviar null para campos de tiempo vacíos en lugar de cadena vacía
         scheduled_time: stop.scheduled_time && stop.scheduled_time.trim() !== '' ? stop.scheduled_time.trim() : null,
         actual_date: stop.actual_date ? 
           (stop.actual_date instanceof Date ? 
             formatDateInUserTimeZone(stop.actual_date) : 
-            stop.actual_date) : null
+            stop.actual_date) : null,
+        actual_time: stop.actual_time || null,
+        pickup_timezone: stop.pickup_timezone || 'America/New_York',
+        delivery_timezone: stop.delivery_timezone || 'America/New_York'
       }));
 
       console.log('🔍 useCreateLoad - Stops data being sent to RPC:', stopsData);
