@@ -241,3 +241,45 @@ export const useReactivateFacility = () => {
     },
   });
 };
+
+// Hook para buscar facilities duplicadas
+export const useCheckDuplicateFacility = () => {
+  const { userCompany } = useCompanyCache();
+
+  return useMutation({
+    mutationFn: async ({ address, city, state, zipCode }: { 
+      address: string; 
+      city?: string; 
+      state: string;
+      zipCode: string;
+    }) => {
+      if (!userCompany) throw new Error('No company found');
+
+      // Normalizar para comparación (lowercase, trim)
+      const normalizedAddress = address.toLowerCase().trim();
+      const normalizedState = state.toLowerCase().trim();
+      const normalizedZip = zipCode.trim();
+
+      const { data, error } = await supabase
+        .from('facilities')
+        .select('*')
+        .eq('company_id', userCompany.company_id)
+        .eq('state', state)
+        .eq('zip_code', zipCode);
+
+      if (error) throw error;
+
+      // Filtrar por dirección similar en el cliente
+      const duplicates = (data as Facility[]).filter(facility => {
+        const facilityAddress = facility.address.toLowerCase().trim();
+        
+        // Comparación exacta o muy similar
+        return facilityAddress === normalizedAddress || 
+               facilityAddress.includes(normalizedAddress) ||
+               normalizedAddress.includes(facilityAddress);
+      });
+
+      return duplicates;
+    },
+  });
+};
