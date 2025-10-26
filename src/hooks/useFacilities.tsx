@@ -242,41 +242,33 @@ export const useReactivateFacility = () => {
   });
 };
 
-// Hook para buscar facilities duplicadas
-export const useCheckDuplicateFacility = () => {
+// Hook para verificar si ya existe una facility con el mismo nombre
+export const useCheckDuplicateFacilityName = () => {
   const { userCompany } = useCompanyCache();
 
   return useMutation({
-    mutationFn: async ({ address, city, state, zipCode }: { 
-      address: string; 
-      city?: string; 
-      state: string;
-      zipCode: string;
+    mutationFn: async ({ name, excludeId }: { 
+      name: string;
+      excludeId?: string;
     }) => {
       if (!userCompany) throw new Error('No company found');
 
       // Normalizar para comparación (lowercase, trim)
-      const normalizedAddress = address.toLowerCase().trim();
-      const normalizedState = state.toLowerCase().trim();
-      const normalizedZip = zipCode.trim();
+      const normalizedName = name.toLowerCase().trim();
 
       const { data, error } = await supabase
         .from('facilities')
         .select('*')
-        .eq('company_id', userCompany.company_id)
-        .eq('state', state)
-        .eq('zip_code', zipCode);
+        .eq('company_id', userCompany.company_id);
 
       if (error) throw error;
 
-      // Filtrar por dirección similar en el cliente
+      // Filtrar por nombre exacto (case-insensitive)
       const duplicates = (data as Facility[]).filter(facility => {
-        const facilityAddress = facility.address.toLowerCase().trim();
+        const facilityName = facility.name.toLowerCase().trim();
+        const isDifferentFacility = !excludeId || facility.id !== excludeId;
         
-        // Comparación exacta o muy similar
-        return facilityAddress === normalizedAddress || 
-               facilityAddress.includes(normalizedAddress) ||
-               normalizedAddress.includes(facilityAddress);
+        return facilityName === normalizedName && isDifferentFacility;
       });
 
       return duplicates;
