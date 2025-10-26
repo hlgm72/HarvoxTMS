@@ -340,7 +340,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
         isLoading
       });
     }
-  }, [filteredLoads, isLoading, onStatsChange]);
+    // ✅ No incluir onStatsChange en dependencias - es estable (setState)
+  }, [filteredLoads, isLoading]);
 
   if (isLoading) {
     return <LoadingState t={t} />;
