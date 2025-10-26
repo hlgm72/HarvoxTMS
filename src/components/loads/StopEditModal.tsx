@@ -383,7 +383,6 @@ export function StopEditModal({
                 className="h-16 min-h-16 resize-none"
                 maxLength={500}
               />
-              <p className="text-xs text-muted-foreground">{(formData.special_instructions || '').length}/500</p>
             </div>
           </div>
         </div>
