@@ -344,7 +344,7 @@ export const useLoads = (filters?: LoadsFilters) => {
         const stopsResult = loadIds.length > 0 
           ? await supabase
               .from('load_stops')
-              .select('id, load_id, stop_type, stop_number, company_name, address, city, state, zip_code, contact_name, contact_phone, reference_number, scheduled_date, scheduled_time, eta_date, eta_time, driver_notes, special_instructions')
+              .select('id, load_id, stop_type, stop_number, facility_id, scheduled_date, scheduled_time, eta_date, eta_time, driver_notes, special_instructions')
               .in('load_id', loadIds)
               .order('stop_number', { ascending: true })
           : { data: [], error: null };
