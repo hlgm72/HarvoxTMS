@@ -133,8 +133,6 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName }:
                       <Input 
                         placeholder={t('create_facility_dialog.placeholders.name')} 
                         {...field}
-                        value={field.value.toUpperCase()}
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       />
                     </FormControl>
                     <FormMessage />
