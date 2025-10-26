@@ -164,7 +164,7 @@ export function PaymentReportDialog({
       const { data, error } = await supabase
         .from('companies')
         .select(`
-          id, name, street_address, zip_code, state_id, city, phone, email, logo_url
+          id, name, street_address, zip_code, state_id, city, phone, email, logo_url, load_assignment_criteria
         `)
         .eq('id', calculation.company_id)
         .single();
@@ -177,11 +177,16 @@ export function PaymentReportDialog({
 
   // Obtener cargas del período
   const { data: loads = [] } = useQuery({
-    queryKey: ['period-loads', calculation?.id, calculation?.user_id],
+    queryKey: ['period-loads', calculation?.id, calculation?.user_id, company?.load_assignment_criteria],
     queryFn: async () => {
-      if (!calculation) return [];
+      if (!calculation || !company) return [];
       
-      const { data, error } = await supabase
+      // 🚨 CRÍTICO: Usar el mismo criterio que la función de cálculo
+      // Si load_assignment_criteria es 'delivery_date', filtrar por delivery_date
+      // Si es 'pickup_date' (default), filtrar por pickup_date
+      const dateField = company.load_assignment_criteria === 'delivery_date' ? 'delivery_date' : 'pickup_date';
+      
+      let query = supabase
         .from('loads')
         .select(`
           id,
@@ -206,11 +211,15 @@ export function PaymentReportDialog({
             )
           )
         `)
-        .eq('driver_user_id', calculation.user_id)
-        .gte('pickup_date', (calculation as any).period?.period_start_date)
-        .lte('delivery_date', (calculation as any).period?.period_end_date)
+        .eq('driver_user_id', calculation.user_id);
+      
+      // Aplicar filtro según criterio de la compañía
+      query = query
+        .gte(dateField, (calculation as any).period?.period_start_date)
+        .lte(dateField, (calculation as any).period?.period_end_date)
         .order('pickup_date', { ascending: true});
 
+      const { data, error } = await query;
       if (error) throw error;
       
       // Procesar los datos para usar facility data cuando esté disponible
@@ -230,7 +239,7 @@ export function PaymentReportDialog({
       
       return processedData;
     },
-    enabled: !!calculation
+    enabled: !!calculation && !!company
   });
 
   // Obtener información de clientes para las cargas
