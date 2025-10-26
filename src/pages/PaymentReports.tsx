@@ -408,18 +408,25 @@ export default function PaymentReports() {
   };
 
   const getStatusBadge = (calculation: any) => {
-    if (!calculation.calculated_at) {
-      return <Badge variant="outline">{t('reports.status.pending')}</Badge>;
-    }
+    // Prioridad 1: Verificar payment_status primero
     if (calculation.payment_status === 'paid') {
       return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.paid')}</Badge>;
     }
     if (calculation.payment_status === 'failed') {
       return <Badge variant="destructive">{t('reports.status.failed')}</Badge>;
     }
+    
+    // Prioridad 2: Verificar si está pendiente de cálculo
+    if (!calculation.calculated_at) {
+      return <Badge variant="outline">{t('reports.status.pending')}</Badge>;
+    }
+    
+    // Prioridad 3: Verificar balance negativo
     if (calculation.net_payment < 0) {
       return <Badge variant="destructive">{t('reports.status.negative_balance')}</Badge>;
     }
+    
+    // Default: Listo para pago
     return <Badge variant="default" className="bg-green-100 text-green-800">{t('reports.status.ready_payment')}</Badge>;
   };
 
