@@ -85,10 +85,14 @@ export const useClients = () => {
 };
 
 // Fetch contacts for a specific client
-export const useClientContacts = (clientId: string) => {
+export const useClientContacts = (clientId?: string) => {
   return useQuery({
-    queryKey: ["client-contacts", clientId],
+    queryKey: ["client-contacts", clientId || ""],
     queryFn: async () => {
+      if (!clientId) {
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("company_client_contacts")
         .select("*")
@@ -103,10 +107,14 @@ export const useClientContacts = (clientId: string) => {
 };
 
 // Get contact count for a specific client
-export const useClientContactCount = (clientId: string) => {
+export const useClientContactCount = (clientId?: string) => {
   return useQuery({
-    queryKey: ["client-contact-count", clientId],
+    queryKey: ["client-contact-count", clientId || ""],
     queryFn: async () => {
+      if (!clientId) {
+        return 0;
+      }
+
       const { count, error } = await supabase
         .from("company_client_contacts")
         .select("*", { count: "exact", head: true })
