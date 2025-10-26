@@ -89,6 +89,7 @@
           "shipper_facility_info": "Shipper Facility Information",
           "receiver_facility_info": "Receiver Facility Information",
           "facility_label": "Select Facility",
+          "facility_info": "Facility Information",
           "facility_help": "Select a registered facility or enter company details manually below",
           "facility_selected_help": "Company information is taken from the selected facility. Click the edit button to modify the facility.",
           "company_from_facility": "Company name comes from the selected facility",

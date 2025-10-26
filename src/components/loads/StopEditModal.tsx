@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { formatPrettyDate } from '@/lib/dateFormatting';
-import { CalendarIcon, MapPin, Clock, User, Phone, Building, FileText } from 'lucide-react';
+import { CalendarIcon, MapPin, Clock, User, Phone, Building2, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -233,7 +233,7 @@ export function StopEditModal({
           {/* Información Básica */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium flex items-center gap-2">
-              <Building className="h-4 w-4" />
+              <Building2 className="h-4 w-4" />
               {getCompanyInfoLabel()}
             </h3>
             
@@ -258,114 +258,108 @@ export function StopEditModal({
             </div>
           </div>
 
-          {/* Dirección - Mostrar info de facility si está seleccionada, sino permitir editar */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              {t("loads:create_wizard.phases.route_details.edit_modal.address_label")}
-            </h3>
-            
-            {selectedFacility ? (
-              /* Mostrar info de facility en modo lectura */
-              <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
-                <div className="grid grid-cols-1 gap-2">
-                  <div>
-                    <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.address_label")}</p>
-                    <p className="text-sm font-medium">{selectedFacility.address}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.city_label")}</p>
-                      <p className="text-sm font-medium">{selectedFacility.city}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.state_label")}</p>
-                      <p className="text-sm font-medium">{selectedFacility.state}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.zip_label")}</p>
-                    <p className="text-sm font-medium">{selectedFacility.zip_code}</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* Formulario editable si NO hay facility */
-              <AddressForm
-                streetAddress={formData.address || ''}
-                onStreetAddressChange={(value) => updateField('address', value)}
-                stateId={formData.state || ''}
-                onStateChange={(value) => {
-                  updateField('state', value);
-                  updateField('city', ''); // Reset city when state changes
-                }}
-                city={formData.city || ''}
-                onCityChange={(value) => updateField('city', value)}
-                zipCode={formData.zip_code || ''}
-                onZipCodeChange={(value) => updateField('zip_code', value)}
-                streetAddressLabel={t("loads:create_wizard.phases.route_details.edit_modal.address_label")}
-                stateLabel={t("loads:create_wizard.phases.route_details.edit_modal.state_label")}
-                cityLabel={t("loads:create_wizard.phases.route_details.edit_modal.city_label")}
-                zipCodeLabel={t("loads:create_wizard.phases.route_details.edit_modal.zip_label")}
-                required={true}
-              />
-            )}
-          </div>
-
-          {/* Contacto - Mostrar info de facility si está seleccionada, sino permitir editar */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium flex items-center gap-2">
-              <User className="h-4 w-4" />
-              {t("loads:create_wizard.phases.route_details.edit_modal.contact_info")}
-            </h3>
-            
-            {selectedFacility ? (
-              /* Mostrar info de contacto de facility en modo lectura */
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg border">
+          {/* Información de Facility o formularios editables */}
+          {selectedFacility ? (
+            /* Mostrar info completa de facility en modo lectura */
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                {t("loads:create_wizard.phases.route_details.edit_modal.facility_info")}
+              </h3>
+              
+              <div className="space-y-2 p-4 bg-muted/50 rounded-lg border">
+                {/* Dirección completa en una línea */}
                 <div>
-                  <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.contact_name")}</p>
-                  <p className="text-sm font-medium">{selectedFacility.contact_name || '-'}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t("loads:create_wizard.phases.route_details.edit_modal.address_label")}</p>
+                  <p className="text-sm font-medium">
+                    {selectedFacility.address}, {selectedFacility.city}, {selectedFacility.state} {selectedFacility.zip_code}
+                  </p>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.contact_phone")}</p>
-                  <p className="text-sm font-medium">{selectedFacility.contact_phone || '-'}</p>
-                </div>
-              </div>
-            ) : (
-              /* Formulario editable si NO hay facility */
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contact">{t("loads:create_wizard.phases.route_details.edit_modal.contact_name")}</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="contact"
-                      placeholder={t("loads:create_wizard.phases.route_details.edit_modal.contact_name_placeholder")}
-                      className="pl-10"
-                      value={formData.contact_name || ''}
-                      onChange={contactNameHandlers.onChange}
-                      onBlur={contactNameHandlers.onBlur}
-                    />
+                
+                {/* Información de contacto */}
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+                  <div>
+                    <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.contact_name")}</p>
+                    <p className="text-sm font-medium">{selectedFacility.contact_name || '-'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.contact_phone")}</p>
+                    <p className="text-sm font-medium">{selectedFacility.contact_phone || '-'}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+          ) : (
+            /* Formularios editables si NO hay facility seleccionada */
+            <>
+              {/* Dirección */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  {t("loads:create_wizard.phases.route_details.edit_modal.address_label")}
+                </h3>
+                
+                <AddressForm
+                  streetAddress={formData.address || ''}
+                  onStreetAddressChange={(value) => updateField('address', value)}
+                  stateId={formData.state || ''}
+                  onStateChange={(value) => {
+                    updateField('state', value);
+                    updateField('city', ''); // Reset city when state changes
+                  }}
+                  city={formData.city || ''}
+                  onCityChange={(value) => updateField('city', value)}
+                  zipCode={formData.zip_code || ''}
+                  onZipCodeChange={(value) => updateField('zip_code', value)}
+                  streetAddressLabel={t("loads:create_wizard.phases.route_details.edit_modal.address_label")}
+                  stateLabel={t("loads:create_wizard.phases.route_details.edit_modal.state_label")}
+                  cityLabel={t("loads:create_wizard.phases.route_details.edit_modal.city_label")}
+                  zipCodeLabel={t("loads:create_wizard.phases.route_details.edit_modal.zip_label")}
+                  required={true}
+                />
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{t("loads:create_wizard.phases.route_details.edit_modal.contact_phone")}</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      placeholder={t("loads:create_wizard.phases.route_details.edit_modal.contact_phone_placeholder")}
-                      className="pl-10"
-                      value={formData.contact_phone || ''}
-                      onChange={phoneHandlers.onChange}
-                      onKeyPress={phoneHandlers.onKeyPress}
-                    />
+              {/* Contacto */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {t("loads:create_wizard.phases.route_details.edit_modal.contact_info")}
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="contact">{t("loads:create_wizard.phases.route_details.edit_modal.contact_name")}</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="contact"
+                        placeholder={t("loads:create_wizard.phases.route_details.edit_modal.contact_name_placeholder")}
+                        className="pl-10"
+                        value={formData.contact_name || ''}
+                        onChange={contactNameHandlers.onChange}
+                        onBlur={contactNameHandlers.onBlur}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">{t("loads:create_wizard.phases.route_details.edit_modal.contact_phone")}</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="phone"
+                        placeholder={t("loads:create_wizard.phases.route_details.edit_modal.contact_phone_placeholder")}
+                        className="pl-10"
+                        value={formData.contact_phone || ''}
+                        onChange={phoneHandlers.onChange}
+                        onKeyPress={phoneHandlers.onKeyPress}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </>
+          )}
 
           {/* Instrucciones Especiales */}
           <div className="space-y-4">
