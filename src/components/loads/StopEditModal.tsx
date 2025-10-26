@@ -91,6 +91,14 @@ export function StopEditModal({
     }));
   };
 
+  // Format phone number to (xxx) xxx-xxxx
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+  };
 
   const getStopTypeLabel = () => {
     if (isFirst) return t("loads:create_wizard.phases.route_details.edit_modal.pickup_label");
@@ -283,7 +291,9 @@ export function StopEditModal({
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.edit_modal.contact_phone")}</p>
-                    <p className="text-sm font-medium">{selectedFacility.contact_phone || '-'}</p>
+                    <p className="text-sm font-medium">
+                      {selectedFacility.contact_phone ? formatPhoneNumber(selectedFacility.contact_phone) : '-'}
+                    </p>
                   </div>
                 </div>
               </div>

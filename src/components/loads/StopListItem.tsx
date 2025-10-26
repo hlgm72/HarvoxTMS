@@ -132,7 +132,16 @@ export function StopListItem({
       parts.push(facilityData.zip_code);
     }
     
-    return parts.join(', ');
+  return parts.join(', ');
+  };
+
+  // Format phone number to (xxx) xxx-xxxx
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
   };
 
   // Get company name from facility data
@@ -208,8 +217,8 @@ export function StopListItem({
             <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <span className="text-muted-foreground">
               {facilityData.contact_name && facilityData.contact_phone 
-                ? `${facilityData.contact_name} - ${facilityData.contact_phone}`
-                : facilityData.contact_name || facilityData.contact_phone
+                ? `${facilityData.contact_name} - ${formatPhoneNumber(facilityData.contact_phone)}`
+                : facilityData.contact_name || (facilityData.contact_phone ? formatPhoneNumber(facilityData.contact_phone) : '')
               }
             </span>
           </div>
