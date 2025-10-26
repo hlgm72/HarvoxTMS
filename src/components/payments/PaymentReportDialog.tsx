@@ -199,9 +199,6 @@ export function PaymentReportDialog({
             stop_number,
             scheduled_date,
             facility_id,
-            company_name,
-            city,
-            state,
             facilities(
               name,
               city,
@@ -224,10 +221,10 @@ export function PaymentReportDialog({
           stop_number: stop.stop_number,
           scheduled_date: stop.scheduled_date,
           facility_id: stop.facility_id,
-          // Usar datos de facility si están disponibles, sino usar los del stop
-          company_name: stop.facilities?.name || stop.company_name,
-          city: stop.facilities?.city || stop.city,
-          state: stop.facilities?.state || stop.state
+          // Usar datos de facility si están disponibles
+          company_name: stop.facilities?.name || '',
+          city: stop.facilities?.city || '',
+          state: stop.facilities?.state || ''
         }))
       }));
       
