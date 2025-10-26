@@ -196,9 +196,17 @@ export function PaymentReportDialog({
           leasing_percentage,
           load_stops(
             stop_type,
+            stop_number,
+            scheduled_date,
+            facility_id,
             company_name,
             city,
-            state
+            state,
+            facilities(
+              name,
+              city,
+              state
+            )
           )
         `)
         .eq('driver_user_id', calculation.user_id)
@@ -207,7 +215,23 @@ export function PaymentReportDialog({
         .order('pickup_date', { ascending: true});
 
       if (error) throw error;
-      return data || [];
+      
+      // Procesar los datos para usar facility data cuando esté disponible
+      const processedData = (data || []).map(load => ({
+        ...load,
+        load_stops: (load.load_stops || []).map((stop: any) => ({
+          stop_type: stop.stop_type,
+          stop_number: stop.stop_number,
+          scheduled_date: stop.scheduled_date,
+          facility_id: stop.facility_id,
+          // Usar datos de facility si están disponibles, sino usar los del stop
+          company_name: stop.facilities?.name || stop.company_name,
+          city: stop.facilities?.city || stop.city,
+          state: stop.facilities?.state || stop.state
+        }))
+      }));
+      
+      return processedData;
     },
     enabled: !!calculation
   });
