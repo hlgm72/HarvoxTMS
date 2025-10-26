@@ -43,6 +43,7 @@ export function StopEditModal({
   const [isDateOpen, setIsDateOpen] = useState(false);
   const [showCreateFacility, setShowCreateFacility] = useState(false);
   const [editingFacility, setEditingFacility] = useState<Facility | undefined>(undefined);
+  const [initialFacilityName, setInitialFacilityName] = useState<string>('');
   
   const { data: facilities = [] } = useFacilities();
   const selectedFacility = facilities.find(f => f.id === formData.facility_id);
@@ -90,6 +91,7 @@ export function StopEditModal({
   const handleCloseFacilityDialog = () => {
     setShowCreateFacility(false);
     setEditingFacility(undefined);
+    setInitialFacilityName('');
   };
 
 
@@ -243,8 +245,9 @@ export function StopEditModal({
               <FacilityCombobox
                 value={formData.facility_id || null}
                 onValueChange={handleFacilitySelect}
-                onCreateNew={() => {
+                onCreateNew={(searchText) => {
                   setEditingFacility(undefined);
+                  setInitialFacilityName(searchText || '');
                   setShowCreateFacility(true);
                 }}
                 onEdit={handleEditFacility}
@@ -403,6 +406,7 @@ export function StopEditModal({
         isOpen={showCreateFacility}
         onClose={handleCloseFacilityDialog}
         facility={editingFacility}
+        initialName={initialFacilityName}
       />
     </Dialog>
   );

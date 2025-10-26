@@ -17,9 +17,10 @@ interface CreateFacilityDialogProps {
   isOpen: boolean;
   onClose: () => void;
   facility?: Facility;
+  initialName?: string;
 }
 
-export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacilityDialogProps) {
+export function CreateFacilityDialog({ isOpen, onClose, facility, initialName }: CreateFacilityDialogProps) {
   const { t } = useTranslation('facilities');
   const isEditMode = !!facility;
 
@@ -71,7 +72,7 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
         });
       } else {
         form.reset({
-          name: '',
+          name: initialName || '',
           address: '',
           city: '',
           state: '',
@@ -83,7 +84,7 @@ export function CreateFacilityDialog({ isOpen, onClose, facility }: CreateFacili
         });
       }
     }
-  }, [isOpen, facility]);
+  }, [isOpen, facility, initialName, form]);
 
   const handleSubmit = async (data: FacilityForm) => {
     try {

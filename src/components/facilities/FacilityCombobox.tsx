@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 interface FacilityComboboxProps {
   value?: string | null;
   onValueChange: (facilityId: string | null, facility?: Facility) => void;
-  onCreateNew: () => void;
+  onCreateNew: (searchText?: string) => void;
   onEdit?: (facility: Facility) => void;
   disabled?: boolean;
 }
@@ -105,7 +105,7 @@ export function FacilityCombobox({
                 size="sm"
                 className="h-8 w-8 p-0"
                 onClick={() => {
-                  onCreateNew();
+                  onCreateNew(searchQuery);
                   setOpen(false);
                 }}
                 title={t('combobox.create_new')}
