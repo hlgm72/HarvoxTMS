@@ -559,7 +559,7 @@ export default function PaymentReports() {
         <div className="space-y-2">
           {statsDisplay}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-muted-foreground">{t('common:active_filters')}:</span>
+            <span className="text-xs text-muted-foreground">{t('common:filters.activeFilters')}:</span>
             {periodDesc && (
               <Badge variant="secondary" className="text-xs font-normal">
                 {periodDesc}{dateRange && `: ${dateRange}`}
