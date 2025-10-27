@@ -313,6 +313,14 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                   </div>
                 </div>
                 
+                {expense.invoice_number && (
+                  <div className="flex items-center gap-1 text-xs">
+                    <Receipt className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">{t('fuel:expenses_list.invoice')}:</span>
+                    <span className="font-medium">{expense.invoice_number}</span>
+                  </div>
+                )}
+                
                 <div className="flex justify-end items-center">
                   {getStatusBadge(expense.status)}
                 </div>

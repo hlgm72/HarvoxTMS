@@ -80,6 +80,7 @@
     "driver_not_found": "Driver not found",
     "license": "License",
     "state": "State",
+    "invoice": "Invoice",
     "actions": {
       "menu_label": "Expense options",
       "view": "View Details",
