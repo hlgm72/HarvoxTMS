@@ -126,11 +126,11 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <Avatar className="h-28 w-28 flex-shrink-0 bg-white border border-border">
+        <Avatar className="h-20 w-20 flex-shrink-0 bg-white border border-border">
           <AvatarImage 
             src={logoUrl} 
             alt={clientName}
-            className="object-contain p-2.5"
+            className="object-contain p-2"
             loading="eager"
           />
           <AvatarFallback className="bg-muted">
