@@ -59,12 +59,13 @@ interface EnrichedTransaction {
 export function PDFAnalyzer() {
   const { t } = useTranslation('fuel');
   const { user } = useAuth();
-  const { showSuccess, showError } = useFleetNotifications();
+  const { showSuccess, showError, showWarning } = useFleetNotifications();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
   const queryClient = useQueryClient();
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState<string>('');
   const [isEnriching, setIsEnriching] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [enrichedTransactions, setEnrichedTransactions] = useState<EnrichedTransaction[]>([]);
@@ -132,9 +133,12 @@ export function PDFAnalyzer() {
     if (!selectedFile) return;
 
     setIsAnalyzing(true);
+    setAnalysisStep('Extrayendo texto del PDF...');
+    
     try {
       const pdfText = await extractTextFromPDF(selectedFile);
       
+      setAnalysisStep('Analizando con IA...');
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
         body: { pdfText }
       });
@@ -144,13 +148,25 @@ export function PDFAnalyzer() {
       }
 
       if (data.success) {
+        const transactionCount = data.analysis.sampleData?.length || 0;
+        
         setAnalysisResult(data.analysis);
+        setAnalysisStep(`Enriqueciendo ${transactionCount} transacciones...`);
         await enrichTransactions(data.analysis.sampleData);
         setSelectedTransactions(new Set()); // Reset selection
+        
         showSuccess(
           t('analyzer.results.analysis_complete'),
-          t('analyzer.results.analysis_success')
+          `${t('analyzer.results.analysis_success')} (${transactionCount} transacciones)`
         );
+        
+        // Advertir si se acerca al límite de procesamiento
+        if (transactionCount >= 90) {
+          showWarning(
+            'Límite de transacciones alcanzado',
+            'El PDF se acerca al límite de procesamiento (~100). Algunas transacciones podrían no haberse detectado. Considera dividir el PDF en rangos más pequeños.'
+          );
+        }
       } else {
         throw new Error(data.error || 'Error analyzing PDF');
       }
@@ -162,6 +178,7 @@ export function PDFAnalyzer() {
       );
     } finally {
       setIsAnalyzing(false);
+      setAnalysisStep('');
     }
   };
 
@@ -707,6 +724,14 @@ export function PDFAnalyzer() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Advertencia sobre el límite */}
+          <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Límite de procesamiento:</strong> Para resultados óptimos, el PDF no debe exceder <strong>100 transacciones</strong>. Si tu archivo tiene más, considera dividirlo en rangos de fechas más pequeños para asegurar que se detecten todas las transacciones.
+            </AlertDescription>
+          </Alert>
+
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <input
@@ -726,7 +751,7 @@ export function PDFAnalyzer() {
               ) : (
                 <Upload className="h-4 w-4" />
               )}
-              {isAnalyzing ? t('analyzer.upload.analyzing') : t('analyzer.upload.analyze_pdf')}
+              {isAnalyzing ? analysisStep || t('analyzer.upload.analyzing') : t('analyzer.upload.analyze_pdf')}
             </Button>
           </div>
 
@@ -746,9 +771,11 @@ export function PDFAnalyzer() {
           <CardContent className="flex flex-col items-center justify-center p-12 space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div className="text-center space-y-2">
-              <h3 className="text-lg font-semibold">{t('analyzer.upload.analyzing')}</h3>
+              <h3 className="text-lg font-semibold">{analysisStep || t('analyzer.upload.analyzing')}</h3>
               <p className="text-sm text-muted-foreground">
-                {t('analyzer.upload.processing_pdf')}
+                {analysisStep.includes('Extrayendo') && 'Leyendo el contenido del PDF...'}
+                {analysisStep.includes('Analizando') && 'La IA está identificando las transacciones...'}
+                {analysisStep.includes('Enriqueciendo') && 'Validando conductores, vehículos y períodos...'}
               </p>
             </div>
           </CardContent>
