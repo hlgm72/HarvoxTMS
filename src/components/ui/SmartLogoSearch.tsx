@@ -72,14 +72,24 @@ export function SmartLogoSearch({
   };
 
   const handleSelectLogo = async (logoUrl: string) => {
-    // SIEMPRE usar la URL externa directamente, sin descargar todavía
-    // La descarga se hará solo cuando se guarde exitosamente el cliente
-    onLogoSelect(logoUrl);
+    if (!companyName.trim()) {
+      setSearchError("Se requiere el nombre de la empresa para descargar el logo");
+      return;
+    }
+
+    // Descargar el logo al Storage de Supabase
+    const result = await downloadLogo(logoUrl, clientId, companyName);
     
-    setSearchResults([]);
-    setSearchError(null);
-    setIsRejected(false);
-    setCurrentSourceIndex(0);
+    if (result.success && result.logoUrl) {
+      // Pasar la URL del Storage (no la URL externa)
+      onLogoSelect(result.logoUrl);
+      setSearchResults([]);
+      setSearchError(null);
+      setIsRejected(false);
+      setCurrentSourceIndex(0);
+    } else {
+      setSearchError(result.error || "Error al descargar el logo al Storage");
+    }
   };
 
   const getInitials = (name: string) => {

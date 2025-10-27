@@ -18,7 +18,7 @@ const supabaseClient = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-async function downloadAndStoreImage(imageUrl: string, clientId: string, companyName: string): Promise<string | null> {
+async function downloadAndStoreImage(imageUrl: string, clientId: string | undefined, companyName: string): Promise<string | null> {
   try {
     console.log(`Downloading image from: ${imageUrl}`);
     
@@ -39,7 +39,9 @@ async function downloadAndStoreImage(imageUrl: string, clientId: string, company
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
     
-    const filePath = `${clientId}/${cleanCompanyName}.png`;
+    // Use clientId folder if available, otherwise use temp folder
+    const folder = clientId || 'temp';
+    const filePath = `${folder}/${cleanCompanyName}-${Date.now()}.png`;
     
     // Upload to Supabase Storage
     const { error: uploadError } = await supabaseClient.storage
@@ -77,11 +79,11 @@ serve(async (req) => {
   try {
     const { imageUrl, clientId, companyName } = await req.json();
     
-    if (!imageUrl || !clientId || !companyName) {
+    if (!imageUrl || !companyName) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Image URL, client ID, and company name are required' 
+          error: 'Image URL and company name are required' 
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -90,7 +92,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Starting download for client ${clientId}: ${companyName}`);
+    console.log(`Starting download for ${clientId ? `client ${clientId}` : 'new client'}: ${companyName}`);
 
     const storedUrl = await downloadAndStoreImage(imageUrl, clientId, companyName);
     
