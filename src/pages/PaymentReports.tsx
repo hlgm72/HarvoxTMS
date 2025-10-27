@@ -567,15 +567,6 @@ export default function PaymentReports() {
             )}
             {filters.driverId !== 'all' && (() => {
               const driver = drivers.find(d => d.user_id === filters.driverId);
-              
-              // Debug: verificar el contenido real de filters
-              const commonResources = i18n.getResourceBundle('en', 'common');
-              console.log('🔍 Full common object keys:', Object.keys(commonResources));
-              console.log('🔍 Filters typeof:', typeof commonResources?.filters);
-              console.log('🔍 Filters keys:', commonResources?.filters ? Object.keys(commonResources.filters) : 'no keys');
-              console.log('🔍 Filters full:', JSON.stringify(commonResources?.filters, null, 2));
-              
-              // Usar hardcoded por ahora
               const translatedDriver = i18n.language === 'es' ? 'Conductor' : 'Driver';
               
               return (
