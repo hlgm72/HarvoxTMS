@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,23 +26,23 @@ serve(async (req) => {
       );
     }
 
-    if (!openAIApiKey) {
+    if (!lovableApiKey) {
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        JSON.stringify({ error: 'Lovable API key not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Image received, analyzing with OpenAI Vision...');
+    console.log('Image received, analyzing with Lovable AI (Gemini)...');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'system',
@@ -98,9 +98,9 @@ Extract ALL visible rows, not just examples.`
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
+      console.error('Lovable AI error:', response.status, errorText);
       return new Response(
-        JSON.stringify({ error: 'OpenAI API error', details: errorText }),
+        JSON.stringify({ error: 'Lovable AI error', details: errorText }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -108,8 +108,8 @@ Extract ALL visible rows, not just examples.`
     const data = await response.json();
     const responseText = data.choices[0].message.content;
     
-    console.log('OpenAI analysis complete');
-    console.log('OpenAI raw response:', responseText.substring(0, 500));
+    console.log('Lovable AI analysis complete');
+    console.log('Gemini raw response:', responseText.substring(0, 500));
 
     let analysisResult;
     try {
