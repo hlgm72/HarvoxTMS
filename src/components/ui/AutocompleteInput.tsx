@@ -79,6 +79,13 @@ export function AutocompleteInput({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Close dropdown on Tab to allow normal navigation
+    if (e.key === 'Tab') {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative">
       <Input
@@ -87,6 +94,7 @@ export function AutocompleteInput({
         onChange={handleInputChange}
         onBlur={handleBlur}
         onFocus={handleFocus}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={className}
       />
