@@ -26,7 +26,10 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `client-logos/${fileName}`;
+      // Use clientId for organized storage, or temp folder if no clientId yet
+      const filePath = clientId 
+        ? `${clientId}/${fileName}`
+        : `temp/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('client-logos')
@@ -72,10 +75,9 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
   const removeLogo = async () => {
     if (logoUrl) {
       try {
-        // Extract file path from URL
-        const urlParts = logoUrl.split('/');
-        const fileName = urlParts[urlParts.length - 1];
-        const filePath = `client-logos/${fileName}`;
+        // Extract file path from URL (everything after the bucket name)
+        const urlParts = logoUrl.split('/storage/v1/object/public/client-logos/');
+        const filePath = urlParts[1] || logoUrl.split('/').slice(-2).join('/');
 
         await supabase.storage
           .from('client-logos')
