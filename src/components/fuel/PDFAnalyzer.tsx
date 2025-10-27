@@ -835,14 +835,9 @@ export function PDFAnalyzer() {
                         </CardTitle>
                         <div className="flex gap-1 flex-wrap">
                           {transaction.import_status === 'already_imported' ? (
-                            <>
-                              <Badge variant="secondary" className="bg-orange-500 text-white">
-                                {t('analyzer.mapping.already_imported')}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                {t('analyzer.mapping.duplicate_detected')}
-                              </Badge>
-                            </>
+                            <Badge variant="secondary" className="bg-orange-500 text-white">
+                              {t('analyzer.mapping.already_imported')}
+                            </Badge>
                           ) : transaction.import_status === 'period_paid' ? (
                             <Badge variant="destructive">{t('analyzer.mapping.period_paid')}</Badge>
                           ) : (
