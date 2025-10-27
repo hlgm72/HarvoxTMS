@@ -570,14 +570,21 @@ export default function PaymentReports() {
                 {periodDesc}{dateRange && `: ${dateRange}`}
               </Badge>
             )}
-            {filters.driverId !== 'all' && (
-              <Badge variant="secondary" className="text-xs font-normal">
-                {t("common:filters.driver")}: {(() => {
-                  const driver = drivers.find(d => d.user_id === filters.driverId);
-                  return driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId;
-                })()}
-              </Badge>
-            )}
+            {filters.driverId !== 'all' && (() => {
+              const driver = drivers.find(d => d.user_id === filters.driverId);
+              const translatedDriver = t("common:filters.driver");
+              console.log('🔍 Translation check:', {
+                key: "common:filters.driver",
+                translated: translatedDriver,
+                language: i18n.language,
+                driver: driver
+              });
+              return (
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {translatedDriver}: {driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}
+                </Badge>
+              );
+            })()}
             {filters.status !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
                 {t("common:filters.status")}: {filters.status}
