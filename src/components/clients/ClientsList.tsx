@@ -96,7 +96,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                         loading="eager"
                       />
                       <AvatarFallback className="bg-muted">
-                        {getInitials(client.alias || client.name)}
+                        {getInitials(client.name)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -186,7 +186,7 @@ export function ClientsList({ clients }: ClientsListProps) {
                       loading="eager"
                     />
                     <AvatarFallback className="bg-muted">
-                      {getInitials(client.alias || client.name)}
+                      {getInitials(client.name)}
                     </AvatarFallback>
                   </Avatar>
                   

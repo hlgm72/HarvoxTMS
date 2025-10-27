@@ -96,7 +96,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                       loading="eager"
                     />
                     <AvatarFallback className="text-sm font-semibold bg-primary/10 text-primary">
-                      {getInitials(client.alias || client.name)}
+                      {getInitials(client.name)}
                     </AvatarFallback>
                   </Avatar>
                   <Badge variant={client.is_active ? "default" : "secondary"} className="text-xs">
