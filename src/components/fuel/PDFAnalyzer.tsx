@@ -92,35 +92,37 @@ export function PDFAnalyzer() {
     });
   };
 
-  const convertPDFToImage = async (file: File): Promise<string> => {
+  const extractTextFromPDF = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async () => {
         try {
+          console.log('📝 [PDF Analyzer] Extrayendo texto del PDF...');
+          
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           const pdf = await (window as any).pdfjsLib.getDocument({ data: typedarray }).promise;
           
-          console.log('📄 PDF tiene', pdf.numPages, 'páginas');
+          console.log(`📄 PDF tiene ${pdf.numPages} páginas`);
+
+          let fullText = '';
           
-          // Renderizar primera página con máxima calidad
-          const page = await pdf.getPage(1);
-          // Escala 3.0 balanceada (buena calidad sin payload gigante)
-          const viewport = page.getViewport({ scale: 3.0 });
-          const canvas = document.createElement('canvas');
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          const context = canvas.getContext('2d');
-          
-          if (context) {
-            await page.render({ canvasContext: context, viewport }).promise;
-            // JPEG con calidad máxima pero tamaño razonable
-            const imageBase64 = canvas.toDataURL('image/jpeg', 1.0).split(',')[1];
-            console.log(`✅ Página 1 renderizada (${viewport.width}x${viewport.height})`);
-            resolve(imageBase64);
-          } else {
-            reject(new Error('Could not get canvas context'));
+          // Extraer texto de todas las páginas
+          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            
+            const pageText = textContent.items
+              .map((item: any) => item.str)
+              .join(' ');
+            
+            fullText += `\n=== PÁGINA ${pageNum} ===\n${pageText}\n`;
+            console.log(`✅ Página ${pageNum} procesada (${pageText.length} caracteres)`);
           }
+
+          console.log(`📊 Total de texto extraído: ${fullText.length} caracteres`);
+          resolve(fullText);
         } catch (error) {
+          console.error('Error extrayendo texto del PDF:', error);
           reject(error);
         }
       };
@@ -134,13 +136,13 @@ export function PDFAnalyzer() {
 
     setIsAnalyzing(true);
     try {
-      // Convert first page of PDF to image
-      const imageBase64 = await convertPDFToImage(selectedFile);
+      // Extraer texto del PDF
+      const pdfText = await extractTextFromPDF(selectedFile);
       
-      console.log(`📤 Enviando imagen al análisis`);
+      console.log(`📤 Enviando texto al análisis (${pdfText.length} caracteres)`);
       
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { imageBase64 }
+        body: { pdfText }
       });
 
       if (error) {

@@ -15,13 +15,13 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting PDF image analysis...');
+    console.log('Starting PDF text analysis...');
     
-    const { imageBase64 } = await req.json();
+    const { pdfText } = await req.json();
 
-    if (!imageBase64) {
+    if (!pdfText) {
       return new Response(
-        JSON.stringify({ error: 'Image base64 data is required' }),
+        JSON.stringify({ error: 'PDF text is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -33,7 +33,8 @@ serve(async (req) => {
       );
     }
 
-    console.log('Image received, analyzing with Lovable AI (Gemini)...');
+    console.log('Text received, analyzing with Lovable AI (Gemini)...');
+    console.log('Text length:', pdfText.length);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -46,16 +47,16 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the table. Return valid JSON only.'
+            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the text. Return valid JSON only.'
           },
           {
             role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Extract ALL fuel transactions from this table image. Look at EVERY row.
+            content: `Extract ALL fuel transactions from this PDF text. Look at EVERY transaction row.
 
-For EACH row you see, extract:
+PDF TEXT:
+${pdfText}
+
+For EACH transaction you see, extract:
 - date: Transaction date (YYYY-MM-DD format)
 - card: Full card number
 - unit: Unit/vehicle number  
@@ -79,16 +80,7 @@ Return JSON:
   "analysis": "Found N transactions"
 }
 
-Extract ALL visible rows, not just examples.`
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/jpeg;base64,${imageBase64}`,
-                  detail: 'high'
-                }
-              }
-            ]
+Extract ALL visible rows, not just examples. Be thorough and extract every single transaction.`
           }
         ],
         max_completion_tokens: 16000,
