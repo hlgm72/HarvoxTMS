@@ -462,8 +462,8 @@ export function PDFAnalyzer() {
           enrichedTransaction.period_mapping_status = 'found';
           enrichedTransaction.period_status = matchingPeriod.payment_status;
           
-          // Bloquear importación si el período está pagado
-          if (matchingPeriod.payment_status === 'paid') {
+          // Bloquear importación si el período está pagado (solo si NO está ya importada)
+          if (matchingPeriod.payment_status === 'paid' && enrichedTransaction.import_status !== 'already_imported') {
             enrichedTransaction.import_status = 'period_paid';
           }
         } else {
