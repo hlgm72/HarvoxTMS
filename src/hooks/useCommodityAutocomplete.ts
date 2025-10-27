@@ -22,12 +22,13 @@ export const useCommodityAutocomplete = (searchTerm: string) => {
       setIsLoading(true);
       
       try {
+        // Fetch more records to ensure we get enough unique commodities
         const { data, error } = await supabase
           .from('loads')
           .select('commodity')
           .not('commodity', 'is', null)
           .ilike('commodity', `%${debouncedSearchTerm}%`)
-          .limit(10);
+          .limit(100);
 
         if (error) {
           console.error('Error fetching commodities:', error);
@@ -35,10 +36,13 @@ export const useCommodityAutocomplete = (searchTerm: string) => {
           return;
         }
 
-        // Get unique commodities and convert to options
+        // Get unique commodities and convert to options, then limit to 20
         const uniqueCommodities = Array.from(
           new Set(data?.map(item => item.commodity).filter(Boolean))
-        ).map(commodity => ({
+        )
+        .sort() // Sort alphabetically
+        .slice(0, 20) // Limit to 20 unique results
+        .map(commodity => ({
           value: commodity!,
           label: commodity!
         }));
