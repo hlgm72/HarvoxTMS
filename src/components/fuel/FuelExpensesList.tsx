@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Fuel, MoreHorizontal, Edit, Trash2, Eye, MapPin, Receipt, User, Calendar, DollarSign } from 'lucide-react';
+import { Fuel, MoreHorizontal, Edit, Trash2, Eye, MapPin, Receipt, User, Calendar, DollarSign, FileText } from 'lucide-react';
 import { useFuelExpenses, useDeleteFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateTime, formatDateOnly } from '@/lib/dateFormatting';
@@ -314,7 +314,7 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                     </div>
                     {expense.invoice_number && (
                       <div className="flex items-center gap-1 pl-4">
-                        <Receipt className="h-3 w-3 text-muted-foreground" />
+                        <FileText className="h-3 w-3 text-muted-foreground" />
                         <span className="font-medium">{expense.invoice_number}</span>
                       </div>
                     )}
