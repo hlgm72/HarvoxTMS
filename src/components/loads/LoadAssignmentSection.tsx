@@ -416,22 +416,6 @@ export function LoadAssignmentSection({
                   ))}
                 </SelectContent>
               </Select>
-
-              {selectedDispatcher && (
-                <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">
-                      {t("loads:create_wizard.phases.assignment.dispatcher_section.selected_label")} {selectedDispatcher.first_name} {selectedDispatcher.last_name}
-                    </span>
-                    {selectedDispatcher.phone && (
-                      <span className="text-sm text-muted-foreground">
-                        📞 {selectedDispatcher.phone}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
