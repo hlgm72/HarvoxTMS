@@ -45,7 +45,7 @@ export function AutocompleteInput({
       return;
     }
     
-    const newValue = e.target.value;
+    const newValue = e.target.value.toUpperCase();
     setInputValue(newValue);
     onChange(newValue);
     setIsOpen(newValue.length >= 3);
@@ -53,8 +53,9 @@ export function AutocompleteInput({
 
   const handleSelect = (selectedValue: string) => {
     setIsSelecting(true);
-    setInputValue(selectedValue);
-    onChange(selectedValue);
+    const upperValue = selectedValue.toUpperCase();
+    setInputValue(upperValue);
+    onChange(upperValue);
     setIsOpen(false);
     
     // Use setTimeout to ensure the selection is processed
