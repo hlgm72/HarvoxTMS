@@ -88,12 +88,11 @@ export function ClientsList({ clients }: ClientsListProps) {
               <div className="block sm:hidden space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar key={client.logo_url || `no-logo-${client.id}`} className="h-10 w-10 bg-white border border-border">
+                    <Avatar className="h-10 w-10 bg-white border border-border">
                       <AvatarImage 
-                        src={client.logo_url ? `${client.logo_url}${client.logo_url.includes('?') ? '&' : '?'}t=${Date.now()}` : undefined}
+                        src={client.logo_url || undefined}
                         alt={client.name}
                         className="object-contain p-1"
-                        loading="eager"
                       />
                       <AvatarFallback className="bg-muted">
                         {getInitials(client.name)}
@@ -178,12 +177,11 @@ export function ClientsList({ clients }: ClientsListProps) {
               {/* Desktop Layout */}
               <div className="hidden sm:flex items-center justify-between">
                 <div className="flex items-center space-x-4 flex-1 min-w-0">
-                  <Avatar key={client.logo_url || `no-logo-${client.id}`} className="h-12 w-12 flex-shrink-0 bg-white border border-border">
+                  <Avatar className="h-12 w-12 flex-shrink-0 bg-white border border-border">
                     <AvatarImage 
-                      src={client.logo_url ? `${client.logo_url}${client.logo_url.includes('?') ? '&' : '?'}t=${Date.now()}` : undefined}
+                      src={client.logo_url || undefined}
                       alt={client.name}
                       className="object-contain p-1.5"
-                      loading="eager"
                     />
                     <AvatarFallback className="bg-muted">
                       {getInitials(client.name)}

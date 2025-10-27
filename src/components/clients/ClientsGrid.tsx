@@ -88,12 +88,11 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
             <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar key={client.logo_url || `no-logo-${client.id}`} className="h-10 w-10 border border-border">
+                  <Avatar className="h-10 w-10 border border-border">
                     <AvatarImage 
-                      src={client.logo_url ? `${client.logo_url}${client.logo_url.includes('?') ? '&' : '?'}t=${Date.now()}` : undefined}
+                      src={client.logo_url || undefined}
                       alt={client.name}
                       className="object-contain p-1 bg-white"
-                      loading="eager"
                     />
                     <AvatarFallback className="text-sm font-semibold bg-primary/10 text-primary">
                       {getInitials(client.name)}
