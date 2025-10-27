@@ -47,8 +47,8 @@ export function LogoMigrationDialog({ trigger }: LogoMigrationDialogProps) {
         <DialogHeader>
           <DialogTitle>Migrar Logos al Storage Local</DialogTitle>
           <DialogDescription>
-            Esta acción descargará todos los logos de Clearbit y los almacenará en el storage local
-            para eliminar la dependencia externa.
+            Esta acción descargará todos los logos externos y los almacenará en el storage local
+            para eliminar dependencias externas.
           </DialogDescription>
         </DialogHeader>
 
@@ -59,10 +59,10 @@ export function LogoMigrationDialog({ trigger }: LogoMigrationDialogProps) {
               <AlertDescription>
                 <strong>Importante:</strong> Esta migración:
                 <ul className="list-disc ml-4 mt-2">
-                  <li>Descargará las imágenes de Clearbit</li>
+                  <li>Descargará las imágenes desde URLs externas</li>
                   <li>Las almacenará en el bucket client-logos</li>
                   <li>Actualizará las URLs en la base de datos</li>
-                  <li>Eliminará la dependencia externa</li>
+                  <li>Eliminará dependencias externas</li>
                 </ul>
               </AlertDescription>
             </Alert>

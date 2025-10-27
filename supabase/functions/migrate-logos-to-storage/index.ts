@@ -17,17 +17,18 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Get all clients with Clearbit logos
+    // Get all clients with external logos (not from our storage)
     const { data: clients, error: clientsError } = await supabaseClient
       .from('company_clients')
       .select('id, name, logo_url')
-      .like('logo_url', '%clearbit.com%')
+      .not('logo_url', 'is', null)
+      .not('logo_url', 'like', '%supabase.co/storage%')
 
     if (clientsError) {
       throw clientsError
     }
 
-    console.log(`Found ${clients?.length || 0} clients with Clearbit logos`)
+    console.log(`Found ${clients?.length || 0} clients with external logos`)
 
     const results = {
       total: clients?.length || 0,
@@ -40,7 +41,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           success: true,
-          message: 'No clients with Clearbit logos found',
+          message: 'No clients with external logos found',
           results
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -51,7 +52,7 @@ serve(async (req) => {
       try {
         console.log(`Processing client: ${client.name} (${client.id})`)
         
-        // Download the image from Clearbit
+        // Download the image from external URL
         const imageResponse = await fetch(client.logo_url)
         
         if (!imageResponse.ok) {
