@@ -101,16 +101,11 @@ export function PDFAnalyzer() {
       const reader = new FileReader();
       reader.onload = async () => {
         try {
-          console.log('📝 [PDF Analyzer] Extrayendo texto del PDF...');
-          
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           const pdf = await (window as any).pdfjsLib.getDocument({ data: typedarray }).promise;
-          
-          console.log(`📄 PDF tiene ${pdf.numPages} páginas`);
 
           let fullText = '';
           
-          // Extraer texto de todas las páginas
           for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
             const textContent = await page.getTextContent();
@@ -120,10 +115,8 @@ export function PDFAnalyzer() {
               .join(' ');
             
             fullText += `\n=== PÁGINA ${pageNum} ===\n${pageText}\n`;
-            console.log(`✅ Página ${pageNum} procesada (${pageText.length} caracteres)`);
           }
 
-          console.log(`📊 Total de texto extraído: ${fullText.length} caracteres`);
           resolve(fullText);
         } catch (error) {
           console.error('Error extrayendo texto del PDF:', error);
@@ -140,10 +133,7 @@ export function PDFAnalyzer() {
 
     setIsAnalyzing(true);
     try {
-      // Extraer texto del PDF
       const pdfText = await extractTextFromPDF(selectedFile);
-      
-      console.log(`📤 Enviando texto al análisis (${pdfText.length} caracteres)`);
       
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
         body: { pdfText }
@@ -208,7 +198,7 @@ export function PDFAnalyzer() {
     
     setIsEnriching(true);
     try {
-      // Obtener todas las tarjetas de la empresa
+      // Obtener company_id
       const { data: userCompanies } = await supabase
         .from('user_company_roles')
         .select('company_id')
@@ -219,83 +209,89 @@ export function PDFAnalyzer() {
 
       const companyId = userCompanies[0].company_id;
 
-      // Obtener equipos de la empresa (solo camiones para combustible)
-      const { data: companyEquipment } = await supabase
-        .from('company_equipment')
-        .select('id, equipment_number, equipment_type, make, model, year')
-        .eq('company_id', companyId)
-        .eq('equipment_type', 'truck')
-        .eq('status', 'active');
+      // ⚡ OPTIMIZACIÓN: Paralelizar todas las queries
+      const [
+        { data: companyEquipment },
+        { data: equipmentAssignments },
+        { data: driverCards },
+        { data: companyPeriods },
+      ] = await Promise.all([
+        // Equipos de la empresa
+        supabase
+          .from('company_equipment')
+          .select('id, equipment_number, equipment_type, make, model, year')
+          .eq('company_id', companyId)
+          .eq('equipment_type', 'truck')
+          .eq('status', 'active'),
+        
+        // Asignaciones de equipos
+        supabase
+          .from('equipment_assignments')
+          .select(`
+            equipment_id,
+            driver_user_id,
+            assigned_date,
+            unassigned_date,
+            is_active,
+            company_equipment!inner(
+              id,
+              equipment_number,
+              equipment_type,
+              company_id,
+              make,
+              model,
+              year
+            )
+          `)
+          .eq('company_equipment.company_id', companyId)
+          .eq('company_equipment.equipment_type', 'truck')
+          .eq('is_active', true),
+        
+        // Tarjetas de conductores
+        supabase
+          .from('driver_fuel_cards')
+          .select(`
+            card_number_last_five,
+            card_identifier,
+            driver_user_id
+          `)
+          .eq('company_id', companyId)
+          .eq('is_active', true),
+        
+        // Períodos de pago
+        supabase
+          .from('company_payment_periods')
+          .select('id, period_start_date, period_end_date')
+          .eq('company_id', companyId)
+      ]);
 
-      // Obtener asignaciones de equipos (solo camiones para combustible)
-      const { data: equipmentAssignments } = await supabase
-        .from('equipment_assignments')
-        .select(`
-          equipment_id,
-          driver_user_id,
-          assigned_date,
-          unassigned_date,
-          is_active,
-          company_equipment!inner(
-            id,
-            equipment_number,
-            equipment_type,
-            company_id,
-            make,
-            model,
-            year
-          )
-        `)
-        .eq('company_equipment.company_id', companyId)
-        .eq('company_equipment.equipment_type', 'truck')
-        .eq('is_active', true);
-
-      // Obtener tarjetas de conductores
-      console.log('🔍 [PDF Analyzer] Obteniendo tarjetas para companyId:', companyId);
-      
-      const { data: driverCards, error: cardsError } = await supabase
-        .from('driver_fuel_cards')
-        .select(`
-          card_number_last_five,
-          card_identifier,
-          driver_user_id
-        `)
-        .eq('company_id', companyId)
-        .eq('is_active', true);
-
-      console.log('🔍 [PDF Analyzer] Tarjetas encontradas:', driverCards);
-      console.log('🔍 [PDF Analyzer] Error en consulta de tarjetas:', cardsError);
-
-      // Intentar obtener nombres de perfiles, si no, usar emails como fallback
+      // Segunda ronda de queries que dependen de driverIds
       const driverIds = driverCards?.map(card => card.driver_user_id) || [];
       
-      const { data: driverProfiles } = await supabase
-        .from('profiles')
-        .select('user_id, first_name, last_name')
-        .in('user_id', driverIds);
-
-      // Obtener emails de los conductores de la tabla user_company_roles
-      const { data: driverRoles } = await supabase
-        .from('user_company_roles')
-        .select('user_id')
-        .eq('company_id', companyId)
-        .eq('role', 'driver')
-        .eq('is_active', true)
-        .in('user_id', driverIds);
-
-      // Obtener períodos de pago de la empresa directamente (sin filtrar por estado)
-      const { data: companyPeriods } = await supabase
-        .from('company_payment_periods')
-        .select('id, period_start_date, period_end_date')
-        .eq('company_id', companyId);
-
-      // Obtener user_payrolls existentes para estos conductores (cualquier estado)
-      // @ts-ignore - Avoiding TypeScript deep instantiation error with complex Supabase query
-      const { data: userPayrolls } = await supabase
-        .from('user_payrolls')
-        .select('id, user_id, company_payment_period_id, payment_status')
-        .eq('company_id', companyId)
-        .in('user_id', driverIds);
+      const [
+        { data: driverProfiles },
+        { data: userPayrolls },
+        { data: existingFuelExpenses }
+      ] = await Promise.all([
+        // Perfiles de conductores
+        supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name')
+          .in('user_id', driverIds),
+        
+        // User payrolls
+        supabase
+          .from('user_payrolls')
+          .select('id, user_id, company_payment_period_id, payment_status')
+          .eq('company_id', companyId)
+          .in('user_id', driverIds),
+        
+        // Gastos existentes para detectar duplicados
+        supabase
+          .from('fuel_expenses')
+          .select('transaction_date, invoice_number, card_last_five, total_amount, station_name')
+          .in('driver_user_id', driverIds)
+      ]);
       
       // Define type for enriched payroll data
       type PayrollWithPeriod = {
@@ -316,7 +312,6 @@ export function PDFAnalyzer() {
       if (companyPeriods) {
         for (const driverId of driverIds) {
           for (const period of companyPeriods) {
-            // Buscar si existe un user_payroll para este conductor y período
             const existingPayroll = userPayrolls?.find(
               p => p.user_id === driverId && p.company_payment_period_id === period.id
             );
@@ -335,12 +330,6 @@ export function PDFAnalyzer() {
           }
         }
       }
-
-      // Obtener gastos de combustible existentes para verificar duplicados
-      const { data: existingFuelExpenses } = await supabase
-        .from('fuel_expenses')
-        .select('transaction_date, invoice_number, card_last_five, total_amount, station_name')
-        .in('driver_user_id', driverIds);
 
       // Procesar cada transacción de manera secuencial para manejar async
       const enriched: EnrichedTransaction[] = [];
@@ -391,58 +380,33 @@ export function PDFAnalyzer() {
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
         const cardNumber = transaction.card;
         
-        console.log('🔍 [PDF Analyzer] Procesando tarjeta de transacción:', cardNumber);
-        
         const matchingCards = driverCards?.filter(card => {
-          // Comparar los últimos 5 dígitos almacenados con los últimos 4 o 5 de la transacción
           const cardLast5 = card.card_number_last_five;
           const transactionLast4 = cardNumber.slice(-4);
           const transactionLast5 = cardNumber.slice(-5);
           
-          const match1 = cardLast5 === transactionLast5;
-          const match2 = cardLast5?.slice(-4) === transactionLast4;
-          const match3 = card.card_identifier === transactionLast4;
-          const match4 = card.card_identifier === transactionLast5;
-          const match5 = card.card_identifier === cardNumber;
-          
-          const isMatch = match1 || match2 || match3 || match4 || match5;
-          
-          console.log('🔍 [PDF Analyzer] Comparando con tarjeta DB:', {
-            cardLast5,
-            cardIdentifier: card.card_identifier,
-            transactionLast4,
-            transactionLast5,
-            cardNumber,
-            matches: { match1, match2, match3, match4, match5 },
-            isMatch
-          });
-          
-          return isMatch;
+          return cardLast5 === transactionLast5 ||
+                 cardLast5?.slice(-4) === transactionLast4 ||
+                 card.card_identifier === transactionLast4 ||
+                 card.card_identifier === transactionLast5 ||
+                 card.card_identifier === cardNumber;
         }) || [];
-
-        console.log('🔍 [PDF Analyzer] Tarjetas coincidentes:', matchingCards.length, matchingCards);
 
         if (matchingCards.length === 1) {
           const card = matchingCards[0];
           const driverProfile = driverProfiles?.find(profile => profile.user_id === card.driver_user_id);
           enrichedTransaction.driver_user_id = card.driver_user_id;
-          enrichedTransaction.card_mapping_status = 'found'; // ✅ Marcar como encontrada
+          enrichedTransaction.card_mapping_status = 'found';
           
           if (driverProfile && driverProfile.first_name) {
             const firstName = driverProfile.first_name || '';
             const lastName = driverProfile.last_name || '';
             enrichedTransaction.driver_name = `${firstName} ${lastName}`.trim();
           } else {
-            // Si no hay perfil, usar un nombre basado en tarjeta o ID genérico
             enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_five}`;
           }
-          
-          console.log('🔍 [PDF Analyzer] ✅ Conductor encontrado:', enrichedTransaction.driver_name);
         } else if (matchingCards.length > 1) {
           enrichedTransaction.card_mapping_status = 'multiple';
-          console.log('🔍 [PDF Analyzer] ⚠️ Múltiples tarjetas encontradas');
-        } else {
-          console.log('🔍 [PDF Analyzer] ❌ Ninguna tarjeta encontrada para:', cardNumber);
         }
         const periodTransactionDate = new Date(transaction.date);
         

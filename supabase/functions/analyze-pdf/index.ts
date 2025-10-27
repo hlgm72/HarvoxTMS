@@ -82,7 +82,7 @@ Return JSON:
 Extract ALL visible rows, not just examples. Be thorough and extract every single transaction.`
           }
         ],
-        max_completion_tokens: 16000,
+        max_completion_tokens: 4000,
         response_format: { type: "json_object" }
       }),
     });
