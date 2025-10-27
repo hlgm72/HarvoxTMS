@@ -113,6 +113,33 @@
       "description": "Esta acción eliminará permanentemente este gasto de combustible. Esta acción no se puede deshacer.",
       "confirm": "Eliminar",
       "cancel": "Cancelar"
+    },
+    "view_dialog": {
+      "title": "Detalles del Gasto de Combustible",
+      "driver_not_found": "Conductor no encontrado",
+      "general_info": "Información General",
+      "driver": "Conductor",
+      "transaction_date": "Fecha de Transacción",
+      "vehicle": "Vehículo",
+      "license_plate": "Placa",
+      "fuel_details": "Detalles del Combustible",
+      "type": "Tipo",
+      "gallons": "Galones",
+      "price_per_gallon": "Precio por Galón",
+      "total": "Total",
+      "fuel_station": "Estación de Combustible",
+      "name": "Nombre",
+      "location": "Ubicación",
+      "additional_info": "Información Adicional",
+      "receipt": "Recibo",
+      "view_receipt": "Ver recibo",
+      "notes": "Notas",
+      "audit_info": "Información de Auditoría",
+      "created": "Creado",
+      "last_updated": "Última Actualización",
+      "verified": "Verificado",
+      "by": "por",
+      "not_found": "No se encontró el gasto de combustible"
     }
   },
   "create_dialog": {

@@ -18,7 +18,7 @@ interface ViewFuelExpenseDialogProps {
 }
 
 export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFuelExpenseDialogProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('fuel');
   const { data: expense, isLoading } = useFuelExpense(expenseId || '');
   const { drivers = [] } = useCompanyDrivers();
 
@@ -28,7 +28,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
     if (driver && driver.first_name && driver.last_name) {
       return `${driver.first_name} ${driver.last_name}`;
     }
-    return 'Conductor no encontrado';
+    return t('view_dialog.driver_not_found');
   };
 
   const getStatusBadge = (status: string) => {
@@ -64,7 +64,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Fuel className="h-5 w-5" />
-            Detalles del Gasto de Combustible
+            {t('view_dialog.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -78,7 +78,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center justify-between">
-                  Información General
+                  {t('view_dialog.general_info')}
                   {getStatusBadge(expense.status)}
                 </CardTitle>
               </CardHeader>
@@ -87,7 +87,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="text-sm text-muted-foreground">Conductor</div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.driver')}</div>
                       <div className="font-medium">{getDriverName(expense.driver_user_id)}</div>
                     </div>
                   </div>
@@ -95,7 +95,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="text-sm text-muted-foreground">Fecha de Transacción</div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.transaction_date')}</div>
                       <div className="font-medium">{formatDateOnly(expense.transaction_date)}</div>
                     </div>
                   </div>
@@ -105,14 +105,14 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                   <div className="flex items-center gap-2">
                     <Car className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="text-sm text-muted-foreground">Vehículo</div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.vehicle')}</div>
                       <div className="font-medium">
                         {expense.company_equipment.equipment_number}
                         {expense.company_equipment.make && ` - ${capitalizeWords(expense.company_equipment.make)}`}
                         {expense.company_equipment.model && ` ${capitalizeWords(expense.company_equipment.model)}`}
                         {expense.company_equipment.year && ` (${expense.company_equipment.year})`}
                         {expense.company_equipment.license_plate && 
-                          ` - Placa: ${expense.company_equipment.license_plate}`
+                          ` - ${t('view_dialog.license_plate')}: ${expense.company_equipment.license_plate}`
                         }
                       </div>
                     </div>
@@ -126,23 +126,23 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Fuel className="h-5 w-5" />
-                  Detalles del Combustible
+                  {t('view_dialog.fuel_details')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-6">
                   <div>
-                    <div className="text-sm text-muted-foreground">Tipo</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.type')}</div>
                     <div className="font-medium capitalize">{expense.fuel_type}</div>
                   </div>
                   
                   <div>
-                    <div className="text-sm text-muted-foreground">Galones</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.gallons')}</div>
                     <div className="font-medium">{expense.gallons_purchased?.toFixed(3)} gal</div>
                   </div>
                   
                   <div>
-                    <div className="text-sm text-muted-foreground">Precio por Galón</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.price_per_gallon')}</div>
                     <div className="font-medium flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />
                       {expense.price_per_gallon?.toFixed(3)}
@@ -153,7 +153,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                 <Separator className="my-4" />
 
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total:</span>
+                  <span className="text-lg font-semibold">{t('view_dialog.total')}:</span>
                   <span className="text-2xl font-bold flex items-center gap-1">
                     <DollarSign className="h-5 w-5" />
                     {expense.total_amount?.toFixed(2)}
@@ -168,20 +168,20 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
-                    Estación de Combustible
+                    {t('view_dialog.fuel_station')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {expense.station_name && (
                     <div>
-                      <div className="text-sm text-muted-foreground">Nombre</div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.name')}</div>
                       <div className="font-medium">{expense.station_name}</div>
                     </div>
                   )}
                   
                   {(expense.station_city || expense.station_state) && (
                     <div>
-                      <div className="text-sm text-muted-foreground">Ubicación</div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.location')}</div>
                       <div className="font-medium">
                         {expense.station_city && expense.station_state 
                           ? `${expense.station_city}, ${expense.station_state}`
@@ -197,7 +197,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
             {/* Información Adicional */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Información Adicional</CardTitle>
+                <CardTitle className="text-lg">{t('view_dialog.additional_info')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
 
@@ -206,10 +206,10 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                   <div className="flex items-center gap-2">
                     <Receipt className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="text-sm text-muted-foreground">Recibo</div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.receipt')}</div>
                       <Button variant="link" className="h-auto p-0" asChild>
                         <a href={expense.receipt_url} target="_blank" rel="noopener noreferrer">
-                          Ver recibo
+                          {t('view_dialog.view_receipt')}
                         </a>
                       </Button>
                     </div>
@@ -218,7 +218,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
 
                 {expense.notes && (
                   <div>
-                    <div className="text-sm text-muted-foreground">Notas</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.notes')}</div>
                     <div className="font-medium">{expense.notes}</div>
                   </div>
                 )}
@@ -228,26 +228,26 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
             {/* Información de Auditoría */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Información de Auditoría</CardTitle>
+                <CardTitle className="text-lg">{t('view_dialog.audit_info')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-muted-foreground">Creado</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.created')}</div>
                     <div className="font-medium">{formatDateTime(expense.created_at)}</div>
                   </div>
                   
                   <div>
-                    <div className="text-sm text-muted-foreground">Última Actualización</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.last_updated')}</div>
                     <div className="font-medium">{formatDateTime(expense.updated_at)}</div>
                   </div>
                 </div>
 
                 {expense.verified_at && expense.verified_by && (
                   <div>
-                    <div className="text-sm text-muted-foreground">Verificado</div>
+                    <div className="text-sm text-muted-foreground">{t('view_dialog.verified')}</div>
                     <div className="font-medium">
-                      {formatDateTime(expense.verified_at)} por {expense.verified_by}
+                      {formatDateTime(expense.verified_at)} {t('view_dialog.by')} {expense.verified_by}
                     </div>
                   </div>
                 )}
@@ -256,7 +256,7 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            No se encontró el gasto de combustible
+            {t('view_dialog.not_found')}
           </div>
         )}
       </DialogContent>
