@@ -303,5 +303,18 @@
     "sourceDefault": "Encontrado",
     "altLogoFound": "Logo encontrado",
     "altCurrentLogo": "Logo actual"
+  },
+  "logoUpload": {
+    "uploadButton": "Cargar Logo",
+    "changeButton": "Cambiar Logo",
+    "removeButton": "Eliminar",
+    "uploading": "Cargando...",
+    "fileTypes": "PNG, JPG hasta 5MB",
+    "success": "Logo cargado exitosamente",
+    "removed": "Logo eliminado",
+    "errorUpload": "Error al cargar el logo",
+    "errorRemove": "Error al eliminar el logo",
+    "errorFileType": "Por favor selecciona un archivo de imagen",
+    "errorFileSize": "El archivo es demasiado grande. Máximo 5MB"
   }
 }

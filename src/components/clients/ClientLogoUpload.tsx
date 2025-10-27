@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useFleetNotifications } from "@/components/notifications";
 import { SmartLogoSearch } from "@/components/ui/SmartLogoSearch";
+import { useTranslation } from "react-i18next";
 
 interface ClientLogoUploadProps {
   logoUrl?: string;
@@ -16,6 +17,7 @@ interface ClientLogoUploadProps {
 }
 
 export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, onLogoChange, disabled }: ClientLogoUploadProps) {
+  const { t } = useTranslation('clients');
   const [uploading, setUploading] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,10 +68,10 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
         .getPublicUrl(filePath);
 
       onLogoChange(data.publicUrl);
-      showSuccess('Logo cargado exitosamente');
+      showSuccess(t('logoUpload.success'));
     } catch (error) {
       console.error('Error uploading logo:', error);
-      showError('Error al cargar el logo');
+      showError(t('logoUpload.errorUpload'));
     } finally {
       setUploading(false);
     }
@@ -81,13 +83,13 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      showError('Por favor selecciona un archivo de imagen');
+      showError(t('logoUpload.errorFileType'));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      showError('El archivo es demasiado grande. Máximo 5MB');
+      showError(t('logoUpload.errorFileSize'));
       return;
     }
 
@@ -106,10 +108,10 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
           .remove([filePath]);
 
         onLogoChange(null);
-        showSuccess('Logo eliminado');
+        showSuccess(t('logoUpload.removed'));
       } catch (error) {
         console.error('Error removing logo:', error);
-        showError('Error al eliminar el logo');
+        showError(t('logoUpload.errorRemove'));
       }
     }
   };
@@ -148,7 +150,7 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
               disabled={disabled || uploading}
             >
               <Upload className="h-4 w-4 mr-2" />
-              {uploading ? 'Cargando...' : logoUrl ? 'Cambiar Logo' : 'Cargar Logo'}
+              {uploading ? t('logoUpload.uploading') : logoUrl ? t('logoUpload.changeButton') : t('logoUpload.uploadButton')}
             </Button>
 
             {logoUrl && (
@@ -160,13 +162,13 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
                 disabled={disabled || uploading}
               >
                 <X className="h-4 w-4 mr-2" />
-                Eliminar
+                {t('logoUpload.removeButton')}
               </Button>
             )}
           </div>
 
           <p className="text-xs text-muted-foreground">
-            PNG, JPG hasta 5MB
+            {t('logoUpload.fileTypes')}
           </p>
 
           <input
