@@ -74,6 +74,10 @@ export const useFuelExpenseACID = () => {
       queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
       // Invalidar semanas disponibles para actualizar filtros
       queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
+      // 🔄 Invalidar queries de reportes de pago para refrescar modal y lista
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
       
       showSuccess(
         isUpdate 

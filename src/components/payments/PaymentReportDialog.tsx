@@ -1122,9 +1122,6 @@ export function PaymentReportDialog({
           setShowEditFuelDialog(isOpen);
           if (!isOpen) {
             setSelectedFuelForEdit(null);
-            // Refrescar los datos después de editar
-            queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
-            queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
           }
         }}
         expenseId={selectedFuelForEdit}
