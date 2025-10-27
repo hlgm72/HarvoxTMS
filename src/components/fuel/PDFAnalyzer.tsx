@@ -92,7 +92,7 @@ export function PDFAnalyzer() {
     });
   };
 
-  const convertPDFToImage = async (file: File): Promise<string[]> => {
+  const convertPDFToImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async () => {
@@ -102,30 +102,24 @@ export function PDFAnalyzer() {
           
           console.log('📄 PDF tiene', pdf.numPages, 'páginas');
           
-          // Renderizar TODAS las páginas del PDF (máximo 10 por seguridad)
-          const maxPages = Math.min(pdf.numPages, 10);
-          const images: string[] = [];
+          // Renderizar primera página con máxima calidad
+          const page = await pdf.getPage(1);
+          // Escala 3.0 balanceada (buena calidad sin payload gigante)
+          const viewport = page.getViewport({ scale: 3.0 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const context = canvas.getContext('2d');
           
-          for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
-            const page = await pdf.getPage(pageNum);
-            // Escala 4.0 para máxima calidad de texto
-            const viewport = page.getViewport({ scale: 4.0 });
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const context = canvas.getContext('2d');
-            
-            if (context) {
-              await page.render({ canvasContext: context, viewport }).promise;
-              // PNG para mejor calidad que JPEG
-              const imageBase64 = canvas.toDataURL('image/png').split(',')[1];
-              images.push(imageBase64);
-              console.log(`✅ Página ${pageNum} renderizada (${viewport.width}x${viewport.height})`);
-            }
+          if (context) {
+            await page.render({ canvasContext: context, viewport }).promise;
+            // JPEG con calidad máxima pero tamaño razonable
+            const imageBase64 = canvas.toDataURL('image/jpeg', 1.0).split(',')[1];
+            console.log(`✅ Página 1 renderizada (${viewport.width}x${viewport.height})`);
+            resolve(imageBase64);
+          } else {
+            reject(new Error('Could not get canvas context'));
           }
-          
-          // Devolver TODAS las imágenes
-          resolve(images);
         } catch (error) {
           reject(error);
         }
@@ -140,13 +134,13 @@ export function PDFAnalyzer() {
 
     setIsAnalyzing(true);
     try {
-      // Convert ALL pages of PDF to images
-      const imagePages = await convertPDFToImage(selectedFile);
+      // Convert first page of PDF to image
+      const imageBase64 = await convertPDFToImage(selectedFile);
       
-      console.log(`📤 Enviando ${imagePages.length} páginas al análisis`);
+      console.log(`📤 Enviando imagen al análisis`);
       
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { imagePages }  // Enviar todas las páginas
+        body: { imageBase64 }
       });
 
       if (error) {
