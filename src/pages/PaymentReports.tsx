@@ -487,17 +487,11 @@ export default function PaymentReports() {
   const getFilterDescription = () => {
     const parts: string[] = [];
     
-    console.log('🔍 DEBUG Translation:', {
-      driver: t("common:filters.driver"),
-      status: t("common:filters.status"),
-      language: i18n.language,
-      namespaces: i18n.options.ns
-    });
-    
     // Filtro de conductor
     if (filters.driverId && filters.driverId !== 'all') {
       const driver = drivers.find(d => d.user_id === filters.driverId);
-      parts.push(`${t("common:filters.driver")}: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}`);
+      const translatedDriver = i18n.language === 'es' ? 'Conductor' : 'Driver';
+      parts.push(`${translatedDriver}: ${driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}`);
     }
     
     // Filtro de estado
@@ -510,7 +504,8 @@ export default function PaymentReports() {
         negative: t('reports.status.negative_balance'),
         approved: t('reports.status.approved')
       };
-      parts.push(`${t("common:filters.status")}: ${statusLabels[filters.status] || filters.status}`);
+      const translatedStatus = i18n.language === 'es' ? 'Estado' : 'Status';
+      parts.push(`${translatedStatus}: ${statusLabels[filters.status] || filters.status}`);
     }
     
     if (parts.length === 0) {
@@ -573,15 +568,15 @@ export default function PaymentReports() {
             {filters.driverId !== 'all' && (() => {
               const driver = drivers.find(d => d.user_id === filters.driverId);
               
-              // Debug: verificar específicamente la clave filters
+              // Debug: verificar el contenido real de filters
               const commonResources = i18n.getResourceBundle('en', 'common');
-              console.log('🔍 Has filters key:', 'filters' in commonResources);
-              console.log('🔍 Filters object:', commonResources?.filters);
-              console.log('🔍 Driver key:', commonResources?.filters?.driver);
+              console.log('🔍 Full common object keys:', Object.keys(commonResources));
+              console.log('🔍 Filters typeof:', typeof commonResources?.filters);
+              console.log('🔍 Filters keys:', commonResources?.filters ? Object.keys(commonResources.filters) : 'no keys');
+              console.log('🔍 Filters full:', JSON.stringify(commonResources?.filters, null, 2));
               
-              // Intentar traducción directa sin namespace prefix
-              const translatedDriver = t("filters.driver", { ns: "common" });
-              console.log('🔍 Final translation:', translatedDriver);
+              // Usar hardcoded por ahora
+              const translatedDriver = i18n.language === 'es' ? 'Conductor' : 'Driver';
               
               return (
                 <Badge variant="secondary" className="text-xs font-normal">
@@ -589,11 +584,14 @@ export default function PaymentReports() {
                 </Badge>
               );
             })()}
-            {filters.status !== 'all' && (
-              <Badge variant="secondary" className="text-xs font-normal">
-                {t("common:filters.status")}: {filters.status}
-              </Badge>
-            )}
+            {filters.status !== 'all' && (() => {
+              const translatedStatus = i18n.language === 'es' ? 'Estado' : 'Status';
+              return (
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {translatedStatus}: {filters.status}
+                </Badge>
+              );
+            })()}
           </div>
         </div>
       );
