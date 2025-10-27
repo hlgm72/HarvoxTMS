@@ -367,20 +367,15 @@ export function PDFAnalyzer() {
           import_status: 'not_imported'
         };
 
-        // Verificar si la transacción ya existe en la base de datos
-        const txnDateStr = transaction.date; // ✅ Usar directamente fecha YYYY-MM-DD del PDF
+        // Verificar si la transacción ya existe en la base de datos (solo fecha + factura)
+        const txnDateStr = transaction.date;
         const existingTransaction = existingFuelExpenses?.find(existing => {
-          const existingDate = existing.transaction_date.split('T')[0]; // ✅ Solo parte de fecha
+          const existingDate = existing.transaction_date.split('T')[0];
           const sameDate = existingDate === txnDateStr;
           const sameInvoice = existing.invoice_number === transaction.invoice;
-          const sameCard = existing.card_last_five?.includes(transaction.card.slice(-5)) || 
-                          existing.card_last_five === transaction.card.slice(-5);
-          const sameAmount = Math.abs(parseFloat(existing.total_amount.toString()) - parseFloat(transaction.total_amt.toString())) < 0.01;
-          const sameStation = existing.station_name === transaction.location_name;
           
-          // Considerar duplicado si coinciden al menos 3 de estos criterios
-          const matches = [sameDate, sameInvoice, sameCard, sameAmount, sameStation].filter(Boolean).length;
-          return matches >= 3;
+          // Solo considerar duplicado si fecha Y factura coinciden
+          return sameDate && sameInvoice;
         });
 
         if (existingTransaction) {
