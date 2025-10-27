@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Upload, FileText, CheckCircle, Info, Loader2, User, Calendar, CreditCard, MapPin, Fuel } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useFleetNotifications } from '@/components/notifications';
 import { useAuth } from '@/hooks/useAuth';
@@ -66,6 +67,7 @@ export function PDFAnalyzer() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [enrichedTransactions, setEnrichedTransactions] = useState<EnrichedTransaction[]>([]);
   const [isImporting, setIsImporting] = useState(false);
+  const [selectedTransactions, setSelectedTransactions] = useState<Set<number>>(new Set());
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -152,6 +154,7 @@ export function PDFAnalyzer() {
       if (data.success) {
         setAnalysisResult(data.analysis);
         await enrichTransactions(data.analysis.sampleData);
+        setSelectedTransactions(new Set()); // Reset selection
         showSuccess(
           t('analyzer.results.analysis_complete'),
           t('analyzer.results.analysis_success')
@@ -541,18 +544,19 @@ export function PDFAnalyzer() {
     console.log('📦 [PDF Analyzer] Iniciando importación de transacciones');
     setIsImporting(true);
     try {
-      const validTransactions = enrichedTransactions.filter(
-        t => t.card_mapping_status === 'found' && 
-             t.import_status === 'not_imported' &&
-             t.period_status !== 'paid' // Excluir períodos pagados
+      const transactionsToImport = enrichedTransactions.filter(
+        (t, index) => selectedTransactions.has(index) &&
+                     t.card_mapping_status === 'found' && 
+                     t.import_status === 'not_imported' &&
+                     t.period_status !== 'paid'
       );
       
-      console.log('📦 [PDF Analyzer] Transacciones filtradas:', validTransactions.length);
+      console.log('📦 [PDF Analyzer] Transacciones seleccionadas para importar:', transactionsToImport.length);
 
-      if (validTransactions.length === 0) {
+      if (transactionsToImport.length === 0) {
         showError(
-          "Sin transacciones válidas",
-          "No hay transacciones con mapeo completo para importar"
+          t('analyzer.results.no_transactions_selected'),
+          t('analyzer.results.select_transactions_to_import')
         );
         return;
       }
@@ -560,7 +564,7 @@ export function PDFAnalyzer() {
       // Crear períodos automáticamente para transacciones que los necesiten
       console.log('📦 [PDF Analyzer] Verificando períodos de pago...');
       
-      for (const transaction of validTransactions) {
+      for (const transaction of transactionsToImport) {
         console.log('📦 [PDF Analyzer] Procesando transacción:', {
           date: transaction.date,
           driver: transaction.driver_name,
@@ -600,8 +604,8 @@ export function PDFAnalyzer() {
         }
       }
       
-      // Validar que todas las transacciones válidas tengan payment_period_id
-      const transactionsWithoutPeriod = validTransactions.filter(t => !t.payment_period_id);
+      // Validar que todas las transacciones seleccionadas tengan payment_period_id
+      const transactionsWithoutPeriod = transactionsToImport.filter(t => !t.payment_period_id);
       if (transactionsWithoutPeriod.length > 0) {
         console.error('❌ [PDF Analyzer] Transacciones sin período:', transactionsWithoutPeriod);
         showError(
@@ -612,10 +616,10 @@ export function PDFAnalyzer() {
       }
 
       // Insertar transacciones una por una usando la función RPC ACID
-      console.log('📦 [PDF Analyzer] Importando', validTransactions.length, 'transacciones...');
+      console.log('📦 [PDF Analyzer] Importando', transactionsToImport.length, 'transacciones...');
       let importedCount = 0;
       
-      for (const transaction of validTransactions) {
+      for (const transaction of transactionsToImport) {
         const fuelExpenseData = {
           driver_user_id: transaction.driver_user_id!,
           payment_period_id: transaction.payment_period_id!,
@@ -659,11 +663,13 @@ export function PDFAnalyzer() {
       console.log('✅ [PDF Analyzer] Importación completada:', importedCount, 'transacciones');
 
       showSuccess(
-        "Importación exitosa",
-        `Se importaron ${validTransactions.length} transacciones de combustible`
+        t('analyzer.results.import_success'),
+        t('analyzer.results.transactions_imported', { count: transactionsToImport.length })
       );
 
-      // Limpiar datos después de la importación
+      // Reset selection and reload
+      setSelectedTransactions(new Set());
+      setSelectedFile(null);
       setAnalysisResult(null);
       setEnrichedTransactions([]);
       setSelectedFile(null);
@@ -676,6 +682,37 @@ export function PDFAnalyzer() {
       );
     } finally {
       setIsImporting(false);
+    }
+  };
+
+  const importableTransactions = enrichedTransactions.filter(
+    t => t.card_mapping_status === 'found' && 
+         t.import_status === 'not_imported'
+  );
+
+  const toggleTransactionSelection = (index: number) => {
+    const newSelection = new Set(selectedTransactions);
+    if (newSelection.has(index)) {
+      newSelection.delete(index);
+    } else {
+      newSelection.add(index);
+    }
+    setSelectedTransactions(newSelection);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedTransactions.size === importableTransactions.length) {
+      // Deselect all
+      setSelectedTransactions(new Set());
+    } else {
+      // Select all importable
+      const allImportableIndices = new Set(
+        enrichedTransactions
+          .map((t, index) => ({ t, index }))
+          .filter(({ t }) => t.card_mapping_status === 'found' && t.import_status === 'not_imported')
+          .map(({ index }) => index)
+      );
+      setSelectedTransactions(allImportableIndices);
     }
   };
 
@@ -783,22 +820,39 @@ export function PDFAnalyzer() {
                 </div>
               </div>
 
-              {enrichedTransactions.filter(t => 
-                t.card_mapping_status === 'found' && 
-                t.import_status === 'not_imported'
-              ).length > 0 && (
-                <div className="flex gap-2">
+              {importableTransactions.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={selectedTransactions.size === importableTransactions.length && importableTransactions.length > 0}
+                        onCheckedChange={toggleSelectAll}
+                        id="select-all"
+                      />
+                      <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
+                        {t('analyzer.selection.select_all')} ({importableTransactions.length})
+                      </label>
+                    </div>
+                    {selectedTransactions.size > 0 && (
+                      <Badge variant="secondary">
+                        {t('analyzer.selection.selected', { count: selectedTransactions.size })}
+                      </Badge>
+                    )}
+                  </div>
                   <Button 
                     onClick={importTransactions} 
-                    disabled={isImporting}
-                    className="flex items-center gap-2"
+                    disabled={isImporting || selectedTransactions.size === 0}
+                    className="flex items-center gap-2 w-full"
                   >
                     {isImporting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Upload className="h-4 w-4" />
                     )}
-                    {isImporting ? t('analyzer.results.importing') : t('analyzer.results.import_transactions')}
+                    {isImporting 
+                      ? t('analyzer.results.importing') 
+                      : `${t('analyzer.results.import_transactions')} (${selectedTransactions.size})`
+                    }
                   </Button>
                 </div>
               )}
@@ -828,11 +882,20 @@ export function PDFAnalyzer() {
                       : 'border-orange-200 bg-white'}
                   `}>
                     <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-base flex items-center gap-2">
-                          <Fuel className="h-4 w-4" />
-                          {t('analyzer.transaction.number', { number: index + 1 })}
-                        </CardTitle>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {transaction.card_mapping_status === 'found' && transaction.import_status === 'not_imported' && (
+                            <Checkbox
+                              checked={selectedTransactions.has(index)}
+                              onCheckedChange={() => toggleTransactionSelection(index)}
+                              id={`transaction-${index}`}
+                            />
+                          )}
+                          <CardTitle className="text-base flex items-center gap-2">
+                            <Fuel className="h-4 w-4" />
+                            {t('analyzer.transaction.number', { number: index + 1 })}
+                          </CardTitle>
+                        </div>
                         <div className="flex gap-1 flex-wrap">
                           {transaction.import_status === 'already_imported' ? (
                             <Badge variant="secondary" className="bg-orange-500 text-white">

@@ -291,7 +291,9 @@
       "import_transactions": "Import Transactions",
       "importing": "Importing...",
       "import_success": "Transactions imported successfully",
-      "import_error": "Error importing transactions"
+      "import_error": "Error importing transactions",
+      "no_transactions_selected": "No transactions selected",
+      "select_transactions_to_import": "Select at least one transaction to import"
     },
     "stats": {
       "transactions": "Transactions",
@@ -299,6 +301,10 @@
       "period_paid": "Period paid (blocked)",
       "ready_to_import": "Ready to import",
       "no_driver_identified": "Driver not identified"
+    },
+    "selection": {
+      "select_all": "Select all",
+      "selected": "{{count}} selected"
     },
     "transaction": {
       "number": "Transaction #{{number}}",

@@ -291,7 +291,9 @@
       "import_transactions": "Importar Transacciones",
       "importing": "Importando...",
       "import_success": "Transacciones importadas exitosamente",
-      "import_error": "Error al importar transacciones"
+      "import_error": "Error al importar transacciones",
+      "no_transactions_selected": "No hay transacciones seleccionadas",
+      "select_transactions_to_import": "Selecciona al menos una transacción para importar"
     },
     "stats": {
       "transactions": "Transacciones",
@@ -299,6 +301,10 @@
       "period_paid": "Período pagado (bloqueado)",
       "ready_to_import": "Listas para importar",
       "no_driver_identified": "Sin conductor identificado"
+    },
+    "selection": {
+      "select_all": "Seleccionar todas",
+      "selected": "{{count}} seleccionadas"
     },
     "transaction": {
       "number": "Transacción #{{number}}",
