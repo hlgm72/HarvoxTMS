@@ -128,9 +128,13 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                     )}
                   />
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={client.logo_url} alt={client.name} />
-                      <AvatarFallback className="text-xs">
+                    <Avatar className="h-8 w-8 bg-white border border-border">
+                      <AvatarImage 
+                        src={client.logo_url} 
+                        alt={client.name}
+                        className="object-contain p-1"
+                      />
+                      <AvatarFallback className="text-xs bg-muted">
                         <Building2 className="h-4 w-4" />
                       </AvatarFallback>
                     </Avatar>
