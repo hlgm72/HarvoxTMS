@@ -299,9 +299,9 @@ export function LoadAssignmentSection({
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-3">
-                              <Label htmlFor="leasing-percentage" className="text-xs font-medium w-24 flex-shrink-0">
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor="leasing-percentage" className="text-xs font-medium whitespace-nowrap">
                                 {t("loads:create_wizard.phases.assignment.owner_operator.leasing_label")}
                               </Label>
                               <Input
@@ -316,8 +316,8 @@ export function LoadAssignmentSection({
                                 className="text-xs h-8 flex-1"
                               />
                             </div>
-                            <div className="flex items-center gap-3">
-                              <Label htmlFor="factoring-percentage" className="text-xs font-medium w-24 flex-shrink-0">
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor="factoring-percentage" className="text-xs font-medium whitespace-nowrap">
                                 {t("loads:create_wizard.phases.assignment.owner_operator.factoring_label")}
                               </Label>
                               <Input
@@ -332,8 +332,8 @@ export function LoadAssignmentSection({
                                 className="text-xs h-8 flex-1"
                               />
                             </div>
-                            <div className="flex items-center gap-3">
-                              <Label htmlFor="dispatching-percentage" className="text-xs font-medium w-24 flex-shrink-0">
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor="dispatching-percentage" className="text-xs font-medium whitespace-nowrap">
                                 {t("loads:create_wizard.phases.assignment.owner_operator.dispatching_label")}
                               </Label>
                               <Input
