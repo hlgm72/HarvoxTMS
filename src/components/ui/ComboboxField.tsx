@@ -103,7 +103,7 @@ export function ComboboxField({
         </FormControl>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-white z-50" align="start">
-        <Command>
+        <Command shouldFilter={!searchHook}>
           <CommandInput
             placeholder={searchHook ? "Escribe para buscar commodities..." : "Buscar marca..."}
             value={search}
