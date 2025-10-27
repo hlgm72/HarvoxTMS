@@ -46,7 +46,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the text. Return valid JSON only.'
+            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the text. Return valid JSON only. Be thorough and complete.'
           },
           {
             role: 'user',
@@ -79,10 +79,10 @@ Return JSON:
   "analysis": "Found N transactions"
 }
 
-Extract ALL visible rows, not just examples. Be thorough and extract every single transaction.`
+IMPORTANT: Extract ALL visible rows, not just examples. Be thorough and extract every single transaction you can see. If there are many transactions, prioritize completeness.`
           }
         ],
-        max_completion_tokens: 4000,
+        max_completion_tokens: 8000,
         response_format: { type: "json_object" }
       }),
     });
@@ -104,12 +104,41 @@ Extract ALL visible rows, not just examples. Be thorough and extract every singl
 
     let analysisResult;
     try {
+      // Check if response was likely truncated
+      const responseLength = responseText.length;
+      const isTruncated = !responseText.trim().endsWith('}') || responseText.includes('"date": "2025-03\n');
+      
+      if (isTruncated) {
+        console.warn('Response appears to be truncated. Length:', responseLength);
+        console.warn('Last 100 chars:', responseText.slice(-100));
+      }
+      
       // Remove markdown code blocks if present
       const cleanedText = responseText.replace(/```json\n?|\n?```/g, '').trim();
       
       // Try to extract JSON from the response
-      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
-      const jsonToParse = jsonMatch ? jsonMatch[0] : cleanedText;
+      let jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+      let jsonToParse = jsonMatch ? jsonMatch[0] : cleanedText;
+      
+      // If JSON appears truncated, try to close it
+      if (isTruncated && jsonToParse) {
+        console.log('Attempting to repair truncated JSON...');
+        // Count unclosed arrays and objects
+        const openBrackets = (jsonToParse.match(/\[/g) || []).length;
+        const closeBrackets = (jsonToParse.match(/\]/g) || []).length;
+        const openBraces = (jsonToParse.match(/\{/g) || []).length;
+        const closeBraces = (jsonToParse.match(/\}/g) || []).length;
+        
+        // Close unclosed structures
+        for (let i = 0; i < (openBrackets - closeBrackets); i++) {
+          jsonToParse += ']';
+        }
+        for (let i = 0; i < (openBraces - closeBraces); i++) {
+          jsonToParse += '}';
+        }
+        
+        console.log('Repaired JSON length:', jsonToParse.length);
+      }
       
       analysisResult = JSON.parse(jsonToParse);
 
@@ -119,20 +148,26 @@ Extract ALL visible rows, not just examples. Be thorough and extract every singl
         hasAuthorizationCode: Boolean(analysisResult.hasAuthorizationCode),
         authorizationCodeField: analysisResult.authorizationCodeField || null,
         sampleData: Array.isArray(analysisResult.sampleData) ? analysisResult.sampleData : [],
-        analysis: analysisResult.analysis || 'Analysis completed'
+        analysis: analysisResult.analysis || `Analysis completed. Extracted ${analysisResult.sampleData?.length || 0} transactions.`,
+        wasTruncated: isTruncated
       };
+
+      if (isTruncated) {
+        console.log(`Successfully recovered ${analysisResult.sampleData.length} transactions from truncated response`);
+      }
 
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      console.error('Raw response from OpenAI:', responseText);
+      console.error('Response length:', responseText.length);
+      console.error('Last 200 chars of response:', responseText.slice(-200));
       
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'The AI could not process this image. The PDF might be too complex, low quality, or not contain a fuel transactions table.',
-          details: 'Please ensure the PDF contains a clear table of fuel transactions and try again.',
+          error: 'The AI response was incomplete or invalid. This can happen with very large PDFs.',
+          details: 'The PDF might have too many transactions for a single analysis. Try with a smaller date range.',
           technicalDetails: parseError.message,
-          rawResponse: responseText.substring(0, 200) // First 200 chars for debugging
+          responseLength: responseText.length
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
