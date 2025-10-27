@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { formatPeriodLabel } from '@/utils/periodUtils';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 
@@ -60,6 +61,7 @@ export function PDFAnalyzer() {
   const { user } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
+  const queryClient = useQueryClient();
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -666,6 +668,18 @@ export function PDFAnalyzer() {
         t('analyzer.results.import_success'),
         t('analyzer.results.transactions_imported', { count: transactionsToImport.length })
       );
+
+      // Invalidar queries para refrescar datos
+      queryClient.invalidateQueries({ queryKey: ['fuel-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['fuel-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+      queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
 
       // Reset selection and reload
       setSelectedTransactions(new Set());
