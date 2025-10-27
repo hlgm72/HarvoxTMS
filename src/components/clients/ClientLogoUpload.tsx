@@ -25,7 +25,16 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
       setUploading(true);
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      // Generate clean company name for consistent file naming
+      const cleanCompanyName = clientName
+        ? clientName.toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+        : 'client-logo';
+      
+      const fileName = `${cleanCompanyName}.${fileExt}`;
       // Use clientId for organized storage, or temp folder if no clientId yet
       const filePath = clientId 
         ? `${clientId}/${fileName}`
@@ -33,7 +42,9 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
 
       const { error: uploadError } = await supabase.storage
         .from('client-logos')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          upsert: true // Allow overwriting existing file
+        });
 
       if (uploadError) {
         throw uploadError;

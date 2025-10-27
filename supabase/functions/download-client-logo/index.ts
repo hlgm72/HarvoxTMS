@@ -41,7 +41,7 @@ async function downloadAndStoreImage(imageUrl: string, clientId: string | undefi
     
     // Use clientId folder if available, otherwise use temp folder
     const folder = clientId || 'temp';
-    const filePath = `${folder}/${cleanCompanyName}-${Date.now()}.png`;
+    const filePath = `${folder}/${cleanCompanyName}.png`;
     
     // Upload to Supabase Storage
     const { error: uploadError } = await supabaseClient.storage
