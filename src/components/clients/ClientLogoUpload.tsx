@@ -130,7 +130,7 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
           <AvatarImage 
             src={logoUrl} 
             alt={clientName}
-            className="object-contain p-2"
+            className="object-contain p-1.5"
           />
           <AvatarFallback className="bg-muted">
             {clientName ? getInitials(clientName) : <Building2 className="h-8 w-8" />}
