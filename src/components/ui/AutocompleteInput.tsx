@@ -48,7 +48,7 @@ export function AutocompleteInput({
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange(newValue);
-    setIsOpen(newValue.length >= 2);
+    setIsOpen(newValue.length >= 3);
   };
 
   const handleSelect = (selectedValue: string) => {
@@ -73,7 +73,7 @@ export function AutocompleteInput({
   };
 
   const handleFocus = () => {
-    if (inputValue.length >= 2) {
+    if (inputValue.length >= 3) {
       setIsOpen(true);
     }
   };
@@ -92,7 +92,7 @@ export function AutocompleteInput({
       
       {isOpen && commodities.length > 0 && (
         <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-hidden">
-          <Command className="border-0">
+          <Command className="border-0" shouldFilter={false}>
             <CommandList>
               {commodities.length === 0 ? (
                 <CommandEmpty>
@@ -104,7 +104,8 @@ export function AutocompleteInput({
                 commodities.map((commodity) => (
                   <CommandItem
                     key={commodity.value}
-                    value={commodity.value}
+                    value={commodity.label}
+                    keywords={[commodity.label]}
                     onSelect={() => handleSelect(commodity.value)}
                     className="cursor-pointer hover:bg-accent"
                   >
