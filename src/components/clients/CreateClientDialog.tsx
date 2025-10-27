@@ -11,6 +11,7 @@ import { useFleetNotifications } from '@/components/notifications';
 import { ClientLogoUpload } from '@/components/clients/ClientLogoUpload';
 import { FMCSALookupModal } from '@/components/clients/FMCSALookupModal';
 import { createTextHandlers, createPhoneHandlers, createMCHandlers, createDOTHandlers } from '@/lib/textUtils';
+import { useLogoSearch } from '@/hooks/useLogoSearch';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -39,6 +40,8 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [showFMCSAModal, setShowFMCSAModal] = useState(false);
+  const [isMigratingLogo, setIsMigratingLogo] = useState(false);
+  const { downloadLogo } = useLogoSearch();
   const isEditMode = !!client;
 
   const dispatcherSchema = z.object({
@@ -109,6 +112,32 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
           notes: client.notes || '',
           dispatchers: [],
         });
+
+        // Migrar logo externo automáticamente si existe
+        const migrateExternalLogo = async () => {
+          if (client.logo_url && client.id && !client.logo_url.includes('supabase.co/storage')) {
+            setIsMigratingLogo(true);
+            try {
+              const result = await downloadLogo(client.logo_url, client.id, client.name);
+              if (result.success && result.logoUrl) {
+                form.setValue('logo_url', result.logoUrl);
+                // Actualizar el logo en la base de datos inmediatamente
+                await supabase
+                  .from('company_clients')
+                  .update({ logo_url: result.logoUrl })
+                  .eq('id', client.id);
+                
+                showSuccess('Logo migrado', 'El logo se migró exitosamente al storage');
+              }
+            } catch (error) {
+              console.error('Error migrando logo:', error);
+            } finally {
+              setIsMigratingLogo(false);
+            }
+          }
+        };
+
+        migrateExternalLogo();
         
         // Cargar contactos existentes
         if (client.id) {
@@ -440,8 +469,9 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
                             logoUrl={field.value || undefined}
                             clientName={form.watch("name") || form.watch("alias")}
                             emailDomain={form.watch("email_domain")}
+                            clientId={client?.id}
                             onLogoChange={(url) => field.onChange(url || "")}
-                            disabled={createClientMutation.isPending}
+                            disabled={createClientMutation.isPending || isMigratingLogo}
                           />
                         </FormControl>
                         <FormMessage />
