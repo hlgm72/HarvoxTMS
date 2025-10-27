@@ -24,7 +24,17 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
     try {
       setUploading(true);
 
-      const fileExt = file.name.split('.').pop();
+      // Get file extension from MIME type to ensure correct format
+      let fileExt = 'png';
+      if (file.type.includes('jpeg') || file.type.includes('jpg')) {
+        fileExt = 'jpg';
+      } else if (file.type.includes('png')) {
+        fileExt = 'png';
+      } else if (file.type.includes('svg')) {
+        fileExt = 'svg';
+      } else if (file.type.includes('webp')) {
+        fileExt = 'webp';
+      }
       
       // Generate clean company name for consistent file naming
       const cleanCompanyName = clientName
@@ -43,7 +53,8 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
       const { error: uploadError } = await supabase.storage
         .from('client-logos')
         .upload(filePath, file, {
-          upsert: true // Allow overwriting existing file
+          contentType: file.type, // Preserve original content type
+          upsert: true
         });
 
       if (uploadError) {
