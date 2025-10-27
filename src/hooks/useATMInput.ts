@@ -19,8 +19,6 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log('🔑 handleKeyDown called with key:', e.key, 'keyCode:', e.keyCode, 'which:', e.which);
-    
     // Allow navigation keys
     if (['Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
       return;
@@ -30,7 +28,6 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
 
     if (e.key === 'Backspace' || e.keyCode === 8) {
       const newValue = Math.floor(value / 10);
-      console.log('🔙 Backspace: new value:', newValue);
       setValue(newValue);
       onValueChange?.(newValue / 100);
       return;
@@ -60,11 +57,8 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
         return;
       }
 
-      console.log('🔢 Digit added:', digit, 'new value:', newValue);
       setValue(newValue);
       onValueChange?.(newValue / 100);
-    } else {
-      console.log('❌ Invalid key ignored:', e.key, 'keyCode:', e.keyCode);
     }
   }, [value, onValueChange]);
 
@@ -73,14 +67,11 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     const input = e.target as HTMLInputElement;
     const inputValue = input.value;
     
-    console.log('📱 Input event, value:', inputValue);
-    
     // Extract only digits from the input
     const digits = inputValue.replace(/\D/g, '');
     
     if (digits && digits !== value.toString()) {
       const newValue = parseInt(digits) || 0;
-      console.log('📱 Mobile input detected, setting value:', newValue);
       setValue(newValue);
       onValueChange?.(newValue / 100);
       
@@ -95,18 +86,15 @@ export function useATMInput({ initialValue = 0, onValueChange }: UseATMInputOpti
     e.preventDefault();
     
     const pastedText = e.clipboardData.getData('text');
-    console.log('📋 Paste event:', pastedText);
     const cleanText = pastedText.replace(/[^\d.]/g, '');
     const numericValue = parseFloat(cleanText) || 0;
     const newValue = Math.round(numericValue * 100);
     
     // Prevent overflow
     if (newValue > 9999999) {
-      console.log('❌ Paste overflow prevented');
       return;
     }
 
-    console.log('📋 Paste processed:', cleanText, '→', newValue);
     setValue(newValue);
     onValueChange?.(newValue / 100);
   }, [onValueChange]);
