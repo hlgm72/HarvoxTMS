@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useLogoSearch } from "@/hooks/useLogoSearch";
+import { useTranslation } from "react-i18next";
 
 interface SmartLogoSearchProps {
   companyName: string;
@@ -23,6 +24,7 @@ export function SmartLogoSearch({
   onLogoSelect,
   className = ""
 }: SmartLogoSearchProps) {
+  const { t } = useTranslation();
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searchSource, setSearchSource] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export function SmartLogoSearch({
 
   const handleSearch = async () => {
     if (!companyName.trim() && !emailDomain?.trim()) {
-      setSearchError("Se requiere el nombre de la empresa o dominio de email");
+      setSearchError(t('clients.logoSearch.errorRequired'));
       return;
     }
 
@@ -48,7 +50,7 @@ export function SmartLogoSearch({
       setSearchResults([result.logoUrl]);
       setSearchSource(result.source || 'unknown');
     } else {
-      setSearchError(result.error || "No se encontró logo para esta empresa");
+      setSearchError(result.error || t('clients.logoSearch.errorNotFound'));
     }
   };
 
@@ -66,14 +68,14 @@ export function SmartLogoSearch({
       setSearchSource(result.source || 'unknown');
       setCurrentSourceIndex(prev => prev + 1);
     } else {
-      setSearchError("No se encontraron más alternativas");
+      setSearchError(t('clients.logoSearch.errorNoAlternatives'));
       setCurrentSourceIndex(prev => prev + 1);
     }
   };
 
   const handleSelectLogo = async (logoUrl: string) => {
     if (!companyName.trim()) {
-      setSearchError("Se requiere el nombre de la empresa para descargar el logo");
+      setSearchError(t('clients.logoSearch.errorRequiredDownload'));
       return;
     }
 
@@ -88,7 +90,7 @@ export function SmartLogoSearch({
       setIsRejected(false);
       setCurrentSourceIndex(0);
     } else {
-      setSearchError(result.error || "Error al descargar el logo al Storage");
+      setSearchError(result.error || t('clients.logoSearch.errorDownloadFailed'));
     }
   };
 
@@ -114,12 +116,12 @@ export function SmartLogoSearch({
 
   const getSourceLabel = (source: string) => {
     switch (source) {
-      case 'clearbit': return 'Clearbit';
-      case 'website': return 'Sitio Web';
-      case 'logosearch': return 'LogoSearch';
-      case 'google': return 'Google';
-      case 'iconhorse': return 'Iconhorse';
-      default: return 'Encontrado';
+      case 'clearbit': return t('clients.logoSearch.sourceClearbit');
+      case 'website': return t('clients.logoSearch.sourceWebsite');
+      case 'logosearch': return t('clients.logoSearch.sourceLogosearch');
+      case 'google': return t('clients.logoSearch.sourceGoogle');
+      case 'iconhorse': return t('clients.logoSearch.sourceIconhorse');
+      default: return t('clients.logoSearch.sourceDefault');
     }
   };
 
@@ -135,7 +137,7 @@ export function SmartLogoSearch({
           className="flex items-center gap-2"
         >
           <Search className="h-3 w-3" />
-          {isSearching ? "Buscando..." : "Buscar Logo"}
+          {isSearching ? t('clients.logoSearch.searching') : t('clients.logoSearch.searchButton')}
         </Button>
         
         {searchSource && (
@@ -154,12 +156,12 @@ export function SmartLogoSearch({
 
       {searchResults.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Logo encontrado:</p>
+          <p className="text-sm text-muted-foreground">{t('clients.logoSearch.logoFound')}</p>
           <div className="space-y-2">
             {searchResults.map((logoUrl, index) => (
               <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-card">
                 <Avatar className="h-10 w-10 flex-shrink-0">
-                  <AvatarImage src={logoUrl} alt="Logo encontrado" />
+                  <AvatarImage src={logoUrl} alt={t('clients.logoSearch.altLogoFound')} />
                   <AvatarFallback className="text-xs">
                     {getInitials(companyName)}
                   </AvatarFallback>
@@ -174,7 +176,7 @@ export function SmartLogoSearch({
                       className="flex items-center gap-1"
                     >
                       <Download className="h-3 w-3" />
-                      {isDownloading ? "Descargando..." : "Usar este logo"}
+                      {isDownloading ? t('clients.logoSearch.downloading') : t('clients.logoSearch.useThisLogo')}
                     </Button>
                     <Button
                       type="button"
@@ -185,11 +187,11 @@ export function SmartLogoSearch({
                       className="flex items-center gap-1"
                     >
                       <Search className="h-3 w-3" />
-                      {isSearching ? "Buscando..." : "Buscar alternativa"}
+                      {isSearching ? t('clients.logoSearch.searching') : t('clients.logoSearch.searchAlternative')}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    ¿No es el logo correcto? Haz clic en 'Buscar alternativa'
+                    {t('clients.logoSearch.notCorrectLogo')}
                   </p>
                 </div>
               </div>
@@ -201,11 +203,11 @@ export function SmartLogoSearch({
       {currentLogoUrl && (
         <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
           <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-          <span className="text-sm text-muted-foreground">Logo actual configurado</span>
+          <span className="text-sm text-muted-foreground">{t('clients.logoSearch.currentLogoSet')}</span>
           <Avatar key={currentLogoUrl} className="h-12 w-12 ml-auto flex-shrink-0 bg-white border border-border">
             <AvatarImage 
               src={`${currentLogoUrl}${currentLogoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-              alt="Logo actual"
+              alt={t('clients.logoSearch.altCurrentLogo')}
               className="object-contain p-1.5"
               loading="eager"
             />

@@ -280,5 +280,28 @@
       "companies_found_message": "Found {{count}} companies. Select the one that corresponds:"
     },
     "disclaimer": "Data is obtained from the public FMCSA database. Always verify the accuracy of information before saving."
+  },
+  "logoSearch": {
+    "searchButton": "Search Logo",
+    "searching": "Searching...",
+    "logoFound": "Logo found:",
+    "useThisLogo": "Use this logo",
+    "downloading": "Downloading...",
+    "searchAlternative": "Search alternative",
+    "notCorrectLogo": "Not the right logo? Click 'Search alternative'",
+    "currentLogoSet": "Current logo configured",
+    "errorRequired": "Company name or email domain required",
+    "errorNotFound": "No logo found for this company",
+    "errorNoAlternatives": "No more alternatives found",
+    "errorRequiredDownload": "Company name required to download logo",
+    "errorDownloadFailed": "Error downloading logo to Storage",
+    "sourceClearbit": "Clearbit",
+    "sourceWebsite": "Website",
+    "sourceLogosearch": "LogoSearch",
+    "sourceGoogle": "Google",
+    "sourceIconhorse": "Iconhorse",
+    "sourceDefault": "Found",
+    "altLogoFound": "Found logo",
+    "altCurrentLogo": "Current logo"
   }
 }
