@@ -83,7 +83,7 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
                 <div className="flex items-center gap-3">
                   <Avatar key={client.logo_url || `no-logo-${client.id}`} className="h-10 w-10 bg-white border border-border">
                     <AvatarImage 
-                      src={client.logo_url ? `${client.logo_url}?t=${Date.now()}` : undefined}
+                      src={client.logo_url ? `${client.logo_url}${client.logo_url.includes('?') ? '&' : '?'}t=${Date.now()}` : undefined}
                       alt={client.name}
                       className="object-contain p-1"
                       loading="eager"

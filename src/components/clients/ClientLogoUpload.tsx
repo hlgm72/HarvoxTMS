@@ -128,7 +128,7 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
       <div className="flex items-center gap-4">
         <Avatar key={logoUrl || 'no-logo'} className="h-20 w-20 flex-shrink-0 bg-white border border-border">
           <AvatarImage 
-            src={logoUrl ? `${logoUrl}?t=${Date.now()}` : undefined}
+            src={logoUrl ? `${logoUrl}${logoUrl.includes('?') ? '&' : '?'}t=${Date.now()}` : undefined}
             alt={clientName}
             className="object-contain p-2"
             loading="eager"

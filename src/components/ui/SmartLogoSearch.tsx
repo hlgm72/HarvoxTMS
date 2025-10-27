@@ -204,7 +204,7 @@ export function SmartLogoSearch({
           <span className="text-sm text-muted-foreground">Logo actual configurado</span>
           <Avatar key={currentLogoUrl} className="h-12 w-12 ml-auto flex-shrink-0 bg-white border border-border">
             <AvatarImage 
-              src={`${currentLogoUrl}?t=${Date.now()}`}
+              src={`${currentLogoUrl}${currentLogoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
               alt="Logo actual"
               className="object-contain p-1.5"
               loading="eager"
