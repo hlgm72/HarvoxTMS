@@ -177,14 +177,16 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
 
         if (clientError) throw clientError;
 
-        // 2. Eliminar contactos existentes y crear los nuevos
+        // 2. Manejar contactos de forma segura (no eliminar, sino desactivar)
+        // Primero, desactivar todos los contactos existentes
         await supabase
           .from('company_client_contacts')
-          .delete()
+          .update({ is_active: false })
           .eq('client_id', client.id);
 
+        // Luego, crear o reactivar los contactos del formulario
         if (data.dispatchers && data.dispatchers.length > 0) {
-          const contactsToCreate = data.dispatchers
+          const contactsToUpsert = data.dispatchers
             .filter(d => d.name.trim())
             .map(contact => ({
               client_id: client.id,
@@ -197,10 +199,10 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
               is_active: true,
             }));
 
-          if (contactsToCreate.length > 0) {
+          if (contactsToUpsert.length > 0) {
             const { error: contactsError } = await supabase
               .from('company_client_contacts')
-              .insert(contactsToCreate);
+              .insert(contactsToUpsert);
 
             if (contactsError) throw contactsError;
           }
