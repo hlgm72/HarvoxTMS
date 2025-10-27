@@ -29,7 +29,7 @@ import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
 import { getISOWeek } from "date-fns";
 
 export default function PaymentReports() {
-  const { t, i18n } = useTranslation(['payments', 'common']);
+  const { t } = useTranslation(['payments', 'common']);
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();
   const { showSuccess, showError } = useFleetNotifications();
@@ -491,7 +491,8 @@ export default function PaymentReports() {
     if (filters.driverId && filters.driverId !== 'all') {
       const driver = drivers.find(d => d.user_id === filters.driverId);
       if (driver) {
-        parts.push(`${t("common:filters.driver")}: ${driver.first_name} ${driver.last_name}`);
+        const driverLabel = t('common:filters.driver');
+        parts.push(`${driverLabel}: ${driver.first_name} ${driver.last_name}`);
       }
     }
     
@@ -565,14 +566,15 @@ export default function PaymentReports() {
                 {periodDesc}{dateRange && `: ${dateRange}`}
               </Badge>
             )}
-            {filters.driverId !== 'all' && (
-              <Badge variant="secondary" className="text-xs font-normal">
-                {t("common:filters.driver")}: {(() => {
-                  const driver = drivers.find(d => d.user_id === filters.driverId);
-                  return driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId;
-                })()}
-              </Badge>
-            )}
+            {filters.driverId !== 'all' && (() => {
+              const driver = drivers.find(d => d.user_id === filters.driverId);
+              const driverLabel = t('common:filters.driver');
+              return (
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {driverLabel}: {driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}
+                </Badge>
+              );
+            })()}
             {filters.status !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
                 {t("common:filters.status")}: {filters.status}
