@@ -124,6 +124,7 @@ YOU MUST respond ONLY with this exact JSON structure (no markdown, no explanatio
     const responseText = data.choices[0].message.content;
     
     console.log('OpenAI analysis complete');
+    console.log('OpenAI raw response:', responseText.substring(0, 500));
 
     let analysisResult;
     try {
