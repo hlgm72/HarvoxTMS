@@ -313,9 +313,9 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       <span className="capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
                     </div>
                     {expense.invoice_number && (
-                      <div className="flex items-center gap-1 pl-4">
-                        <FileText className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">{expense.invoice_number}</span>
+                      <div className="flex items-center gap-1 pl-4 text-xs text-muted-foreground">
+                        <FileText className="h-3 w-3" />
+                        <span>Inv: {expense.invoice_number}</span>
                       </div>
                     )}
                   </div>
