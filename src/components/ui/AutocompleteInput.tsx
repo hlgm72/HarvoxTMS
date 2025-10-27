@@ -91,9 +91,9 @@ export function AutocompleteInput({
       />
       
       {isOpen && commodities.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-y-auto pointer-events-auto">
           <Command className="border-0" shouldFilter={false}>
-            <CommandList>
+            <CommandList className="max-h-none overflow-visible">
               {commodities.length === 0 ? (
                 <CommandEmpty>
                   <div className="p-2 text-sm text-muted-foreground text-center">
