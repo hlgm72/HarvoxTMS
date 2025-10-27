@@ -29,8 +29,22 @@ async function downloadAndStoreImage(imageUrl: string, clientId: string | undefi
       return null;
     }
     
+    // Get the actual content type from the response
+    const contentType = imageResponse.headers.get('content-type') || 'image/png';
+    console.log(`Image content type: ${contentType}`);
+    
     const imageBuffer = await imageResponse.arrayBuffer();
-    const imageBlob = new Blob([imageBuffer]);
+    const imageBlob = new Blob([imageBuffer], { type: contentType });
+    
+    // Determine file extension from content type
+    let fileExt = 'png';
+    if (contentType.includes('jpeg') || contentType.includes('jpg')) {
+      fileExt = 'jpg';
+    } else if (contentType.includes('svg')) {
+      fileExt = 'svg';
+    } else if (contentType.includes('webp')) {
+      fileExt = 'webp';
+    }
     
     // Clean company name for filename
     const cleanCompanyName = companyName
@@ -41,13 +55,13 @@ async function downloadAndStoreImage(imageUrl: string, clientId: string | undefi
     
     // Use clientId folder if available, otherwise use temp folder
     const folder = clientId || 'temp';
-    const filePath = `${folder}/${cleanCompanyName}.png`;
+    const filePath = `${folder}/${cleanCompanyName}.${fileExt}`;
     
     // Upload to Supabase Storage
     const { error: uploadError } = await supabaseClient.storage
       .from('client-logos')
       .upload(filePath, imageBlob, {
-        contentType: 'image/png',
+        contentType: contentType,
         upsert: true
       });
     
