@@ -42,64 +42,44 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-5-2025-08-07',
         messages: [
           {
             role: 'system',
-            content: 'You are a specialized document analysis assistant. You MUST respond ONLY with valid JSON. Do not include any explanatory text, apologies, or comments outside the JSON structure. If you cannot analyze the image, return valid JSON with empty arrays.'
+            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the table. Return valid JSON only.'
           },
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: `You are analyzing a fuel transaction document. Your task is to extract EVERY SINGLE TRANSACTION visible in the image.
+                text: `Extract ALL fuel transactions from this table image. Look at EVERY row.
 
-CRITICAL INSTRUCTIONS - READ CAREFULLY:
-1. Look at the ENTIRE table from top to bottom
-2. Extract EVERY row that contains transaction data
-3. DO NOT skip any rows - we need ALL transactions
-4. Even if there are 50+ transactions, extract ALL OF THEM
-5. The "sampleData" array should contain ALL transactions, not just samples
+For EACH row you see, extract:
+- date: Transaction date (YYYY-MM-DD format)
+- card: Full card number
+- unit: Unit/vehicle number  
+- invoice: Invoice number
+- location_name: Gas station name
+- city: City name
+- state: 2-letter state code
+- qty: Gallons (number)
+- gross_ppg: Price per gallon (number)
+- gross_amt: Gross amount (number)
+- disc_amt: Discount (number, 0 if none)
+- fees: Fees (number, 0 if none)
+- total_amt: Total amount (number)
 
-DATA EXTRACTION RULES:
-- Card numbers: Extract the COMPLETE card number from each row
-- Dates: Convert to YYYY-MM-DD format (e.g., "10/21/2025" becomes "2025-10-21")
-- Amounts: Include the FULL number with decimals (e.g., $156.45 → 156.45)
-- Locations: Separate into station name, city, and state
-- Quantities: Extract gallons as numbers
-- Prices: Extract price per gallon as numbers
-
-QUALITY CHECKS:
-✓ Did you read EVERY row in the table?
-✓ Is your sampleData array as long as the number of rows you see?
-✓ Did you extract complete card numbers from each row?
-✓ Are ALL amounts complete with decimals?
-
-RESPONSE FORMAT (JSON ONLY, NO MARKDOWN):
+Return JSON:
 {
-  "columnsFound": ["Card #", "Tran Date", "Location Name", etc.],
+  "columnsFound": ["list of column headers"],
   "hasAuthorizationCode": false,
   "authorizationCodeField": null,
-  "sampleData": [
-    {
-      "date": "2025-10-21",
-      "card": "708305003086527160",
-      "unit": "123",
-      "invoice": "INV001",
-      "location_name": "LOVES 347",
-      "city": "HOUSTON",
-      "state": "TX",
-      "qty": 49.90,
-      "gross_ppg": 2.86,
-      "gross_amt": 143.72,
-      "disc_amt": 0,
-      "fees": 0,
-      "total_amt": 143.72
-    }
-  ],
-  "analysis": "Found X transactions from [date range]"
-}`
+  "sampleData": [array of ALL transactions],
+  "analysis": "Found N transactions"
+}
+
+Extract ALL visible rows, not just examples.`
               },
               {
                 type: 'image_url',
@@ -111,8 +91,7 @@ RESPONSE FORMAT (JSON ONLY, NO MARKDOWN):
             ]
           }
         ],
-        max_tokens: 2000,
-        temperature: 0,
+        max_completion_tokens: 4000,
         response_format: { type: "json_object" }
       }),
     });
