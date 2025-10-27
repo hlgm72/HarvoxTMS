@@ -299,9 +299,9 @@ export function LoadAssignmentSection({
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                          <div className="grid grid-cols-3 gap-3">
-                            <div>
-                              <Label htmlFor="leasing-percentage" className="text-xs font-medium">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              <Label htmlFor="leasing-percentage" className="text-xs font-medium w-24 flex-shrink-0">
                                 {t("loads:create_wizard.phases.assignment.owner_operator.leasing_label")}
                               </Label>
                               <Input
@@ -313,11 +313,11 @@ export function LoadAssignmentSection({
                                 value={leasingPercentage !== undefined && leasingPercentage !== null ? leasingPercentage.toFixed(2) : ''}
                                 onChange={(e) => onLeasingPercentageChange?.(parseFloat(e.target.value) || 0)}
                                 placeholder="0.00"
-                                className="text-xs h-8"
+                                className="text-xs h-8 flex-1"
                               />
                             </div>
-                            <div>
-                              <Label htmlFor="factoring-percentage" className="text-xs font-medium">
+                            <div className="flex items-center gap-3">
+                              <Label htmlFor="factoring-percentage" className="text-xs font-medium w-24 flex-shrink-0">
                                 {t("loads:create_wizard.phases.assignment.owner_operator.factoring_label")}
                               </Label>
                               <Input
@@ -329,11 +329,11 @@ export function LoadAssignmentSection({
                                 value={factoringPercentage !== undefined && factoringPercentage !== null ? factoringPercentage.toFixed(2) : ''}
                                 onChange={(e) => onFactoringPercentageChange?.(parseFloat(e.target.value) || 0)}
                                 placeholder="3.00"
-                                className="text-xs h-8"
+                                className="text-xs h-8 flex-1"
                               />
                             </div>
-                            <div>
-                              <Label htmlFor="dispatching-percentage" className="text-xs font-medium">
+                            <div className="flex items-center gap-3">
+                              <Label htmlFor="dispatching-percentage" className="text-xs font-medium w-24 flex-shrink-0">
                                 {t("loads:create_wizard.phases.assignment.owner_operator.dispatching_label")}
                               </Label>
                               <Input
@@ -345,7 +345,7 @@ export function LoadAssignmentSection({
                                 value={dispatchingPercentage !== undefined && dispatchingPercentage !== null ? dispatchingPercentage.toFixed(2) : ''}
                                 onChange={(e) => onDispatchingPercentageChange?.(parseFloat(e.target.value) || 0)}
                                 placeholder="5.00"
-                                className="text-xs h-8"
+                                className="text-xs h-8 flex-1"
                               />
                             </div>
                           </div>
