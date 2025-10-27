@@ -45,49 +45,54 @@ serve(async (req) => {
         model: 'gpt-4o',
         messages: [
           {
+            role: 'system',
+            content: 'You are a specialized document analysis assistant. You MUST respond ONLY with valid JSON. Do not include any explanatory text, apologies, or comments outside the JSON structure. If you cannot analyze the image, return valid JSON with empty arrays.'
+          },
+          {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: `Eres un asistente experto en análisis de documentos de combustible. Analiza esta imagen de un documento y extrae TODAS las transacciones de combustible que veas.
+                text: `Analyze this fuel transaction document image and extract ALL transactions you see.
 
-CRÍTICO - INSTRUCCIONES DE EXTRACCIÓN:
-1. Lee CADA FILA de la tabla cuidadosamente
-2. Extrae TODAS las transacciones que aparezcan (no solo una muestra)
-3. Para números de tarjeta: extrae el número COMPLETO de CADA fila individual
-4. Para ubicaciones: separa nombre de estación, ciudad y estado
-5. Para montos: escribe el número COMPLETO (si ves $156.45, escribe 156.45 NO 56.45)
-6. Para fechas: convierte a formato YYYY-MM-DD
+CRITICAL EXTRACTION RULES:
+1. Read EVERY row of the table carefully
+2. Extract ALL transactions that appear (not just a sample)
+3. For card numbers: extract the FULL number from EACH individual row
+4. For locations: separate station name, city, and state
+5. For amounts: write the COMPLETE number (if you see $156.45, write 156.45 NOT 56.45)
+6. For dates: convert to YYYY-MM-DD format
 
-REGLAS IMPORTANTES:
-- NO asumas que todas las filas tienen el mismo número de tarjeta
-- Verifica CADA fila individualmente
-- Lee TODOS los dígitos de los montos
-- NO inventes datos que no veas
+IMPORTANT RULES:
+- DO NOT assume all rows have the same card number
+- Verify EACH row individually
+- Read ALL digits of amounts
+- DO NOT invent data you don't see
+- If you cannot read the image clearly, return empty arrays but ALWAYS return valid JSON
 
-Responde SOLO con JSON válido:
+YOU MUST respond ONLY with this exact JSON structure (no markdown, no explanations):
 {
-  "columnsFound": ["lista_de_todas_las_columnas_que_ves"],
-  "hasAuthorizationCode": true/false,
-  "authorizationCodeField": "nombre_del_campo_de_autorización o null",
+  "columnsFound": ["list_of_all_columns_you_see"],
+  "hasAuthorizationCode": true or false,
+  "authorizationCodeField": "authorization_field_name or null",
   "sampleData": [
     {
       "date": "YYYY-MM-DD",
-      "card": "número_de_tarjeta_completo_de_esta_fila",
-      "unit": "número_de_unidad",
-      "invoice": "número_de_factura",
-      "location_name": "nombre_exacto_de_la_estación",
-      "city": "ciudad",
-      "state": "código_de_estado_2_letras",
-      "qty": cantidad_galones_número,
-      "gross_ppg": precio_por_galón_número,
-      "gross_amt": monto_bruto_número_COMPLETO,
-      "disc_amt": descuento_número,
-      "fees": comisiones_número,
-      "total_amt": total_número_COMPLETO
+      "card": "complete_card_number_from_this_row",
+      "unit": "unit_number",
+      "invoice": "invoice_number",
+      "location_name": "exact_station_name",
+      "city": "city_name",
+      "state": "two_letter_state_code",
+      "qty": gallons_number,
+      "gross_ppg": price_per_gallon_number,
+      "gross_amt": gross_amount_COMPLETE_number,
+      "disc_amt": discount_number,
+      "fees": fees_number,
+      "total_amt": total_COMPLETE_number
     }
   ],
-  "analysis": "Descripción de cuántas transacciones encontraste y de qué columnas"
+  "analysis": "Brief description of how many transactions found and columns"
 }`
               },
               {
@@ -101,7 +106,8 @@ Responde SOLO con JSON válido:
           }
         ],
         max_tokens: 2000,
-        temperature: 0
+        temperature: 0,
+        response_format: { type: "json_object" }
       }),
     });
 
@@ -121,29 +127,37 @@ Responde SOLO con JSON válido:
 
     let analysisResult;
     try {
+      // Remove markdown code blocks if present
       const cleanedText = responseText.replace(/```json\n?|\n?```/g, '').trim();
+      
+      // Try to extract JSON from the response
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
       const jsonToParse = jsonMatch ? jsonMatch[0] : cleanedText;
+      
       analysisResult = JSON.parse(jsonToParse);
 
+      // Validate and normalize the structure
       analysisResult = {
         columnsFound: Array.isArray(analysisResult.columnsFound) ? analysisResult.columnsFound : [],
         hasAuthorizationCode: Boolean(analysisResult.hasAuthorizationCode),
         authorizationCodeField: analysisResult.authorizationCodeField || null,
         sampleData: Array.isArray(analysisResult.sampleData) ? analysisResult.sampleData : [],
-        analysis: analysisResult.analysis || 'Análisis completado'
+        analysis: analysisResult.analysis || 'Analysis completed'
       };
 
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
+      console.error('Raw response from OpenAI:', responseText);
+      
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Failed to parse AI response',
-          details: parseError.message,
-          rawResponse: responseText
+          error: 'The AI could not process this image. The PDF might be too complex, low quality, or not contain a fuel transactions table.',
+          details: 'Please ensure the PDF contains a clear table of fuel transactions and try again.',
+          technicalDetails: parseError.message,
+          rawResponse: responseText.substring(0, 200) // First 200 chars for debugging
         }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
