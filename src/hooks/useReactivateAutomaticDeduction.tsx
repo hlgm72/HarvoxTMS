@@ -47,11 +47,12 @@ export function useReactivateAutomaticDeduction() {
       }
 
       // 3. Asegurar que existe un payment_period para esta fecha
-      // Usar la función RPC que crea el período si no existe
+      // ✅ FIX: Pasar user_id para crear período solo para el usuario específico
       const { data: periodData, error: periodError } = await supabase
         .rpc('create_payment_period_if_needed', {
           target_company_id: companyData.company_id,
-          target_date: expenseDate
+          target_date: expenseDate,
+          created_by_user_id: userId
         });
 
       if (periodError) {

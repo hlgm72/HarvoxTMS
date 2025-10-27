@@ -257,56 +257,12 @@ export function EventualDeductionDialog({
           return unpaidPeriods;
         }
 
-        // Si no hay ningún período, crear uno automáticamente
+        // ✅ FIX: NO crear período automáticamente aquí
+        // El período se creará solo cuando el usuario confirme la deducción en handleSubmit
         if (import.meta.env.DEV) {
-          console.log('📝 No period found - creating automatically...');
+          console.log('ℹ️ No period found for this date - will be created on submit');
         }
-        const { data: newPeriodId, error: createError } = await supabase.rpc(
-          'create_payment_period_if_needed',
-          {
-            target_company_id: companyId,
-            target_date: expenseDateStr
-          }
-        );
-
-        if (createError) {
-          if (import.meta.env.DEV) {
-            console.error('Error creating period:', createError);
-          }
-          throw new Error('No se pudo crear el período de pago automáticamente');
-        }
-
-        if (import.meta.env.DEV) {
-          console.log('✅ Period created:', newPeriodId);
-        }
-
-        // Buscar el user_payroll recién creado
-        const { data: newUserPeriods, error: fetchNewError } = await supabase
-          .from('user_payrolls')
-          .select(`
-            *,
-            period:company_payment_periods!company_payment_period_id(
-              period_start_date,
-              period_end_date,
-              period_frequency
-            )
-          `)
-          .eq('company_id', companyId)
-          .eq('user_id', formData.user_id)
-          .eq('company_payment_period_id', newPeriodId)
-          .limit(1);
-
-        if (fetchNewError || !newUserPeriods || newUserPeriods.length === 0) {
-          if (import.meta.env.DEV) {
-            console.error('Error fetching newly created period:', fetchNewError);
-          }
-          return [];
-        }
-
-        if (import.meta.env.DEV) {
-          console.log('✅ Successfully fetched newly created user_payroll');
-        }
-        return newUserPeriods;
+        return [];
       } catch (error) {
         if (import.meta.env.DEV) {
           console.error('Error in payment periods query:', error);
@@ -398,10 +354,55 @@ export function EventualDeductionDialog({
         showSuccess(t("deductions.notifications.success"), t("deductions.period_dialog.success_updated"));
       } else {
         // Create new deduction
+        // ✅ FIX: Asegurar que existe período antes de crear la deducción
+        let periodId = paymentPeriods[0]?.company_payment_period_id;
+        
+        if (!periodId) {
+          // Obtener company_id del usuario
+          const { data: userCompanyRoles, error: companyError } = await supabase
+            .from('user_company_roles')
+            .select('company_id')
+            .eq('user_id', formData.user_id)
+            .eq('is_active', true)
+            .limit(1);
+
+          if (companyError || !userCompanyRoles || userCompanyRoles.length === 0) {
+            throw new Error('No se pudo obtener la compañía del usuario');
+          }
+
+          const companyId = userCompanyRoles[0].company_id;
+          const expenseDateStr = formatDateInUserTimeZone(expenseDate);
+
+          if (import.meta.env.DEV) {
+            console.log('🔄 Creating payment period on submit:', { companyId, date: expenseDateStr, userId: formData.user_id });
+          }
+
+          // Crear el período usando la función correcta con user_id
+          const { data: newPeriodId, error: createError } = await supabase.rpc(
+            'create_payment_period_if_needed',
+            {
+              target_company_id: companyId,
+              target_date: expenseDateStr,
+              created_by_user_id: formData.user_id
+            }
+          );
+
+          if (createError) {
+            console.error('Error creating period:', createError);
+            throw new Error('No se pudo crear el período de pago');
+          }
+
+          periodId = newPeriodId;
+
+          if (import.meta.env.DEV) {
+            console.log('✅ Period created on submit:', periodId);
+          }
+        }
+
         const { error } = await supabase
           .from('expense_instances')
           .insert({
-            payment_period_id: paymentPeriods[0]?.company_payment_period_id,
+            payment_period_id: periodId,
             user_id: formData.user_id,
             expense_type_id: formData.expense_type_id,
             amount: parseFloat(formData.amount),
@@ -472,13 +473,13 @@ export function EventualDeductionDialog({
     return '';
   };
 
+  // ✅ FIX: Permitir submit incluso si no hay período existente (se creará en handleSubmit)
   const isFormValid = 
     formData.user_id &&
     expenseDate &&
     formData.expense_type_id && 
     formData.amount && 
-    parseFloat(formData.amount) > 0 &&
-    (editingDeduction || (!editingDeduction && paymentPeriods.length > 0));
+    parseFloat(formData.amount) > 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
