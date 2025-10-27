@@ -42,6 +42,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
   const isEditMode = !!client;
 
   const dispatcherSchema = z.object({
+    id: z.string().optional(), // ID del contacto existente
     name: z.string().min(1, t('create_client_dialog.validation.name_required')),
     email: z.string().email(t('create_client_dialog.validation.email_invalid')).optional().or(z.literal("")),
     phone_office: z.string().optional(),
@@ -119,6 +120,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
             .then(({ data: contacts }) => {
               if (contacts && contacts.length > 0) {
                 const formattedContacts = contacts.map(c => ({
+                  id: c.id, // Incluir el ID del contacto
                   name: c.name,
                   email: c.email || '',
                   phone_office: c.phone_office || '',
@@ -177,35 +179,69 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
 
         if (clientError) throw clientError;
 
-        // 2. Manejar contactos de forma segura (no eliminar, sino desactivar)
-        // Primero, desactivar todos los contactos existentes
-        await supabase
-          .from('company_client_contacts')
-          .update({ is_active: false })
-          .eq('client_id', client.id);
-
-        // Luego, crear o reactivar los contactos del formulario
+        // 2. Manejar contactos de forma inteligente
         if (data.dispatchers && data.dispatchers.length > 0) {
-          const contactsToUpsert = data.dispatchers
-            .filter(d => d.name.trim())
-            .map(contact => ({
-              client_id: client.id,
-              name: contact.name,
-              email: contact.email || null,
-              phone_office: contact.phone_office || null,
-              phone_mobile: contact.phone_mobile || null,
-              extension: contact.extension || null,
-              notes: contact.notes || null,
-              is_active: true,
-            }));
+          const formContactIds = data.dispatchers
+            .filter(d => d.id)
+            .map(d => d.id!);
 
-          if (contactsToUpsert.length > 0) {
-            const { error: contactsError } = await supabase
+          // Desactivar contactos que ya no están en el formulario
+          if (formContactIds.length > 0) {
+            await supabase
               .from('company_client_contacts')
-              .insert(contactsToUpsert);
-
-            if (contactsError) throw contactsError;
+              .update({ is_active: false })
+              .eq('client_id', client.id)
+              .not('id', 'in', `(${formContactIds.join(',')})`);
+          } else {
+            // Si no hay contactos con ID, desactivar todos
+            await supabase
+              .from('company_client_contacts')
+              .update({ is_active: false })
+              .eq('client_id', client.id);
           }
+
+          // Procesar cada contacto del formulario
+          for (const contact of data.dispatchers.filter(d => d.name.trim())) {
+            if (contact.id) {
+              // Actualizar contacto existente
+              const { error: updateError } = await supabase
+                .from('company_client_contacts')
+                .update({
+                  name: contact.name,
+                  email: contact.email || null,
+                  phone_office: contact.phone_office || null,
+                  phone_mobile: contact.phone_mobile || null,
+                  extension: contact.extension || null,
+                  notes: contact.notes || null,
+                  is_active: true,
+                })
+                .eq('id', contact.id);
+
+              if (updateError) throw updateError;
+            } else {
+              // Crear nuevo contacto
+              const { error: insertError } = await supabase
+                .from('company_client_contacts')
+                .insert({
+                  client_id: client.id,
+                  name: contact.name,
+                  email: contact.email || null,
+                  phone_office: contact.phone_office || null,
+                  phone_mobile: contact.phone_mobile || null,
+                  extension: contact.extension || null,
+                  notes: contact.notes || null,
+                  is_active: true,
+                });
+
+              if (insertError) throw insertError;
+            }
+          }
+        } else {
+          // Si no hay contactos en el formulario, desactivar todos
+          await supabase
+            .from('company_client_contacts')
+            .update({ is_active: false })
+            .eq('client_id', client.id);
         }
 
         return updatedClient;
@@ -312,6 +348,7 @@ export function CreateClientDialog({ isOpen, onClose, onSuccess, initialName = '
 
   const addDispatcher = () => {
     append({
+      id: undefined, // Nuevo contacto sin ID
       name: '',
       email: '',
       phone_office: '',
