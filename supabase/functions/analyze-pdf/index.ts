@@ -46,43 +46,24 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the text. Return valid JSON only. Be thorough and complete.'
+            content: 'Extract ALL fuel transactions. Return compact JSON only - no extra text.'
           },
           {
             role: 'user',
-            content: `Extract ALL fuel transactions from this PDF text. Look at EVERY transaction row.
+            content: `Extract every transaction from this PDF:
 
-PDF TEXT:
 ${pdfText}
 
-For EACH transaction you see, extract:
-- date: Transaction date (YYYY-MM-DD format)
-- card: Full card number
-- unit: Unit/vehicle number  
-- invoice: Invoice number
-- location_name: Gas station name
-- city: City name
-- state: 2-letter state code
-- qty: Gallons (number)
-- gross_ppg: Price per gallon (number)
-- gross_amt: Gross amount (number)
-- disc_amt: Discount (number, 0 if none)
-- fees: Fees (number, 0 if none)
-- total_amt: Total amount (number)
+Extract these fields for each:
+date (YYYY-MM-DD), card, unit, invoice, location_name, city, state, qty, gross_ppg, gross_amt, disc_amt, fees, total_amt
 
-Return JSON:
-{
-  "columnsFound": ["list of column headers"],
-  "hasAuthorizationCode": false,
-  "authorizationCodeField": null,
-  "sampleData": [array of ALL transactions],
-  "analysis": "Found N transactions"
-}
+Return compact JSON:
+{"columnsFound":[],"hasAuthorizationCode":false,"authorizationCodeField":null,"sampleData":[...],"analysis":"Found X transactions"}
 
-IMPORTANT: Extract ALL visible rows, not just examples. Be thorough and extract every single transaction you can see. If there are many transactions, prioritize completeness.`
+Extract ALL rows. Use numbers not strings for amounts. Be complete.`
           }
         ],
-        max_completion_tokens: 8000,
+        max_completion_tokens: 16000,
         response_format: { type: "json_object" }
       }),
     });
