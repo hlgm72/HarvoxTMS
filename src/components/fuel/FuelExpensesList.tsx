@@ -307,19 +307,19 @@ export function FuelExpensesList({ filters, onEdit, onView }: FuelExpensesListPr
                       ${expense.price_per_gallon?.toFixed(3)}/gal
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {getFuelTypeIcon(expense.fuel_type)}
-                    <span className="capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1">
+                      {getFuelTypeIcon(expense.fuel_type)}
+                      <span className="capitalize">{t(`fuel:expenses_list.fuel_types.${expense.fuel_type}`, expense.fuel_type)}</span>
+                    </div>
+                    {expense.invoice_number && (
+                      <div className="flex items-center gap-1 pl-4">
+                        <Receipt className="h-3 w-3 text-muted-foreground" />
+                        <span className="font-medium">{expense.invoice_number}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                
-                {expense.invoice_number && (
-                  <div className="flex items-center gap-1 text-xs">
-                    <Receipt className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">{t('fuel:expenses_list.invoice')}:</span>
-                    <span className="font-medium">{expense.invoice_number}</span>
-                  </div>
-                )}
                 
                 <div className="flex justify-end items-center">
                   {getStatusBadge(expense.status)}
