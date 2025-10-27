@@ -137,8 +137,9 @@ export function ComboboxField({
                 {popularOptions.map((option) => (
                   <CommandItem
                     key={option.value}
-                    value={option.value}
-                    onSelect={handleSelect}
+                    value={option.label}
+                    keywords={[option.label]}
+                    onSelect={() => handleSelect(option.value)}
                   >
                     <Check
                       className={cn(
@@ -164,8 +165,9 @@ export function ComboboxField({
                 {regularOptions.map((option) => (
                   <CommandItem
                     key={option.value}
-                    value={option.value}
-                    onSelect={handleSelect}
+                    value={option.label}
+                    keywords={[option.label]}
+                    onSelect={() => handleSelect(option.value)}
                   >
                     <Check
                       className={cn(

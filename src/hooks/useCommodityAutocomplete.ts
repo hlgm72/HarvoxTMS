@@ -14,7 +14,7 @@ export const useCommodityAutocomplete = (searchTerm: string) => {
 
   useEffect(() => {
     const fetchCommodities = async () => {
-      if (debouncedSearchTerm.length < 2) {
+      if (debouncedSearchTerm.length < 3) {
         setCommodities([]);
         return;
       }
