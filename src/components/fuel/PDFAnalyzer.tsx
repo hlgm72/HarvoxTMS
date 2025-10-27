@@ -66,6 +66,7 @@ export function PDFAnalyzer() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState<'extracting' | 'analyzing' | 'enriching' | ''>('');
   const [isEnriching, setIsEnriching] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [enrichedTransactions, setEnrichedTransactions] = useState<EnrichedTransaction[]>([]);
@@ -133,12 +134,14 @@ export function PDFAnalyzer() {
     if (!selectedFile) return;
 
     setIsAnalyzing(true);
-    setAnalysisStep('Extrayendo texto del PDF...');
+    setCurrentStep('extracting');
+    setAnalysisStep(t('analyzer.upload.extracting_text'));
     
     try {
       const pdfText = await extractTextFromPDF(selectedFile);
       
-      setAnalysisStep('Analizando con IA...');
+      setCurrentStep('analyzing');
+      setAnalysisStep(t('analyzer.upload.analyzing_with_ai'));
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
         body: { pdfText }
       });
@@ -151,20 +154,21 @@ export function PDFAnalyzer() {
         const transactionCount = data.analysis.sampleData?.length || 0;
         
         setAnalysisResult(data.analysis);
-        setAnalysisStep(`Enriqueciendo ${transactionCount} transacciones...`);
+        setCurrentStep('enriching');
+        setAnalysisStep(t('analyzer.upload.enriching_count', { count: transactionCount }));
         await enrichTransactions(data.analysis.sampleData);
         setSelectedTransactions(new Set()); // Reset selection
         
         showSuccess(
           t('analyzer.results.analysis_complete'),
-          `${t('analyzer.results.analysis_success')} (${transactionCount} transacciones)`
+          `${t('analyzer.results.analysis_success')} (${transactionCount} ${t('analyzer.results.transactions_unit')})`
         );
         
         // Advertir si se acerca al límite de procesamiento
         if (transactionCount >= 90) {
           showWarning(
-            'Límite de transacciones alcanzado',
-            'El PDF se acerca al límite de procesamiento (~100). Algunas transacciones podrían no haberse detectado. Considera dividir el PDF en rangos más pequeños.'
+            t('analyzer.upload.limit_reached_title'),
+            t('analyzer.upload.limit_reached_message')
           );
         }
       } else {
@@ -179,6 +183,7 @@ export function PDFAnalyzer() {
     } finally {
       setIsAnalyzing(false);
       setAnalysisStep('');
+      setCurrentStep('');
     }
   };
 
@@ -728,7 +733,7 @@ export function PDFAnalyzer() {
           <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Límite de procesamiento:</strong> Para resultados óptimos, el PDF no debe exceder <strong>100 transacciones</strong>. Si tu archivo tiene más, considera dividirlo en rangos de fechas más pequeños para asegurar que se detecten todas las transacciones.
+              {t('analyzer.upload.processing_limit_warning')}
             </AlertDescription>
           </Alert>
 
@@ -773,9 +778,9 @@ export function PDFAnalyzer() {
             <div className="text-center space-y-2">
               <h3 className="text-lg font-semibold">{analysisStep || t('analyzer.upload.analyzing')}</h3>
               <p className="text-sm text-muted-foreground">
-                {analysisStep.includes('Extrayendo') && 'Leyendo el contenido del PDF...'}
-                {analysisStep.includes('Analizando') && 'La IA está identificando las transacciones...'}
-                {analysisStep.includes('Enriqueciendo') && 'Validando conductores, vehículos y períodos...'}
+                {currentStep === 'extracting' && t('analyzer.upload.reading_pdf')}
+                {currentStep === 'analyzing' && t('analyzer.upload.ai_identifying')}
+                {currentStep === 'enriching' && t('analyzer.upload.validating_data')}
               </p>
             </div>
           </CardContent>
