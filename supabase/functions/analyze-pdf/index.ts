@@ -53,46 +53,52 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Analyze this fuel transaction document image and extract ALL transactions you see.
+                text: `You are analyzing a fuel transaction document. Your task is to extract EVERY SINGLE TRANSACTION visible in the image.
 
-CRITICAL EXTRACTION RULES:
-1. Read EVERY row of the table carefully
-2. Extract ALL transactions that appear (not just a sample)
-3. For card numbers: extract the FULL number from EACH individual row
-4. For locations: separate station name, city, and state
-5. For amounts: write the COMPLETE number (if you see $156.45, write 156.45 NOT 56.45)
-6. For dates: convert to YYYY-MM-DD format
+CRITICAL INSTRUCTIONS - READ CAREFULLY:
+1. Look at the ENTIRE table from top to bottom
+2. Extract EVERY row that contains transaction data
+3. DO NOT skip any rows - we need ALL transactions
+4. Even if there are 50+ transactions, extract ALL OF THEM
+5. The "sampleData" array should contain ALL transactions, not just samples
 
-IMPORTANT RULES:
-- DO NOT assume all rows have the same card number
-- Verify EACH row individually
-- Read ALL digits of amounts
-- DO NOT invent data you don't see
-- If you cannot read the image clearly, return empty arrays but ALWAYS return valid JSON
+DATA EXTRACTION RULES:
+- Card numbers: Extract the COMPLETE card number from each row
+- Dates: Convert to YYYY-MM-DD format (e.g., "10/21/2025" becomes "2025-10-21")
+- Amounts: Include the FULL number with decimals (e.g., $156.45 → 156.45)
+- Locations: Separate into station name, city, and state
+- Quantities: Extract gallons as numbers
+- Prices: Extract price per gallon as numbers
 
-YOU MUST respond ONLY with this exact JSON structure (no markdown, no explanations):
+QUALITY CHECKS:
+✓ Did you read EVERY row in the table?
+✓ Is your sampleData array as long as the number of rows you see?
+✓ Did you extract complete card numbers from each row?
+✓ Are ALL amounts complete with decimals?
+
+RESPONSE FORMAT (JSON ONLY, NO MARKDOWN):
 {
-  "columnsFound": ["list_of_all_columns_you_see"],
-  "hasAuthorizationCode": true or false,
-  "authorizationCodeField": "authorization_field_name or null",
+  "columnsFound": ["Card #", "Tran Date", "Location Name", etc.],
+  "hasAuthorizationCode": false,
+  "authorizationCodeField": null,
   "sampleData": [
     {
-      "date": "YYYY-MM-DD",
-      "card": "complete_card_number_from_this_row",
-      "unit": "unit_number",
-      "invoice": "invoice_number",
-      "location_name": "exact_station_name",
-      "city": "city_name",
-      "state": "two_letter_state_code",
-      "qty": gallons_number,
-      "gross_ppg": price_per_gallon_number,
-      "gross_amt": gross_amount_COMPLETE_number,
-      "disc_amt": discount_number,
-      "fees": fees_number,
-      "total_amt": total_COMPLETE_number
+      "date": "2025-10-21",
+      "card": "708305003086527160",
+      "unit": "123",
+      "invoice": "INV001",
+      "location_name": "LOVES 347",
+      "city": "HOUSTON",
+      "state": "TX",
+      "qty": 49.90,
+      "gross_ppg": 2.86,
+      "gross_amt": 143.72,
+      "disc_amt": 0,
+      "fees": 0,
+      "total_amt": 143.72
     }
   ],
-  "analysis": "Brief description of how many transactions found and columns"
+  "analysis": "Found X transactions from [date range]"
 }`
               },
               {
