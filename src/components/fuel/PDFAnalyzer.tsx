@@ -385,6 +385,7 @@ export function PDFAnalyzer() {
 
         if (existingTransaction) {
           enrichedTransaction.import_status = 'already_imported';
+          enrichedTransaction.attention_reason = 'Duplicado detectado en el sistema';
         }
 
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
@@ -824,12 +825,12 @@ export function PDFAnalyzer() {
               <h3 className="text-lg font-semibold">{t('analyzer.results.enrichment')}</h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {enrichedTransactions.map((transaction, index) => (
-                  <Card key={index} className={`bg-white
+                  <Card key={index} className={`
                     ${transaction.import_status === 'already_imported' 
-                      ? 'border-gray-200 opacity-75' 
+                      ? 'border-2 border-orange-400 bg-orange-50/50' 
                     : transaction.card_mapping_status === 'found'
-                      ? 'border-green-200' 
-                      : 'border-orange-200'}
+                      ? 'border-green-200 bg-white' 
+                      : 'border-orange-200 bg-white'}
                   `}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
@@ -837,9 +838,16 @@ export function PDFAnalyzer() {
                           <Fuel className="h-4 w-4" />
                           {t('analyzer.transaction.number', { number: index + 1 })}
                         </CardTitle>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-wrap">
                           {transaction.import_status === 'already_imported' ? (
-                            <Badge variant="secondary">{t('analyzer.mapping.already_imported')}</Badge>
+                            <>
+                              <Badge variant="secondary" className="bg-orange-500 text-white">
+                                {t('analyzer.mapping.already_imported')}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {t('analyzer.mapping.duplicate_detected')}
+                              </Badge>
+                            </>
                           ) : transaction.import_status === 'period_paid' ? (
                             <Badge variant="destructive">{t('analyzer.mapping.period_paid')}</Badge>
                           ) : (

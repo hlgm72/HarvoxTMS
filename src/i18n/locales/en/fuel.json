@@ -323,8 +323,12 @@
       "vehicle_validated": "Vehicle validated from PDF",
       "vehicle_not_found": "Vehicle not found",
       "already_imported": "Already imported",
+      "duplicate_detected": "Duplicate detected",
       "period_paid": "Period paid (cannot modify)",
       "not_imported": "Not imported"
+    },
+    "duplicate_reasons": {
+      "already_exists": "Transaction already exists in system"
     },
     "table": {
       "date": "Date",
