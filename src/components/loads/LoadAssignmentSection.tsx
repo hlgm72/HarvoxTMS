@@ -287,24 +287,6 @@ export function LoadAssignmentSection({
 
               {selectedDriver && (
                 <div className="space-y-3">
-                    <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium">
-                          {t("loads:create_wizard.phases.assignment.driver_section.selected_label")} {selectedDriver.first_name} {selectedDriver.last_name}
-                        </span>
-                        {selectedDriver.phone && (
-                          <span className="text-sm text-muted-foreground">
-                            📞 {selectedDriver.phone}
-                          </span>
-                        )}
-                        {isOwnerOperator && (
-                          <Badge variant="secondary" className="ml-2">
-                            {t("loads:create_wizard.phases.assignment.owner_operator.badge")}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
                   {isOwnerOperator && (
                       <Card className="border-amber-200 bg-amber-50/50">
                         <CardHeader className="pb-3">
