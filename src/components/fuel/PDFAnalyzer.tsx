@@ -763,6 +763,20 @@ export function PDFAnalyzer() {
         </CardContent>
       </Card>
 
+      {isAnalyzing && (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-12 space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold">{t('analyzer.upload.analyzing')}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t('analyzer.upload.processing_pdf')}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {analysisResult && !isEnriching && (
         <div className="space-y-6">
           {/* Resumen del análisis */}

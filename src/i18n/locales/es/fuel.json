@@ -269,6 +269,7 @@
       "no_file_chosen": "Ningún archivo seleccionado",
       "analyze_pdf": "Analizar PDF",
       "analyzing": "Analizando...",
+      "processing_pdf": "Procesando archivo PDF y extrayendo datos de transacciones...",
       "select_pdf": "Seleccionar PDF",
       "invalid_file": "Archivo no válido",
       "select_pdf_error": "Por favor selecciona un archivo PDF",
