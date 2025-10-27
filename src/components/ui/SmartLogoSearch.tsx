@@ -24,7 +24,7 @@ export function SmartLogoSearch({
   onLogoSelect,
   className = ""
 }: SmartLogoSearchProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('clients');
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searchSource, setSearchSource] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export function SmartLogoSearch({
 
   const handleSearch = async () => {
     if (!companyName.trim() && !emailDomain?.trim()) {
-      setSearchError(t('clients.logoSearch.errorRequired'));
+      setSearchError(t('logoSearch.errorRequired'));
       return;
     }
 
@@ -50,7 +50,7 @@ export function SmartLogoSearch({
       setSearchResults([result.logoUrl]);
       setSearchSource(result.source || 'unknown');
     } else {
-      setSearchError(result.error || t('clients.logoSearch.errorNotFound'));
+      setSearchError(result.error || t('logoSearch.errorNotFound'));
     }
   };
 
@@ -68,14 +68,14 @@ export function SmartLogoSearch({
       setSearchSource(result.source || 'unknown');
       setCurrentSourceIndex(prev => prev + 1);
     } else {
-      setSearchError(t('clients.logoSearch.errorNoAlternatives'));
+      setSearchError(t('logoSearch.errorNoAlternatives'));
       setCurrentSourceIndex(prev => prev + 1);
     }
   };
 
   const handleSelectLogo = async (logoUrl: string) => {
     if (!companyName.trim()) {
-      setSearchError(t('clients.logoSearch.errorRequiredDownload'));
+      setSearchError(t('logoSearch.errorRequiredDownload'));
       return;
     }
 
@@ -90,7 +90,7 @@ export function SmartLogoSearch({
       setIsRejected(false);
       setCurrentSourceIndex(0);
     } else {
-      setSearchError(result.error || t('clients.logoSearch.errorDownloadFailed'));
+      setSearchError(result.error || t('logoSearch.errorDownloadFailed'));
     }
   };
 
@@ -116,12 +116,12 @@ export function SmartLogoSearch({
 
   const getSourceLabel = (source: string) => {
     switch (source) {
-      case 'clearbit': return t('clients.logoSearch.sourceClearbit');
-      case 'website': return t('clients.logoSearch.sourceWebsite');
-      case 'logosearch': return t('clients.logoSearch.sourceLogosearch');
-      case 'google': return t('clients.logoSearch.sourceGoogle');
-      case 'iconhorse': return t('clients.logoSearch.sourceIconhorse');
-      default: return t('clients.logoSearch.sourceDefault');
+      case 'clearbit': return t('logoSearch.sourceClearbit');
+      case 'website': return t('logoSearch.sourceWebsite');
+      case 'logosearch': return t('logoSearch.sourceLogosearch');
+      case 'google': return t('logoSearch.sourceGoogle');
+      case 'iconhorse': return t('logoSearch.sourceIconhorse');
+      default: return t('logoSearch.sourceDefault');
     }
   };
 
@@ -137,7 +137,7 @@ export function SmartLogoSearch({
           className="flex items-center gap-2"
         >
           <Search className="h-3 w-3" />
-          {isSearching ? t('clients.logoSearch.searching') : t('clients.logoSearch.searchButton')}
+          {isSearching ? t('logoSearch.searching') : t('logoSearch.searchButton')}
         </Button>
         
         {searchSource && (
@@ -156,12 +156,12 @@ export function SmartLogoSearch({
 
       {searchResults.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">{t('clients.logoSearch.logoFound')}</p>
+          <p className="text-sm text-muted-foreground">{t('logoSearch.logoFound')}</p>
           <div className="space-y-2">
             {searchResults.map((logoUrl, index) => (
               <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-card">
                 <Avatar className="h-10 w-10 flex-shrink-0">
-                  <AvatarImage src={logoUrl} alt={t('clients.logoSearch.altLogoFound')} />
+                  <AvatarImage src={logoUrl} alt={t('logoSearch.altLogoFound')} />
                   <AvatarFallback className="text-xs">
                     {getInitials(companyName)}
                   </AvatarFallback>
@@ -176,7 +176,7 @@ export function SmartLogoSearch({
                       className="flex items-center gap-1"
                     >
                       <Download className="h-3 w-3" />
-                      {isDownloading ? t('clients.logoSearch.downloading') : t('clients.logoSearch.useThisLogo')}
+                      {isDownloading ? t('logoSearch.downloading') : t('logoSearch.useThisLogo')}
                     </Button>
                     <Button
                       type="button"
@@ -187,11 +187,11 @@ export function SmartLogoSearch({
                       className="flex items-center gap-1"
                     >
                       <Search className="h-3 w-3" />
-                      {isSearching ? t('clients.logoSearch.searching') : t('clients.logoSearch.searchAlternative')}
+                      {isSearching ? t('logoSearch.searching') : t('logoSearch.searchAlternative')}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {t('clients.logoSearch.notCorrectLogo')}
+                    {t('logoSearch.notCorrectLogo')}
                   </p>
                 </div>
               </div>
@@ -203,11 +203,11 @@ export function SmartLogoSearch({
       {currentLogoUrl && (
         <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
           <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-          <span className="text-sm text-muted-foreground">{t('clients.logoSearch.currentLogoSet')}</span>
+          <span className="text-sm text-muted-foreground">{t('logoSearch.currentLogoSet')}</span>
           <Avatar key={currentLogoUrl} className="h-12 w-12 ml-auto flex-shrink-0 bg-white border border-border">
             <AvatarImage 
               src={`${currentLogoUrl}${currentLogoUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
-              alt={t('clients.logoSearch.altCurrentLogo')}
+              alt={t('logoSearch.altCurrentLogo')}
               className="object-contain p-1.5"
               loading="eager"
             />
