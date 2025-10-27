@@ -573,12 +573,10 @@ export default function PaymentReports() {
             {filters.driverId !== 'all' && (() => {
               const driver = drivers.find(d => d.user_id === filters.driverId);
               const translatedDriver = t("common:filters.driver");
-              console.log('🔍 Translation check:', {
-                key: "common:filters.driver",
-                translated: translatedDriver,
-                language: i18n.language,
-                driver: driver
-              });
+              console.log('🔍 Key:', "common:filters.driver");
+              console.log('🔍 Translated:', translatedDriver);
+              console.log('🔍 Type:', typeof translatedDriver);
+              console.log('🔍 Language:', i18n.language);
               return (
                 <Badge variant="secondary" className="text-xs font-normal">
                   {translatedDriver}: {driver ? `${driver.first_name} ${driver.last_name}` : filters.driverId}
