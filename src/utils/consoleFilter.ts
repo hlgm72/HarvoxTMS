@@ -24,7 +24,12 @@ const developmentOnlyPatterns = [
   /Auth operation|Load operation|Fuel operation/,
   /Client en grid|Cliente en lista/,
   /main\.tsx:|PDF worker/,
-  /RoleSwitcher|ProtectedRoute/
+  /RoleSwitcher|ProtectedRoute/,
+  /\[PDF Analyzer\] Comparando con tarjeta DB:/,
+  /\[PDF Analyzer\] Tarjetas coincidentes:/,
+  /\[PDF Analyzer\] Procesando tarjeta de transacción:/,
+  /\[PDF Analyzer\] Obteniendo tarjetas para companyId:/,
+  /\[PDF Analyzer\] Tarjetas encontradas:/
 ];
 
 // Patterns that should NEVER go to Sentry regardless of environment
@@ -91,9 +96,19 @@ function shouldAllowToSentry(level: string, message: string): boolean {
 
 // Override console.log - In production, suppress all logs
 console.log = (...args: any[]) => {
+  const message = args.join(' ');
+  
+  // Filter out repetitive PDF Analyzer logs even in development
+  if (developmentOnlyPatterns.some(pattern => pattern.test(message))) {
+    // Only show critical PDF Analyzer logs
+    if (!message.includes('✅ Conductor encontrado') && 
+        !message.includes('Error en consulta') &&
+        !message.includes('📊 Total de texto extraído')) {
+      return;
+    }
+  }
+  
   if (isDevelopment) {
-    const message = args.join(' ');
-    // Show in console but don't send to Sentry unless critical
     originalLog.apply(console, args);
   }
   // In production, suppress all console.log
@@ -101,6 +116,15 @@ console.log = (...args: any[]) => {
 
 // Override console.info - Similar to log
 console.info = (...args: any[]) => {
+  const message = args.join(' ');
+  
+  // Filter out repetitive logs
+  if (developmentOnlyPatterns.some(pattern => pattern.test(message))) {
+    if (!message.includes('✅') && !message.includes('Error')) {
+      return;
+    }
+  }
+  
   if (isDevelopment) {
     originalInfo.apply(console, args);
   }
