@@ -105,7 +105,11 @@ export function ClientLogoUpload({ logoUrl, clientName, emailDomain, clientId, o
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16 flex-shrink-0">
-          <AvatarImage src={logoUrl} alt={clientName} />
+          <AvatarImage 
+            src={logoUrl} 
+            alt={clientName}
+            className="object-cover object-center"
+          />
           <AvatarFallback>
             {clientName ? getInitials(clientName) : <Building2 className="h-6 w-6" />}
           </AvatarFallback>
