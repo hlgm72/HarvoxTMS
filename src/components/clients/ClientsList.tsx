@@ -64,8 +64,15 @@ export function ClientsList({ clients }: ClientsListProps) {
   };
 
   const getInitials = (name: string) => {
-    return name
-      .split(' ')
+    const words = name.trim().split(' ').filter(word => word.length > 0);
+    
+    if (words.length === 1) {
+      // Si es una sola palabra, tomar las dos primeras letras
+      return words[0].slice(0, 2).toUpperCase();
+    }
+    
+    // Si son múltiples palabras, tomar la primera letra de cada una
+    return words
       .map(word => word[0])
       .join('')
       .slice(0, 2)
