@@ -80,13 +80,14 @@ export function ClientDetailDialog({ client, open, onOpenChange }: ClientDetailD
               <Building2 className="h-5 w-5" />
               {client.name}
             </DialogTitle>
-            <DialogDescription className="flex items-center gap-2">
+            <DialogDescription>
+              {t('messages.detailed_info')}
+            </DialogDescription>
+            <div className="flex items-center gap-2 mt-2">
               <Badge variant={client.is_active ? "default" : "secondary"}>
                 {client.is_active ? t('status.active') : t('status.inactive')}
               </Badge>
-              <span>•</span>
-              <span>{t('messages.detailed_info')}</span>
-            </DialogDescription>
+            </div>
           </DialogHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
