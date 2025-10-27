@@ -92,7 +92,7 @@ export function PDFAnalyzer() {
     });
   };
 
-  const convertPDFToImage = async (file: File): Promise<string> => {
+  const convertPDFToImage = async (file: File): Promise<string[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async () => {
@@ -124,8 +124,8 @@ export function PDFAnalyzer() {
             }
           }
           
-          // Por ahora enviar solo la primera imagen (luego podemos mejorar para enviar todas)
-          resolve(images[0]);
+          // Devolver TODAS las imágenes
+          resolve(images);
         } catch (error) {
           reject(error);
         }
@@ -140,11 +140,13 @@ export function PDFAnalyzer() {
 
     setIsAnalyzing(true);
     try {
-      // Convert first page of PDF to image
-      const imageBase64 = await convertPDFToImage(selectedFile);
+      // Convert ALL pages of PDF to images
+      const imagePages = await convertPDFToImage(selectedFile);
+      
+      console.log(`📤 Enviando ${imagePages.length} páginas al análisis`);
       
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { imageBase64 }
+        body: { imagePages }  // Enviar todas las páginas
       });
 
       if (error) {

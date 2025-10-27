@@ -17,11 +17,11 @@ serve(async (req) => {
   try {
     console.log('Starting PDF image analysis...');
     
-    const { imageBase64 } = await req.json();
+    const { imagePages } = await req.json();
 
-    if (!imageBase64) {
+    if (!imagePages || !Array.isArray(imagePages) || imagePages.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Image base64 data is required' }),
+        JSON.stringify({ error: 'Image pages array is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -33,27 +33,13 @@ serve(async (req) => {
       );
     }
 
-    console.log('Image received, analyzing with Lovable AI (Gemini)...');
+    console.log(`Image received, analyzing ${imagePages.length} pages with Lovable AI (Gemini)...`);
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from the table. Return valid JSON only.'
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Extract ALL fuel transactions from this table image. Look at EVERY row.
+    // Analizar todas las páginas juntas
+    const contentParts: any[] = [
+      {
+        type: 'text',
+        text: `Extract ALL fuel transactions from these ${imagePages.length} pages.
 
 For EACH row you see, extract:
 - date: Transaction date (YYYY-MM-DD format)
@@ -75,20 +61,41 @@ Return JSON:
   "columnsFound": ["list of column headers"],
   "hasAuthorizationCode": false,
   "authorizationCodeField": null,
-  "sampleData": [array of ALL transactions],
-  "analysis": "Found N transactions"
+  "sampleData": [array of ALL transactions from ALL pages],
+  "analysis": "Found N transactions across M pages"
 }
 
-Extract ALL visible rows, not just examples.`
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/jpeg;base64,${imageBase64}`,
-                  detail: 'high'
-                }
-              }
-            ]
+Extract ALL visible rows from ALL pages, not just examples.`
+      }
+    ];
+
+    // Agregar todas las páginas como imágenes
+    for (let i = 0; i < imagePages.length; i++) {
+      contentParts.push({
+        type: 'image_url',
+        image_url: {
+          url: `data:image/png;base64,${imagePages[i]}`,
+          detail: 'high'
+        }
+      });
+    }
+
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${lovableApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a fuel transaction data extractor. Extract ALL visible transactions from ALL pages. Return valid JSON only.'
+          },
+          {
+            role: 'user',
+            content: contentParts
           }
         ],
         max_completion_tokens: 4000,
