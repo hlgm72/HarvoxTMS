@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, User, Fuel, Car, Receipt, DollarSign, Gauge, CreditCard } from 'lucide-react';
+import { Calendar, MapPin, User, Fuel, Car, Receipt, DollarSign, Gauge, CreditCard, FileText } from 'lucide-react';
 import { useFuelExpense } from '@/hooks/useFuelExpenses';
 import { useCompanyDrivers } from '@/hooks/useCompanyDrivers';
 import { formatDateOnly, formatDateTime } from '@/lib/dateFormatting';
@@ -200,7 +200,15 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                 <CardTitle className="text-lg">{t('view_dialog.additional_info')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-
+                {expense.invoice_number && (
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.invoice')}</div>
+                      <div className="font-medium">{expense.invoice_number}</div>
+                    </div>
+                  </div>
+                )}
 
                 {expense.receipt_url && (
                   <div className="flex items-center gap-2">

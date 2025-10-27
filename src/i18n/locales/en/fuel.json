@@ -132,6 +132,7 @@
     "name": "Name",
     "location": "Location",
     "additional_info": "Additional Information",
+    "invoice": "Invoice Number",
     "receipt": "Receipt",
     "view_receipt": "View Receipt",
     "notes": "Notes",
