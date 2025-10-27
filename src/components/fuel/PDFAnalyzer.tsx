@@ -99,15 +99,33 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           const pdf = await (window as any).pdfjsLib.getDocument({ data: typedarray }).promise;
-          const page = await pdf.getPage(1);
-          const viewport = page.getViewport({ scale: 2.0 });
-          const canvas = document.createElement('canvas');
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          const context = canvas.getContext('2d');
-          await page.render({ canvasContext: context, viewport }).promise;
-          const imageBase64 = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
-          resolve(imageBase64);
+          
+          console.log('📄 PDF tiene', pdf.numPages, 'páginas');
+          
+          // Renderizar TODAS las páginas del PDF (máximo 10 por seguridad)
+          const maxPages = Math.min(pdf.numPages, 10);
+          const images: string[] = [];
+          
+          for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            // Escala 4.0 para máxima calidad de texto
+            const viewport = page.getViewport({ scale: 4.0 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const context = canvas.getContext('2d');
+            
+            if (context) {
+              await page.render({ canvasContext: context, viewport }).promise;
+              // PNG para mejor calidad que JPEG
+              const imageBase64 = canvas.toDataURL('image/png').split(',')[1];
+              images.push(imageBase64);
+              console.log(`✅ Página ${pageNum} renderizada (${viewport.width}x${viewport.height})`);
+            }
+          }
+          
+          // Por ahora enviar solo la primera imagen (luego podemos mejorar para enviar todas)
+          resolve(images[0]);
         } catch (error) {
           reject(error);
         }
