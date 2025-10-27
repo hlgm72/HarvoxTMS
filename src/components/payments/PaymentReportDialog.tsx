@@ -42,6 +42,7 @@ import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
+import { FuelExpenseDialog } from "@/components/fuel/FuelExpenseDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from 'react-i18next';
 
@@ -65,6 +66,8 @@ export function PaymentReportDialog({
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [showEditLoadDialog, setShowEditLoadDialog] = useState(false);
   const [selectedLoadForEdit, setSelectedLoadForEdit] = useState<any>(null);
+  const [showEditFuelDialog, setShowEditFuelDialog] = useState(false);
+  const [selectedFuelForEdit, setSelectedFuelForEdit] = useState<string | null>(null);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -967,25 +970,41 @@ export function PaymentReportDialog({
               <CardContent>
                 <div className="space-y-2">
                   {fuelExpenses.map((expense) => (
-                    <div key={expense.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 border-b">
-                       <div className="space-y-1 min-w-0 flex-1">
-                         <div className="font-medium truncate text-sm sm:text-base">
-                           {expense.station_name || t('deductions.status.station')}
-                         </div>
+                    <div key={expense.id} className="py-3 border-b">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="font-medium truncate text-sm sm:text-base">
+                            {expense.station_name || t('deductions.status.station')}
+                          </div>
                           <div className="text-xs sm:text-sm text-muted-foreground">
                             {expense.gallons_purchased} gal • {formatDateSafe(expense.transaction_date)}
                             {(expense.station_city || expense.station_state) && (
-                             <span className="ml-2">
-                               • {expense.station_city && expense.station_state 
-                                 ? `${expense.station_city}, ${expense.station_state}`
-                                 : expense.station_city || expense.station_state
-                               }
-                             </span>
-                           )}
-                         </div>
-                       </div>
-                      <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
-                        {formatCurrency(expense.total_amount)}
+                              <span className="ml-2">
+                                • {expense.station_city && expense.station_state 
+                                  ? `${expense.station_city}, ${expense.station_state}`
+                                  : expense.station_city || expense.station_state
+                                }
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="font-semibold text-warning sm:text-right shrink-0 text-sm sm:text-base">
+                            {formatCurrency(expense.total_amount)}
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedFuelForEdit(expense.id);
+                              setShowEditFuelDialog(true);
+                            }}
+                            className="h-7 w-7 p-0"
+                            title={t('common.edit')}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1095,6 +1114,20 @@ export function PaymentReportDialog({
         }}
         mode="edit"
         loadData={selectedLoadForEdit}
+      />
+
+      <FuelExpenseDialog
+        open={showEditFuelDialog}
+        onOpenChange={(isOpen) => {
+          setShowEditFuelDialog(isOpen);
+          if (!isOpen) {
+            setSelectedFuelForEdit(null);
+            // Refrescar los datos después de editar
+            queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
+            queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+          }
+        }}
+        expenseId={selectedFuelForEdit}
       />
     </>
   );
