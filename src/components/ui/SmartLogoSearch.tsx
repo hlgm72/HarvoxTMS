@@ -199,11 +199,16 @@ export function SmartLogoSearch({
       )}
 
       {currentLogoUrl && (
-        <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
-          <CheckCircle className="h-4 w-4 text-green-600" />
+        <div className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
+          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
           <span className="text-sm text-muted-foreground">Logo actual configurado</span>
-          <Avatar className="h-8 w-8 ml-auto">
-            <AvatarImage src={currentLogoUrl} alt="Logo actual" />
+          <Avatar key={currentLogoUrl} className="h-12 w-12 ml-auto flex-shrink-0 bg-white border border-border">
+            <AvatarImage 
+              src={`${currentLogoUrl}?t=${Date.now()}`}
+              alt="Logo actual"
+              className="object-contain p-1.5"
+              loading="eager"
+            />
             <AvatarFallback className="text-xs">
               {getInitials(companyName)}
             </AvatarFallback>
