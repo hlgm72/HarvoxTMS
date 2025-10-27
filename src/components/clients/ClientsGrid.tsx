@@ -79,13 +79,14 @@ export function ClientsGrid({ clients }: ClientsGridProps) {
         {clients.map((client) => (
           <Card key={client.id} className="hover:shadow-md transition-shadow duration-200">
             <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 bg-white border border-border">
+                  <Avatar key={client.logo_url || `no-logo-${client.id}`} className="h-10 w-10 bg-white border border-border">
                     <AvatarImage 
-                      src={client.logo_url} 
+                      src={client.logo_url ? `${client.logo_url}?t=${Date.now()}` : undefined}
                       alt={client.name}
                       className="object-contain p-1"
+                      loading="eager"
                     />
                     <AvatarFallback className="text-sm font-medium bg-muted">
                       {getInitials(client.alias || client.name)}
