@@ -573,14 +573,15 @@ export default function PaymentReports() {
             {filters.driverId !== 'all' && (() => {
               const driver = drivers.find(d => d.user_id === filters.driverId);
               
-              // Debug: verificar si el namespace común está cargado
-              console.log('🔍 Namespaces loaded:', i18n.options.ns);
-              console.log('🔍 Has common namespace:', i18n.hasResourceBundle('en', 'common'));
-              console.log('🔍 Common resources:', i18n.getResourceBundle('en', 'common'));
+              // Debug: verificar específicamente la clave filters
+              const commonResources = i18n.getResourceBundle('en', 'common');
+              console.log('🔍 Has filters key:', 'filters' in commonResources);
+              console.log('🔍 Filters object:', commonResources?.filters);
+              console.log('🔍 Driver key:', commonResources?.filters?.driver);
               
-              // Intentar diferentes formas de traducción
+              // Intentar traducción directa sin namespace prefix
               const translatedDriver = t("filters.driver", { ns: "common" });
-              console.log('🔍 With options ns:', translatedDriver);
+              console.log('🔍 Final translation:', translatedDriver);
               
               return (
                 <Badge variant="secondary" className="text-xs font-normal">
