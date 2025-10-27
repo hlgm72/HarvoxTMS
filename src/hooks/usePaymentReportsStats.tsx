@@ -142,7 +142,7 @@ export function usePaymentReportsStats(filters?: PaymentReportsStatsFilters) {
         // Calcular estadísticas
         const totalNetPayment = filteredPayrolls.reduce((sum, p) => sum + calculateNetPayment(p), 0);
         const uniqueDrivers = new Set(filteredPayrolls.map(p => p.user_id)).size;
-        const pendingReports = filteredPayrolls.filter(p => !p.calculated_at).length;
+        const pendingReports = filteredPayrolls.filter(p => p.payment_status === 'calculated').length;
 
         return {
           totalReports: filteredPayrolls.length,
