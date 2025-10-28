@@ -672,6 +672,8 @@
     "dialogs": {
       "new_income_title": "New Additional Income",
       "new_income_description": "Add a new income record",
+      "edit_title": "Edit Additional Income",
+      "edit_description": "Update income record details",
       "view_details_title": "Income Details"
     },
     "table": {

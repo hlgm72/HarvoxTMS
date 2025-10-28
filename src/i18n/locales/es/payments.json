@@ -652,6 +652,8 @@
     "dialogs": {
       "new_income_title": "Nuevo Ingreso Adicional",
       "new_income_description": "Agregar un nuevo registro de ingreso",
+      "edit_title": "Editar Ingreso Adicional",
+      "edit_description": "Actualizar detalles del registro de ingreso",
       "view_details_title": "Detalles del Ingreso"
     },
     "table": {

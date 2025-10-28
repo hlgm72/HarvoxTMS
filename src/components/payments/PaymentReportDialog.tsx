@@ -43,6 +43,8 @@ import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { FuelExpenseDialog } from "@/components/fuel/FuelExpenseDialog";
+import { UnifiedOtherIncomeForm } from "./UnifiedOtherIncomeForm";
+import { Dialog as EditDialog, DialogContent as EditDialogContent, DialogDescription as EditDialogDescription, DialogHeader as EditDialogHeader, DialogTitle as EditDialogTitle } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from 'react-i18next';
 
@@ -68,6 +70,9 @@ export function PaymentReportDialog({
   const [selectedLoadForEdit, setSelectedLoadForEdit] = useState<any>(null);
   const [showEditFuelDialog, setShowEditFuelDialog] = useState(false);
   const [selectedFuelForEdit, setSelectedFuelForEdit] = useState<string | null>(null);
+  const [showEditOtherIncomeDialog, setShowEditOtherIncomeDialog] = useState(false);
+  const [selectedOtherIncomeForEdit, setSelectedOtherIncomeForEdit] = useState<any>(null);
+  const [isEditOtherIncomeFormValid, setIsEditOtherIncomeFormValid] = useState(false);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -957,21 +962,35 @@ export function PaymentReportDialog({
                   {otherIncomeItems.map((item: any, index: number) => (
                     <div key={item.id || index} className="py-3 border-b last:border-b-0">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="space-y-1 min-w-0 flex-1">
-                          <div className="font-medium text-sm sm:text-base">{item.description}</div>
-                          <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
-                            <div>{item.income_type}</div>
-                            <div>{formatDateAuto(item.income_date)}</div>
-                            {item.reference_number && (
-                              <div className="text-xs text-muted-foreground">
-                                Ref: {item.reference_number}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
-                          {formatCurrency(item.amount)}
-                        </div>
+                         <div className="space-y-1 min-w-0 flex-1">
+                           <div className="font-medium text-sm sm:text-base">{item.description}</div>
+                           <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
+                             <div>{item.income_type}</div>
+                             <div>{formatDateAuto(item.income_date)}</div>
+                             {item.reference_number && (
+                               <div className="text-xs text-muted-foreground">
+                                 Ref: {item.reference_number}
+                               </div>
+                             )}
+                           </div>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
+                             {formatCurrency(item.amount)}
+                           </div>
+                           <Button
+                             size="sm"
+                             variant="outline"
+                             onClick={() => {
+                               setSelectedOtherIncomeForEdit(item);
+                               setShowEditOtherIncomeDialog(true);
+                             }}
+                             className="h-7 w-7 p-0"
+                             title={t('common.edit')}
+                           >
+                             <Edit className="h-3 w-3" />
+                           </Button>
+                         </div>
                       </div>
                     </div>
                   ))}
@@ -1160,6 +1179,62 @@ export function PaymentReportDialog({
         }}
         expenseId={selectedFuelForEdit}
       />
+
+      <EditDialog open={showEditOtherIncomeDialog} onOpenChange={setShowEditOtherIncomeDialog}>
+        <EditDialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
+          <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
+            <EditDialogTitle>{t('additional_payments.dialogs.edit_title')}</EditDialogTitle>
+            <EditDialogDescription>
+              {t('additional_payments.dialogs.edit_description')}
+            </EditDialogDescription>
+          </div>
+          <div className="overflow-y-auto flex-1 p-6 bg-white">
+            {selectedOtherIncomeForEdit && (
+              <UnifiedOtherIncomeForm 
+                onClose={() => {
+                  setShowEditOtherIncomeDialog(false);
+                  setSelectedOtherIncomeForEdit(null);
+                  // Invalidar queries para actualizar el modal y la página principal
+                  queryClient.invalidateQueries({ queryKey: ['period-other-income'] });
+                  queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+                  queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+                  queryClient.invalidateQueries({ queryKey: ['other-income'] });
+                  queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+                  queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+                }}
+                showButtons={false}
+                onValidationChange={setIsEditOtherIncomeFormValid}
+                editData={{
+                  id: selectedOtherIncomeForEdit.id,
+                  description: selectedOtherIncomeForEdit.description,
+                  amount: selectedOtherIncomeForEdit.amount,
+                  income_type: selectedOtherIncomeForEdit.income_type,
+                  income_date: selectedOtherIncomeForEdit.income_date,
+                  user_id: selectedOtherIncomeForEdit.user_id,
+                  applied_to_role: selectedOtherIncomeForEdit.applied_to_role,
+                  reference_number: selectedOtherIncomeForEdit.reference_number
+                }}
+              />
+            )}
+          </div>
+          <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
+            <Button type="button" variant="outline" onClick={() => {
+              setShowEditOtherIncomeDialog(false);
+              setSelectedOtherIncomeForEdit(null);
+            }} className="flex-1">
+              {t('common:form.cancel')}
+            </Button>
+            <Button 
+              type="submit"
+              form="other-income-form"
+              className="flex-1"
+              disabled={!isEditOtherIncomeFormValid}
+            >
+              {t('common:form.update')}
+            </Button>
+          </div>
+        </EditDialogContent>
+      </EditDialog>
     </>
   );
 }
