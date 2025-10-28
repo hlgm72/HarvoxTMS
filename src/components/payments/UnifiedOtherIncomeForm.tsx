@@ -207,7 +207,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="amount">{t('form.amount')}</Label>
+          <Label htmlFor="amount">
+            {t('form.amount')} <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="amount"
             type="text"
@@ -219,10 +221,13 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             onFocus={atmInput.handleFocus}
             onMouseDown={atmInput.handleMouseDown}
             placeholder="$0.00"
-            className="text-right text-lg"
+            className={cn("text-right text-lg", atmInput.numericValue <= 0 && "border-destructive")}
             autoComplete="off"
             required
           />
+          {atmInput.numericValue <= 0 && (
+            <p className="text-xs text-destructive">{t('form.amount_required', { defaultValue: 'Amount must be greater than $0.00' })}</p>
+          )}
         </div>
 
         <div className="space-y-2">
