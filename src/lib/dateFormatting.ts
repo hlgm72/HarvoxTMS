@@ -256,6 +256,26 @@ export const createDateInUserTimeZone = (year: number, month: number, day: numbe
   return formatDateInUserTimeZone(date);
 };
 
+/**
+ * Parse a date string (YYYY-MM-DD) or ISO datetime from database to a Date object
+ * WITHOUT timezone issues. Creates date at noon local time to avoid day shifts.
+ * 
+ * @param dateString - Date string in format YYYY-MM-DD or ISO datetime
+ * @returns Date object at noon local time
+ */
+export const parseDateSafe = (dateString: string): Date => {
+  if (!dateString) {
+    return new Date();
+  }
+  
+  // Extract just the date part (YYYY-MM-DD)
+  const datePart = dateString.split('T')[0];
+  const [year, month, day] = datePart.split('-').map(Number);
+  
+  // Create date at noon local time to avoid timezone issues
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+};
+
 export const formatDateSafe = (
   dateInput: string | Date | null | undefined, 
   formatPattern?: string,

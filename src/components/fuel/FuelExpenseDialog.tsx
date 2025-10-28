@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto, parseDateSafe } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { capitalizeWords } from '@/lib/textUtils';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
@@ -185,18 +185,14 @@ export function FuelExpenseDialog({
       // 🛡️ Marcar que estamos cargando datos de edición
       isLoadingEditData.current = true;
       
-      // 🕐 CRÍTICO: Parsear correctamente la fecha UTC de la base de datos
-      // Agregar T12:00:00 para evitar problemas de timezone al cruzar medianoche
-      const transactionDateStr = expense.transaction_date.includes('T') 
-        ? expense.transaction_date 
-        : `${expense.transaction_date}T12:00:00`;
-      const parsedTransactionDate = parseISO(transactionDateStr);
+      // 🕐 CRÍTICO: Parsear fecha sin problemas de timezone
+      // Usa parseDateSafe que crea Date a las 12:00 hora local
+      const parsedTransactionDate = parseDateSafe(expense.transaction_date);
       
       if (import.meta.env.DEV) {
         console.log('🔍 FuelExpenseDialog - Cargando datos de edición:', {
           expenseId: expense.id,
           originalTransactionDate: expense.transaction_date,
-          transactionDateStr,
           parsedTransactionDate,
           formattedForUI: format(parsedTransactionDate, 'yyyy-MM-dd'),
           paymentPeriodId: expense.payment_period_id
