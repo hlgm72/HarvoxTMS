@@ -943,6 +943,43 @@ export function PaymentReportDialog({
             </Card>
           )}
 
+          {/* Otros Ingresos */}
+          {otherIncomeItems && otherIncomeItems.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  {t('report_dialog.other_income_section')} ({otherIncomeItems.length} - {t('report_dialog.loads_total')}: {formatCurrency(calculation.other_income)})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {otherIncomeItems.map((item: any, index: number) => (
+                    <div key={item.id || index} className="py-3 border-b last:border-b-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="font-medium text-sm sm:text-base">{item.description}</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
+                            <div>{item.income_type}</div>
+                            <div>{formatDateAuto(item.income_date)}</div>
+                            {item.reference_number && (
+                              <div className="text-xs text-muted-foreground">
+                                Ref: {item.reference_number}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
+                          {formatCurrency(item.amount)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Deducciones */}
           {deductions.length > 0 && (
             <Card>
@@ -1023,43 +1060,6 @@ export function PaymentReportDialog({
                           >
                             <Edit className="h-3 w-3" />
                           </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Otros Ingresos */}
-          {otherIncomeItems && otherIncomeItems.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                  {t('report_dialog.other_income_section')} ({otherIncomeItems.length} - {t('report_dialog.loads_total')}: {formatCurrency(calculation.other_income)})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {otherIncomeItems.map((item: any, index: number) => (
-                    <div key={item.id || index} className="py-3 border-b last:border-b-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div className="space-y-1 min-w-0 flex-1">
-                          <div className="font-medium text-sm sm:text-base">{item.description}</div>
-                          <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
-                            <div>{item.income_type}</div>
-                            <div>{formatDateAuto(item.income_date)}</div>
-                            {item.reference_number && (
-                              <div className="text-xs text-muted-foreground">
-                                Ref: {item.reference_number}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
-                          {formatCurrency(item.amount)}
                         </div>
                       </div>
                     </div>
