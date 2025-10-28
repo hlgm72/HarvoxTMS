@@ -3,9 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useCompanyCache } from './useCompanyCache';
 import { getTodayInUserTimeZone } from '@/lib/dateFormatting';
+import { startOfWeek, endOfWeek } from 'date-fns';
 
 /**
- * Hook para obtener el contador de cargas del período actual
+ * Hook para obtener el contador de cargas de la semana actual
  * Optimizado para el sidebar - solo cuenta, no trae los datos completos
  */
 export const useLoadsCount = () => {
@@ -35,32 +36,18 @@ export const useLoadsCount = () => {
       }
 
       try {
-        // 1. Get user payment periods for the current date range
+        // 1. Obtener el rango de fechas de la semana actual
         const today = getTodayInUserTimeZone();
+        const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Lunes
+        const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Domingo
         
-        const { data: currentPeriods, error: periodError } = await supabase
-          .from('user_payrolls')
-          .select('id, company_payment_period_id')
-          .eq('company_id', userCompany.company_id)
-          .eq('payment_status', 'pending');
-
-        if (periodError) {
-          console.error('Error obteniendo períodos actuales:', periodError);
-          throw new Error('Error consultando períodos actuales');
-        }
-
-        // Si no hay períodos actuales, retornar 0
-        if (!currentPeriods || currentPeriods.length === 0) {
-          return 0;
-        }
-
-        // 2. Contar cargas del período actual usando los IDs de user_payment_periods
-        const periodIds = currentPeriods.map(p => p.id);
+        // 2. Contar cargas de la semana actual
         const { count, error: loadsError } = await supabase
           .from('loads')
           .select('*', { count: 'exact', head: true })
           .or(`driver_user_id.in.(${companyUsers.join(',')}),and(driver_user_id.is.null,created_by.in.(${companyUsers.join(',')}))`)
-          .in('payment_period_id', periodIds);
+          .gte('pickup_date', weekStart.toISOString())
+          .lte('pickup_date', weekEnd.toISOString());
 
         if (loadsError) {
           console.error('Error contando cargas:', loadsError);
