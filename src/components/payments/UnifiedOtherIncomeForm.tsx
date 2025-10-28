@@ -279,7 +279,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           placeholder={t('form.description_placeholder')}
           rows={2}
           className={cn(touched.description && !description.trim() && "border-destructive")}
-          required
         />
         {touched.description && !description.trim() && (
           <p className="text-xs text-destructive">{t('form.description_required', { defaultValue: 'Description is required' })}</p>
