@@ -209,10 +209,12 @@ export function FMCSALookupModal({ isOpen, onClose, onDataFound }: FMCSALookupMo
       onDataFound(mappedData);
       showSuccess(t('fmcsa_lookup_modal.messages.data_applied'));
       
-      // Limpiar datos y cerrar modal
-      setData(null);
-      setSearchQuery("");
-      onClose();
+      // Limpiar datos y cerrar modal con un pequeño delay para evitar conflictos de foco
+      setTimeout(() => {
+        setData(null);
+        setSearchQuery("");
+        onClose();
+      }, 100);
     }
   };
 
