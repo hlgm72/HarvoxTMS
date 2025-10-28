@@ -275,3 +275,63 @@ export const useCheckDuplicateFacilityName = () => {
     },
   });
 };
+
+// Hook para verificar si ya existe una facility con la misma dirección
+export const useCheckDuplicateFacilityAddress = () => {
+  const { userCompany } = useCompanyCache();
+
+  return useMutation({
+    mutationFn: async ({ 
+      address, 
+      city, 
+      state, 
+      zipCode, 
+      excludeId 
+    }: { 
+      address: string;
+      city?: string;
+      state: string;
+      zipCode: string;
+      excludeId?: string;
+    }) => {
+      if (!userCompany) throw new Error('No company found');
+
+      // Normalizar para comparación (lowercase, trim, eliminar espacios extras)
+      const normalizeString = (str: string) => 
+        str.toLowerCase().trim().replace(/\s+/g, ' ');
+
+      const normalizedAddress = normalizeString(address);
+      const normalizedCity = city ? normalizeString(city) : '';
+      const normalizedState = normalizeString(state);
+      const normalizedZip = zipCode.trim();
+
+      const { data, error } = await supabase
+        .from('facilities')
+        .select('*')
+        .eq('company_id', userCompany.company_id);
+
+      if (error) throw error;
+
+      // Filtrar por dirección similar
+      const duplicates = (data as Facility[]).filter(facility => {
+        const facilityAddress = normalizeString(facility.address);
+        const facilityCity = facility.city ? normalizeString(facility.city) : '';
+        const facilityState = normalizeString(facility.state);
+        const facilityZip = facility.zip_code.trim();
+        const isDifferentFacility = !excludeId || facility.id !== excludeId;
+        
+        // Considerar duplicado si la dirección, estado y zip son iguales
+        const sameAddress = facilityAddress === normalizedAddress;
+        const sameState = facilityState === normalizedState;
+        const sameZip = facilityZip === normalizedZip;
+        
+        // También verificar si la ciudad coincide (si está disponible)
+        const sameCity = !normalizedCity || !facilityCity || facilityCity === normalizedCity;
+        
+        return sameAddress && sameState && sameZip && sameCity && isDifferentFacility;
+      });
+
+      return duplicates;
+    },
+  });
+};

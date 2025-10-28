@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AddressForm } from '@/components/ui/AddressForm';
-import { Facility, useCreateFacility, useUpdateFacility, useCheckDuplicateFacilityName } from '@/hooks/useFacilities';
+import { Facility, useCreateFacility, useUpdateFacility, useCheckDuplicateFacilityName, useCheckDuplicateFacilityAddress } from '@/hooks/useFacilities';
 
 interface CreateFacilityDialogProps {
   isOpen: boolean;
@@ -29,9 +29,11 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
   const createFacility = useCreateFacility();
   const updateFacility = useUpdateFacility();
   const checkDuplicateName = useCheckDuplicateFacilityName();
+  const checkDuplicateAddress = useCheckDuplicateFacilityAddress();
 
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [duplicateFacilities, setDuplicateFacilities] = useState<Facility[]>([]);
+  const [duplicateType, setDuplicateType] = useState<'name' | 'address'>('name');
   const [pendingData, setPendingData] = useState<any>(null);
 
   const facilitySchema = z.object({
@@ -98,6 +100,11 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
       if (isEditMode && facility) {
         // Al editar, verificar si el nombre cambió y si ya existe
         const nameChanged = facility.name !== data.name;
+        const addressChanged = facility.address !== data.address || 
+                              facility.state !== data.state || 
+                              facility.zip_code !== data.zip_code ||
+                              facility.city !== data.city;
+
         if (nameChanged) {
           const duplicates = await checkDuplicateName.mutateAsync({
             name: data.name,
@@ -105,7 +112,26 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
           });
 
           if (duplicates && duplicates.length > 0) {
+            setDuplicateType('name');
             setDuplicateFacilities(duplicates);
+            setPendingData({ id: facility.id, ...data });
+            setShowDuplicateDialog(true);
+            return;
+          }
+        }
+
+        if (addressChanged) {
+          const addressDuplicates = await checkDuplicateAddress.mutateAsync({
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            zipCode: data.zip_code,
+            excludeId: facility.id,
+          });
+
+          if (addressDuplicates && addressDuplicates.length > 0) {
+            setDuplicateType('address');
+            setDuplicateFacilities(addressDuplicates);
             setPendingData({ id: facility.id, ...data });
             setShowDuplicateDialog(true);
             return;
@@ -120,24 +146,41 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
         onClose();
       } else {
         // Verificar si ya existe una facility con el mismo nombre
-        const duplicates = await checkDuplicateName.mutateAsync({
+        const nameDuplicates = await checkDuplicateName.mutateAsync({
           name: data.name,
         });
 
-        if (duplicates && duplicates.length > 0) {
-          // Mostrar diálogo de advertencia
-          setDuplicateFacilities(duplicates);
+        if (nameDuplicates && nameDuplicates.length > 0) {
+          setDuplicateType('name');
+          setDuplicateFacilities(nameDuplicates);
           setPendingData(data);
           setShowDuplicateDialog(true);
-        } else {
-          // No hay duplicados, crear directamente
-          const newFacility = await createFacility.mutateAsync(data as any);
-          form.reset();
-          if (newFacility && onSuccess) {
-            onSuccess(newFacility as Facility);
-          }
-          onClose();
+          return;
         }
+
+        // Verificar si ya existe una facility con la misma dirección
+        const addressDuplicates = await checkDuplicateAddress.mutateAsync({
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          zipCode: data.zip_code,
+        });
+
+        if (addressDuplicates && addressDuplicates.length > 0) {
+          setDuplicateType('address');
+          setDuplicateFacilities(addressDuplicates);
+          setPendingData(data);
+          setShowDuplicateDialog(true);
+          return;
+        }
+
+        // No hay duplicados, crear directamente
+        const newFacility = await createFacility.mutateAsync(data as any);
+        form.reset();
+        if (newFacility && onSuccess) {
+          onSuccess(newFacility as Facility);
+        }
+        onClose();
       }
     } catch (error: any) {
       console.error('Error saving facility:', error);
@@ -329,9 +372,9 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
             </Button>
             <Button 
               onClick={form.handleSubmit(handleSubmit)} 
-              disabled={createFacility.isPending || updateFacility.isPending || checkDuplicateName.isPending}
+              disabled={createFacility.isPending || updateFacility.isPending || checkDuplicateName.isPending || checkDuplicateAddress.isPending}
             >
-              {checkDuplicateName.isPending ? 'Verificando...' : (
+              {(checkDuplicateName.isPending || checkDuplicateAddress.isPending) ? 'Verificando...' : (
                 isEditMode 
                   ? t('create_facility_dialog.buttons.update') 
                   : t('create_facility_dialog.buttons.create')
@@ -341,16 +384,20 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo de advertencia de nombre duplicado */}
+      {/* Diálogo de advertencia de duplicados */}
       <AlertDialog open={showDuplicateDialog} onOpenChange={handleCancelCreate}>
         <AlertDialogContent className="max-w-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
-              Nombre de Facility Ya Existe
+              {duplicateType === 'name' ? 'Nombre de Facility Ya Existe' : 'Dirección de Facility Ya Existe'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Ya existe{duplicateFacilities.length > 1 ? 'n' : ''} {duplicateFacilities.length} facility{duplicateFacilities.length > 1 ? 's' : ''} con el mismo nombre:
+              {duplicateType === 'name' ? (
+                <>Ya existe{duplicateFacilities.length > 1 ? 'n' : ''} {duplicateFacilities.length} facility{duplicateFacilities.length > 1 ? 's' : ''} con el mismo nombre:</>
+              ) : (
+                <>Ya existe{duplicateFacilities.length > 1 ? 'n' : ''} {duplicateFacilities.length} facility{duplicateFacilities.length > 1 ? 's' : ''} con la misma dirección:</>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -376,22 +423,40 @@ export function CreateFacilityDialog({ isOpen, onClose, facility, initialName, o
 
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
             <p className="font-medium text-blue-900 dark:text-blue-100">💡 Sugerencia:</p>
-            <p className="text-blue-800 dark:text-blue-200 mt-1">
-              Si es una ubicación diferente de la misma empresa, agregue información adicional al nombre:
-            </p>
-            <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 mt-1 ml-2">
-              <li>"Amazon - Dallas Warehouse"</li>
-              <li>"Amazon - Houston Distribution Center"</li>
-              <li>"Job Site - Bridge Project I-95"</li>
-            </ul>
+            {duplicateType === 'name' ? (
+              <>
+                <p className="text-blue-800 dark:text-blue-200 mt-1">
+                  Si es una ubicación diferente de la misma empresa, agregue información adicional al nombre:
+                </p>
+                <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 mt-1 ml-2">
+                  <li>"Amazon - Dallas Warehouse"</li>
+                  <li>"Amazon - Houston Distribution Center"</li>
+                  <li>"Job Site - Bridge Project I-95"</li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <p className="text-blue-800 dark:text-blue-200 mt-1">
+                  Esta dirección ya está registrada con otro nombre. Posibles razones:
+                </p>
+                <ul className="list-disc list-inside text-blue-700 dark:text-blue-300 mt-1 ml-2">
+                  <li>Es la misma ubicación con un nombre diferente</li>
+                  <li>Son empresas diferentes en la misma dirección</li>
+                  <li>Hay un error en la dirección ingresada</li>
+                </ul>
+                <p className="text-blue-800 dark:text-blue-200 mt-2">
+                  Verifique que la dirección y el nombre sean correctos antes de continuar.
+                </p>
+              </>
+            )}
           </div>
 
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancelCreate}>
-              Cancelar y Cambiar Nombre
+              {duplicateType === 'name' ? 'Cancelar y Cambiar Nombre' : 'Cancelar y Verificar'}
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmCreate} className="bg-yellow-600 hover:bg-yellow-700">
-              Usar Este Nombre de Todos Modos
+              {duplicateType === 'name' ? 'Usar Este Nombre de Todos Modos' : 'Crear de Todos Modos'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
