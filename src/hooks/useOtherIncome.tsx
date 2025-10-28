@@ -128,6 +128,11 @@ export function useCreateOtherIncome() {
       });
       // Invalidar semanas disponibles para actualizar filtros
       queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
+      // Invalidar Payment Report Dialog queries
+      queryClient.invalidateQueries({ queryKey: ['period-other-income'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      // Invalidar Financial Summary
+      queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
     },
     onError: (error) => {
       console.error('Error creating other income:', error);
@@ -184,6 +189,11 @@ export function useUpdateOtherIncome() {
       });
       // Invalidar semanas disponibles para actualizar filtros
       queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
+      // Invalidar Payment Report Dialog queries
+      queryClient.invalidateQueries({ queryKey: ['period-other-income'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      // Invalidar Financial Summary
+      queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
     },
     onError: (error) => {
       console.error('Error updating other income:', error);
@@ -239,6 +249,11 @@ export function useDeleteOtherIncome() {
       });
       // Invalidar semanas disponibles para actualizar filtros
       queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
+      // Invalidar Payment Report Dialog queries
+      queryClient.invalidateQueries({ queryKey: ['period-other-income'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      // Invalidar Financial Summary
+      queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
     },
     onError: (error) => {
       console.error('Error deleting other income:', error);

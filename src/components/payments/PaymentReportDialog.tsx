@@ -285,6 +285,25 @@ export function PaymentReportDialog({
     enabled: !!calculation
   });
 
+  // Obtener items de other income del período
+  const { data: otherIncomeItems = [] } = useQuery({
+    queryKey: ['period-other-income', calculation?.id, calculation?.user_id],
+    queryFn: async () => {
+      if (!calculation) return [];
+      
+      const { data, error } = await supabase
+        .from('other_income')
+        .select('*')
+        .eq('user_id', calculation.user_id)
+        .eq('payment_period_id', calculation.company_payment_period_id)
+        .order('income_date', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!calculation
+  });
+
   // Obtener deducciones del período
   const { data: deductions = [] } = useQuery({
     queryKey: ['period-deductions', calculation?.company_payment_period_id, calculation?.user_id],
@@ -1014,27 +1033,37 @@ export function PaymentReportDialog({
           )}
 
           {/* Otros Ingresos */}
-          {calculation.other_income > 0 && (
+          {otherIncomeItems && otherIncomeItems.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-green-600" />
-                  {t('report_dialog.other_income_section')} (1 - {t('report_dialog.loads_total')}: {formatCurrency(calculation.other_income)})
+                  {t('report_dialog.other_income_section')} ({otherIncomeItems.length} - {t('report_dialog.loads_total')}: {formatCurrency(calculation.other_income)})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="py-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <div className="font-medium text-sm sm:text-base">{t('income.other')}</div>
-                      <div className="text-xs sm:text-sm text-muted-foreground">
-                        {t('reports.company_name')}
+                <div className="space-y-3">
+                  {otherIncomeItems.map((item: any, index: number) => (
+                    <div key={item.id || index} className="py-3 border-b last:border-b-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="font-medium text-sm sm:text-base">{item.description}</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground space-y-0.5">
+                            <div>{item.income_type}</div>
+                            <div>{formatDateAuto(item.income_date)}</div>
+                            {item.reference_number && (
+                              <div className="text-xs text-muted-foreground">
+                                Ref: {item.reference_number}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
+                          {formatCurrency(item.amount)}
+                        </div>
                       </div>
                     </div>
-                    <div className="font-semibold text-success sm:text-right shrink-0 text-sm sm:text-base">
-                      {formatCurrency(calculation.other_income)}
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
