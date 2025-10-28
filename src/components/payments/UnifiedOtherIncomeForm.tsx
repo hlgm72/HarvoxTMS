@@ -184,9 +184,11 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="income-type">{t('form.income_type')}</Label>
-          <Select value={incomeType} onValueChange={setIncomeType}>
-            <SelectTrigger>
+          <Label htmlFor="income-type">
+            {t('form.income_type')} <span className="text-destructive">*</span>
+          </Label>
+          <Select value={incomeType} onValueChange={setIncomeType} required>
+            <SelectTrigger className={cn(!incomeType && "border-destructive")}>
               <SelectValue placeholder={t('form.select_income_type')} />
             </SelectTrigger>
             <SelectContent>
@@ -197,6 +199,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
               ))}
             </SelectContent>
           </Select>
+          {!incomeType && (
+            <p className="text-xs text-destructive">{t('form.income_type_required', { defaultValue: 'Income type is required' })}</p>
+          )}
         </div>
       </div>
 
