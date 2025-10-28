@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -130,22 +130,17 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
-  // Validación del formulario - cada condición como booleano
-  const hasSelectedUser = Boolean(selectedUser);
-  const hasDescription = Boolean(description.trim());
-  const hasIncomeType = Boolean(incomeType);
-  const hasValidAmount = atmInput.numericValue > 0;
-  const hasDate = Boolean(date);
-  const isFormValid = hasSelectedUser && hasDescription && hasIncomeType && hasValidAmount && hasDate;
-  
-  console.log('Form validation:', {
-    hasSelectedUser,
-    hasDescription,
-    hasIncomeType,
-    hasValidAmount,
-    hasDate,
-    isFormValid
-  });
+  // Validación del formulario con useMemo
+  const isFormValid = useMemo(() => {
+    const valid = Boolean(
+      selectedUser && 
+      description.trim() && 
+      incomeType && 
+      atmInput.numericValue > 0 && 
+      date
+    );
+    return valid;
+  }, [selectedUser, description, incomeType, atmInput.numericValue, date]);
 
   return (
     <form id="other-income-form" onSubmit={handleSubmit} className="space-y-4">
