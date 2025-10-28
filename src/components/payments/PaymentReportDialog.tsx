@@ -949,7 +949,7 @@ export function PaymentReportDialog({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <TrendingUp className="h-5 w-5 text-green-600" />
-                  {t('report_dialog.other_income_section')} ({otherIncomeItems.length} - {t('report_dialog.loads_total')}: {formatCurrency(calculation.other_income)})
+                  {t('report_dialog.other_income_section')} ({otherIncomeItems.length} - {t('report_dialog.loads_total')}: {formatCurrency(otherIncomeItems.reduce((sum, item) => sum + item.amount, 0))})
                 </CardTitle>
               </CardHeader>
               <CardContent>
