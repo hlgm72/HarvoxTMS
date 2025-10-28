@@ -23,7 +23,7 @@ export interface UpdateOtherIncomeData extends Partial<CreateOtherIncomeData> {
   id: string;
 }
 
-export function useOtherIncome(filters: { driverId?: string; periodId?: string; status?: string } = {}) {
+export function useOtherIncome(filters: { driverId?: string; periodId?: string; status?: string; startDate?: string; endDate?: string; userRole?: string } = {}) {
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
 
@@ -50,6 +50,20 @@ export function useOtherIncome(filters: { driverId?: string; periodId?: string; 
 
       if (filters.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
+      }
+
+      // Filter by date range
+      if (filters.startDate) {
+        query = query.gte('income_date', filters.startDate);
+      }
+
+      if (filters.endDate) {
+        query = query.lte('income_date', filters.endDate);
+      }
+
+      // Filter by user role
+      if (filters.userRole && filters.userRole !== 'all') {
+        query = query.eq('applied_to_role', filters.userRole as any);
       }
 
       const { data, error } = await query;
