@@ -55,8 +55,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const { selectedCompany } = useUserCompanies();
   const { drivers, loading: driversLoading, error: driversError } = useCompanyDrivers();
   
-  // Debug log para ver el estado de los drivers
-  console.log('Drivers data:', { drivers, driversLoading, driversError });
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const createOtherIncome = useCreateOtherIncome();
   const updateOtherIncome = useUpdateOtherIncome();
