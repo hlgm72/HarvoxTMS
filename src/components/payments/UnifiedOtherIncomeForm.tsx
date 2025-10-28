@@ -263,10 +263,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             onChange={atmInput.handleInput}
             onKeyDown={atmInput.handleKeyDown}
             onPaste={atmInput.handlePaste}
-            onFocus={(e) => {
-              atmInput.handleFocus(e);
-              setTouched(prev => ({ ...prev, amount: true }));
-            }}
+            onFocus={atmInput.handleFocus}
+            onBlur={() => setTouched(prev => ({ ...prev, amount: true }))}
             onMouseDown={atmInput.handleMouseDown}
             placeholder="$0.00"
             className={cn("text-right text-lg", touched.amount && atmInput.numericValue <= 0 && "border-destructive")}
