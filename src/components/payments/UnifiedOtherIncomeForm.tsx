@@ -73,8 +73,14 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       description: true
     });
     
-    if (!selectedUser || !date || !incomeType) {
-      console.error("Required fields not filled:", { selectedUser, date, incomeType });
+    if (!selectedUser || !date || !incomeType || atmInput.numericValue <= 0 || !description.trim()) {
+      console.error("Required fields not filled:", { 
+        selectedUser, 
+        date, 
+        incomeType, 
+        amount: atmInput.numericValue,
+        description: description.trim()
+      });
       return;
     }
 
@@ -262,7 +268,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">{t('form.description')}</Label>
+        <Label htmlFor="description">
+          {t('form.description')} <span className="text-destructive">*</span>
+        </Label>
         <Textarea
           id="description"
           value={description}
@@ -270,8 +278,12 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           onBlur={() => setTouched(prev => ({ ...prev, description: true }))}
           placeholder={t('form.description_placeholder')}
           rows={2}
+          className={cn(touched.description && !description.trim() && "border-destructive")}
           required
         />
+        {touched.description && !description.trim() && (
+          <p className="text-xs text-destructive">{t('form.description_required', { defaultValue: 'Description is required' })}</p>
+        )}
       </div>
 
       {showButtons && (
@@ -282,7 +294,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           <Button 
             type="submit"
             disabled={(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) || 
-                     !selectedUser || !description || !incomeType || atmInput.numericValue <= 0 || !date}
+                     !selectedUser || !description.trim() || !incomeType || atmInput.numericValue <= 0 || !date}
             className="flex-1"
           >
             {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
