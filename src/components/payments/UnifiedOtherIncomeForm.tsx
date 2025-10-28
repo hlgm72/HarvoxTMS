@@ -324,7 +324,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
                 return;
               }
             }}
-            className="flex-1"
+            className={cn(
+              "flex-1",
+              isButtonDisabled && "opacity-50 cursor-not-allowed pointer-events-none"
+            )}
           >
             {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
              (isEditing ? t('form.updating') : t('form.creating')) : 
