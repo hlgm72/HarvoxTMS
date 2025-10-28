@@ -1111,6 +1111,11 @@ export function PaymentReportDialog({
           // Refrescar los datos después de editar
           queryClient.invalidateQueries({ queryKey: ['period-loads'] });
           queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+          // Invalidar también las queries de la página principal para actualizar Available Payment Reports
+          queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+          queryClient.invalidateQueries({ queryKey: ['loads'] });
+          queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
+          queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
         }}
         mode="edit"
         loadData={selectedLoadForEdit}

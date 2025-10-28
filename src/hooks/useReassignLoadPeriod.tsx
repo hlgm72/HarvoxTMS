@@ -45,6 +45,7 @@ export const useReassignLoadPeriod = () => {
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] }); // Actualizar Available Payment Reports
       
       showSuccess('Carga reasignada exitosamente al nuevo período');
     },

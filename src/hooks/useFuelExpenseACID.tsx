@@ -78,6 +78,7 @@ export const useFuelExpenseACID = () => {
       queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
       queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
       queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] }); // Actualizar Available Payment Reports
       
       showSuccess(
         isUpdate 

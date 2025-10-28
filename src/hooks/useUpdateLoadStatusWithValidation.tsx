@@ -154,6 +154,7 @@ export const useUpdateLoadStatusWithValidation = () => {
       queryClient.invalidateQueries({ queryKey: ['load-document-validation', params.loadId] });
       // Invalidar el historial de estados para esta carga específica
       queryClient.invalidateQueries({ queryKey: ['load-status-history', params.loadId] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] }); // Actualizar Available Payment Reports
       
       showSuccess('Estado de carga actualizado exitosamente');
     },
