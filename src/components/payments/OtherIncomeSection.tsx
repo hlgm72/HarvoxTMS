@@ -51,7 +51,13 @@ interface OtherIncomeItem {
   created_at: string;
 }
 
-export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: boolean }) {
+interface OtherIncomeSectionProps {
+  hideAddButton?: boolean;
+  filteredData?: OtherIncomeItem[];
+  isLoading?: boolean;
+}
+
+export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoading: externalIsLoading }: OtherIncomeSectionProps) {
   const { user, isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const { selectedCompany } = useUserCompanies();
   const { drivers: companyDrivers = [] } = useCompanyDrivers();
@@ -68,10 +74,14 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   const [isEditFormValid, setIsEditFormValid] = useState(false);
   const deleteOtherIncome = useDeleteOtherIncome();
 
-  // Cargar datos reales de otros ingresos
-  const { data: incomeData = [], isLoading } = useOtherIncome({
+  // Cargar datos reales de otros ingresos si no se pasan como props
+  const { data: internalIncomeData = [], isLoading: internalIsLoading } = useOtherIncome({
     driverId: isDriver ? user?.id : undefined
   });
+
+  // Use filtered data if provided, otherwise use internal data
+  const incomeData = filteredData !== undefined ? filteredData : internalIncomeData;
+  const isLoading = externalIsLoading !== undefined ? externalIsLoading : internalIsLoading;
 
   // Helper function para obtener el nombre del usuario según su rol
   const getUserName = (userId: string, role: string) => {
