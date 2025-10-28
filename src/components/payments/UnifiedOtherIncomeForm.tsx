@@ -163,21 +163,22 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
                 {date ? formatPrettyDate(date) : <span>{t('form.select_date')}</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={(date) => {
-                  setDate(date);
-                  setIsDatePickerOpen(false);
-                }}
-                initialFocus
-                showOutsideDays={true}
-                className="pointer-events-auto p-3 [&_td]:px-1 [&_button]:mx-0.5"
-                captionLayout="dropdown-buttons"
-                fromYear={2020}
-                toYear={2030}
-              />
+            <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+              <div className="pointer-events-auto">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  defaultMonth={date}
+                  onSelect={(newDate) => {
+                    setDate(newDate);
+                    setIsDatePickerOpen(false);
+                  }}
+                  disableClear={true}
+                  fromYear={2020}
+                  toYear={2030}
+                  initialFocus
+                />
+              </div>
             </PopoverContent>
           </Popover>
         </div>
