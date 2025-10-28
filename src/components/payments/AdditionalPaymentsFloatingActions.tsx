@@ -170,7 +170,7 @@ export function AdditionalPaymentsFloatingActions({
                     <SelectValue placeholder={t('filters.select_user')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('filters.all_users')}</SelectItem>
+                    <SelectItem value="all">{t('filters.all_drivers')}</SelectItem>
                   {currentUsers.map((user: any) => (
                     <SelectItem key={user.user_id || user.id} value={user.user_id || user.id}>
                       {user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim()}
