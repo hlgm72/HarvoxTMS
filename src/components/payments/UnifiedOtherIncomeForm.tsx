@@ -315,6 +315,15 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           <Button 
             type="submit"
             disabled={isButtonDisabled}
+            aria-disabled={isButtonDisabled}
+            onClick={(e) => {
+              if (isButtonDisabled) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Button click prevented - form is invalid');
+                return;
+              }
+            }}
             className="flex-1"
           >
             {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
