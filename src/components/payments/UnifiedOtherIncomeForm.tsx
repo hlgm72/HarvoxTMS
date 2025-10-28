@@ -139,8 +139,18 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       atmInput.numericValue > 0 && 
       date
     );
+    console.log('isFormValid calculated:', valid, {
+      selectedUser: !!selectedUser,
+      description: !!description.trim(),
+      incomeType: !!incomeType,
+      amount: atmInput.numericValue,
+      date: !!date
+    });
     return valid;
   }, [selectedUser, description, incomeType, atmInput.numericValue, date]);
+  
+  const isButtonDisabled = !isFormValid || (isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending);
+  console.log('Button disabled state:', isButtonDisabled, '(isFormValid:', isFormValid, ')');
 
   return (
     <form id="other-income-form" onSubmit={handleSubmit} className="space-y-4">
@@ -304,7 +314,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           </Button>
           <Button 
             type="submit"
-            disabled={!isFormValid || (isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending)}
+            disabled={isButtonDisabled}
             className="flex-1"
           >
             {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
