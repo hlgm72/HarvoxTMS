@@ -643,5 +643,79 @@
       "email_success": "Payment report sent successfully",
       "email_error": "Could not send email"
     }
+  },
+  "additional_payments": {
+    "title": "Additional Payments",
+    "items": "items",
+    "loading": "Loading additional payments...",
+    "section_title": "Additional Income",
+    "filters": {
+      "user_type": "User Type",
+      "select_user_type": "Select type",
+      "all_users": "All Users",
+      "drivers_only": "Drivers Only",
+      "dispatchers_only": "Dispatchers Only",
+      "dispatcher": "Dispatcher"
+    },
+    "stats": {
+      "total_items": "Total Items",
+      "total_amount": "Total Amount",
+      "approved": "Approved",
+      "pending": "Pending",
+      "total": "Total"
+    },
+    "actions": {
+      "add_income": "Add Income",
+      "add_income_short": "Add"
+    },
+    "dialogs": {
+      "new_income_title": "New Additional Income",
+      "new_income_description": "Add a new income record",
+      "view_details_title": "Income Details"
+    },
+    "table": {
+      "description": "Description",
+      "type": "Type",
+      "amount": "Amount",
+      "date": "Date",
+      "driver": "Driver",
+      "dispatcher": "Dispatcher",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "detail_labels": {
+      "description": "Description",
+      "type": "Type",
+      "amount": "Amount",
+      "date": "Date",
+      "status": "Status",
+      "reference": "Reference"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "types": {
+      "bonus": "Bonus",
+      "commission": "Commission",
+      "reimbursement": "Reimbursement",
+      "other": "Other"
+    },
+    "roles": {
+      "drivers": "Drivers",
+      "dispatchers": "Dispatchers",
+      "others": "Others"
+    },
+    "errors": {
+      "no_name": "No name",
+      "driver_not_found": "Driver not found",
+      "dispatcher_not_found": "Dispatcher not found",
+      "user_not_found": "User not found"
+    },
+    "no_records": {
+      "title": "No income records",
+      "subtitle": "Add your first additional income record"
+    }
   }
 }

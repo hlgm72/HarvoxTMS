@@ -623,5 +623,79 @@
       "email_success": "Reporte de pago enviado exitosamente",
       "email_error": "No se pudo enviar el email"
     }
+  },
+  "additional_payments": {
+    "title": "Pagos Adicionales",
+    "items": "elementos",
+    "loading": "Cargando pagos adicionales...",
+    "section_title": "Ingresos Adicionales",
+    "filters": {
+      "user_type": "Tipo de Usuario",
+      "select_user_type": "Seleccionar tipo",
+      "all_users": "Todos los Usuarios",
+      "drivers_only": "Solo Conductores",
+      "dispatchers_only": "Solo Dispatchers",
+      "dispatcher": "Dispatcher"
+    },
+    "stats": {
+      "total_items": "Total de Elementos",
+      "total_amount": "Monto Total",
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "total": "Total"
+    },
+    "actions": {
+      "add_income": "Agregar Ingreso",
+      "add_income_short": "Agregar"
+    },
+    "dialogs": {
+      "new_income_title": "Nuevo Ingreso Adicional",
+      "new_income_description": "Agregar un nuevo registro de ingreso",
+      "view_details_title": "Detalles del Ingreso"
+    },
+    "table": {
+      "description": "Descripción",
+      "type": "Tipo",
+      "amount": "Monto",
+      "date": "Fecha",
+      "driver": "Conductor",
+      "dispatcher": "Dispatcher",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "detail_labels": {
+      "description": "Descripción",
+      "type": "Tipo",
+      "amount": "Monto",
+      "date": "Fecha",
+      "status": "Estado",
+      "reference": "Referencia"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "pending": "Pendiente",
+      "rejected": "Rechazado"
+    },
+    "types": {
+      "bonus": "Bono",
+      "commission": "Comisión",
+      "reimbursement": "Reembolso",
+      "other": "Otro"
+    },
+    "roles": {
+      "drivers": "Conductores",
+      "dispatchers": "Dispatchers",
+      "others": "Otros"
+    },
+    "errors": {
+      "no_name": "Sin nombre",
+      "driver_not_found": "Conductor no encontrado",
+      "dispatcher_not_found": "Dispatcher no encontrado",
+      "user_not_found": "Usuario no encontrado"
+    },
+    "no_records": {
+      "title": "No hay registros de ingresos",
+      "subtitle": "Agrega tu primer registro de ingreso adicional"
+    }
   }
 }
