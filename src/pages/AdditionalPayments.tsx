@@ -13,6 +13,7 @@ export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner } = useAuth();
   const { t } = useTranslation();
   const [isCreateIncomeDialogOpen, setIsCreateIncomeDialogOpen] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const handleAddIncome = () => {
     setIsCreateIncomeDialogOpen(true);
@@ -51,6 +52,7 @@ export default function AdditionalPayments() {
             <UnifiedOtherIncomeForm 
               onClose={() => setIsCreateIncomeDialogOpen(false)}
               showButtons={false}
+              onValidationChange={setIsFormValid}
             />
           </div>
           <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
@@ -61,6 +63,7 @@ export default function AdditionalPayments() {
               type="submit"
               form="other-income-form"
               className="flex-1"
+              disabled={!isFormValid}
             >
               {t('common:form.create')}
             </Button>

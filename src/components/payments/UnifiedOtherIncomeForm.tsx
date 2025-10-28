@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,7 @@ interface UnifiedOtherIncomeFormProps {
   onClose: () => void;
   defaultUserType?: "driver" | "dispatcher";
   showButtons?: boolean;
+  onValidationChange?: (isValid: boolean) => void;
   editData?: {
     id: string;
     description: string;
@@ -35,7 +36,7 @@ interface UnifiedOtherIncomeFormProps {
   };
 }
 
-export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true }: UnifiedOtherIncomeFormProps) {
+export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true, onValidationChange }: UnifiedOtherIncomeFormProps) {
   const { t } = useTranslation(['payments', 'common']);
   const isEditing = !!editData;
   
@@ -139,18 +140,17 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       atmInput.numericValue > 0 && 
       date
     );
-    console.log('isFormValid calculated:', valid, {
-      selectedUser: !!selectedUser,
-      description: !!description.trim(),
-      incomeType: !!incomeType,
-      amount: atmInput.numericValue,
-      date: !!date
-    });
     return valid;
   }, [selectedUser, description, incomeType, atmInput.numericValue, date]);
+
+  // Notificar al padre cuando cambie la validación
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(isFormValid);
+    }
+  }, [isFormValid, onValidationChange]);
   
   const isButtonDisabled = !isFormValid || (isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending);
-  console.log('Button disabled state:', isButtonDisabled, '(isFormValid:', isFormValid, ')');
 
   return (
     <form id="other-income-form" onSubmit={handleSubmit} className="space-y-4">
@@ -315,19 +315,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           <Button 
             type="submit"
             disabled={isButtonDisabled}
-            aria-disabled={isButtonDisabled}
-            onClick={(e) => {
-              if (isButtonDisabled) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Button click prevented - form is invalid');
-                return;
-              }
-            }}
-            className={cn(
-              "flex-1",
-              isButtonDisabled && "opacity-50 cursor-not-allowed pointer-events-none"
-            )}
+            className="flex-1"
           >
             {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
              (isEditing ? t('form.updating') : t('form.creating')) : 

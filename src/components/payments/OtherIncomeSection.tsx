@@ -64,6 +64,8 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<OtherIncomeItem | null>(null);
   const [itemToEdit, setItemToEdit] = useState<OtherIncomeItem | null>(null);
+  const [isCreateFormValid, setIsCreateFormValid] = useState(false);
+  const [isEditFormValid, setIsEditFormValid] = useState(false);
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos
@@ -230,7 +232,11 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                 </DialogDescription>
               </div>
               <div className="overflow-y-auto flex-1 p-6 bg-white">
-                <UnifiedOtherIncomeForm onClose={() => setIsCreateDialogOpen(false)} showButtons={false} />
+                <UnifiedOtherIncomeForm 
+                  onClose={() => setIsCreateDialogOpen(false)} 
+                  showButtons={false} 
+                  onValidationChange={setIsCreateFormValid}
+                />
               </div>
               <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
                 <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="flex-1">
@@ -240,6 +246,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                   type="submit"
                   form="other-income-form"
                   className="flex-1"
+                  disabled={!isCreateFormValid}
                 >
                   {t('common:form.create')}
                 </Button>
@@ -413,6 +420,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
                   setItemToEdit(null);
                 }}
                 showButtons={false}
+                onValidationChange={setIsEditFormValid}
                 editData={{
                   id: itemToEdit.id,
                   description: itemToEdit.description,
@@ -437,6 +445,7 @@ export function OtherIncomeSection({ hideAddButton = false }: { hideAddButton?: 
               type="submit"
               form="other-income-form"
               className="flex-1"
+              disabled={!isEditFormValid}
             >
               {t('common:form.update')}
             </Button>
