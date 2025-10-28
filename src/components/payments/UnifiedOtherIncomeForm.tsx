@@ -63,8 +63,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedUser || !date) {
-      console.error("User or date not selected");
+    if (!selectedUser || !date || !incomeType) {
+      console.error("Required fields not filled:", { selectedUser, date, incomeType });
       return;
     }
 
@@ -251,7 +251,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           <Button 
             type="submit"
             disabled={(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) || 
-                     !selectedUser || !description || atmInput.numericValue <= 0 || !date}
+                     !selectedUser || !description || !incomeType || atmInput.numericValue <= 0 || !date}
             className="flex-1"
           >
             {(isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending) ? 
