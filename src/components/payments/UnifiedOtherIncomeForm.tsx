@@ -130,8 +130,22 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
-  // Validación del formulario - convertir a booleano explícito
-  const isFormValid = Boolean(selectedUser && description.trim() && incomeType && atmInput.numericValue > 0 && date);
+  // Validación del formulario - cada condición como booleano
+  const hasSelectedUser = Boolean(selectedUser);
+  const hasDescription = Boolean(description.trim());
+  const hasIncomeType = Boolean(incomeType);
+  const hasValidAmount = atmInput.numericValue > 0;
+  const hasDate = Boolean(date);
+  const isFormValid = hasSelectedUser && hasDescription && hasIncomeType && hasValidAmount && hasDate;
+  
+  console.log('Form validation:', {
+    hasSelectedUser,
+    hasDescription,
+    hasIncomeType,
+    hasValidAmount,
+    hasDate,
+    isFormValid
+  });
 
   return (
     <form id="other-income-form" onSubmit={handleSubmit} className="space-y-4">
