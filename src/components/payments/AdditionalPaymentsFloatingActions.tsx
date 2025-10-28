@@ -167,10 +167,10 @@ export function AdditionalPaymentsFloatingActions({
                   onValueChange={(value) => handleFilterChange('userId', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('filters.select_user', 'Seleccionar usuario')} />
+                    <SelectValue placeholder={t('filters.select_user')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('filters.all_users', 'Todos')}</SelectItem>
+                    <SelectItem value="all">{t('filters.all_users')}</SelectItem>
                   {currentUsers.map((user: any) => (
                     <SelectItem key={user.user_id || user.id} value={user.user_id || user.id}>
                       {user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim()}
