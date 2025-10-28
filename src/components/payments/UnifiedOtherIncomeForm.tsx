@@ -48,7 +48,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const [referenceNumber, setReferenceNumber] = useState(editData?.reference_number || "");
   const [touched, setTouched] = useState({
     incomeType: false,
-    amount: false
+    amount: false,
+    description: false
   });
 
   const { user } = useAuth();
@@ -68,7 +69,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
     // Marcar todos los campos como tocados al enviar
     setTouched({
       incomeType: true,
-      amount: true
+      amount: true,
+      description: true
     });
     
     if (!selectedUser || !date || !incomeType) {
@@ -265,6 +267,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          onBlur={() => setTouched(prev => ({ ...prev, description: true }))}
           placeholder={t('form.description_placeholder')}
           rows={2}
           required
