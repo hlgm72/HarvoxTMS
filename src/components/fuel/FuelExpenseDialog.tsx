@@ -92,6 +92,9 @@ export function FuelExpenseDialog({
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
 
   const isEditMode = !!expenseId;
+  
+  // 🛡️ Prevenir auto-selección de período durante carga de datos de edición
+  const isLoadingEditData = React.useRef(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -179,6 +182,9 @@ export function FuelExpenseDialog({
   // Populate form with expense data for edit mode
   React.useEffect(() => {
     if (open && isEditMode && expense) {
+      // 🛡️ Marcar que estamos cargando datos de edición
+      isLoadingEditData.current = true;
+      
       form.reset({
         driver_user_id: expense.driver_user_id,
         payment_period_id: expense.payment_period_id,
@@ -206,7 +212,14 @@ export function FuelExpenseDialog({
       discountAmountATM.setValue(expense.discount_amount || 0);
       feesATM.setValue(expense.fees || 0);
       totalAmountATM.setValue(expense.total_amount || 0);
+      
+      // 🛡️ Finalizar carga de datos de edición después de un pequeño delay
+      // para asegurar que el useEffect de auto-selección no sobrescriba
+      setTimeout(() => {
+        isLoadingEditData.current = false;
+      }, 100);
     } else if (open && !isEditMode) {
+      isLoadingEditData.current = false;
       // Reset to default values for create mode
       form.reset({
         driver_user_id: '',
@@ -235,6 +248,11 @@ export function FuelExpenseDialog({
       discountAmountATM.reset();
       feesATM.reset();
       totalAmountATM.reset();
+    }
+    
+    // 🛡️ Si el diálogo se cierra, limpiar el flag de carga
+    if (!open) {
+      isLoadingEditData.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, expense, isEditMode]);
@@ -442,7 +460,8 @@ export function FuelExpenseDialog({
   const [predictedPeriod, setPredictedPeriod] = React.useState<{start: string, end: string} | null>(null);
   
   React.useEffect(() => {
-    if (!isEditMode && transactionDate && paymentPeriods.length) {
+    // 🛡️ NO auto-seleccionar período si estamos en modo edición O cargando datos de edición
+    if ((!isEditMode && !isLoadingEditData.current) && transactionDate && paymentPeriods.length) {
       const transactionDateStr = formatDateInUserTimeZone(transactionDate);
       
       // Solo buscar período existente, no crear automáticamente
