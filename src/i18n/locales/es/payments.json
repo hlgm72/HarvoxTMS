@@ -492,7 +492,9 @@
       "driver": "Conductor:",
       "status": "Estado:",
       "period": "Período:",
-      "selected": "Seleccionado"
+      "selected": "Seleccionado",
+      "type": "Tipo:",
+      "user": "Usuario:"
     }
   },
   "floating_actions": {

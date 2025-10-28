@@ -516,7 +516,9 @@
       "driver": "Driver:",
       "status": "Status:",
       "period": "Period:",
-      "selected": "Selected"
+      "selected": "Selected",
+      "type": "Type:",
+      "user": "User:"
     }
   },
   "floating_actions": {
