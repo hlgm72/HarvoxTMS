@@ -879,6 +879,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                     value={field.value || ''}
                                     onChange={textHandlers.onChange}
                                     onBlur={textHandlers.onBlur}
+                                    autoFocus
                                     className={
                                       loadNumberValidation.isDuplicate 
                                         ? "border-destructive focus:border-destructive" 
