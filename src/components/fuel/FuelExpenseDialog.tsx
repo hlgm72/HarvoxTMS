@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
@@ -185,10 +185,28 @@ export function FuelExpenseDialog({
       // 🛡️ Marcar que estamos cargando datos de edición
       isLoadingEditData.current = true;
       
+      // 🕐 CRÍTICO: Parsear correctamente la fecha UTC de la base de datos
+      // Agregar T12:00:00 para evitar problemas de timezone al cruzar medianoche
+      const transactionDateStr = expense.transaction_date.includes('T') 
+        ? expense.transaction_date 
+        : `${expense.transaction_date}T12:00:00`;
+      const parsedTransactionDate = parseISO(transactionDateStr);
+      
+      if (import.meta.env.DEV) {
+        console.log('🔍 FuelExpenseDialog - Cargando datos de edición:', {
+          expenseId: expense.id,
+          originalTransactionDate: expense.transaction_date,
+          transactionDateStr,
+          parsedTransactionDate,
+          formattedForUI: format(parsedTransactionDate, 'yyyy-MM-dd'),
+          paymentPeriodId: expense.payment_period_id
+        });
+      }
+      
       form.reset({
         driver_user_id: expense.driver_user_id,
         payment_period_id: expense.payment_period_id,
-        transaction_date: new Date(expense.transaction_date),
+        transaction_date: parsedTransactionDate,
         fuel_type: expense.fuel_type,
         gallons_purchased: expense.gallons_purchased,
         price_per_gallon: expense.price_per_gallon,
@@ -463,6 +481,16 @@ export function FuelExpenseDialog({
     // 🛡️ NO auto-seleccionar período si estamos en modo edición O cargando datos de edición
     if ((!isEditMode && !isLoadingEditData.current) && transactionDate && paymentPeriods.length) {
       const transactionDateStr = formatDateInUserTimeZone(transactionDate);
+      
+      if (import.meta.env.DEV) {
+        console.log('🔍 FuelExpenseDialog - Auto-selección de período:', {
+          isEditMode,
+          isLoadingEditData: isLoadingEditData.current,
+          transactionDate,
+          transactionDateStr,
+          availablePeriods: paymentPeriods.length
+        });
+      }
       
       // Solo buscar período existente, no crear automáticamente
       const matchingPeriod = paymentPeriods.find(period => {
