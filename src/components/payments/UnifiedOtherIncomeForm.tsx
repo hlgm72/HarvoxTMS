@@ -46,6 +46,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(editData?.user_id || "");
   const [referenceNumber, setReferenceNumber] = useState(editData?.reference_number || "");
+  const [touched, setTouched] = useState({
+    incomeType: false,
+    amount: false
+  });
 
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
@@ -62,6 +66,12 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Marcar todos los campos como tocados al enviar
+    setTouched({
+      incomeType: true,
+      amount: true
+    });
     
     if (!selectedUser || !date || !incomeType) {
       console.error("Required fields not filled:", { selectedUser, date, incomeType });
@@ -187,8 +197,15 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           <Label htmlFor="income-type">
             {t('form.income_type')} <span className="text-destructive">*</span>
           </Label>
-          <Select value={incomeType} onValueChange={setIncomeType} required>
-            <SelectTrigger className={cn(!incomeType && "border-destructive")}>
+          <Select 
+            value={incomeType} 
+            onValueChange={(value) => {
+              setIncomeType(value);
+              setTouched(prev => ({ ...prev, incomeType: true }));
+            }}
+            required
+          >
+            <SelectTrigger className={cn(touched.incomeType && !incomeType && "border-destructive")}>
               <SelectValue placeholder={t('form.select_income_type')} />
             </SelectTrigger>
             <SelectContent>
@@ -199,7 +216,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
               ))}
             </SelectContent>
           </Select>
-          {!incomeType && (
+          {touched.incomeType && !incomeType && (
             <p className="text-xs text-destructive">{t('form.income_type_required', { defaultValue: 'Income type is required' })}</p>
           )}
         </div>
@@ -218,14 +235,17 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             onChange={atmInput.handleInput}
             onKeyDown={atmInput.handleKeyDown}
             onPaste={atmInput.handlePaste}
-            onFocus={atmInput.handleFocus}
+            onFocus={(e) => {
+              atmInput.handleFocus(e);
+              setTouched(prev => ({ ...prev, amount: true }));
+            }}
             onMouseDown={atmInput.handleMouseDown}
             placeholder="$0.00"
-            className={cn("text-right text-lg", atmInput.numericValue <= 0 && "border-destructive")}
+            className={cn("text-right text-lg", touched.amount && atmInput.numericValue <= 0 && "border-destructive")}
             autoComplete="off"
             required
           />
-          {atmInput.numericValue <= 0 && (
+          {touched.amount && atmInput.numericValue <= 0 && (
             <p className="text-xs text-destructive">{t('form.amount_required', { defaultValue: 'Amount must be greater than $0.00' })}</p>
           )}
         </div>
