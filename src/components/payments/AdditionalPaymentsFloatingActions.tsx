@@ -58,9 +58,9 @@ export function AdditionalPaymentsFloatingActions({
   ];
 
   const userTypeOptions = [
-    { value: "all", label: t('additional_payments.filters.all_users', 'Todos') },
-    { value: "driver", label: t('additional_payments.filters.drivers_only', 'Solo Conductores') },
-    { value: "dispatcher", label: t('additional_payments.filters.dispatchers_only', 'Solo Dispatchers') }
+    { value: "all", label: t('payments:additional_payments.filters.all_users') },
+    { value: "driver", label: t('payments:additional_payments.filters.drivers_only') },
+    { value: "dispatcher", label: t('payments:additional_payments.filters.dispatchers_only') }
   ];
 
   const handleFilterChange = (key: keyof AdditionalPaymentsFiltersType, value: any) => {
@@ -138,13 +138,13 @@ export function AdditionalPaymentsFloatingActions({
 
             {/* User Type Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t('additional_payments.filters.user_type', 'Tipo de Usuario')}</label>
+              <label className="text-sm font-medium">{t('payments:additional_payments.filters.user_type')}</label>
               <Select 
                 value={filters.userType} 
                 onValueChange={(value) => handleFilterChange('userType', value as any)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('additional_payments.filters.select_user_type', 'Seleccionar tipo')} />
+                  <SelectValue placeholder={t('payments:additional_payments.filters.select_user_type')} />
                 </SelectTrigger>
                 <SelectContent>
                   {userTypeOptions.map((option) => (
@@ -160,7 +160,7 @@ export function AdditionalPaymentsFloatingActions({
             {filters.userType !== 'all' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  {filters.userType === 'driver' ? t('filters.driver_label') : t('additional_payments.filters.dispatcher', 'Dispatcher')}
+                  {filters.userType === 'driver' ? t('filters.driver_label') : t('payments:additional_payments.filters.dispatcher')}
                 </label>
                 <Select 
                   value={filters.userId} 
@@ -248,7 +248,7 @@ export function AdditionalPaymentsFloatingActions({
           <div className="space-y-4">
             <Button className="w-full justify-start" onClick={onAddIncome}>
               <Plus className="h-4 w-4 mr-2" />
-              {t('additional_payments.actions.add_income')}
+              {t('payments:additional_payments.actions.add_income')}
             </Button>
           </div>
         </div>
@@ -264,7 +264,7 @@ export function AdditionalPaymentsFloatingActions({
             <div className="p-4 border rounded-lg space-y-2">
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium">{t('additional_payments.stats.total_items', 'Total')}</span>
+                <span className="text-sm font-medium">{t('payments:additional_payments.stats.total_items')}</span>
               </div>
               <div className="text-2xl font-bold">{stats.totalItems}</div>
             </div>
@@ -272,7 +272,7 @@ export function AdditionalPaymentsFloatingActions({
             <div className="p-4 border rounded-lg space-y-2 col-span-2">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">{t('additional_payments.stats.total_amount', 'Monto Total')}</span>
+                <span className="text-sm font-medium">{t('payments:additional_payments.stats.total_amount')}</span>
               </div>
               <div className="text-2xl font-bold">{formatCurrency(stats.totalAmount)}</div>
             </div>
@@ -280,7 +280,7 @@ export function AdditionalPaymentsFloatingActions({
             <div className="p-4 border rounded-lg space-y-2">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">{t('additional_payments.stats.approved', 'Aprobado')}</span>
+                <span className="text-sm font-medium">{t('payments:additional_payments.stats.approved')}</span>
               </div>
               <div className="text-2xl font-bold">{formatCurrency(stats.totalApproved)}</div>
             </div>
@@ -288,7 +288,7 @@ export function AdditionalPaymentsFloatingActions({
             <div className="p-4 border rounded-lg space-y-2">
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-orange-600" />
-                <span className="text-sm font-medium">{t('additional_payments.stats.pending', 'Pendiente')}</span>
+                <span className="text-sm font-medium">{t('payments:additional_payments.stats.pending')}</span>
               </div>
               <div className="text-2xl font-bold">{formatCurrency(stats.totalPending)}</div>
             </div>

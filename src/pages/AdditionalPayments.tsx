@@ -173,19 +173,19 @@ export default function AdditionalPayments() {
       <div className="flex items-center gap-4 text-sm flex-wrap">
         <span className="flex items-center gap-1">
           <span className="font-medium">{stats.totalItems}</span>
-          <span className="text-muted-foreground">{t('additional_payments.items', 'items')}</span>
+          <span className="text-muted-foreground">{t('payments:additional_payments.items')}</span>
         </span>
         <span className="flex items-center gap-1">
           <span className="font-medium">{formatCurrency(stats.totalAmount)}</span>
-          <span className="text-muted-foreground">{t('additional_payments.stats.total_amount')}</span>
+          <span className="text-muted-foreground">{t('payments:additional_payments.stats.total_amount')}</span>
         </span>
         <span className="flex items-center gap-1">
           <span className="font-medium">{formatCurrency(stats.totalApproved)}</span>
-          <span className="text-muted-foreground">{t('additional_payments.stats.approved')}</span>
+          <span className="text-muted-foreground">{t('payments:additional_payments.stats.approved')}</span>
         </span>
         <span className="flex items-center gap-1">
           <span className="font-medium">{formatCurrency(stats.totalPending)}</span>
-          <span className="text-muted-foreground">{t('additional_payments.stats.pending')}</span>
+          <span className="text-muted-foreground">{t('payments:additional_payments.stats.pending')}</span>
         </span>
       </div>
     );
@@ -211,7 +211,7 @@ export default function AdditionalPayments() {
             )}
             {filters.userType !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {t('additional_payments.filters.user_type')}: {filters.userType === 'driver' ? t('additional_payments.filters.drivers_only') : t('additional_payments.filters.dispatchers_only')}
+                {t('payments:additional_payments.filters.user_type')}: {filters.userType === 'driver' ? t('payments:additional_payments.filters.drivers_only') : t('payments:additional_payments.filters.dispatchers_only')}
               </Badge>
             )}
             {filters.userId !== 'all' && (
@@ -252,14 +252,14 @@ export default function AdditionalPayments() {
     <>
       <PageToolbar 
         icon={Calculator}
-        title={t('additional_payments.title')}
+        title={t('payments:additional_payments.title')}
         subtitle={getSubtitle()}
         actions={
           <div className="hidden md:flex gap-2">
             <Button onClick={handleAddIncome} className="gap-2 text-xs md:text-sm px-2 md:px-4">
               <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('additional_payments.actions.add_income')}</span>
-              <span className="sm:hidden">{t('additional_payments.actions.add_income_short', 'Add')}</span>
+              <span className="hidden sm:inline">{t('payments:additional_payments.actions.add_income')}</span>
+              <span className="sm:hidden">{t('payments:additional_payments.actions.add_income_short')}</span>
             </Button>
           </div>
         }
@@ -288,9 +288,9 @@ export default function AdditionalPayments() {
       <Dialog open={isCreateIncomeDialogOpen} onOpenChange={setIsCreateIncomeDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
           <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
-            <DialogTitle>{t('additional_payments.dialogs.new_income_title')}</DialogTitle>
+            <DialogTitle>{t('payments:additional_payments.dialogs.new_income_title')}</DialogTitle>
             <DialogDescription>
-              {t('additional_payments.dialogs.new_income_description')}
+              {t('payments:additional_payments.dialogs.new_income_description')}
             </DialogDescription>
           </div>
           <div className="overflow-y-auto flex-1 p-6 bg-white">
