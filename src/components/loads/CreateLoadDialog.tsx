@@ -600,13 +600,35 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         const paidPeriodValidation = await validateDatesAgainstPaidPeriods(driverIdForValidation, scheduledDates);
         
         if (!paidPeriodValidation.isValid) {
-          console.log('🚨 onSubmit blocked - dates fall in paid period:', paidPeriodValidation.error);
-          showError(
-            t("loads:create_wizard.validation.validation_error"),
-            paidPeriodValidation.error || "Las fechas corresponden a un período de pago ya cerrado"
-          );
-          setCurrentPhase(2); // Volver al paso de fechas
-          return;
+          console.log('🚨 Dates fall in paid period:', paidPeriodValidation.error);
+          
+          // Si es modo EDIT, permitir con confirmación
+          if (mode === 'edit') {
+            const confirmed = window.confirm(
+              `⚠️ ADVERTENCIA: ${paidPeriodValidation.error}\n\n` +
+              `Al modificar esta carga:\n` +
+              `• Se recalcularán automáticamente los totales del período\n` +
+              `• Esto puede afectar pagos ya procesados\n` +
+              `• Se recomienda revisar el período después de esta acción\n\n` +
+              `¿Desea continuar con la modificación?`
+            );
+            
+            if (!confirmed) {
+              console.log('🚨 onSubmit cancelled by user - editing paid period load');
+              setCurrentPhase(2); // Volver al paso de fechas
+              return;
+            }
+            console.log('✅ User confirmed editing load in paid period');
+          } else {
+            // Si es CREATE o DUPLICATE, bloquear completamente
+            console.log('🚨 onSubmit blocked - dates fall in paid period:', paidPeriodValidation.error);
+            showError(
+              t("loads:create_wizard.validation.validation_error"),
+              paidPeriodValidation.error || "Las fechas corresponden a un período de pago ya cerrado"
+            );
+            setCurrentPhase(2); // Volver al paso de fechas
+            return;
+          }
         }
         
         console.log('✅ Dates validation passed - no conflicts with paid periods');
