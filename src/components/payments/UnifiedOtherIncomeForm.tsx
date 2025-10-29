@@ -87,15 +87,15 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
     try {
       if (isEditing && editData) {
-        // Para la edición, solo enviamos los campos que pueden ser actualizados
+        // Para la edición, incluir user_id si cambió
         const updateData = {
           id: editData.id,
+          user_id: selectedUser, // ✅ Ahora se permite cambiar el usuario
           description,
           amount: atmInput.numericValue,
           income_type: incomeType,
-           income_date: formatDateInUserTimeZone(date),
-          reference_number: referenceNumber || null, // Usar null en lugar de undefined
-          // No incluir user_id ni applied_to_role en la actualización ya que pueden causar conflictos RLS
+          income_date: formatDateInUserTimeZone(date),
+          reference_number: referenceNumber || null,
         };
         
         console.log('Updating other income with data:', updateData);
@@ -167,7 +167,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             <Label htmlFor="user">
               {userType === "driver" ? t('form.driver') : t('form.dispatcher')}
             </Label>
-            <Select value={selectedUser} onValueChange={setSelectedUser} disabled={isEditing}>
+            <Select value={selectedUser} onValueChange={setSelectedUser}>
               <SelectTrigger>
                 <SelectValue placeholder={`${t(userType === "driver" ? 'form.select_driver' : 'form.select_dispatcher')}`} />
               </SelectTrigger>

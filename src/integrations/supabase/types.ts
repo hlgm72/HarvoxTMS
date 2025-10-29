@@ -4430,9 +4430,10 @@ export type Database = {
         Args: { load_id_param: string; new_status: string }
         Returns: Json
       }
-      update_other_income_with_validation:
-        | { Args: { update_data: Json }; Returns: Json }
-        | { Args: { income_data: Json; income_id: string }; Returns: Json }
+      update_other_income_with_validation: {
+        Args: { update_data: Json }
+        Returns: Json
+      }
       update_user_company_role_with_validation: {
         Args: {
           new_role_data: Json
