@@ -87,10 +87,11 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
     try {
       if (isEditing && editData) {
-        // Para la edición, incluir user_id si cambió
+        // Para la edición, incluir user_id y applied_to_role si cambiaron
         const updateData = {
           id: editData.id,
           user_id: selectedUser, // ✅ Ahora se permite cambiar el usuario
+          applied_to_role: userType, // ✅ Ahora se permite cambiar el tipo de usuario
           description,
           amount: atmInput.numericValue,
           income_type: incomeType,
@@ -155,13 +156,11 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   return (
     <form id="other-income-form" onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-          {!isEditing && (
-            <UserTypeSelector
-              value={userType}
-              onChange={setUserType}
-              label={t('form.apply_to')}
-            />
-          )}
+          <UserTypeSelector
+            value={userType}
+            onChange={setUserType}
+            label={t('form.apply_to')}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="user">
