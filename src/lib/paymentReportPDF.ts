@@ -693,14 +693,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
 
   if (data.otherIncome && data.otherIncome.length > 0) {
     data.otherIncome.forEach(income => {
-      addText(`• ${income.description}`, margin + 2, currentY, {
+      addText(income.description, margin + 2, currentY, {
         fontSize: 9,
         color: '#003366' // Color de fuente #003366
       });
       
       addText(formatCurrency(income.amount), pageWidth - margin - 2, currentY, {
         fontSize: 9,
-        color: colors.success,
+        color: '#003366',
         align: 'right'
       });
       
