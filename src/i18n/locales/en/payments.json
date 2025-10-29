@@ -121,7 +121,9 @@
       "no_period_found": "No open payment period found for date {{date}}.",
       "select_period_date": "Select a date within an open payment period.",
       "period_found": "✓ Period found: {{start}} - {{end}}",
-      "month": "Month"
+      "month": "Month",
+      "payroll_paid_title": "Period Payroll Already Paid - Cannot Modify",
+      "payroll_paid_message": "The driver's payroll for period {{periodLabel}} ({{startDate}} - {{endDate}}) has already been paid. Deductions cannot be created or modified for paid periods."
     },
     "template": {
       "create_title": "Create New Recurrent Deduction",

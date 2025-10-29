@@ -121,7 +121,9 @@
       "no_period_found": "No hay un período de pago abierto para la fecha {{date}}.",
       "select_period_date": "Selecciona una fecha que esté dentro de un período de pago abierto.",
       "period_found": "✓ Período encontrado: {{start}} - {{end}}",
-      "month": "Mes"
+      "month": "Mes",
+      "payroll_paid_title": "Nómina del Período ya pagada - No se puede modificar",
+      "payroll_paid_message": "La nómina del conductor para el período {{periodLabel}} ({{startDate}} - {{endDate}}) ya fue pagada. No se pueden crear ni modificar deducciones para períodos pagados."
     },
     "template": {
       "create_title": "Crear Nueva Deducción Recurrente",

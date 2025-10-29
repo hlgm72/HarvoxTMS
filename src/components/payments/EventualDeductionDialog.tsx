@@ -646,18 +646,26 @@ export function EventualDeductionDialog({
                 {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid' && (
                   <div className="p-3 border border-red-200 bg-red-50 rounded-md">
                     <p className="text-sm text-red-800 font-medium">
-                      ⚠️ Nómina del Período ya pagada - No se puede modificar
+                      ⚠️ {t("deductions.period_dialog.payroll_paid_title")}
                     </p>
                     <p className="text-xs text-red-600 mt-1">
                       {(() => {
                         const period = paymentPeriods[0]?.period;
-                        if (!period) return 'Este conductor ya recibió el pago. No se pueden crear ni modificar deducciones.';
+                        if (!period) return t("deductions.period_dialog.payroll_paid_message", {
+                          periodLabel: '',
+                          startDate: '',
+                          endDate: ''
+                        });
                         
                         const startDate = formatDateOnly(period.period_start_date);
                         const endDate = formatDateOnly(period.period_end_date);
                         const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
                         
-                        return `La nómina del conductor para el período ${periodLabel} (${startDate} - ${endDate}) ya fue pagada. No se pueden crear ni modificar deducciones para períodos pagados.`;
+                        return t("deductions.period_dialog.payroll_paid_message", {
+                          periodLabel,
+                          startDate,
+                          endDate
+                        });
                       })()}
                     </p>
                   </div>
