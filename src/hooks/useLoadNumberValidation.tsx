@@ -16,7 +16,7 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
       setError(null);
       setIsValidating(false);
       
-      if (!debouncedLoadNumber || debouncedLoadNumber.length < 2 || skipValidation) {
+      if (!debouncedLoadNumber || skipValidation) {
         return;
       }
 
@@ -49,6 +49,6 @@ export const useLoadNumberValidation = (loadNumber: string, skipValidation = fal
     isValidating,
     isDuplicate,
     error,
-    isValid: !isDuplicate && !error && debouncedLoadNumber && debouncedLoadNumber.length >= 2
+    isValid: !isDuplicate && !error && !!debouncedLoadNumber
   };
 };
