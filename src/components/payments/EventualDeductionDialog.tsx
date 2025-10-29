@@ -23,6 +23,7 @@ import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from '@/hooks/useFinancialDataValidation'; // ⭐ NUEVO
 import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from '@/lib/financialIntegrityUtils'; // ⭐ NUEVO
+import { formatPeriodLabel } from '@/utils/periodUtils';
 
 interface EventualDeductionDialogProps {
   isOpen: boolean;
@@ -645,10 +646,19 @@ export function EventualDeductionDialog({
                 {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid' && (
                   <div className="p-3 border border-red-200 bg-red-50 rounded-md">
                     <p className="text-sm text-red-800 font-medium">
-                      ⚠️ Período ya pagado - No se puede modificar
+                      ⚠️ Nómina del Período ya pagada - No se puede modificar
                     </p>
                     <p className="text-xs text-red-600 mt-1">
-                      Este conductor ya recibió el pago para este período. No se pueden crear ni modificar deducciones.
+                      {(() => {
+                        const period = paymentPeriods[0]?.period;
+                        if (!period) return 'Este conductor ya recibió el pago. No se pueden crear ni modificar deducciones.';
+                        
+                        const startDate = formatDateOnly(period.period_start_date);
+                        const endDate = formatDateOnly(period.period_end_date);
+                        const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+                        
+                        return `La nómina del conductor para el período ${periodLabel} (${startDate} - ${endDate}) ya fue pagada. No se pueden crear ni modificar deducciones para períodos pagados.`;
+                      })()}
                     </p>
                   </div>
                 )}
