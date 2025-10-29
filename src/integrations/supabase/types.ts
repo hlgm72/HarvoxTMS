@@ -4147,6 +4147,10 @@ export type Database = {
         Returns: boolean
       }
       is_period_locked: { Args: { period_id: string }; Returns: boolean }
+      is_period_paid_for_user: {
+        Args: { p_period_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_superadmin: { Args: { user_id_param?: string }; Returns: boolean }
       is_user_admin_in_company_safe: {
         Args: { company_id_param: string; user_id_param: string }
