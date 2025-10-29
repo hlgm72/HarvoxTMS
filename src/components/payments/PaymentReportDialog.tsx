@@ -479,6 +479,11 @@ export function PaymentReportDialog({
         notes: deduction.notes,
         amount: deduction.amount,
         expense_date: deduction.expense_date
+      })),
+      otherIncome: otherIncomeItems.map(income => ({
+        description: income.description,
+        amount: income.amount,
+        income_date: income.income_date
       }))
     };
   };
