@@ -843,7 +843,8 @@
     "ready": "Listo: {{doc}}",
     "active": "Activo: {{doc}}",
     "missing": "Sin RC/LO",
-    "no_period": "Sin período asignado"
+    "no_period": "Sin período asignado",
+    "paid_period_error": "La fecha {{date}} corresponde a un período de nómina que ya está marcado como pagado ({{periodLabel}}: {{startDate}} - {{endDate}}). No se pueden agregar cargas a períodos cerrados."
   },
   "documents": {
     "title": "Documentos de la Carga",

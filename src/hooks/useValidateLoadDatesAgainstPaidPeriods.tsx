@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
+import { formatPeriodLabel } from "@/utils/periodUtils";
 
 interface ValidationResult {
   isValid: boolean;
@@ -15,6 +17,7 @@ interface ValidationResult {
  * Hook para validar si las fechas de una carga caen en períodos de pago ya marcados como pagados
  */
 export function useValidateLoadDatesAgainstPaidPeriods() {
+  const { t } = useTranslation('loads');
   const [isValidating, setIsValidating] = useState(false);
   const { selectedCompany } = useUserCompanies();
 
@@ -76,9 +79,15 @@ export function useValidateLoadDatesAgainstPaidPeriods() {
           // Si el conductor tiene un payroll pagado en este período, bloquear
           if (driverPayroll && driverPayroll.payment_status === 'paid') {
             setIsValidating(false);
+            const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
             return {
               isValid: false,
-              error: `La fecha ${date} corresponde a un período de pago que ya está marcado como pagado (${period.period_start_date} - ${period.period_end_date}). No se pueden agregar cargas a períodos cerrados.`,
+              error: t('validation.paid_period_error', {
+                date,
+                periodLabel,
+                startDate: period.period_start_date,
+                endDate: period.period_end_date
+              }),
               paidPeriod: {
                 period_start_date: period.period_start_date,
                 period_end_date: period.period_end_date,

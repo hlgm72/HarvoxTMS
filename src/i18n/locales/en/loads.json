@@ -843,7 +843,8 @@
     "ready": "Ready: {{doc}}",
     "active": "Active: {{doc}}",
     "missing": "No RC/LO",
-    "no_period": "No period assigned"
+    "no_period": "No period assigned",
+    "paid_period_error": "The date {{date}} falls within a payroll period that is already marked as paid ({{periodLabel}}: {{startDate}} - {{endDate}}). Loads cannot be added to closed periods."
   },
   "documents": {
     "title": "Load Documents",
