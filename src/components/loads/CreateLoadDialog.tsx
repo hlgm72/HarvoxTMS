@@ -13,6 +13,7 @@ import { useLoadForm, LoadFormData } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
 import { useCommodityAutocomplete } from "@/hooks/useCommodityAutocomplete";
 import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation"; // ⭐ NUEVO
+import { useValidateLoadDatesAgainstPaidPeriods } from "@/hooks/useValidateLoadDatesAgainstPaidPeriods"; // ⭐ VALIDACIÓN DE PERÍODOS PAGADOS
 import { LoadStop } from "@/hooks/useLoadStops";
 import { createTextHandlers } from "@/lib/textUtils";
 import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from "@/lib/financialIntegrityUtils"; // ⭐ NUEVO
@@ -96,6 +97,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { selectedCompany } = useUserCompanies();
   const createLoadMutation = useCreateLoad();
   const { showSuccess, showError } = useFleetNotifications();
+  const { validateDates: validateDatesAgainstPaidPeriods, isValidating: isValidatingPaidPeriods } = useValidateLoadDatesAgainstPaidPeriods(); // ⭐ NUEVO
   const [companyData, setCompanyData] = useState<any>(null);
 
   // For edit mode, fetch full load data. For duplicate mode, also fetch stops separately
@@ -582,6 +584,33 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       showError(t("loads:create_wizard.validation.dates_error"), chronologicalValidation.errors[0]);
       setCurrentPhase(2);
       return;
+    }
+
+    // ⭐ VALIDACIÓN CRÍTICA: Verificar si las fechas caen en períodos ya pagados (Paso 2)
+    const driverIdForValidation = selectedDriver?.user_id || (mode === 'edit' ? activeLoadData?.driver_user_id : null);
+    if (driverIdForValidation) {
+      // Extraer todas las fechas programadas de las paradas
+      const scheduledDates = loadStops
+        .filter(stop => stop.scheduled_date)
+        .map(stop => stop.scheduled_date);
+
+      if (scheduledDates.length > 0) {
+        console.log('🔍 Validating dates against paid periods:', { driverId: driverIdForValidation, dates: scheduledDates });
+        
+        const paidPeriodValidation = await validateDatesAgainstPaidPeriods(driverIdForValidation, scheduledDates);
+        
+        if (!paidPeriodValidation.isValid) {
+          console.log('🚨 onSubmit blocked - dates fall in paid period:', paidPeriodValidation.error);
+          showError(
+            t("loads:create_wizard.validation.validation_error"),
+            paidPeriodValidation.error || "Las fechas corresponden a un período de pago ya cerrado"
+          );
+          setCurrentPhase(2); // Volver al paso de fechas
+          return;
+        }
+        
+        console.log('✅ Dates validation passed - no conflicts with paid periods');
+      }
     }
 
     // Validar conductor (Paso 3) - Ahora es opcional
