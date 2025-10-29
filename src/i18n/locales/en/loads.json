@@ -844,7 +844,9 @@
     "active": "Active: {{doc}}",
     "missing": "No RC/LO",
     "no_period": "No period assigned",
-    "paid_period_error": "The date {{date}} falls within a payroll period that is already marked as paid ({{periodLabel}}: {{startDate}} - {{endDate}}). Loads cannot be added to closed periods."
+    "paid_period_error": "The date {{date}} falls within a payroll period that is already marked as paid ({{periodLabel}}: {{startDate}} - {{endDate}}). Loads cannot be added to closed periods.",
+    "paid_period_immutable": "Period Payroll Already Paid - Cannot Modify",
+    "paid_period_immutable_message": "The driver's payroll for period {{periodLabel}} ({{startDate}} - {{endDate}}) has already been paid. Loads cannot be created or modified for paid periods."
   },
   "documents": {
     "title": "Load Documents",

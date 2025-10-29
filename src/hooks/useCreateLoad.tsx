@@ -2,6 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useFleetNotifications } from '@/components/notifications';
+import { useTranslation } from 'react-i18next';
+import { formatPeriodLabel } from '@/utils/periodUtils';
+import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDateInUserTimeZone, getTodayInUserTimeZone } from '@/lib/dateFormatting';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
@@ -141,6 +144,7 @@ const getFileExtension = (fileName: string): string => {
 export const useCreateLoad = () => {
   const { user, userRole } = useAuth();
   const { showSuccess, showError } = useFleetNotifications();
+  const { t } = useTranslation('loads');
   const queryClient = useQueryClient();
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
   const recalculateUserPeriod = useRecalculateUserPeriod();
@@ -324,6 +328,25 @@ export const useCreateLoad = () => {
       
       if (!(loadResult as any)?.success) {
         console.error('❌ useCreateLoad - Load operation failed. Result:', loadResult);
+        
+        // Interceptar errores de período pagado con formato especial
+        const errorMsg = (loadResult as any)?.error || '';
+        if (errorMsg.includes('PAID_PERIOD_IMMUTABLE')) {
+          const parts = errorMsg.split('|');
+          if (parts.length === 3) {
+            const [, startDate, endDate] = parts;
+            const periodLabel = formatPeriodLabel(startDate, endDate);
+            const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
+            const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
+            
+            throw new Error(t('validation.paid_period_immutable_message', {
+              periodLabel,
+              startDate: formattedStartDate,
+              endDate: formattedEndDate
+            }));
+          }
+        }
+        
         throw new Error(`La operación de carga no fue exitosa. Detalle: ${JSON.stringify(loadResult)}`);
       }
 

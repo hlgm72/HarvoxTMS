@@ -844,7 +844,9 @@
     "active": "Activo: {{doc}}",
     "missing": "Sin RC/LO",
     "no_period": "Sin período asignado",
-    "paid_period_error": "La fecha {{date}} corresponde a un período de nómina que ya está marcado como pagado ({{periodLabel}}: {{startDate}} - {{endDate}}). No se pueden agregar cargas a períodos cerrados."
+    "paid_period_error": "La fecha {{date}} corresponde a un período de nómina que ya está marcado como pagado ({{periodLabel}}: {{startDate}} - {{endDate}}). No se pueden agregar cargas a períodos cerrados.",
+    "paid_period_immutable": "Nómina del Período ya pagada - No se puede modificar",
+    "paid_period_immutable_message": "La nómina del conductor para el período {{periodLabel}} ({{startDate}} - {{endDate}}) ya fue pagada. No se pueden crear ni modificar cargas para períodos pagados."
   },
   "documents": {
     "title": "Documentos de la Carga",
