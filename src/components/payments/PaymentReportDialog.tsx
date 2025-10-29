@@ -44,7 +44,6 @@ import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { FuelExpenseDialog } from "@/components/fuel/FuelExpenseDialog";
 import { UnifiedOtherIncomeForm } from "./UnifiedOtherIncomeForm";
-import { Dialog as EditDialog, DialogContent as EditDialogContent, DialogDescription as EditDialogDescription, DialogHeader as EditDialogHeader, DialogTitle as EditDialogTitle } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from 'react-i18next';
 
@@ -1180,14 +1179,14 @@ export function PaymentReportDialog({
         expenseId={selectedFuelForEdit}
       />
 
-      <EditDialog open={showEditOtherIncomeDialog} onOpenChange={setShowEditOtherIncomeDialog}>
-        <EditDialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
-          <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
-            <EditDialogTitle>{t('additional_payments.dialogs.edit_title')}</EditDialogTitle>
-            <EditDialogDescription>
+      <Dialog open={showEditOtherIncomeDialog} onOpenChange={setShowEditOtherIncomeDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="flex flex-col space-y-1.5 p-6 pb-4 border-b flex-shrink-0">
+            <DialogTitle>{t('additional_payments.dialogs.edit_title')}</DialogTitle>
+            <DialogDescription>
               {t('additional_payments.dialogs.edit_description')}
-            </EditDialogDescription>
-          </div>
+            </DialogDescription>
+          </DialogHeader>
           <div className="overflow-y-auto flex-1 p-6 bg-white">
             {selectedOtherIncomeForEdit && (
               <UnifiedOtherIncomeForm 
@@ -1233,8 +1232,8 @@ export function PaymentReportDialog({
               {t('common:form.update')}
             </Button>
           </div>
-        </EditDialogContent>
-      </EditDialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
