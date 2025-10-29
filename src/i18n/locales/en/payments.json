@@ -409,6 +409,9 @@
     "update": "Update Income", 
     "creating": "Creating...",
     "updating": "Updating...",
+    "checking_period": "Checking payment period...",
+    "payroll_paid_title": "Period Payroll Already Paid - Cannot Modify",
+    "payroll_paid_message": "The user's payroll for period {{periodLabel}} ({{startDate}} - {{endDate}}) has already been paid. Additional income cannot be created or modified for paid periods.",
     "income_types": {
       "bonus": "Bonus",
       "commission": "Commission",

@@ -385,9 +385,12 @@
     "description_placeholder": "Descripción del ingreso adicional",
     "cancel": "Cancelar",
     "create": "Crear Ingreso",
-    "update": "Actualizar Ingreso",
+    "update": "Actualizar Ingreso", 
     "creating": "Creando...",
     "updating": "Actualizando...",
+    "checking_period": "Verificando período de pago...",
+    "payroll_paid_title": "Nómina del Período ya pagada - No se puede modificar",
+    "payroll_paid_message": "La nómina del usuario para el período {{periodLabel}} ({{startDate}} - {{endDate}}) ya fue pagada. No se pueden crear ni modificar ingresos adicionales para períodos pagados.",
     "income_types": {
       "bonus": "Bono",
       "commission": "Comisión",

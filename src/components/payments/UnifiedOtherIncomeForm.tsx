@@ -9,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { formatDateInUserTimeZone, formatPrettyDate, parseDateSafe } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatPrettyDate, parseDateSafe, formatDateOnly } from '@/lib/dateFormatting';
 import { useCreateOtherIncome, useUpdateOtherIncome } from "@/hooks/useOtherIncome";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
@@ -18,6 +18,9 @@ import { useConsolidatedDispatchers } from "@/hooks/useConsolidatedDispatchers";
 import { useATMInput } from "@/hooks/useATMInput";
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 import { useTranslation } from 'react-i18next';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { formatPeriodLabel } from '@/utils/periodUtils';
 
 interface UnifiedOtherIncomeFormProps {
   onClose: () => void;
@@ -62,6 +65,54 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   const updateOtherIncome = useUpdateOtherIncome();
   const atmInput = useATMInput({
     initialValue: editData?.amount || 0
+  });
+
+  // Verificar períodos pagados
+  const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
+    queryKey: ['user-payment-periods-for-income', selectedUser, date],
+    queryFn: async () => {
+      if (!selectedUser || !date || !selectedCompany?.id) {
+        return [];
+      }
+
+      try {
+        const incomeDateStr = formatDateInUserTimeZone(date);
+        
+        const { data: allPeriods, error: periodsError } = await supabase
+          .from('user_payrolls')
+          .select(`
+            *,
+            period:company_payment_periods!company_payment_period_id(
+              period_start_date,
+              period_end_date,
+              period_frequency
+            )
+          `)
+          .eq('company_id', selectedCompany.id)
+          .eq('user_id', selectedUser)
+          .order('created_at', { ascending: false });
+        
+        if (periodsError) {
+          console.error('Error fetching user periods:', periodsError);
+          return [];
+        }
+
+        // Filtrar períodos que contienen la fecha del ingreso
+        const periodsForDate = allPeriods?.filter(period => {
+          if (!period.period) return false;
+          const startDate = period.period.period_start_date;
+          const endDate = period.period.period_end_date;
+          return incomeDateStr >= startDate && incomeDateStr <= endDate;
+        }) || [];
+
+        // Retornar solo períodos pagados para mostrar advertencia
+        return periodsForDate.filter(p => p.payment_status === 'paid');
+      } catch (error) {
+        console.error('Error in payment periods query:', error);
+        return [];
+      }
+    },
+    enabled: !!selectedUser && !!date
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -132,6 +183,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
+  // Verificar si el período está pagado
+  const isPeriodPaid = paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid';
+
   // Validación del formulario con useMemo
   const isFormValid = useMemo(() => {
     const valid = Boolean(
@@ -139,10 +193,11 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       description.trim() && 
       incomeType && 
       atmInput.numericValue > 0 && 
-      date
+      date &&
+      !isPeriodPaid // Bloquear si el período está pagado
     );
     return valid;
-  }, [selectedUser, description, incomeType, atmInput.numericValue, date]);
+  }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid]);
 
   // Notificar al padre cuando cambie la validación
   useEffect(() => {
@@ -183,6 +238,43 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             </Select>
           </div>
         </div>
+
+      {/* Mensaje de advertencia si el período está pagado */}
+      {selectedUser && date && isLoadingPeriods && (
+        <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
+          <p className="text-sm text-blue-800">
+            {t('form.checking_period')}
+          </p>
+        </div>
+      )}
+      
+      {selectedUser && date && !isLoadingPeriods && isPeriodPaid && (
+        <div className="p-3 border border-red-200 bg-red-50 rounded-md">
+          <p className="text-sm text-red-800 font-medium">
+            ⚠️ {t('form.payroll_paid_title')}
+          </p>
+          <p className="text-xs text-red-600 mt-1">
+            {(() => {
+              const period = paymentPeriods[0]?.period;
+              if (!period) return t('form.payroll_paid_message', {
+                periodLabel: '',
+                startDate: '',
+                endDate: ''
+              });
+              
+              const startDate = formatDateOnly(period.period_start_date);
+              const endDate = formatDateOnly(period.period_end_date);
+              const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+              
+              return t('form.payroll_paid_message', {
+                periodLabel,
+                startDate,
+                endDate
+              });
+            })()}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
