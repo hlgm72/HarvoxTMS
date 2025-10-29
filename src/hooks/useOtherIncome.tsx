@@ -163,12 +163,13 @@ export function useUpdateOtherIncome() {
 
   return useMutation({
     mutationFn: async ({ id, ...data }: UpdateOtherIncomeData) => {
-      // ✅ USE ACID FUNCTION FOR ATOMIC UPDATE
+      console.log('Updating other income with data:', { id, ...data });
+      
+      // ✅ USE ACID FUNCTION FOR ATOMIC UPDATE - Updated signature
       const { data: result, error } = await supabase.rpc(
         'update_other_income_with_validation',
         {
-          income_id: id,
-          income_data: data
+          update_data: { id, ...data }
         }
       );
 
