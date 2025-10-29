@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, MapPin, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Plus, MapPin, AlertTriangle, CheckCircle, HelpCircle, ChevronDown } from 'lucide-react';
 import { useLoadStops, LoadStop } from '@/hooks/useLoadStops';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +35,6 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
 
   const [editingStop, setEditingStop] = useState<LoadStop | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showStopTypeDialog, setShowStopTypeDialog] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -107,15 +106,6 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
     setIsModalOpen(false);
   };
 
-  const handleAddStopClick = () => {
-    setShowStopTypeDialog(true);
-  };
-
-  const handleAddStopWithType = (stopType: 'pickup' | 'delivery') => {
-    addStop(stopType);
-    setShowStopTypeDialog(false);
-  };
-
   // Check for date errors
   const getDateErrors = () => {
     const errors: { [key: string]: boolean } = {};
@@ -155,15 +145,33 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
             <CardTitle>{t("loads:create_wizard.phases.route_details.card_title")}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleAddStopClick}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              {t("loads:create_wizard.phases.route_details.add_intermediate_stop")}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  {t("loads:create_wizard.phases.route_details.add_intermediate_stop")}
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => addStop('pickup')}>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{t("loads:create_wizard.phases.route_details.pickup")}</span>
+                    <span className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.pickup_description")}</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => addStop('delivery')}>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{t("loads:create_wizard.phases.route_details.delivery")}</span>
+                    <span className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.delivery_description")}</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -254,40 +262,6 @@ export function LoadStopsManager({ onStopsChange, showValidation = false, initia
         isFirst={editingStop ? stops.findIndex(s => s.id === editingStop.id) === 0 : false}
         isLast={editingStop ? stops.findIndex(s => s.id === editingStop.id) === stops.length - 1 : false}
       />
-
-      {/* Stop Type Selection Dialog */}
-      <Dialog open={showStopTypeDialog} onOpenChange={setShowStopTypeDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{t("loads:create_wizard.phases.route_details.select_stop_type")}</DialogTitle>
-            <DialogDescription>
-              {t("loads:create_wizard.phases.route_details.select_stop_type_description")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Button
-              onClick={() => handleAddStopWithType('pickup')}
-              className="w-full justify-start h-auto py-4"
-              variant="outline"
-            >
-              <div className="flex flex-col items-start gap-1">
-                <span className="font-semibold">{t("loads:create_wizard.phases.route_details.pickup")}</span>
-                <span className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.pickup_description")}</span>
-              </div>
-            </Button>
-            <Button
-              onClick={() => handleAddStopWithType('delivery')}
-              className="w-full justify-start h-auto py-4"
-              variant="outline"
-            >
-              <div className="flex flex-col items-start gap-1">
-                <span className="font-semibold">{t("loads:create_wizard.phases.route_details.delivery")}</span>
-                <span className="text-xs text-muted-foreground">{t("loads:create_wizard.phases.route_details.delivery_description")}</span>
-              </div>
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 }
