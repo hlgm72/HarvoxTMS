@@ -9,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { formatDateInUserTimeZone, formatPrettyDate } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatPrettyDate, parseDateSafe } from '@/lib/dateFormatting';
 import { useCreateOtherIncome, useUpdateOtherIncome } from "@/hooks/useOtherIncome";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
@@ -42,7 +42,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
   
   const [description, setDescription] = useState(editData?.description || "");
   const [incomeType, setIncomeType] = useState(editData?.income_type || "");
-  const [date, setDate] = useState<Date | undefined>(editData ? new Date(editData.income_date) : undefined);
+  const [date, setDate] = useState<Date | undefined>(editData ? parseDateSafe(editData.income_date) : undefined);
   const [userType, setUserType] = useState<"driver" | "dispatcher">(editData?.applied_to_role || defaultUserType);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(editData?.user_id || "");
