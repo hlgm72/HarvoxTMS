@@ -89,10 +89,6 @@ interface PaymentReportData {
   }>;
 }
 
-// Variable global para controlar descargas concurrentes
-let isCurrentlyDownloading = false;
-let currentBlobUrl: string | null = null;
-
 // 🚨 FUNCIÓN CRÍTICA - NO MODIFICAR SIN AUTORIZACIÓN
 // Esta función es responsable de generar los PDFs de reportes de pago
 // Cualquier cambio puede afectar reportes financieros críticos del negocio
@@ -102,28 +98,6 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   console.log('🔍 PDF Generation - isPreview parameter:', isPreview);
   console.log('🔍 PDF Generation - targetWindow:', !!targetWindow);
   console.log('🔍 PDF Generation - typeof isPreview:', typeof isPreview);
-  
-  // Prevenir descargas concurrentes
-  if (!isPreview && isCurrentlyDownloading) {
-    console.warn('⚠️ Ya hay una descarga en proceso, esperando...');
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    if (isCurrentlyDownloading) {
-      throw new Error('Ya hay una descarga en proceso. Por favor espera a que termine.');
-    }
-  }
-  
-  // Limpiar Blob URL anterior si existe
-  if (!isPreview && currentBlobUrl) {
-    console.log('🧹 Limpiando Blob URL anterior...');
-    try {
-      URL.revokeObjectURL(currentBlobUrl);
-      currentBlobUrl = null;
-    } catch (e) {
-      console.warn('⚠️ Error limpiando Blob URL anterior:', e);
-    }
-    // Pequeño delay para asegurar limpieza
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
   
   const doc = new jsPDF('p', 'mm', 'letter');
   
@@ -1362,110 +1336,40 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   } else {
       console.log('💾 Modo descarga activado');
       
-      // Marcar que hay una descarga en proceso
-      isCurrentlyDownloading = true;
-      
-      // Sanitizar el nombre del archivo para evitar problemas con caracteres especiales
+      // Sanitizar el nombre del archivo
       const sanitizedFileName = fileName.replace(/[^\w\s.-]/gi, '_').replace(/\s+/g, '_');
-      console.log('📝 Nombre del archivo sanitizado:', sanitizedFileName);
+      console.log('📝 Archivo:', sanitizedFileName);
       
       try {
-        // Generar el PDF como ArrayBuffer primero (más confiable)
-        const pdfOutput = doc.output('arraybuffer');
-        
-        console.log('📊 Tamaño del PDF:', (pdfOutput.byteLength / 1024).toFixed(2), 'KB');
-        
-        // Crear blob con tipo MIME explícito (crítico para Chrome)
-        const pdfBlob = new Blob([pdfOutput], { type: 'application/pdf' });
-        
-        // Verificar que el blob se creó correctamente
-        if (!pdfBlob || pdfBlob.size === 0) {
-          throw new Error('Error generando el archivo PDF');
-        }
-        
-        // Método robusto con soporte para Chrome/mobile
-        const blobUrl = URL.createObjectURL(pdfBlob);
-        
-        // Guardar referencia para limpieza posterior
-        currentBlobUrl = blobUrl;
-        
-        // Crear elemento de enlace
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = sanitizedFileName;
-        link.style.display = 'none';
-        
-        // Agregar al DOM (necesario para algunos navegadores)
-        document.body.appendChild(link);
-        
-        // Trigger download
-        link.click();
-        
-        console.log('✅ Descarga iniciada correctamente');
-        
-        // Limpiar el enlace del DOM inmediatamente
-        setTimeout(() => {
-          if (document.body.contains(link)) {
-            document.body.removeChild(link);
-          }
-        }, 100);
-        
-        // Esperar tiempo suficiente antes de limpiar el Blob URL
-        // y marcar descarga como completada
-        setTimeout(() => {
-          if (currentBlobUrl === blobUrl) {
-            URL.revokeObjectURL(blobUrl);
-            currentBlobUrl = null;
-            console.log('🧹 Blob URL limpiado');
-          }
-          isCurrentlyDownloading = false;
-          console.log('✅ Descarga completada, listo para siguiente');
-        }, 10000); // 10 segundos - tiempo seguro para descargas
+        // Método 1: doc.save() - El más simple y confiable
+        console.log('🔄 Usando doc.save() (método nativo jsPDF)...');
+        doc.save(sanitizedFileName);
+        console.log('✅ Descarga iniciada con doc.save()');
         
       } catch (error) {
-        console.error('❌ Error en descarga principal:', error);
-        isCurrentlyDownloading = false;
+        console.error('❌ Error con doc.save(), intentando fallback:', error);
         
-        // Método de respaldo 1: Intentar con doc.save() nativo de jsPDF
         try {
-          console.log('🔄 Intentando método de respaldo doc.save()...');
-          doc.save(sanitizedFileName);
-          console.log('✅ Descarga iniciada con doc.save()');
+          // Método 2: Fallback con Blob + createElement
+          console.log('🔄 Intentando fallback con Blob URL...');
           
-          // Liberar flag después de un tiempo
-          setTimeout(() => {
-            isCurrentlyDownloading = false;
-          }, 2000);
+          const pdfBlob = doc.output('blob');
+          const blobUrl = URL.createObjectURL(pdfBlob);
           
-        } catch (saveError) {
-          console.error('❌ Error con doc.save():', saveError);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = sanitizedFileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
           
-          // Método de respaldo 2: Data URI (último recurso)
-          try {
-            console.log('🔄 Intentando método de último recurso con Data URI...');
-            const dataUri = doc.output('dataurlstring');
-            
-            const link = document.createElement('a');
-            link.href = dataUri;
-            link.download = sanitizedFileName;
-            
-            document.body.appendChild(link);
-            link.click();
-            
-            setTimeout(() => {
-              if (document.body.contains(link)) {
-                document.body.removeChild(link);
-              }
-              isCurrentlyDownloading = false;
-            }, 2000);
-            
-            console.log('✅ Descarga iniciada con Data URI');
-            
-          } catch (finalError) {
-            console.error('❌ Todos los métodos de descarga fallaron:', finalError);
-            isCurrentlyDownloading = false;
-            throw new Error(`No se pudo descargar el PDF. Por favor, intenta de nuevo o contacta soporte. Error: ${finalError.message}`);
-          }
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+          
+          console.log('✅ Descarga iniciada con fallback');
+          
+        } catch (fallbackError) {
+          console.error('❌ Error en fallback:', fallbackError);
+          throw new Error('No se pudo descargar el PDF. Intenta de nuevo.');
         }
       }
     }
