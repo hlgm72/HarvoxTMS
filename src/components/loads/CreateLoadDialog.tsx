@@ -402,19 +402,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
     onClose();
   };
-  
-  // Prevenir cierre automático del modal con ESC o click fuera
-  const handleOpenChange = (open: boolean) => {
-    // Solo permitir cerrar explícitamente (botón cancel o X)
-    // No cerrar con ESC o click fuera
-    if (!open && createLoadMutation.isPending) {
-      return;
-    }
-    // No hacer nada cuando open=false (evita cierre por click fuera)
-    if (open) {
-      return;
-    }
-  };
 
   // Función auxiliar para validar paradas
   const validateStops = (stops: LoadStop[]) => {
@@ -741,21 +728,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent 
         className="w-full max-w-full sm:max-w-6xl max-h-[90vh] overflow-hidden p-0"
-        onEscapeKeyDown={(e) => {
-          // Prevenir cierre con ESC durante guardado
-          if (createLoadMutation.isPending) {
-            e.preventDefault();
-          }
-        }}
         onPointerDownOutside={(e) => {
-          // Prevenir cierre al hacer clic fuera
-          e.preventDefault();
-        }}
-        onInteractOutside={(e) => {
-          // Prevenir cierre con interacciones fuera del modal
+          // Prevenir cierre solo al hacer clic fuera del modal
+          // El botón X y Cancel seguirán funcionando
           e.preventDefault();
         }}
       >
