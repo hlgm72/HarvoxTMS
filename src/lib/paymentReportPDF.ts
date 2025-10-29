@@ -1340,45 +1340,82 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       const sanitizedFileName = fileName.replace(/[^\w\s.-]/gi, '_').replace(/\s+/g, '_');
       console.log('📝 Nombre del archivo sanitizado:', sanitizedFileName);
       
-      // Método simplificado y más robusto: Blob + Link
       try {
-        // Generar blob del PDF
-        const pdfBlob = doc.output('blob');
+        // Generar el PDF como ArrayBuffer primero (más confiable)
+        const pdfOutput = doc.output('arraybuffer');
         
-        console.log('📊 Tamaño del PDF:', (pdfBlob.size / 1024).toFixed(2), 'KB');
+        console.log('📊 Tamaño del PDF:', (pdfOutput.byteLength / 1024).toFixed(2), 'KB');
+        
+        // Crear blob con tipo MIME explícito (crítico para Chrome)
+        const pdfBlob = new Blob([pdfOutput], { type: 'application/pdf' });
         
         // Verificar que el blob se creó correctamente
         if (!pdfBlob || pdfBlob.size === 0) {
           throw new Error('Error generando el archivo PDF');
         }
         
-        // Método 1: Descargar directamente usando Blob URL (más compatible y confiable)
-        const pdfUrl = URL.createObjectURL(pdfBlob);
+        // Método robusto con soporte para Chrome/mobile
+        const blobUrl = URL.createObjectURL(pdfBlob);
         
+        // Crear elemento de enlace
         const link = document.createElement('a');
-        link.href = pdfUrl;
+        link.href = blobUrl;
         link.download = sanitizedFileName;
+        link.style.display = 'none';
         
-        // No agregar al DOM, solo hacer click
+        // Agregar al DOM (necesario para algunos navegadores)
+        document.body.appendChild(link);
+        
+        // Trigger download
         link.click();
         
-        // Limpiar después de un tiempo razonable
+        // Limpiar después de un delay suficiente (importante para Chrome)
         setTimeout(() => {
-          URL.revokeObjectURL(pdfUrl);
-        }, 1000);
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
+          URL.revokeObjectURL(blobUrl);
+          console.log('🧹 Blob URL limpiado');
+        }, 5000); // 5 segundos para dar tiempo a la descarga
         
-        console.log('✅ Descarga iniciada correctamente con Blob URL');
+        console.log('✅ Descarga iniciada correctamente');
         
       } catch (error) {
-        console.error('❌ Error en descarga:', error);
+        console.error('❌ Error en descarga principal:', error);
         
-        // Método de respaldo: intentar doc.save() de jsPDF
+        // Método de respaldo 1: Intentar con doc.save() nativo de jsPDF
         try {
+          console.log('🔄 Intentando método de respaldo doc.save()...');
           doc.save(sanitizedFileName);
-          console.log('✅ Descarga iniciada con método de respaldo (doc.save)');
+          console.log('✅ Descarga iniciada con doc.save()');
+          
         } catch (saveError) {
           console.error('❌ Error con doc.save():', saveError);
-          throw new Error(`No se pudo descargar el PDF. Error: ${error.message}`);
+          
+          // Método de respaldo 2: Data URI (último recurso)
+          try {
+            console.log('🔄 Intentando método de último recurso con Data URI...');
+            const dataUri = doc.output('dataurlstring');
+            
+            const link = document.createElement('a');
+            link.href = dataUri;
+            link.download = sanitizedFileName;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            setTimeout(() => {
+              if (document.body.contains(link)) {
+                document.body.removeChild(link);
+              }
+            }, 1000);
+            
+            console.log('✅ Descarga iniciada con Data URI');
+            
+          } catch (finalError) {
+            console.error('❌ Todos los métodos de descarga fallaron:', finalError);
+            throw new Error(`No se pudo descargar el PDF. Por favor, intenta de nuevo o contacta soporte. Error: ${finalError.message}`);
+          }
         }
       }
     }
