@@ -213,28 +213,12 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     load?: any;
   }>({ isOpen: false });
 
-  const handleDeleteLoad = async (loadId: string, loadNumber: string, skipPaidPeriodCheck = false) => {
+  const handleDeleteLoad = async (loadId: string, loadNumber: string) => {
     try {
-      await deleteLoadMutation.mutateAsync({ loadId, loadNumber, skipPaidPeriodCheck });
+      await deleteLoadMutation.mutateAsync({ loadId, loadNumber });
       setDeleteDialog({ isOpen: false });
-    } catch (error: any) {
-      // Si es un error de período pagado, mostrar confirmación especial
-      if (error?.isPaidPeriodError) {
-        const confirmed = window.confirm(
-          `⚠️ ADVERTENCIA: ${error.message}\n\n` +
-          `Al eliminar esta carga:\n` +
-          `• Se recalcularán automáticamente los totales del período\n` +
-          `• Esto puede afectar pagos ya procesados\n` +
-          `• Se recomienda revisar el período después de esta acción\n\n` +
-          `¿Desea continuar con la eliminación?`
-        );
-        
-        if (confirmed) {
-          // Reintentar con el flag de omitir validación
-          handleDeleteLoad(loadId, loadNumber, true);
-        }
-      }
-      // Otros errores ya se manejan en el hook
+    } catch (error) {
+      // El error ya se maneja en el hook
     }
   };
 
