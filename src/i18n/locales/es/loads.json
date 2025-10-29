@@ -68,6 +68,10 @@
           "delivery": "D{{number}}: Falta Fecha programada"
         },
         "add_intermediate_stop": "Agregar Parada Intermedia",
+        "select_stop_type": "Seleccionar Tipo de Parada",
+        "select_stop_type_description": "Elige si esta parada intermedia es una recogida o entrega",
+        "pickup_description": "Cargar mercancía en esta ubicación",
+        "delivery_description": "Descargar mercancía en esta ubicación",
         "instructions_label": "Instrucciones:",
         "instructions": {
           "click_edit": "Haz clic en cualquier parada para editar sus detalles",

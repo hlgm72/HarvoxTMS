@@ -136,13 +136,13 @@ export function useLoadStops(initialStops?: LoadStop[]) {
     };
   }, [stops]);
 
-  const addStop = useCallback(() => {
+  const addStop = useCallback((stopType: 'pickup' | 'delivery' = 'delivery') => {
     // console.log('🚨 useLoadStops - addStop called, current stops:', stops.length);
     const newStopNumber = stops.length + 1;
     const newStop: LoadStop = {
       id: `stop-${newStopNumber}`,
       stop_number: newStopNumber,
-      stop_type: 'delivery', // Default to delivery for intermediate stops
+      stop_type: stopType,
     };
 
     // Insert before the last stop (which should remain delivery)

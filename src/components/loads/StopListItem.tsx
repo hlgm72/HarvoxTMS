@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Edit, Calendar, Clock, Building, Phone } from 'lucide-react';
+import { MapPin, Edit, Calendar, Clock, Building, Phone, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LoadStop } from '@/hooks/useLoadStops';
 import { format } from 'date-fns';
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 interface StopListItemProps {
   stop: LoadStop;
   onEdit: () => void;
+  onRemove?: () => void;
   isFirst?: boolean;
   isLast?: boolean;
   hasDateError?: boolean;
@@ -19,7 +20,8 @@ interface StopListItemProps {
 
 export function StopListItem({ 
   stop, 
-  onEdit, 
+  onEdit,
+  onRemove,
   isFirst = false, 
   isLast = false, 
   hasDateError = false 
@@ -181,15 +183,28 @@ export function StopListItem({
           )}
         </div>
         
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onEdit}
-          className="h-8 px-2"
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onEdit}
+            className="h-8 px-2"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          {onRemove && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onRemove}
+              className="h-8 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2 text-sm">

@@ -68,6 +68,10 @@
           "delivery": "D{{number}}: Missing Scheduled Date"
         },
         "add_intermediate_stop": "Add Intermediate Stop",
+        "select_stop_type": "Select Stop Type",
+        "select_stop_type_description": "Choose whether this intermediate stop is a pickup or delivery",
+        "pickup_description": "Load cargo at this location",
+        "delivery_description": "Unload cargo at this location",
         "instructions_label": "Instructions:",
         "instructions": {
           "click_edit": "Click on any stop to edit its details",
