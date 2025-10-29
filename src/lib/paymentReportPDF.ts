@@ -1333,91 +1333,52 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       console.log('📄 Modo retorno de documento activado');
       // Si isPreview es explícitamente false, retornar el documento
       return doc;
-    } else {
+  } else {
       console.log('💾 Modo descarga activado');
       
-      // Método principal: usando jsPDF save()
+      // Sanitizar el nombre del archivo para evitar problemas con caracteres especiales
+      const sanitizedFileName = fileName.replace(/[^\w\s.-]/gi, '_').replace(/\s+/g, '_');
+      console.log('📝 Nombre del archivo sanitizado:', sanitizedFileName);
+      
+      // Método simplificado y más robusto: Blob + Link
       try {
-        doc.save(fileName);
-        console.log('✅ Descarga iniciada con doc.save()');
+        // Generar blob del PDF
+        const pdfBlob = doc.output('blob');
         
-      } catch (saveError) {
-        console.error('❌ Error con doc.save():', saveError);
+        console.log('📊 Tamaño del PDF:', (pdfBlob.size / 1024).toFixed(2), 'KB');
         
-        // Método fallback 1: Blob + URL (más compatible)
+        // Verificar que el blob se creó correctamente
+        if (!pdfBlob || pdfBlob.size === 0) {
+          throw new Error('Error generando el archivo PDF');
+        }
+        
+        // Método 1: Descargar directamente usando Blob URL (más compatible y confiable)
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = sanitizedFileName;
+        
+        // No agregar al DOM, solo hacer click
+        link.click();
+        
+        // Limpiar después de un tiempo razonable
+        setTimeout(() => {
+          URL.revokeObjectURL(pdfUrl);
+        }, 1000);
+        
+        console.log('✅ Descarga iniciada correctamente con Blob URL');
+        
+      } catch (error) {
+        console.error('❌ Error en descarga:', error);
+        
+        // Método de respaldo: intentar doc.save() de jsPDF
         try {
-          const pdfBlob = doc.output('blob');
-          
-          // Verificar que el blob se creó correctamente
-          if (!pdfBlob || pdfBlob.size === 0) {
-            throw new Error('Error generando el archivo PDF');
-          }
-          
-          const pdfUrl = URL.createObjectURL(pdfBlob);
-          
-          const link = document.createElement('a');
-          link.href = pdfUrl;
-          link.download = fileName;
-          link.style.display = 'none';
-          
-          // Agregar al DOM
-          document.body.appendChild(link);
-          
-          // Trigger download
-          link.click();
-          
-          // Limpiar inmediatamente
-          setTimeout(() => {
-            if (document.body.contains(link)) {
-              document.body.removeChild(link);
-            }
-            URL.revokeObjectURL(pdfUrl);
-          }, 100);
-          
-          console.log('✅ Descarga iniciada con método fallback (Blob)');
-          
-        } catch (fallbackError) {
-          console.error('❌ Error con método fallback:', fallbackError);
-          
-          // Método alternativo: forzar descarga con window.open
-          try {
-            const pdfDataUri = doc.output('datauristring');
-            
-            // Crear un enlace temporal y activarlo
-            const tempLink = document.createElement('a');
-            tempLink.href = pdfDataUri;
-            tempLink.download = fileName;
-            
-            // Forzar click en el enlace
-            const event = new MouseEvent('click', {
-              view: window,
-              bubbles: true,
-              cancelable: true
-            });
-            
-            tempLink.dispatchEvent(event);
-            console.log('✅ Descarga forzada con Data URI');
-            
-          } catch (finalError) {
-            console.error('❌ Todos los métodos fallaron:', finalError);
-            // En lugar de fallar, abrir en nueva ventana como último recurso
-            console.log('🔄 Intentando abrir PDF en nueva ventana como último recurso...');
-            
-            try {
-              const pdfBlob = doc.output('blob');
-              const pdfUrl = URL.createObjectURL(pdfBlob);
-              const newWindow = window.open(pdfUrl, '_blank');
-              
-              if (newWindow) {
-                console.log('✅ PDF abierto en nueva ventana (método de último recurso)');
-                setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
-              } else {
-                throw new Error('No se pudo abrir el PDF. Verifica que los popups estén permitidos.');
-              }
-            } catch (lastResortError) {
-              throw new Error(`No se pudo procesar el PDF. Error: ${lastResortError.message}`);
-            }
-          }
+          doc.save(sanitizedFileName);
+          console.log('✅ Descarga iniciada con método de respaldo (doc.save)');
+        } catch (saveError) {
+          console.error('❌ Error con doc.save():', saveError);
+          throw new Error(`No se pudo descargar el PDF. Error: ${error.message}`);
         }
       }
     }
