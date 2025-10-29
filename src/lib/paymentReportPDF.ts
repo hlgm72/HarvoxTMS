@@ -89,6 +89,10 @@ interface PaymentReportData {
   }>;
 }
 
+// Variable global para controlar descargas concurrentes
+let isCurrentlyDownloading = false;
+let currentBlobUrl: string | null = null;
+
 // 🚨 FUNCIÓN CRÍTICA - NO MODIFICAR SIN AUTORIZACIÓN
 // Esta función es responsable de generar los PDFs de reportes de pago
 // Cualquier cambio puede afectar reportes financieros críticos del negocio
@@ -98,6 +102,28 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   console.log('🔍 PDF Generation - isPreview parameter:', isPreview);
   console.log('🔍 PDF Generation - targetWindow:', !!targetWindow);
   console.log('🔍 PDF Generation - typeof isPreview:', typeof isPreview);
+  
+  // Prevenir descargas concurrentes
+  if (!isPreview && isCurrentlyDownloading) {
+    console.warn('⚠️ Ya hay una descarga en proceso, esperando...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (isCurrentlyDownloading) {
+      throw new Error('Ya hay una descarga en proceso. Por favor espera a que termine.');
+    }
+  }
+  
+  // Limpiar Blob URL anterior si existe
+  if (!isPreview && currentBlobUrl) {
+    console.log('🧹 Limpiando Blob URL anterior...');
+    try {
+      URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = null;
+    } catch (e) {
+      console.warn('⚠️ Error limpiando Blob URL anterior:', e);
+    }
+    // Pequeño delay para asegurar limpieza
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
   
   const doc = new jsPDF('p', 'mm', 'letter');
   
@@ -1336,6 +1362,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   } else {
       console.log('💾 Modo descarga activado');
       
+      // Marcar que hay una descarga en proceso
+      isCurrentlyDownloading = true;
+      
       // Sanitizar el nombre del archivo para evitar problemas con caracteres especiales
       const sanitizedFileName = fileName.replace(/[^\w\s.-]/gi, '_').replace(/\s+/g, '_');
       console.log('📝 Nombre del archivo sanitizado:', sanitizedFileName);
@@ -1357,6 +1386,9 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         // Método robusto con soporte para Chrome/mobile
         const blobUrl = URL.createObjectURL(pdfBlob);
         
+        // Guardar referencia para limpieza posterior
+        currentBlobUrl = blobUrl;
+        
         // Crear elemento de enlace
         const link = document.createElement('a');
         link.href = blobUrl;
@@ -1369,25 +1401,41 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
         // Trigger download
         link.click();
         
-        // Limpiar después de un delay suficiente (importante para Chrome)
+        console.log('✅ Descarga iniciada correctamente');
+        
+        // Limpiar el enlace del DOM inmediatamente
         setTimeout(() => {
           if (document.body.contains(link)) {
             document.body.removeChild(link);
           }
-          URL.revokeObjectURL(blobUrl);
-          console.log('🧹 Blob URL limpiado');
-        }, 5000); // 5 segundos para dar tiempo a la descarga
+        }, 100);
         
-        console.log('✅ Descarga iniciada correctamente');
+        // Esperar tiempo suficiente antes de limpiar el Blob URL
+        // y marcar descarga como completada
+        setTimeout(() => {
+          if (currentBlobUrl === blobUrl) {
+            URL.revokeObjectURL(blobUrl);
+            currentBlobUrl = null;
+            console.log('🧹 Blob URL limpiado');
+          }
+          isCurrentlyDownloading = false;
+          console.log('✅ Descarga completada, listo para siguiente');
+        }, 10000); // 10 segundos - tiempo seguro para descargas
         
       } catch (error) {
         console.error('❌ Error en descarga principal:', error);
+        isCurrentlyDownloading = false;
         
         // Método de respaldo 1: Intentar con doc.save() nativo de jsPDF
         try {
           console.log('🔄 Intentando método de respaldo doc.save()...');
           doc.save(sanitizedFileName);
           console.log('✅ Descarga iniciada con doc.save()');
+          
+          // Liberar flag después de un tiempo
+          setTimeout(() => {
+            isCurrentlyDownloading = false;
+          }, 2000);
           
         } catch (saveError) {
           console.error('❌ Error con doc.save():', saveError);
@@ -1408,12 +1456,14 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
               if (document.body.contains(link)) {
                 document.body.removeChild(link);
               }
-            }, 1000);
+              isCurrentlyDownloading = false;
+            }, 2000);
             
             console.log('✅ Descarga iniciada con Data URI');
             
           } catch (finalError) {
             console.error('❌ Todos los métodos de descarga fallaron:', finalError);
+            isCurrentlyDownloading = false;
             throw new Error(`No se pudo descargar el PDF. Por favor, intenta de nuevo o contacta soporte. Error: ${finalError.message}`);
           }
         }
