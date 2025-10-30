@@ -513,6 +513,44 @@ export function EventualDeductionDialog({
               </div>
             </div>
           )}
+
+          {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
+          {formData.user_id && expenseDate && isLoadingPeriods && (
+            <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
+              <p className="text-sm text-blue-800">
+                {t("deductions.period_dialog.checking_period")}
+              </p>
+            </div>
+          )}
+          
+          {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
+          {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid' && (
+            <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ {t("deductions.period_dialog.payroll_paid_title")}
+              </p>
+              <p className="text-xs text-red-600 mt-1">
+                {(() => {
+                  const period = paymentPeriods[0]?.period;
+                  if (!period) return t("deductions.period_dialog.payroll_paid_message", {
+                    periodLabel: '',
+                    startDate: '',
+                    endDate: ''
+                  });
+                  
+                  const startDate = formatDateOnly(period.period_start_date);
+                  const endDate = formatDateOnly(period.period_end_date);
+                  const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+                  
+                  return t("deductions.period_dialog.payroll_paid_message", {
+                    periodLabel,
+                    startDate,
+                    endDate
+                  });
+                })()}
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
@@ -634,42 +672,6 @@ export function EventualDeductionDialog({
                   </Select>
                 </div>
               </div>
-                
-                {formData.user_id && expenseDate && isLoadingPeriods && (
-                  <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
-                    <p className="text-sm text-blue-800">
-                      {t("deductions.period_dialog.checking_period")}
-                    </p>
-                  </div>
-                )}
-                
-                {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid' && (
-                  <div className="p-3 border border-red-200 bg-red-50 rounded-md">
-                    <p className="text-sm text-red-800 font-medium">
-                      ⚠️ {t("deductions.period_dialog.payroll_paid_title")}
-                    </p>
-                    <p className="text-xs text-red-600 mt-1">
-                      {(() => {
-                        const period = paymentPeriods[0]?.period;
-                        if (!period) return t("deductions.period_dialog.payroll_paid_message", {
-                          periodLabel: '',
-                          startDate: '',
-                          endDate: ''
-                        });
-                        
-                        const startDate = formatDateOnly(period.period_start_date);
-                        const endDate = formatDateOnly(period.period_end_date);
-                        const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
-                        
-                        return t("deductions.period_dialog.payroll_paid_message", {
-                          periodLabel,
-                          startDate,
-                          endDate
-                        });
-                      })()}
-                    </p>
-                  </div>
-                )}
                 
                 {formData.user_id && expenseDate && !isLoadingPeriods && paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status !== 'paid' && (
                   <div className="p-3 border border-green-200 bg-green-50 rounded-md">

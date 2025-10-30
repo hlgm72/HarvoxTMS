@@ -27,6 +27,15 @@ interface UnifiedOtherIncomeFormProps {
   defaultUserType?: "driver" | "dispatcher";
   showButtons?: boolean;
   onValidationChange?: (isValid: boolean) => void;
+  onPeriodStatusChange?: (status: {
+    isLoading: boolean;
+    isPaid: boolean;
+    periodInfo?: {
+      period_start_date: string;
+      period_end_date: string;
+      period_frequency: string;
+    };
+  }) => void;
   editData?: {
     id: string;
     description: string;
@@ -39,7 +48,7 @@ interface UnifiedOtherIncomeFormProps {
   };
 }
 
-export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true, onValidationChange }: UnifiedOtherIncomeFormProps) {
+export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true, onValidationChange, onPeriodStatusChange }: UnifiedOtherIncomeFormProps) {
   const { t } = useTranslation(['payments', 'common']);
   const isEditing = !!editData;
   
@@ -205,6 +214,21 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       onValidationChange(isFormValid);
     }
   }, [isFormValid, onValidationChange]);
+
+  // Notificar al padre cuando cambie el estado de período pagado
+  useEffect(() => {
+    if (onPeriodStatusChange) {
+      onPeriodStatusChange({
+        isLoading: isLoadingPeriods,
+        isPaid: isPeriodPaid,
+        periodInfo: isPeriodPaid && paymentPeriods[0]?.period ? {
+          period_start_date: paymentPeriods[0].period.period_start_date,
+          period_end_date: paymentPeriods[0].period.period_end_date,
+          period_frequency: paymentPeriods[0].period.period_frequency
+        } : undefined
+      });
+    }
+  }, [isLoadingPeriods, isPeriodPaid, paymentPeriods, onPeriodStatusChange]);
   
   const isButtonDisabled = !isFormValid || (isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending);
 
@@ -238,43 +262,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
             </Select>
           </div>
         </div>
-
-      {/* Mensaje de advertencia si el período está pagado */}
-      {selectedUser && date && isLoadingPeriods && (
-        <div className="p-3 border border-blue-200 bg-blue-50 rounded-md">
-          <p className="text-sm text-blue-800">
-            {t('form.checking_period')}
-          </p>
-        </div>
-      )}
-      
-      {selectedUser && date && !isLoadingPeriods && isPeriodPaid && (
-        <div className="p-3 border border-red-200 bg-red-50 rounded-md">
-          <p className="text-sm text-red-800 font-medium">
-            ⚠️ {t('form.payroll_paid_title')}
-          </p>
-          <p className="text-xs text-red-600 mt-1">
-            {(() => {
-              const period = paymentPeriods[0]?.period;
-              if (!period) return t('form.payroll_paid_message', {
-                periodLabel: '',
-                startDate: '',
-                endDate: ''
-              });
-              
-              const startDate = formatDateOnly(period.period_start_date);
-              const endDate = formatDateOnly(period.period_end_date);
-              const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
-              
-              return t('form.payroll_paid_message', {
-                periodLabel,
-                startDate,
-                endDate
-              });
-            })()}
-          </p>
-        </div>
-      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

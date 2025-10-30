@@ -34,6 +34,7 @@ import {
   Loader2
 } from "lucide-react";
 import { formatDateOnly } from '@/lib/dateFormatting';
+import { formatPeriodLabel } from '@/utils/periodUtils';
 import { UnifiedOtherIncomeForm } from './UnifiedOtherIncomeForm';
 import { useTranslation } from "react-i18next";
 
@@ -72,6 +73,15 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
   const [itemToEdit, setItemToEdit] = useState<OtherIncomeItem | null>(null);
   const [isCreateFormValid, setIsCreateFormValid] = useState(false);
   const [isEditFormValid, setIsEditFormValid] = useState(false);
+  const [periodStatus, setPeriodStatus] = useState<{
+    isLoading: boolean;
+    isPaid: boolean;
+    periodInfo?: {
+      period_start_date: string;
+      period_end_date: string;
+      period_frequency: string;
+    };
+  }>({ isLoading: false, isPaid: false });
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos si no se pasan como props
@@ -240,12 +250,51 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                 <DialogDescription>
                   {t('additional_payments.dialogs.new_income_description')}
                 </DialogDescription>
+
+                {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
+                {periodStatus.isLoading && (
+                  <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      {t('payments:form.checking_period')}
+                    </p>
+                  </div>
+                )}
+                
+                {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
+                {!periodStatus.isLoading && periodStatus.isPaid && periodStatus.periodInfo && (
+                  <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
+                    <p className="text-sm text-red-800 font-medium">
+                      ⚠️ {t('payments:form.payroll_paid_title')}
+                    </p>
+                    <p className="text-xs text-red-600 mt-1">
+                      {(() => {
+                        const period = periodStatus.periodInfo;
+                        if (!period) return t('payments:form.payroll_paid_message', {
+                          periodLabel: '',
+                          startDate: '',
+                          endDate: ''
+                        });
+                        
+                        const startDate = formatDateOnly(period.period_start_date);
+                        const endDate = formatDateOnly(period.period_end_date);
+                        const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+                        
+                        return t('payments:form.payroll_paid_message', {
+                          periodLabel,
+                          startDate,
+                          endDate
+                        });
+                      })()}
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="overflow-y-auto flex-1 p-6 bg-white">
                 <UnifiedOtherIncomeForm 
                   onClose={() => setIsCreateDialogOpen(false)} 
                   showButtons={false} 
                   onValidationChange={setIsCreateFormValid}
+                  onPeriodStatusChange={setPeriodStatus}
                 />
               </div>
               <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
