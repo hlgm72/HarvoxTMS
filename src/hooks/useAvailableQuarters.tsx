@@ -29,28 +29,30 @@ export function useAvailableQuarters(companyId?: string) {
         throw error;
       }
 
-      // Extraer años y trimestres únicos (solo para períodos no semanales)
+      // Extraer años y trimestres únicos de TODOS los períodos
       const quartersMap = new Map<number, Set<number>>();
       
       data?.forEach(period => {
         if (period.period_start_date && period.period_end_date) {
-          // Calcular duración del período
           const [startYear, startMonth, startDay] = period.period_start_date.split('-').map(Number);
           const [endYear, endMonth, endDay] = period.period_end_date.split('-').map(Number);
           const start = new Date(startYear, startMonth - 1, startDay, 12, 0, 0);
           const end = new Date(endYear, endMonth - 1, endDay, 12, 0, 0);
           const durationDays = differenceInDays(end, start) + 1;
           
-          // Excluir períodos semanales (7-10 días)
-          if (durationDays > 10) {
-            const year = startYear;
-            const quarter = Math.ceil(startMonth / 3);
-            
-            if (!quartersMap.has(year)) {
-              quartersMap.set(year, new Set());
-            }
-            quartersMap.get(year)?.add(quarter);
+          // Para períodos semanales, usar año ISO
+          let year = startYear;
+          if (durationDays <= 10) {
+            const { calculateWeekYearFromString } = require('@/utils/weekCalculation');
+            year = calculateWeekYearFromString(period.period_start_date);
           }
+          
+          const quarter = Math.ceil(startMonth / 3);
+          
+          if (!quartersMap.has(year)) {
+            quartersMap.set(year, new Set());
+          }
+          quartersMap.get(year)?.add(quarter);
         }
       });
 

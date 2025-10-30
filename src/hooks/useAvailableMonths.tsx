@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { calculateWeekYearFromString } from '@/utils/weekCalculation';
 import { differenceInDays } from 'date-fns';
+import { calculateWeekYearFromString } from '@/utils/weekCalculation';
 
 interface MonthData {
   year: number;
@@ -30,29 +30,29 @@ export function useAvailableMonths(companyId?: string) {
         throw error;
       }
 
-      // Extraer años y meses únicos (solo para períodos mensuales, no semanales)
+      // Extraer años y meses únicos de TODOS los períodos
       const monthsMap = new Map<number, Set<number>>();
       
       data?.forEach(period => {
         if (period.period_start_date && period.period_end_date) {
-          // Calcular duración del período
           const [startYear, startMonth, startDay] = period.period_start_date.split('-').map(Number);
           const [endYear, endMonth, endDay] = period.period_end_date.split('-').map(Number);
           const start = new Date(startYear, startMonth - 1, startDay, 12, 0, 0);
           const end = new Date(endYear, endMonth - 1, endDay, 12, 0, 0);
           const durationDays = differenceInDays(end, start) + 1;
           
-          // Solo incluir períodos mensuales (25-35 días) o quincenales (10-25 días)
-          // Excluir períodos semanales (7-10 días)
-          if (durationDays > 10) {
-            const year = startYear;
-            const month = startMonth; // Ya está en 1-12
-            
-            if (!monthsMap.has(year)) {
-              monthsMap.set(year, new Set());
-            }
-            monthsMap.get(year)?.add(month);
+          // Para períodos semanales, usar año ISO
+          let year = startYear;
+          if (durationDays <= 10) {
+            year = calculateWeekYearFromString(period.period_start_date);
           }
+          
+          const month = startMonth; // 1-12
+          
+          if (!monthsMap.has(year)) {
+            monthsMap.set(year, new Set());
+          }
+          monthsMap.get(year)?.add(month);
         }
       });
 
