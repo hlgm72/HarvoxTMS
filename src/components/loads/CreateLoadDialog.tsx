@@ -839,7 +839,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             {validationData.driverId && validationData.dates.length > 0 && isLoadingPeriods && (
               <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-800">
-                  {t('payments:form.checking_period')}
+                  {t('loads:create_wizard.validation.checking_period')}
                 </p>
               </div>
             )}
@@ -848,7 +848,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             {validationData.driverId && validationData.dates.length > 0 && !isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
               <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
                 <p className="text-sm text-red-800 font-medium">
-                  ⚠️ {t('payments:form.payroll_paid_title')}
+                  ⚠️ {t('loads:create_wizard.validation.payroll_paid_title')}
                 </p>
                 <p className="text-xs text-red-600 mt-1">
                   {(() => {
@@ -857,7 +857,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                     const endDate = formatDateOnly(period.period_end_date);
                     const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
                     
-                    return t('payments:form.payroll_paid_message', {
+                    return t('loads:create_wizard.validation.payroll_paid_message', {
                       periodLabel,
                       startDate,
                       endDate
