@@ -38,7 +38,6 @@ export default function AdditionalPayments() {
 
   // Callback estable para actualizar el estado del formulario
   const handleFormStateChange = useCallback((state: { selectedUser: string; date: Date | undefined }) => {
-    console.log('🔄 AdditionalPayments - Form state changed:', state);
     setCreateFormState(state);
   }, []);
 
@@ -47,18 +46,8 @@ export default function AdditionalPayments() {
     queryKey: ['user-payment-periods-additional-payments', createFormState.selectedUser, createFormState.date?.toISOString()],
     queryFn: async () => {
       if (!createFormState.selectedUser || !createFormState.date || !selectedCompany?.id) {
-        console.log('❌ Query disabled - missing params:', {
-          selectedUser: createFormState.selectedUser,
-          date: createFormState.date,
-          companyId: selectedCompany?.id
-        });
         return [];
       }
-
-      console.log('🔍 Checking paid periods for:', {
-        userId: createFormState.selectedUser,
-        date: createFormState.date
-      });
 
       const incomeDateStr = formatDateInUserTimeZone(createFormState.date);
       
@@ -76,10 +65,7 @@ export default function AdditionalPayments() {
         .eq('user_id', createFormState.selectedUser)
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('❌ Error fetching periods:', error);
-        return [];
-      }
+      if (error) return [];
 
       const periodsForDate = allPeriods?.filter(period => {
         if (!period.period) return false;
@@ -87,16 +73,12 @@ export default function AdditionalPayments() {
                incomeDateStr <= period.period.period_end_date;
       }) || [];
 
-      const paidPeriods = periodsForDate.filter(p => p.payment_status === 'paid');
-      console.log('✅ Paid periods found:', paidPeriods.length, paidPeriods);
-      
-      return paidPeriods;
+      return periodsForDate.filter(p => p.payment_status === 'paid');
     },
     enabled: !!createFormState.selectedUser && !!createFormState.date && !!selectedCompany?.id && isCreateIncomeDialogOpen
   });
 
   const isPeriodPaid = paymentPeriods.length > 0;
-  console.log('📊 Period status:', { isLoadingPeriods, isPeriodPaid, paymentPeriods: paymentPeriods.length });
 
   // Initialize with current week
   const getCurrentWeek = () => {

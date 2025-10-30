@@ -67,11 +67,6 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  
-  // Log cuando el diálogo se abre/cierra
-  useEffect(() => {
-    console.log('🚪 Create dialog state changed:', isCreateDialogOpen);
-  }, [isCreateDialogOpen]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -87,7 +82,6 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
 
   // Callback estable para actualizar el estado del formulario
   const handleFormStateChange = useCallback((state: { selectedUser: string; date: Date | undefined }) => {
-    console.log('🔄 Form state changed:', state);
     setCreateFormState(state);
   }, []);
 
@@ -96,18 +90,8 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
     queryKey: ['user-payment-periods-other-income', createFormState.selectedUser, createFormState.date?.toISOString()],
     queryFn: async () => {
       if (!createFormState.selectedUser || !createFormState.date || !selectedCompany?.id) {
-        console.log('❌ Query disabled - missing params:', {
-          selectedUser: createFormState.selectedUser,
-          date: createFormState.date,
-          companyId: selectedCompany?.id
-        });
         return [];
       }
-
-      console.log('🔍 Checking paid periods for:', {
-        userId: createFormState.selectedUser,
-        date: createFormState.date
-      });
 
       const incomeDateStr = formatDateInUserTimeZone(createFormState.date);
       
@@ -125,10 +109,7 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
         .eq('user_id', createFormState.selectedUser)
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('❌ Error fetching periods:', error);
-        return [];
-      }
+      if (error) return [];
 
       const periodsForDate = allPeriods?.filter(period => {
         if (!period.period) return false;
@@ -136,16 +117,12 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                incomeDateStr <= period.period.period_end_date;
       }) || [];
 
-      const paidPeriods = periodsForDate.filter(p => p.payment_status === 'paid');
-      console.log('✅ Paid periods found:', paidPeriods.length, paidPeriods);
-      
-      return paidPeriods;
+      return periodsForDate.filter(p => p.payment_status === 'paid');
     },
     enabled: !!createFormState.selectedUser && !!createFormState.date && !!selectedCompany?.id && isCreateDialogOpen
   });
 
   const isPeriodPaid = paymentPeriods.length > 0;
-  console.log('📊 Period status:', { isLoadingPeriods, isPeriodPaid, paymentPeriods: paymentPeriods.length });
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos si no se pasan como props
