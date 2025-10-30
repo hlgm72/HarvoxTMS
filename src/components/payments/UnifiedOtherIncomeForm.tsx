@@ -68,7 +68,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   // Notificar al padre el estado del formulario para la validación de períodos pagados
   useEffect(() => {
+    console.log('🔔 UnifiedOtherIncomeForm - State changed:', { selectedUser, date, hasCallback: !!onFormStateChange });
     if (onFormStateChange) {
+      console.log('📤 Calling onFormStateChange with:', { selectedUser, date });
       onFormStateChange({ selectedUser, date });
     }
   }, [selectedUser, date, onFormStateChange]);

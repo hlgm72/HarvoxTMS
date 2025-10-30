@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCompanyDrivers } from "@/hooks/useCompanyDrivers";
@@ -67,6 +67,11 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const { t } = useTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  
+  // Log cuando el diálogo se abre/cierra
+  useEffect(() => {
+    console.log('🚪 Create dialog state changed:', isCreateDialogOpen);
+  }, [isCreateDialogOpen]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<OtherIncomeItem | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
