@@ -140,6 +140,54 @@ export const useUpdateLoadStatusWithValidation = () => {
         }
       }
 
+      // 🔄 Si la carga fue CANCELADA, recalcular el payroll del driver
+      if (params.newStatus === 'cancelled') {
+        console.log('🔄 Carga cancelada - recalculando payroll del driver...');
+        
+        // Obtener información de la carga para recalcular payroll
+        const { data: loadData, error: loadError } = await supabase
+          .from('loads')
+          .select('driver_user_id, payment_period_id')
+          .eq('id', params.loadId)
+          .single();
+
+        if (loadError) {
+          console.error('❌ Error obteniendo datos de la carga para recalcular:', loadError);
+          // No lanzar error para no bloquear la cancelación
+        } else if (loadData?.driver_user_id && loadData?.payment_period_id) {
+          console.log('🔍 Datos de carga obtenidos:', {
+            driver: loadData.driver_user_id,
+            period: loadData.payment_period_id
+          });
+
+          // Buscar el user_payroll correspondiente
+          const { data: userPayroll, error: payrollError } = await supabase
+            .from('user_payrolls')
+            .select('id')
+            .eq('user_id', loadData.driver_user_id)
+            .eq('company_payment_period_id', loadData.payment_period_id)
+            .single();
+
+          if (payrollError) {
+            console.error('❌ Error obteniendo user_payroll:', payrollError);
+          } else if (userPayroll) {
+            console.log('🔄 Recalculando payroll con ID:', userPayroll.id);
+            
+            // Recalcular el payroll
+            const { error: recalcError } = await supabase.rpc(
+              'calculate_user_payment_period_with_validation',
+              { calculation_id: userPayroll.id }
+            );
+
+            if (recalcError) {
+              console.error('❌ Error recalculando payroll después de cancelar:', recalcError);
+            } else {
+              console.log('✅ Payroll recalculado exitosamente después de cancelar la carga');
+            }
+          }
+        }
+      }
+
       console.log('✅ useUpdateLoadStatusWithValidation - Estado actualizado:', data);
     },
     onSuccess: (_, params) => {
