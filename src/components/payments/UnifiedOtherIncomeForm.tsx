@@ -192,8 +192,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
-  // Verificar si el período está pagado
-  const isPeriodPaid = paymentPeriods.length > 0 && paymentPeriods[0]?.payment_status === 'paid';
+  // Verificar si el período está pagado (el query ya filtra solo los pagados)
+  const isPeriodPaid = paymentPeriods.length > 0;
 
   // Validación del formulario con useMemo
   const isFormValid = useMemo(() => {
@@ -203,10 +203,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       incomeType && 
       atmInput.numericValue > 0 && 
       date &&
-      !isPeriodPaid // Bloquear si el período está pagado
+      (isEditing || !isPeriodPaid) // Solo bloquear en modo creación si el período está pagado
     );
     return valid;
-  }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid]);
+  }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid, isEditing]);
 
   // Notificar al padre cuando cambie la validación
   useEffect(() => {
