@@ -4021,6 +4021,14 @@ export type Database = {
         Args: { load_id_param: string }
         Returns: string
       }
+      get_or_create_payment_period: {
+        Args: {
+          company_id_param: string
+          driver_user_id_param: string
+          target_date: string
+        }
+        Returns: string
+      }
       get_payment_calculations_integrity_status: {
         Args: { target_company_id: string }
         Returns: Json
