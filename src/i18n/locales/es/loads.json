@@ -933,7 +933,17 @@
     "delete_success": "Carga #{{loadNumber}} eliminada exitosamente",
     "delete_error": "Error eliminando carga: {{message}}",
     "user_not_authenticated": "Usuario no autenticado",
-    "deleting": "Eliminando..."
+    "deleting": "Eliminando...",
+    "cancel_dialog": {
+      "title": "Cancelar Carga #{{loadNumber}}",
+      "description": "¿Estás seguro de que quieres cancelar esta carga? Esta acción recalculará el payroll del conductor.",
+      "note_label": "Motivo de Cancelación",
+      "note_placeholder": "Por favor especifica el motivo de la cancelación de esta carga...",
+      "note_help": "Esta nota se guardará en el historial de estados de la carga.",
+      "cancel_button": "Mantener Carga",
+      "confirm_button": "Cancelar Carga",
+      "cancelling": "Cancelando..."
+    }
   },
   "delete": {
     "title": "Eliminar Carga",

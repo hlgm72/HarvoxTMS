@@ -140,6 +140,25 @@ export const useUpdateLoadStatusWithValidation = () => {
         }
       }
 
+      // 🔄 Registrar nota en historial si el cambio es una cancelación (incluso sin stopId)
+      if (params.newStatus === 'cancelled' && params.notes) {
+        console.log('📝 Registrando nota de cancelación en historial...');
+        const { error: historyError } = await supabase
+          .from('load_status_history')
+          .insert({
+            load_id: params.loadId,
+            new_status: params.newStatus,
+            changed_by: user.id,
+            notes: params.notes
+          });
+
+        if (historyError) {
+          console.error('❌ Error registrando historial de cancelación:', historyError);
+        } else {
+          console.log('✅ Nota de cancelación registrada en historial');
+        }
+      }
+
       // 🔄 Si la carga fue CANCELADA, recalcular el payroll del driver
       if (params.newStatus === 'cancelled') {
         console.log('🔄 Carga cancelada - recalculando payroll del driver...');

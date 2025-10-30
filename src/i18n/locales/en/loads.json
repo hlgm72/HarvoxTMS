@@ -933,7 +933,17 @@
     "delete_success": "Load #{{loadNumber}} deleted successfully",
     "delete_error": "Error deleting load: {{message}}",
     "user_not_authenticated": "User not authenticated",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "cancel_dialog": {
+      "title": "Cancel Load #{{loadNumber}}",
+      "description": "Are you sure you want to cancel this load? This action will recalculate the driver's payroll.",
+      "note_label": "Cancellation Reason",
+      "note_placeholder": "Please specify the reason for cancelling this load...",
+      "note_help": "This note will be saved in the load's status history.",
+      "cancel_button": "Keep Load",
+      "confirm_button": "Cancel Load",
+      "cancelling": "Cancelling..."
+    }
   },
   "delete": {
     "title": "Delete Load",

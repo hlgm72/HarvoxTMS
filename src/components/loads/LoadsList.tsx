@@ -25,6 +25,7 @@ import { LoadDocumentValidationIndicator } from "./LoadDocumentValidationIndicat
 import { LoadDocumentStatusIndicator } from "./LoadDocumentStatusIndicator";
 import { LoadStatusHistoryButton } from "./LoadStatusHistoryButton";
 import { useAuth } from "@/hooks/useAuth";
+import { CancelLoadDialog } from "./CancelLoadDialog";
 
 // Componente de skeleton para cargas
 const LoadSkeleton = () => (
@@ -213,6 +214,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     load?: any;
   }>({ isOpen: false });
 
+  const [cancelDialog, setCancelDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
+
   const handleDeleteLoad = async (loadId: string, loadNumber: string) => {
     try {
       await deleteLoadMutation.mutateAsync({ loadId, loadNumber });
@@ -222,7 +228,27 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     }
   };
 
+  const handleCancelLoad = async (loadId: string, cancellationNote: string) => {
+    try {
+      await updateStatusMutation.mutateAsync({
+        loadId,
+        newStatus: 'cancelled',
+        notes: cancellationNote
+      });
+      setCancelDialog({ isOpen: false });
+    } catch (error) {
+      // El error ya se maneja en el hook
+    }
+  };
+
   const handleUpdateStatus = async (loadId: string, newStatus: string) => {
+    // Si es cancelación, abrir el diálogo para solicitar motivo
+    if (newStatus === 'cancelled') {
+      const load = loads.find(l => l.id === loadId);
+      setCancelDialog({ isOpen: true, load });
+      return;
+    }
+
     try {
       await updateStatusMutation.mutateAsync({
         loadId,
@@ -767,6 +793,17 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog de confirmación de cancelación */}
+      {cancelDialog.load && (
+        <CancelLoadDialog
+          isOpen={cancelDialog.isOpen}
+          loadNumber={cancelDialog.load.load_number}
+          onConfirm={(note) => handleCancelLoad(cancelDialog.load.id, note)}
+          onCancel={() => setCancelDialog({ isOpen: false })}
+          isPending={updateStatusMutation.isPending}
+        />
+      )}
     </>
   );
 }
