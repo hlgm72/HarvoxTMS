@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { getISOWeek, getISOWeekYear } from 'date-fns';
+import { getISOWeek } from 'date-fns';
 
 interface WeekData {
   weekNumber: number;
@@ -46,9 +46,9 @@ export function useAvailableWeeks(companyId?: string) {
       
       data?.forEach(period => {
         if (period.period_start_date && period.period_end_date) {
-          // CRÍTICO: Usar la fecha de inicio del período para calcular año/mes/semana
+          // CRÍTICO: Usar año/mes calendario (igual que otros hooks) para consistencia en UI
           const startDate = new Date(period.period_start_date + 'T12:00:00Z');
-          const year = getISOWeekYear(startDate); // Año ISO de la semana (corrige W53/2024 → W1/2025)
+          const year = startDate.getUTCFullYear(); // Año calendario de la fecha (2004 para W53/2004)
           const month = startDate.getUTCMonth() + 1; // 1-12
           const weekNumber = getISOWeek(startDate); // ISO week (1-53)
           
