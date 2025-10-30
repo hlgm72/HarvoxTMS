@@ -770,6 +770,7 @@ export function FuelExpenseDialog({
                             <Calendar
                               mode="single"
                               selected={field.value}
+                              defaultMonth={field.value || new Date()}
                               onSelect={(date) => {
                                 field.onChange(date);
                                 setIsTransactionDateOpen(false);
