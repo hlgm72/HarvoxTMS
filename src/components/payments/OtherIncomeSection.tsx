@@ -20,6 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { formatCurrency, formatPrettyDate, formatMonthName, formatDateInUserTimeZone } from '@/lib/dateFormatting';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Plus, 
   DollarSign, 
@@ -73,17 +75,49 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
   const [itemToEdit, setItemToEdit] = useState<OtherIncomeItem | null>(null);
   const [isCreateFormValid, setIsCreateFormValid] = useState(false);
   const [isEditFormValid, setIsEditFormValid] = useState(false);
-  const [periodStatus, setPeriodStatus] = useState<{
-    isLoading: boolean;
-    isPaid: boolean;
-    periodInfo?: {
-      period_start_date: string;
-      period_end_date: string;
-      period_frequency: string;
-    };
-  }>({ isLoading: false, isPaid: false });
-  
-  console.log('📥 Current periodStatus in parent:', periodStatus);
+  const [createFormState, setCreateFormState] = useState<{
+    selectedUser: string;
+    date: Date | undefined;
+  }>({ selectedUser: '', date: undefined });
+
+  // Query para verificar períodos pagados directamente en el padre
+  const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
+    queryKey: ['user-payment-periods-other-income', createFormState.selectedUser, createFormState.date?.toISOString()],
+    queryFn: async () => {
+      if (!createFormState.selectedUser || !createFormState.date || !selectedCompany?.id) {
+        return [];
+      }
+
+      const incomeDateStr = formatDateInUserTimeZone(createFormState.date);
+      
+      const { data: allPeriods, error } = await supabase
+        .from('user_payrolls')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency
+          )
+        `)
+        .eq('company_id', selectedCompany.id)
+        .eq('user_id', createFormState.selectedUser)
+        .order('created_at', { ascending: false });
+      
+      if (error) return [];
+
+      const periodsForDate = allPeriods?.filter(period => {
+        if (!period.period) return false;
+        return incomeDateStr >= period.period.period_start_date && 
+               incomeDateStr <= period.period.period_end_date;
+      }) || [];
+
+      return periodsForDate.filter(p => p.payment_status === 'paid');
+    },
+    enabled: !!createFormState.selectedUser && !!createFormState.date && !!selectedCompany?.id
+  });
+
+  const isPeriodPaid = paymentPeriods.length > 0;
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos si no se pasan como props
@@ -254,7 +288,7 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                 </DialogDescription>
 
                 {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
-                {periodStatus.isLoading && (
+                {isLoadingPeriods && createFormState.selectedUser && createFormState.date && (
                   <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
                     <p className="text-sm text-blue-800">
                       {t('payments:form.checking_period')}
@@ -263,20 +297,14 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                 )}
                 
                 {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
-                {!periodStatus.isLoading && periodStatus.isPaid && periodStatus.periodInfo && (
+                {!isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
                   <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
                     <p className="text-sm text-red-800 font-medium">
                       ⚠️ {t('payments:form.payroll_paid_title')}
                     </p>
                     <p className="text-xs text-red-600 mt-1">
                       {(() => {
-                        const period = periodStatus.periodInfo;
-                        if (!period) return t('payments:form.payroll_paid_message', {
-                          periodLabel: '',
-                          startDate: '',
-                          endDate: ''
-                        });
-                        
+                        const period = paymentPeriods[0].period;
                         const startDate = formatDateOnly(period.period_start_date);
                         const endDate = formatDateOnly(period.period_end_date);
                         const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
@@ -296,7 +324,8 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                   onClose={() => setIsCreateDialogOpen(false)} 
                   showButtons={false} 
                   onValidationChange={setIsCreateFormValid}
-                  onPeriodStatusChange={setPeriodStatus}
+                  onFormStateChange={setCreateFormState}
+                  isPeriodPaid={isPeriodPaid}
                 />
               </div>
               <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">

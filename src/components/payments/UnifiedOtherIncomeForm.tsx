@@ -18,24 +18,14 @@ import { useConsolidatedDispatchers } from "@/hooks/useConsolidatedDispatchers";
 import { useATMInput } from "@/hooks/useATMInput";
 import { UserTypeSelector } from "@/components/ui/UserTypeSelector";
 import { useTranslation } from 'react-i18next';
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { formatPeriodLabel } from '@/utils/periodUtils';
 
 interface UnifiedOtherIncomeFormProps {
   onClose: () => void;
   defaultUserType?: "driver" | "dispatcher";
   showButtons?: boolean;
   onValidationChange?: (isValid: boolean) => void;
-  onPeriodStatusChange?: (status: {
-    isLoading: boolean;
-    isPaid: boolean;
-    periodInfo?: {
-      period_start_date: string;
-      period_end_date: string;
-      period_frequency: string;
-    };
-  }) => void;
+  onFormStateChange?: (state: { selectedUser: string; date: Date | undefined }) => void;
+  isPeriodPaid?: boolean;
   editData?: {
     id: string;
     description: string;
@@ -48,7 +38,7 @@ interface UnifiedOtherIncomeFormProps {
   };
 }
 
-export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true, onValidationChange, onPeriodStatusChange }: UnifiedOtherIncomeFormProps) {
+export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", editData, showButtons = true, onValidationChange, onFormStateChange, isPeriodPaid = false }: UnifiedOtherIncomeFormProps) {
   const { t } = useTranslation(['payments', 'common']);
   const isEditing = !!editData;
   
@@ -76,63 +66,12 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
     initialValue: editData?.amount || 0
   });
 
-  // Verificar períodos pagados
-  const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
-    queryKey: ['user-payment-periods-for-income', selectedUser, date?.toISOString()],
-    queryFn: async () => {
-      console.log('🔄 Executing query with:', { selectedUser, date, companyId: selectedCompany?.id });
-      
-      if (!selectedUser || !date || !selectedCompany?.id) {
-        console.log('⚠️ Query skipped - missing required data');
-        return [];
-      }
-
-      try {
-        const incomeDateStr = formatDateInUserTimeZone(date);
-        console.log('📅 Formatted date:', incomeDateStr);
-        
-        const { data: allPeriods, error: periodsError } = await supabase
-          .from('user_payrolls')
-          .select(`
-            *,
-            period:company_payment_periods!company_payment_period_id(
-              period_start_date,
-              period_end_date,
-              period_frequency
-            )
-          `)
-          .eq('company_id', selectedCompany.id)
-          .eq('user_id', selectedUser)
-          .order('created_at', { ascending: false });
-        
-        console.log('📊 Query result:', { allPeriods, error: periodsError });
-        
-        if (periodsError) {
-          console.error('Error fetching user periods:', periodsError);
-          return [];
-        }
-
-        // Filtrar períodos que contienen la fecha del ingreso
-        const periodsForDate = allPeriods?.filter(period => {
-          if (!period.period) return false;
-          const startDate = period.period.period_start_date;
-          const endDate = period.period.period_end_date;
-          return incomeDateStr >= startDate && incomeDateStr <= endDate;
-        }) || [];
-
-        console.log('🎯 Periods for date:', periodsForDate);
-
-        // Retornar solo períodos pagados para mostrar advertencia
-        const paidPeriods = periodsForDate.filter(p => p.payment_status === 'paid');
-        console.log('💰 Paid periods:', paidPeriods);
-        return paidPeriods;
-      } catch (error) {
-        console.error('Error in payment periods query:', error);
-        return [];
-      }
-    },
-    enabled: !!selectedUser && !!date && !!selectedCompany?.id
-  });
+  // Notificar al padre el estado del formulario para la validación de períodos pagados
+  useEffect(() => {
+    if (onFormStateChange) {
+      onFormStateChange({ selectedUser, date });
+    }
+  }, [selectedUser, date, onFormStateChange]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,11 +141,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   const currentUsers = userType === "driver" ? drivers : dispatchers;
 
-  // Verificar si el período está pagado (el query ya filtra solo los pagados)
-  const isPeriodPaid = paymentPeriods.length > 0;
-  
-  console.log('🎯 isPeriodPaid calculated:', isPeriodPaid, 'paymentPeriods:', paymentPeriods);
-
   // Validación del formulario con useMemo
   const isFormValid = useMemo(() => {
     const valid = Boolean(
@@ -217,7 +151,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       date &&
       !isPeriodPaid // Bloquear si el período está pagado
     );
-    console.log('✅ Form validation:', { valid, isPeriodPaid, selectedUser, hasDescription: !!description.trim(), incomeType, amount: atmInput.numericValue, hasDate: !!date });
     return valid;
   }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid]);
 
@@ -227,30 +160,6 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       onValidationChange(isFormValid);
     }
   }, [isFormValid, onValidationChange]);
-
-  // Notificar al padre cuando cambie el estado de período pagado
-  useEffect(() => {
-    console.log('🔍 Period status changed:', {
-      isLoadingPeriods,
-      isPeriodPaid,
-      paymentPeriodsLength: paymentPeriods.length,
-      hasPeriodInfo: !!paymentPeriods[0]?.period
-    });
-    
-    if (onPeriodStatusChange) {
-      const status = {
-        isLoading: isLoadingPeriods,
-        isPaid: isPeriodPaid,
-        periodInfo: isPeriodPaid && paymentPeriods[0]?.period ? {
-          period_start_date: paymentPeriods[0].period.period_start_date,
-          period_end_date: paymentPeriods[0].period.period_end_date,
-          period_frequency: paymentPeriods[0].period.period_frequency
-        } : undefined
-      };
-      console.log('📤 Sending period status to parent:', status);
-      onPeriodStatusChange(status);
-    }
-  }, [isLoadingPeriods, isPeriodPaid, paymentPeriods, onPeriodStatusChange]);
   
   const isButtonDisabled = !isFormValid || (isEditing ? updateOtherIncome.isPending : createOtherIncome.isPending);
 
