@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays } from 'date-fns';
+import { calculateWeekYearFromString } from '@/utils/weekCalculation';
 
 interface QuarterData {
   year: number;
@@ -43,7 +44,6 @@ export function useAvailableQuarters(companyId?: string) {
           // Para períodos semanales, usar año ISO
           let year = startYear;
           if (durationDays <= 10) {
-            const { calculateWeekYearFromString } = require('@/utils/weekCalculation');
             year = calculateWeekYearFromString(period.period_start_date);
           }
           
