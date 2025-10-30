@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
 import { useClients, Client, useClientContacts } from "@/hooks/useClients";
@@ -12,11 +13,13 @@ import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm, LoadFormData } from "@/hooks/useLoadForm";
 import { useATMInput } from "@/hooks/useATMInput";
 import { useCommodityAutocomplete } from "@/hooks/useCommodityAutocomplete";
-import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation"; // ⭐ NUEVO
-import { useValidateLoadDatesAgainstPaidPeriods } from "@/hooks/useValidateLoadDatesAgainstPaidPeriods"; // ⭐ VALIDACIÓN DE PERÍODOS PAGADOS
+import { useFinancialDataValidation } from "@/hooks/useFinancialDataValidation";
+import { useValidateLoadDatesAgainstPaidPeriods } from "@/hooks/useValidateLoadDatesAgainstPaidPeriods";
 import { LoadStop } from "@/hooks/useLoadStops";
 import { createTextHandlers } from "@/lib/textUtils";
-import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from "@/lib/financialIntegrityUtils"; // ⭐ NUEVO
+import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from "@/lib/financialIntegrityUtils";
+import { formatPeriodLabel } from "@/utils/periodUtils";
+import { formatDateOnly, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -190,6 +193,60 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     getFinancialOperationTooltip(financialValidation, 'editar esta carga'), 
     [financialValidation]
   );
+
+  // ⭐ VALIDACIÓN DE PERÍODOS PAGADOS EN TIEMPO REAL
+  const validationData = useMemo(() => {
+    const driverId = selectedDriver?.user_id || activeLoadData?.driver_user_id;
+    const dates = loadStops
+      .filter(stop => stop.scheduled_date)
+      .map(stop => stop.scheduled_date);
+    
+    return { driverId, dates };
+  }, [selectedDriver, activeLoadData, loadStops]);
+
+  const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
+    queryKey: ['load-wizard-payment-periods', validationData.driverId, validationData.dates],
+    queryFn: async () => {
+      if (!validationData.driverId || validationData.dates.length === 0 || !selectedCompany?.id) {
+        return [];
+      }
+
+      const { data: allPeriods, error } = await supabase
+        .from('user_payrolls')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency
+          )
+        `)
+        .eq('company_id', selectedCompany.id)
+        .eq('user_id', validationData.driverId)
+        .eq('payment_status', 'paid')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('❌ Error fetching periods:', error);
+        return [];
+      }
+
+      // Verificar si alguna fecha cae en un período pagado
+      const paidPeriodsForDates = allPeriods?.filter(period => {
+        if (!period.period) return false;
+        return validationData.dates.some(date => {
+          const dateStr = formatDateInUserTimeZone(new Date(date));
+          return dateStr >= period.period.period_start_date && 
+                 dateStr <= period.period.period_end_date;
+        });
+      }) || [];
+      
+      return paidPeriodsForDates;
+    },
+    enabled: !!validationData.driverId && validationData.dates.length > 0 && !!selectedCompany?.id && isOpen
+  });
+
+  const isPeriodPaid = paymentPeriods.length > 0;
 
   // Fetch company data when selectedCompany changes
   useEffect(() => {
@@ -598,21 +655,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         .map(stop => stop.scheduled_date);
 
       if (scheduledDates.length > 0) {
-        console.log('🔍 Validating dates against paid periods:', { driverId: driverIdForValidation, dates: scheduledDates });
-        
         const paidPeriodValidation = await validateDatesAgainstPaidPeriods(driverIdForValidation, scheduledDates);
         
         if (!paidPeriodValidation.isValid) {
-          console.log('🚨 onSubmit blocked - dates fall in paid period:', paidPeriodValidation.error);
           showError(
             t("loads:create_wizard.validation.validation_error"),
             paidPeriodValidation.error || "Las fechas corresponden a un período de pago ya cerrado"
           );
-          setCurrentPhase(2); // Volver al paso de fechas
+          setCurrentPhase(2);
           return;
         }
-        
-        console.log('✅ Dates validation passed - no conflicts with paid periods');
       }
     }
 
@@ -780,6 +832,38 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                     )}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
+            {validationData.driverId && validationData.dates.length > 0 && isLoadingPeriods && (
+              <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
+                <p className="text-sm text-blue-800">
+                  {t('payments:form.checking_period')}
+                </p>
+              </div>
+            )}
+            
+            {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
+            {validationData.driverId && validationData.dates.length > 0 && !isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
+              <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
+                <p className="text-sm text-red-800 font-medium">
+                  ⚠️ {t('payments:form.payroll_paid_title')}
+                </p>
+                <p className="text-xs text-red-600 mt-1">
+                  {(() => {
+                    const period = paymentPeriods[0].period;
+                    const startDate = formatDateOnly(period.period_start_date);
+                    const endDate = formatDateOnly(period.period_end_date);
+                    const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+                    
+                    return t('payments:form.payroll_paid_message', {
+                      periodLabel,
+                      startDate,
+                      endDate
+                    });
+                  })()}
+                </p>
               </div>
             )}
           </DialogHeader>
