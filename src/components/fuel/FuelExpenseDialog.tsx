@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto, parseDateSafe } from '@/lib/dateFormatting';
+import { formatDateInUserTimeZone, formatDateSafe, formatMonthName, formatDateAuto, parseDateSafe, formatDateOnly } from '@/lib/dateFormatting';
 import { cn } from '@/lib/utils';
 import { capitalizeWords } from '@/lib/textUtils';
 import { useCompanyCache } from '@/hooks/useCompanyCache';
@@ -34,6 +34,8 @@ import { useATMInput } from '@/hooks/useATMInput';
 import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { useFinancialDataValidation } from '@/hooks/useFinancialDataValidation'; // ⭐ NUEVO
 import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from '@/lib/financialIntegrityUtils'; // ⭐ NUEVO
+import { useQuery } from '@tanstack/react-query';
+import { formatPeriodLabel } from '@/utils/periodUtils';
 
 const formSchema = z.object({
   driver_user_id: z.string().min(1, 'Selecciona un conductor'),
@@ -435,6 +437,57 @@ export function FuelExpenseDialog({
   const fees = form.watch('fees');
   const transactionDate = form.watch('transaction_date');
 
+  // ⭐ VERIFICAR PERÍODOS PAGADOS BASADO EN LA FECHA DE TRANSACCIÓN
+  const { data: paidPeriods = [], isLoading: isLoadingPaidPeriods } = useQuery({
+    queryKey: ['user-payment-periods-for-fuel', selectedDriverId, transactionDate],
+    queryFn: async () => {
+      if (!selectedDriverId || !transactionDate || !userCompany?.company_id) {
+        return [];
+      }
+
+      try {
+        const transactionDateStr = formatDateInUserTimeZone(transactionDate);
+        
+        const { data: allPeriods, error: periodsError } = await supabase
+          .from('user_payrolls')
+          .select(`
+            *,
+            period:company_payment_periods!company_payment_period_id(
+              period_start_date,
+              period_end_date,
+              period_frequency
+            )
+          `)
+          .eq('company_id', userCompany.company_id)
+          .eq('user_id', selectedDriverId)
+          .order('created_at', { ascending: false });
+        
+        if (periodsError) {
+          console.error('Error fetching user periods:', periodsError);
+          return [];
+        }
+
+        // Filtrar períodos que contienen la fecha de transacción
+        const periodsForDate = allPeriods?.filter(period => {
+          if (!period.period) return false;
+          const startDate = period.period.period_start_date;
+          const endDate = period.period.period_end_date;
+          return transactionDateStr >= startDate && transactionDateStr <= endDate;
+        }) || [];
+
+        // Retornar solo períodos pagados para mostrar advertencia
+        return periodsForDate.filter(p => p.payment_status === 'paid');
+      } catch (error) {
+        console.error('Error in payment periods query:', error);
+        return [];
+      }
+    },
+    enabled: !!selectedDriverId && !!transactionDate && !isEditMode
+  });
+
+  // Verificar si el período está pagado
+  const isPeriodPaid = paidPeriods.length > 0 && paidPeriods[0]?.payment_status === 'paid';
+
   // Auto-calculate gross amount (gallons * price)
   React.useEffect(() => {
     if (gallons && pricePerGallon) {
@@ -560,6 +613,43 @@ export function FuelExpenseDialog({
                   )}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO (CREATE MODE) */}
+          {!isEditMode && selectedDriverId && transactionDate && isLoadingPaidPeriods && (
+            <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
+              <p className="text-sm text-blue-800">
+                {t('fuel:create_dialog.validation.checking_period')}
+              </p>
+            </div>
+          )}
+          
+          {!isEditMode && selectedDriverId && transactionDate && !isLoadingPaidPeriods && isPeriodPaid && (
+            <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ {t('fuel:create_dialog.validation.payroll_paid_title')}
+              </p>
+              <p className="text-xs text-red-600 mt-1">
+                {(() => {
+                  const period = paidPeriods[0]?.period;
+                  if (!period) return t('fuel:create_dialog.validation.payroll_paid_message', {
+                    periodLabel: '',
+                    startDate: '',
+                    endDate: ''
+                  });
+                  
+                  const startDate = formatDateOnly(period.period_start_date);
+                  const endDate = formatDateOnly(period.period_end_date);
+                  const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+                  
+                  return t('fuel:create_dialog.validation.payroll_paid_message', {
+                    periodLabel,
+                    startDate,
+                    endDate
+                  });
+                })()}
+              </p>
             </div>
           )}
         </DialogHeader>
@@ -1010,7 +1100,7 @@ export function FuelExpenseDialog({
               </Button>
               <Button 
                 type="submit" 
-                disabled={isPending || !canModify} // ⭐ NUEVO: Deshabilitar si conductor pagado
+                disabled={isPending || !canModify || (!isEditMode && isPeriodPaid)} // ⭐ NUEVO: Deshabilitar si conductor pagado O período pagado (solo en create mode)
                 title={protectionTooltip || undefined} // ⭐ NUEVO: Tooltip explicativo
               >
                 {isPending 

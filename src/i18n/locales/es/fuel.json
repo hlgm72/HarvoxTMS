@@ -230,6 +230,11 @@
       "create": "Crear",
       "save_changes": "Guardar Cambios",
       "saving": "Guardando..."
+    },
+    "validation": {
+      "checking_period": "Verificando período de pago...",
+      "payroll_paid_title": "Nómina del Período ya pagada - No se puede modificar",
+      "payroll_paid_message": "La nómina del conductor para el período {{periodLabel}} ({{startDate}} - {{endDate}}) ya fue pagada. No se pueden crear ni modificar gastos de combustible para períodos pagados."
     }
   },
   "edit_dialog": {
