@@ -4395,15 +4395,10 @@ export type Database = {
             Returns: Json
           }
         | { Args: { operation_data: Json }; Returns: Json }
-      simple_load_operation_with_deductions:
-        | {
-            Args: { load_data: Json; load_id_param?: string; stops_data?: Json }
-            Returns: Json
-          }
-        | {
-            Args: { load_data: Json; load_id_param: string; stops_data: Json }
-            Returns: Json
-          }
+      simple_load_operation_with_deductions: {
+        Args: { load_data: Json; load_id_param: string; stops_data: Json }
+        Returns: Json
+      }
       sync_existing_user_profiles: { Args: never; Returns: undefined }
       test_recurring_expenses_system: { Args: never; Returns: Json }
       unassign_equipment_with_validation: {
