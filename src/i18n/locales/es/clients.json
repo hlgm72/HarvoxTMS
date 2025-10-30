@@ -204,7 +204,7 @@
     },
     "messages": {
       "success_title": "Cliente creado exitosamente",
-      "success_description": "{clientName} ha sido agregado al sistema",
+      "success_description": "{{clientName}} ha sido agregado al sistema",
       "error_title": "Error",
       "error_description": "No se pudo crear el cliente. Intenta nuevamente.",
       "user_not_found": "Usuario o compañía no encontrados"
