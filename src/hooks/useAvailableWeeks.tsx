@@ -59,7 +59,11 @@ export function useAvailableWeeks(companyId?: string) {
             // Usar año ISO de la semana (consistente con formatPeriodLabel)
             const weekYear = calculateWeekYearFromString(period.period_start_date);
             const weekNumber = calculateWeekNumberFromString(period.period_start_date);
-            const month = startMonth; // Mes calendario para navegación UI
+            
+            // Para el mes de navegación: usar el punto medio de la semana para determinar el mes
+            // Esto evita que W01/2025 (30-dic-2024 a 5-ene-2025) aparezca en Diciembre 2025
+            const midDate = new Date(start.getTime() + (end.getTime() - start.getTime()) / 2);
+            const month = midDate.getMonth() + 1; // 1-12
             
             if (!weeksMap.has(weekYear)) {
               weeksMap.set(weekYear, new Map());
