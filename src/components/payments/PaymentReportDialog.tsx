@@ -37,7 +37,7 @@ import {
 import { formatPaymentPeriod, formatDateAuto, formatDateSafe, formatCurrency } from "@/lib/dateFormatting";
 import { format } from "date-fns";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
-import { calculateWeekNumberFromString } from "@/utils/weekCalculation";
+import { calculateWeekNumberFromString, calculateWeekYearFromString } from "@/utils/weekCalculation";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
@@ -734,7 +734,7 @@ export function PaymentReportDialog({
                         const startDate = (calculation as any).period.period_start_date;
                         const endDate = (calculation as any).period.period_end_date;
                         const weekNumber = calculateWeekNumberFromString(startDate);
-                        const year = startDate.split('-')[0];
+                        const year = calculateWeekYearFromString(startDate); // Año ISO (corrige W53/2024 → W1/2025)
                         const formattedDates = formatPaymentPeriod(startDate, endDate);
                         return `Wk${weekNumber}/${year} (${formattedDates})`;
                       })()
@@ -784,7 +784,7 @@ export function PaymentReportDialog({
                 const endDate = (calculation as any).period?.period_end_date;
                 if (!startDate || !endDate) return 'N/A';
                 const weekNumber = calculateWeekNumberFromString(startDate);
-                const year = startDate.split('-')[0];
+                const year = calculateWeekYearFromString(startDate); // Año ISO (corrige W53/2024 → W1/2025)
                 const formattedDates = formatPaymentPeriod(startDate, endDate);
                 return `Wk${weekNumber}/${year} (${formattedDates})`;
               })()}

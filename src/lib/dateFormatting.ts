@@ -6,7 +6,7 @@
 import { format, parseISO, isValid } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { es, enUS } from 'date-fns/locale';
-import { calculateWeekNumberFromString } from '@/utils/weekCalculation';
+import { calculateWeekNumberFromString, calculateWeekYearFromString } from '@/utils/weekCalculation';
 
 /**
  * Constantes para patrones de fecha comunes
@@ -74,11 +74,9 @@ export const formatDetailedPaymentPeriod = (
     // Use safe date parsing for period start
     const periodStart = formatDateSafe(startDate, 'yyyy-MM-dd');
     if (periodStart !== 'Fecha inválida' && periodStart !== 'Invalid date') {
-      const dateObj = parseISO(startDate);
-      const year = dateObj.getFullYear();
-      
-      // ✅ USAR FUNCIÓN UNIFICADA para calcular semana
+      // ✅ USAR FUNCIÓN UNIFICADA para calcular semana y año ISO
       const weekNumber = calculateWeekNumberFromString(startDate);
+      const year = calculateWeekYearFromString(startDate); // Año ISO (corrige W53/2024 → W1/2025)
       
       periodLabel = `Week ${weekNumber}/${year}`;
     } else {

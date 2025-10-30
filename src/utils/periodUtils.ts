@@ -1,6 +1,6 @@
 import { format, getYear, differenceInDays } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
-import { calculateWeekNumberFromString } from './weekCalculation';
+import { calculateWeekNumberFromString, calculateWeekYearFromString } from './weekCalculation';
 
 /**
  * Obtiene el idioma global de la aplicación
@@ -35,6 +35,7 @@ export const formatPeriodLabel = (startDate: string, endDate: string): string =>
   // Si es semanal (7-10 días), mostrar número de semana usando cálculo unificado
   if (durationDays <= 10) {
     const weekNumber = calculateWeekNumberFromString(startDate);
+    const year = calculateWeekYearFromString(startDate); // Año ISO (corrige W53/2024 → W1/2025)
     return `W${weekNumber.toString().padStart(2, '0')}/${year}`;
   }
   

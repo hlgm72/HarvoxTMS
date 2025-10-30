@@ -1,31 +1,19 @@
+import { getISOWeek, getISOWeekYear } from 'date-fns';
+
 /**
- * Función unificada para calcular números de semana usando el método PostgreSQL
- * PostgreSQL usa lunes como primer día de la semana y la primera semana contiene el 4 de enero
+ * Función unificada para calcular números de semana usando el método ISO 8601
+ * ISO 8601 usa lunes como primer día de la semana y la primera semana contiene el primer jueves del año
  */
 export const calculateWeekNumber = (date: Date): number => {
-  const year = date.getFullYear();
-  
-  // Encontrar el lunes de la semana que contiene la fecha
-  const dayOfWeek = date.getDay(); // 0=domingo, 1=lunes, ... 6=sábado
-  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convertir a lunes=0
-  const mondayOfWeek = new Date(date);
-  mondayOfWeek.setDate(date.getDate() - daysFromMonday);
-  
-  // Encontrar el lunes de la primera semana del año
-  // La primera semana es la que contiene el 4 de enero
-  const jan4 = new Date(year, 0, 4); // 4 de enero
-  const jan4DayOfWeek = jan4.getDay();
-  const jan4DaysFromMonday = jan4DayOfWeek === 0 ? 6 : jan4DayOfWeek - 1;
-  const firstMondayOfYear = new Date(jan4);
-  firstMondayOfYear.setDate(4 - jan4DaysFromMonday);
-  
-  // Calcular diferencia en días y convertir a semanas
-  const daysDiff = Math.floor((mondayOfWeek.getTime() - firstMondayOfYear.getTime()) / (1000 * 60 * 60 * 24));
-  const weekNumber = Math.floor(daysDiff / 7) + 1;
-  
-  // Debug logs removed to clean console
-  
-  return weekNumber;
+  return getISOWeek(date);
+};
+
+/**
+ * Calcula el año ISO de la semana (importante para semanas entre años)
+ * Ejemplo: 30/12/2024 pertenece a la semana 1 de 2025, no a la semana 53 de 2024
+ */
+export const calculateWeekYear = (date: Date): number => {
+  return getISOWeekYear(date);
 };
 
 /**
@@ -35,4 +23,13 @@ export const calculateWeekNumberFromString = (dateString: string): number => {
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(year, month - 1, day, 12, 0, 0); // Mediodía para evitar problemas de zona horaria
   return calculateWeekNumber(date);
+};
+
+/**
+ * Calcula el año ISO de la semana desde una fecha string en formato YYYY-MM-DD
+ */
+export const calculateWeekYearFromString = (dateString: string): number => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, month - 1, day, 12, 0, 0);
+  return calculateWeekYear(date);
 };
