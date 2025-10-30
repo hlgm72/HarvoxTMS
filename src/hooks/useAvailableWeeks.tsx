@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { getISOWeek } from 'date-fns';
+import { differenceInDays } from 'date-fns';
+import { calculateWeekNumberFromString, calculateWeekYearFromString } from '@/utils/weekCalculation';
 
 interface WeekData {
   weekNumber: number;
@@ -46,30 +47,39 @@ export function useAvailableWeeks(companyId?: string) {
       
       data?.forEach(period => {
         if (period.period_start_date && period.period_end_date) {
-          // CRÍTICO: Usar año/mes calendario (igual que otros hooks) para consistencia en UI
-          const startDate = new Date(period.period_start_date + 'T12:00:00Z');
-          const year = startDate.getUTCFullYear(); // Año calendario de la fecha (2004 para W53/2004)
-          const month = startDate.getUTCMonth() + 1; // 1-12
-          const weekNumber = getISOWeek(startDate); // ISO week (1-53)
+          // Calcular duración del período
+          const [startYear, startMonth, startDay] = period.period_start_date.split('-').map(Number);
+          const [endYear, endMonth, endDay] = period.period_end_date.split('-').map(Number);
+          const start = new Date(startYear, startMonth - 1, startDay, 12, 0, 0);
+          const end = new Date(endYear, endMonth - 1, endDay, 12, 0, 0);
+          const durationDays = differenceInDays(end, start) + 1;
           
-          if (!weeksMap.has(year)) {
-            weeksMap.set(year, new Map());
-          }
-          
-          const yearMap = weeksMap.get(year)!;
-          if (!yearMap.has(month)) {
-            yearMap.set(month, new Map());
-          }
-          
-          const monthMap = yearMap.get(month)!;
-          
-          // Solo agregar si no existe o actualizar con el rango más amplio
-          if (!monthMap.has(weekNumber)) {
-            monthMap.set(weekNumber, {
-              weekNumber,
-              startDate: period.period_start_date,
-              endDate: period.period_end_date
-            });
+          // Solo incluir períodos semanales (7-10 días)
+          if (durationDays <= 10) {
+            // Usar año ISO de la semana (consistente con formatPeriodLabel)
+            const weekYear = calculateWeekYearFromString(period.period_start_date);
+            const weekNumber = calculateWeekNumberFromString(period.period_start_date);
+            const month = startMonth; // Mes calendario para navegación UI
+            
+            if (!weeksMap.has(weekYear)) {
+              weeksMap.set(weekYear, new Map());
+            }
+            
+            const yearMap = weeksMap.get(weekYear)!;
+            if (!yearMap.has(month)) {
+              yearMap.set(month, new Map());
+            }
+            
+            const monthMap = yearMap.get(month)!;
+            
+            // Solo agregar si no existe
+            if (!monthMap.has(weekNumber)) {
+              monthMap.set(weekNumber, {
+                weekNumber,
+                startDate: period.period_start_date,
+                endDate: period.period_end_date
+              });
+            }
           }
         }
       });
