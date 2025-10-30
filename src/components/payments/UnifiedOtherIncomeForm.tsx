@@ -204,6 +204,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   // Verificar si el período está pagado (el query ya filtra solo los pagados)
   const isPeriodPaid = paymentPeriods.length > 0;
+  
+  console.log('🎯 isPeriodPaid calculated:', isPeriodPaid, 'paymentPeriods:', paymentPeriods);
 
   // Validación del formulario con useMemo
   const isFormValid = useMemo(() => {
@@ -215,6 +217,7 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       date &&
       !isPeriodPaid // Bloquear si el período está pagado
     );
+    console.log('✅ Form validation:', { valid, isPeriodPaid, selectedUser, hasDescription: !!description.trim(), incomeType, amount: atmInput.numericValue, hasDate: !!date });
     return valid;
   }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid]);
 
