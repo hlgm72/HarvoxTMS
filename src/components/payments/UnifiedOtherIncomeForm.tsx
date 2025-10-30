@@ -78,14 +78,18 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   // Verificar períodos pagados
   const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
-    queryKey: ['user-payment-periods-for-income', selectedUser, date],
+    queryKey: ['user-payment-periods-for-income', selectedUser, date?.toISOString()],
     queryFn: async () => {
+      console.log('🔄 Executing query with:', { selectedUser, date, companyId: selectedCompany?.id });
+      
       if (!selectedUser || !date || !selectedCompany?.id) {
+        console.log('⚠️ Query skipped - missing required data');
         return [];
       }
 
       try {
         const incomeDateStr = formatDateInUserTimeZone(date);
+        console.log('📅 Formatted date:', incomeDateStr);
         
         const { data: allPeriods, error: periodsError } = await supabase
           .from('user_payrolls')
@@ -101,6 +105,8 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           .eq('user_id', selectedUser)
           .order('created_at', { ascending: false });
         
+        console.log('📊 Query result:', { allPeriods, error: periodsError });
+        
         if (periodsError) {
           console.error('Error fetching user periods:', periodsError);
           return [];
@@ -114,14 +120,18 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           return incomeDateStr >= startDate && incomeDateStr <= endDate;
         }) || [];
 
+        console.log('🎯 Periods for date:', periodsForDate);
+
         // Retornar solo períodos pagados para mostrar advertencia
-        return periodsForDate.filter(p => p.payment_status === 'paid');
+        const paidPeriods = periodsForDate.filter(p => p.payment_status === 'paid');
+        console.log('💰 Paid periods:', paidPeriods);
+        return paidPeriods;
       } catch (error) {
         console.error('Error in payment periods query:', error);
         return [];
       }
     },
-    enabled: !!selectedUser && !!date
+    enabled: !!selectedUser && !!date && !!selectedCompany?.id
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
