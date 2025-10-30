@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { formatPeriodLabel } from "@/utils/periodUtils";
+import { formatDateInUserTimeZone } from "@/lib/dateFormatting";
 
 interface ValidationResult {
   isValid: boolean;
@@ -45,6 +46,9 @@ export function useValidateLoadDatesAgainstPaidPeriods() {
     try {
       // Verificar cada fecha
       for (const date of dates) {
+        // ✅ Formatear fecha a YYYY-MM-DD antes de enviar a Supabase
+        const formattedDate = formatDateInUserTimeZone(new Date(date));
+        
         // Buscar si existe un período de pago para esta fecha y conductor
         const { data: periods, error: periodsError } = await supabase
           .from('company_payment_periods')
@@ -58,8 +62,8 @@ export function useValidateLoadDatesAgainstPaidPeriods() {
             )
           `)
           .eq('company_id', selectedCompany.id)
-          .lte('period_start_date', date)
-          .gte('period_end_date', date)
+          .lte('period_start_date', formattedDate)
+          .gte('period_end_date', formattedDate)
           .limit(1);
 
         if (periodsError) {
