@@ -13,7 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
-import { parseISO, isWithinInterval, isBefore, isAfter, format, getISOWeek, getISOWeekYear } from "date-fns";
+import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { formatDateOnly, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 import { useATMInput } from "@/hooks/useATMInput";
@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useFinancialDataValidation } from '@/hooks/useFinancialDataValidation'; // ⭐ NUEVO
 import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from '@/lib/financialIntegrityUtils'; // ⭐ NUEVO
 import { formatPeriodLabel } from '@/utils/periodUtils';
+import { calculateWeekNumberFromString, calculateWeekYearFromString } from '@/utils/weekCalculation';
 
 interface EventualDeductionDialogProps {
   isOpen: boolean;
@@ -693,9 +694,9 @@ export function EventualDeductionDialog({
                         let periodLabel = '';
                         
                         if (frequency === 'weekly') {
-                          // Usar ISO week year para el año correcto según estándar ISO 8601
-                          const weekNumber = getISOWeek(periodStart);
-                          const weekYear = getISOWeekYear(periodStart);
+                          // Usar funciones centralizadas para cálculo de semana ISO
+                          const weekNumber = calculateWeekNumberFromString(period.period_start_date);
+                          const weekYear = calculateWeekYearFromString(period.period_start_date);
                           periodLabel = `Period Week ${weekNumber}/${weekYear}`;
                         } else if (frequency === 'biweekly') {
                           // Determinar si es primera o segunda quincena
