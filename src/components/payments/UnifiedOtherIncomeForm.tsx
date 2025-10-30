@@ -203,10 +203,10 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
       incomeType && 
       atmInput.numericValue > 0 && 
       date &&
-      (isEditing || !isPeriodPaid) // Solo bloquear en modo creación si el período está pagado
+      !isPeriodPaid // Bloquear si el período está pagado
     );
     return valid;
-  }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid, isEditing]);
+  }, [selectedUser, description, incomeType, atmInput.numericValue, date, isPeriodPaid]);
 
   // Notificar al padre cuando cambie la validación
   useEffect(() => {
@@ -217,8 +217,15 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
 
   // Notificar al padre cuando cambie el estado de período pagado
   useEffect(() => {
+    console.log('🔍 Period status changed:', {
+      isLoadingPeriods,
+      isPeriodPaid,
+      paymentPeriodsLength: paymentPeriods.length,
+      hasPeriodInfo: !!paymentPeriods[0]?.period
+    });
+    
     if (onPeriodStatusChange) {
-      onPeriodStatusChange({
+      const status = {
         isLoading: isLoadingPeriods,
         isPaid: isPeriodPaid,
         periodInfo: isPeriodPaid && paymentPeriods[0]?.period ? {
@@ -226,7 +233,9 @@ export function UnifiedOtherIncomeForm({ onClose, defaultUserType = "driver", ed
           period_end_date: paymentPeriods[0].period.period_end_date,
           period_frequency: paymentPeriods[0].period.period_frequency
         } : undefined
-      });
+      };
+      console.log('📤 Sending period status to parent:', status);
+      onPeriodStatusChange(status);
     }
   }, [isLoadingPeriods, isPeriodPaid, paymentPeriods, onPeriodStatusChange]);
   

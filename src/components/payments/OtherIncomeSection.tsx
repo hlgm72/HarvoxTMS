@@ -82,6 +82,8 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
       period_frequency: string;
     };
   }>({ isLoading: false, isPaid: false });
+  
+  console.log('📥 Current periodStatus in parent:', periodStatus);
   const deleteOtherIncome = useDeleteOtherIncome();
 
   // Cargar datos reales de otros ingresos si no se pasan como props
