@@ -688,7 +688,7 @@ export function EventualDeductionDialog({
                         const startDate = formatDateOnly(period.period_start_date);
                         const endDate = formatDateOnly(period.period_end_date);
                         const frequency = period.period_frequency;
-                        const periodStart = new Date(period.period_start_date);
+                        const periodStart = parseISO(period.period_start_date);
                         
                         let periodLabel = '';
                         
