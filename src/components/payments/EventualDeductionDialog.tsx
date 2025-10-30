@@ -13,7 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CalendarIcon } from "lucide-react";
-import { parseISO, isWithinInterval, isBefore, isAfter, format } from "date-fns";
+import { parseISO, isWithinInterval, isBefore, isAfter, format, getISOWeek, getISOWeekYear } from "date-fns";
 import { formatPrettyDate, formatMonthName } from '@/lib/dateFormatting';
 import { formatDateOnly, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 import { useATMInput } from "@/hooks/useATMInput";
@@ -693,11 +693,10 @@ export function EventualDeductionDialog({
                         let periodLabel = '';
                         
                         if (frequency === 'weekly') {
-                          // Calcular número de semana ISO del año
-                          const oneJan = new Date(periodStart.getFullYear(), 0, 1);
-                          const numberOfDays = Math.floor((periodStart.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
-                          const weekNumber = Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
-                          periodLabel = `Period Week ${weekNumber}/${periodStart.getFullYear()}`;
+                          // Usar ISO week year para el año correcto según estándar ISO 8601
+                          const weekNumber = getISOWeek(periodStart);
+                          const weekYear = getISOWeekYear(periodStart);
+                          periodLabel = `Period Week ${weekNumber}/${weekYear}`;
                         } else if (frequency === 'biweekly') {
                           // Determinar si es primera o segunda quincena
                           const day = periodStart.getDate();
