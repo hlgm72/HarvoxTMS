@@ -61,6 +61,7 @@ export function EventualDeductionDialog({
   });
   
   const [expenseDate, setExpenseDate] = useState<Date | undefined>(undefined);
+  const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(undefined); // ⭐ Estado separado para la navegación del calendario
   const [driverComboboxOpen, setDriverComboboxOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
@@ -98,7 +99,9 @@ export function EventualDeductionDialog({
           amount: editingDeduction.amount.toString(),
           notes: editingDeduction.notes || ''
         });
-        setExpenseDate(parseISO(editingDeduction.expense_date));
+        const parsedDate = parseISO(editingDeduction.expense_date);
+        setExpenseDate(parsedDate);
+        setCalendarMonth(parsedDate); // ⭐ Sincronizar el mes del calendario
         atmInput.setValue(editingDeduction.amount);
       } else {
         // Reset form for creating
@@ -110,6 +113,7 @@ export function EventualDeductionDialog({
           notes: ''
         });
         setExpenseDate(undefined);
+        setCalendarMonth(new Date()); // ⭐ Resetear al mes actual
         atmInput.setValue(0);
       }
     }
@@ -640,11 +644,12 @@ export function EventualDeductionDialog({
                         onSelect={(date) => {
                           if (date) {
                             setExpenseDate(date);
+                            setCalendarMonth(date); // ⭐ Sincronizar el mes cuando se selecciona una fecha
                             setIsDatePickerOpen(false);
                           }
                         }}
-                        month={expenseDate}
-                        onMonthChange={setExpenseDate}
+                        month={calendarMonth || expenseDate || new Date()} // ⭐ Usar estado separado para la navegación
+                        onMonthChange={setCalendarMonth} // ⭐ Solo actualizar el mes visible, no la fecha seleccionada
                         captionLayout="dropdown-buttons"
                         showWeekNumber
                         className="p-1 pointer-events-auto"
