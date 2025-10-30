@@ -539,30 +539,19 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   };
 
   const onSubmit = async (values: LoadFormData) => {
-    console.log('🚨🚨🚨 onSubmit STARTED!!! Mode:', mode);
-    console.log('🚨🚨🚨 CLIENT_ID VALUE:', values.client_id);
-    console.log('🚨🚨🚨 CONTACT_ID VALUE:', values.contact_id);
-    console.log('🚨🚨🚨 SELECTED CLIENT:', selectedClient?.name);
-    console.log('🚨 onSubmit called with values:', values);
-    console.log('🚨 Current mode:', mode);
-    console.log('🚨 Current phase:', currentPhase);
-    
     // Limpiar errores previos antes de validar
     form.clearErrors();
     
     // En modo edición, permitir guardar en cualquier fase
     // En modo creación y duplicación, solo permitir en la fase final (duplicate se comporta como create)
     if ((mode === 'create' || mode === 'duplicate') && currentPhase !== 4) {
-      console.log('🚨 onSubmit blocked - not in final phase for create mode');
       return;
     }
 
     // Validar campos requeridos del formulario primero
-    console.log('🔍 onSubmit - Validating form values:', values);
     
     // Validar número de carga requerido (Paso 1)
     if (!values.load_number || values.load_number.trim() === '') {
-      console.log('🚨 onSubmit blocked - missing load number');
       form.setError("load_number", {
         type: "manual",
         message: t("loads:create_wizard.validation.load_number_required")
@@ -709,24 +698,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       temporaryDocuments: (mode === 'create' || mode === 'duplicate') ? loadDocuments : undefined, // Pass temporary documents only for new loads
     };
 
-    if (import.meta.env.DEV) {
-      console.log('📍 CreateLoadDialog - Current loadStops state:', loadStops);
-      console.log('📋 CreateLoadDialog - Submitting load data:', loadDataToSubmit);
-      console.log('🚨 CreateLoadDialog - Dispatcher ID being sent:', loadDataToSubmit.internal_dispatcher_id);
-      console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
-      console.log('🔍 CreateLoadDialog - Full selected dispatcher:', selectedDispatcher);
-      console.log('🔍 CreateLoadDialog - Full load data to submit:', JSON.stringify(loadDataToSubmit, null, 2));
-      console.log('🔍 CreateLoadDialog - Selected dispatcher object:', selectedDispatcher);
-      console.log('🔍 CreateLoadDialog - Selected dispatcher user_id:', selectedDispatcher?.user_id);
-      console.log('🔍 CreateLoadDialog - Raw form values:', values);
-      console.log('📋 CreateLoadDialog - Current mutation state:', {
-        isIdle: createLoadMutation.isIdle,
-        isPending: createLoadMutation.isPending,
-        isError: createLoadMutation.isError,
-        isSuccess: createLoadMutation.isSuccess,
-        error: createLoadMutation.error
-      });
-    }
     
     createLoadMutation.mutate(loadDataToSubmit, {
       onSuccess: () => {

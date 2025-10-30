@@ -347,30 +347,6 @@ export function PaymentReportDialog({
         throw error;
       }
       
-      if (import.meta.env.DEV) {
-        console.log('✅ Deductions query result:', data);
-        console.log('✅ Deductions count from query:', data?.length || 0);
-        
-        // Verificar permisos adicionales
-        console.log('🔐 Current user ID:', (await supabase.auth.getUser()).data.user?.id);
-        
-        // Debug: Calcular manualmente los totales esperados por tipo de deducción
-        if (data && data.length > 0) {
-          const leasingTotal = data.filter(d => d.expense_types?.name === 'Leasing Fee').reduce((sum, d) => sum + d.amount, 0);
-          const factoringTotal = data.filter(d => d.expense_types?.name === 'Factoring Fee').reduce((sum, d) => sum + d.amount, 0);
-          const dispatchingTotal = data.filter(d => d.expense_types?.name === 'Dispatching Fee').reduce((sum, d) => sum + d.amount, 0);
-          
-          console.log('📊 DEDUCTION TOTALS FROM DB BY TYPE:');
-          console.log('  Leasing Total from DB:', leasingTotal);
-          console.log('  Factoring Total from DB:', factoringTotal);
-          console.log('  Dispatching Total from DB:', dispatchingTotal);
-          console.log('  Grand Total from DB:', leasingTotal + factoringTotal + dispatchingTotal);
-          
-          console.log('📊 AVAILABLE EXPENSE TYPES:');
-          data.forEach(d => console.log(`  - ${d.expense_types?.name}: $${d.amount}`));
-        }
-      }
-      
       return data || [];
     },
     enabled: !!calculation?.company_payment_period_id && !!calculation?.user_id

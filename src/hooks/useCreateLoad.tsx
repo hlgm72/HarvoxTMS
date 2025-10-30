@@ -151,15 +151,6 @@ export const useCreateLoad = () => {
 
   return useMutation({
     mutationFn: async (data: CreateLoadData): Promise<string> => {
-      console.log('🚚 ========== INICIO MUTACIÓN useCreateLoad ==========');
-      console.log('📦 Datos completos de entrada:', JSON.stringify(data, null, 2));
-      console.log('🔍 Modo:', data.mode);
-      console.log('🔍 ID de carga:', data.id);
-      console.log('🔍 Driver User ID:', data.driver_user_id);
-      console.log('🔍 Dispatcher ID being sent:', data.internal_dispatcher_id);
-      console.log('🔍 Mapped to internal_dispatcher_id:', data.internal_dispatcher_id || '');
-      console.log('🔍 Raw data object:', JSON.stringify(data, null, 2));
-      
       if (!user) {
         throw new Error('Usuario no autenticado');
       }
@@ -204,10 +195,6 @@ export const useCreateLoad = () => {
         leasing_percentage: toNumber(data.leasing_percentage) ?? 0
       };
 
-      console.log('🔍 useCreateLoad - Final loadData being sent to RPC:', loadData);
-      console.log('🔍 useCreateLoad - Client contact ID being sent:', loadData.client_contact_id);
-      console.log('🔍 useCreateLoad - Dispatcher in loadData:', loadData.internal_dispatcher_id);
-      
       // Prepare stops data with sanitization
       // ✅ Solo incluir campos que existen en la tabla load_stops
       const stopsData = (data.stops || []).map(stop => ({
@@ -230,25 +217,15 @@ export const useCreateLoad = () => {
         delivery_timezone: stop.delivery_timezone || 'America/New_York'
       }));
 
-      console.log('🔍 useCreateLoad - Stops data being sent to RPC:', stopsData);
-      console.log('🔍 useCreateLoad - Number of stops:', stopsData.length);
-
       // ===============================================
       // 🚨 SISTEMA DE PERÍODOS BAJO DEMANDA v3.0 - CRÍTICO 
       // ⚠️ DELEGAMOS LA CREACIÓN DE PERÍODOS A LA FUNCIÓN SQL
       // ===============================================
-      console.log('🔍 useCreateLoad - Delegating payment period creation to SQL function');
-      
-      // ✅ VALIDACIÓN: Verificar que hay conductor asignado para cálculos correctos
-      if (!data.driver_user_id) {
-        console.warn('⚠️ useCreateLoad - No driver assigned, period calculations may be incomplete');
-      }
       
       // ✅ La función SQL simple_load_operation_with_deductions se encarga de:
       // 1. Crear el período de pago usando create_payment_period_if_needed
       // 2. Crear los user_payment_periods para el usuario correcto
       // 3. Generar las deducciones automáticas
-      console.log('✅ useCreateLoad - Payment period creation delegated to SQL function');
 
       // ✅ PREPARAR DATOS PARA FUNCIÓN SQL CON FECHAS CORRECTAS
       const stopsWithDates = stopsData.filter(stop => stop.scheduled_date);
@@ -264,18 +241,6 @@ export const useCreateLoad = () => {
       };
       
       // ✅ CREAR/ACTUALIZAR CARGA CON PERÍODOS Y CÁLCULOS AUTOMÁTICOS
-      console.log('📞 ========== LLAMANDO RPC ==========');
-      console.log('🔍 Función: simple_load_operation_with_deductions');
-      console.log('🔍 Parámetros completos:', {
-        operation_type: isEdit ? 'UPDATE' : 'CREATE',
-        has_driver: !!loadDataForRPC.driver_user_id,
-        pickup_date: loadDataForRPC.pickup_date,
-        delivery_date: loadDataForRPC.delivery_date,
-        load_data: loadDataForRPC,
-        stops_data: stopsData,
-        load_id_param: isEdit ? data.id : null
-      });
-      
       let loadResult: any;
       let loadError: any;
       
@@ -292,10 +257,6 @@ export const useCreateLoad = () => {
         loadResult = rpcResponse.data;
         loadError = rpcResponse.error;
 
-        console.log('📞 ========== RESPUESTA RPC ==========');
-        console.log('📊 Data recibida:', JSON.stringify(loadResult, null, 2));
-        console.log('📊 Error recibido:', loadError);
-
         if (loadError) {
           console.error('❌ ERROR RPC:', {
             message: loadError.message,
@@ -311,11 +272,8 @@ export const useCreateLoad = () => {
         }
 
         if (!loadResult) {
-          console.error('❌ ERROR: RPC sin error pero data es null/undefined');
           throw new Error('Load operation completed but no data returned');
         }
-
-        console.log('✅ RPC EXITOSO');
         
       } catch (rpcError) {
         console.error('❌ ========== ERROR EN RPC CALL ==========');
@@ -324,8 +282,6 @@ export const useCreateLoad = () => {
         throw rpcError;
       }
 
-      console.log('🔍 useCreateLoad - Load operation result:', JSON.stringify(loadResult, null, 2));
-      
       if (!(loadResult as any)?.success) {
         console.error('❌ useCreateLoad - Load operation failed. Result:', loadResult);
         
@@ -352,96 +308,35 @@ export const useCreateLoad = () => {
 
       const loadId = (loadResult as any).load?.id || data.id;
 
-      // ✅ Log de deducciones automáticas generadas
-      if ((loadResult as any)?.automatic_deductions) {
-        const deductions = (loadResult as any).automatic_deductions;
-        console.log('✅ useCreateLoad - Automatic deductions generated:', deductions);
-      }
-
       // Handle temporary documents upload (outside ACID transaction for performance)
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
-        console.log('📄 useCreateLoad - Processing temporary documents post-ACID');
         try {
           await uploadTemporaryDocuments(data.temporaryDocuments, loadId, data.load_number);
-          console.log('✅ useCreateLoad - Temporary documents uploaded successfully');
         } catch (uploadError) {
           console.error('❌ useCreateLoad - Error uploading documents:', uploadError);
           // Don't fail the whole operation for document errors
-          console.warn('⚠️ useCreateLoad - Continuing despite document upload errors');
         }
       }
 
-      console.log('🚚 ========== MUTACIÓN COMPLETADA EXITOSAMENTE ==========');
-      console.log('🆔 Load ID retornado:', loadId);
       return loadId;
     },
     onSuccess: async (loadId, variables) => {
-      console.log('🎉 ========== ON SUCCESS EJECUTADO ==========');
-      console.log('🎉 Load ID recibido:', loadId);
-      console.log('🎉 Variables completas:', JSON.stringify(variables, null, 2));
-      console.log('🔍 Modo:', variables.mode);
-      console.log('🔍 Driver User ID:', variables.driver_user_id);
-      console.log('🔍 Load ID original:', variables.id);
-      console.log('🔍 typeof loadId:', typeof loadId);
-      console.log('🔍 loadId value:', loadId);
-      
       const isEdit = variables.mode === 'edit';
-      console.log('🔍 ¿Es edición?', isEdit);
-      
-      // Verificar estado del hook de recálculo
-      console.log('🔍 ========== VERIFICANDO HOOK RECÁLCULO ==========');
-      console.log('🔍 recalculateUserPeriod disponible:', !!recalculateUserPeriod);
-      console.log('🔍 recalculateUserPeriod.mutateAsync disponible:', !!recalculateUserPeriod?.mutateAsync);
-      console.log('🔍 recalculateUserPeriod.isPending:', recalculateUserPeriod?.isPending);
-      console.log('🔍 recalculateUserPeriod.error:', recalculateUserPeriod?.error);
-      
-      // Check recalculation conditions
-      console.log('🔍 ========== VERIFICANDO CONDICIONES PARA RECÁLCULO ==========');
-      console.log('🔍 isEdit:', isEdit);
-      console.log('🔍 variables.driver_user_id:', variables.driver_user_id);
-      console.log('🔍 typeof recalculateUserPeriod:', typeof recalculateUserPeriod);
-      console.log('🔍 recalculateUserPeriod.mutateAsync:', typeof recalculateUserPeriod?.mutateAsync);
 
       // If editing and driver is assigned, recalculate their payment period
       if (isEdit && variables.driver_user_id) {
-        console.log('🔄 ========== INICIANDO RECÁLCULO ==========');
-        console.log('🔄 Condiciones cumplidas para recálculo automático');
-        
-        const recalculateParams = {
-          userId: variables.driver_user_id,
-          loadId: loadId
-        };
-        
-        console.log('🔄 Parámetros de recálculo:', JSON.stringify(recalculateParams, null, 2));
-        
         try {
-          console.log('🔄 Llamando recalculateUserPeriod.mutateAsync...');
-          const recalcResult = await recalculateUserPeriod.mutateAsync(recalculateParams);
-          console.log('✅ User period recalculated automatically');
-          console.log('✅ Resultado del recálculo:', recalcResult);
+          await recalculateUserPeriod.mutateAsync({
+            userId: variables.driver_user_id,
+            loadId: loadId
+          });
         } catch (recalcError) {
-          console.error('❌ ========== ERROR EN RECÁLCULO ==========');
-          console.error('❌ Error completo:', recalcError);
-          console.error('❌ Error message:', recalcError instanceof Error ? recalcError.message : 'Unknown error');
-          console.error('❌ Stack trace:', recalcError instanceof Error ? recalcError.stack : 'No stack');
+          console.error('Error recalculating user period:', recalcError);
           // Don't fail the main operation, just log the error
-        }
-      } else {
-        console.log('🚫 ========== RECÁLCULO NO EJECUTADO ==========');
-        console.log('🚫 Razones de no ejecución:');
-        console.log('   - isEdit:', isEdit, '(debe ser true)');
-        console.log('   - driver_user_id:', variables.driver_user_id, '(debe existir)');
-        console.log('   - recalculateUserPeriod disponible:', !!recalculateUserPeriod);
-        if (!isEdit) {
-          console.log('🚫 No es modo edición');
-        }
-        if (!variables.driver_user_id) {
-          console.log('🚫 No hay conductor asignado');
         }
       }
       
       // Standard cache invalidations
-      console.log('🔄 Invalidando queries...');
       queryClient.invalidateQueries({ queryKey: ['loads'] });
       queryClient.invalidateQueries({ queryKey: ['load-stops'] });
       queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
@@ -458,18 +353,8 @@ export const useCreateLoad = () => {
       
       // Refetch inmediato para sincronización rápida
       await queryClient.refetchQueries({ queryKey: ['loads'] });
-      console.log('✅ Queries invalidadas');
-      
-      console.log('🎉 ========== ON SUCCESS COMPLETADO ==========');
     },
     onError: (error: Error, variables) => {
-      console.error('💥 ========== ON ERROR EJECUTADO ==========');
-      console.error('💥 Error completo:', error);
-      console.error('💥 Error message:', error.message);
-      console.error('💥 Error stack:', error.stack);
-      console.error('💥 Variables que causaron error:', JSON.stringify(variables, null, 2));
-      console.error('💥 Tipo de error:', error.constructor.name);
-      
       // Traducir errores técnicos a mensajes amigables
       let errorMessage = 'No se pudo guardar la carga. Inténtalo de nuevo.';
       
@@ -484,7 +369,6 @@ export const useCreateLoad = () => {
       }
       
       showError(errorMessage);
-      console.error('💥 ========== ON ERROR COMPLETADO ==========');
     },
   });
 };
