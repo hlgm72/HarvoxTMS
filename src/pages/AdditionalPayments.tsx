@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { PageToolbar } from "@/components/layout/PageToolbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { getISOWeek } from "date-fns";
 import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { formatPeriodLabel } from "@/utils/periodUtils";
+import { formatDateOnly, formatDateInUserTimeZone } from "@/lib/dateFormatting";
 
 export default function AdditionalPayments() {
   const { isDriver, isOperationsManager, isCompanyOwner, user } = useAuth();
@@ -27,6 +31,72 @@ export default function AdditionalPayments() {
   const { data: availableWeeks } = useAvailableWeeks(selectedCompany?.id);
   const [isCreateIncomeDialogOpen, setIsCreateIncomeDialogOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [createFormState, setCreateFormState] = useState<{
+    selectedUser: string;
+    date: Date | undefined;
+  }>({ selectedUser: '', date: undefined });
+
+  // Callback estable para actualizar el estado del formulario
+  const handleFormStateChange = useCallback((state: { selectedUser: string; date: Date | undefined }) => {
+    console.log('🔄 AdditionalPayments - Form state changed:', state);
+    setCreateFormState(state);
+  }, []);
+
+  // Query para verificar períodos pagados
+  const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
+    queryKey: ['user-payment-periods-additional-payments', createFormState.selectedUser, createFormState.date?.toISOString()],
+    queryFn: async () => {
+      if (!createFormState.selectedUser || !createFormState.date || !selectedCompany?.id) {
+        console.log('❌ Query disabled - missing params:', {
+          selectedUser: createFormState.selectedUser,
+          date: createFormState.date,
+          companyId: selectedCompany?.id
+        });
+        return [];
+      }
+
+      console.log('🔍 Checking paid periods for:', {
+        userId: createFormState.selectedUser,
+        date: createFormState.date
+      });
+
+      const incomeDateStr = formatDateInUserTimeZone(createFormState.date);
+      
+      const { data: allPeriods, error } = await supabase
+        .from('user_payrolls')
+        .select(`
+          *,
+          period:company_payment_periods!company_payment_period_id(
+            period_start_date,
+            period_end_date,
+            period_frequency
+          )
+        `)
+        .eq('company_id', selectedCompany.id)
+        .eq('user_id', createFormState.selectedUser)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('❌ Error fetching periods:', error);
+        return [];
+      }
+
+      const periodsForDate = allPeriods?.filter(period => {
+        if (!period.period) return false;
+        return incomeDateStr >= period.period.period_start_date && 
+               incomeDateStr <= period.period.period_end_date;
+      }) || [];
+
+      const paidPeriods = periodsForDate.filter(p => p.payment_status === 'paid');
+      console.log('✅ Paid periods found:', paidPeriods.length, paidPeriods);
+      
+      return paidPeriods;
+    },
+    enabled: !!createFormState.selectedUser && !!createFormState.date && !!selectedCompany?.id && isCreateIncomeDialogOpen
+  });
+
+  const isPeriodPaid = paymentPeriods.length > 0;
+  console.log('📊 Period status:', { isLoadingPeriods, isPeriodPaid, paymentPeriods: paymentPeriods.length });
 
   // Initialize with current week
   const getCurrentWeek = () => {
@@ -292,12 +362,46 @@ export default function AdditionalPayments() {
             <DialogDescription>
               {t('payments:additional_payments.dialogs.new_income_description')}
             </DialogDescription>
+
+            {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
+            {createFormState.selectedUser && createFormState.date && isLoadingPeriods && (
+              <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
+                <p className="text-sm text-blue-800">
+                  {t('payments:form.checking_period')}
+                </p>
+              </div>
+            )}
+            
+            {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
+            {createFormState.selectedUser && createFormState.date && !isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
+              <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
+                <p className="text-sm text-red-800 font-medium">
+                  ⚠️ {t('payments:form.payroll_paid_title')}
+                </p>
+                <p className="text-xs text-red-600 mt-1">
+                  {(() => {
+                    const period = paymentPeriods[0].period;
+                    const startDate = formatDateOnly(period.period_start_date);
+                    const endDate = formatDateOnly(period.period_end_date);
+                    const periodLabel = formatPeriodLabel(period.period_start_date, period.period_end_date);
+                    
+                    return t('payments:form.payroll_paid_message', {
+                      periodLabel,
+                      startDate,
+                      endDate
+                    });
+                  })()}
+                </p>
+              </div>
+            )}
           </div>
           <div className="overflow-y-auto flex-1 p-6 bg-white">
             <UnifiedOtherIncomeForm 
               onClose={() => setIsCreateIncomeDialogOpen(false)}
               showButtons={false}
               onValidationChange={setIsFormValid}
+              onFormStateChange={handleFormStateChange}
+              isPeriodPaid={isPeriodPaid}
             />
           </div>
           <div className="flex gap-2 p-4 border-t flex-shrink-0 bg-background">
