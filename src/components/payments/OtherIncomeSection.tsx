@@ -288,7 +288,7 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                 </DialogDescription>
 
                 {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
-                {isLoadingPeriods && createFormState.selectedUser && createFormState.date && (
+                {createFormState.selectedUser && createFormState.date && isLoadingPeriods && (
                   <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
                     <p className="text-sm text-blue-800">
                       {t('payments:form.checking_period')}
@@ -297,7 +297,7 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
                 )}
                 
                 {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
-                {!isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
+                {createFormState.selectedUser && createFormState.date && !isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
                   <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
                     <p className="text-sm text-red-800 font-medium">
                       ⚠️ {t('payments:form.payroll_paid_title')}
