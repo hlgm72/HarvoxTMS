@@ -392,11 +392,28 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                               .find(w => w.year === selectedWeekYear)
                               ?.months.find(m => m.month === selectedWeekMonth)
                               ?.weeks.map(({ weekNumber, startDate, endDate }) => {
+                                // Calcular el año ISO correcto para esta semana
+                                const startDateObj = new Date(startDate + 'T12:00:00Z');
+                                const isoYear = startDateObj.getUTCFullYear();
+                                const isoMonth = startDateObj.getUTCMonth();
+                                const isoDate = startDateObj.getUTCDate();
+                                
+                                // Si es semana 1 y estamos en diciembre, el año ISO es el siguiente
+                                // Si es semana 52/53 y estamos en enero, el año ISO es el anterior
+                                let displayYear = isoYear;
+                                if (weekNumber === 1 && isoMonth === 11) {
+                                  // Semana 1 en diciembre → año siguiente
+                                  displayYear = isoYear + 1;
+                                } else if (weekNumber >= 52 && isoMonth === 0) {
+                                  // Semana 52/53 en enero → año anterior
+                                  displayYear = isoYear - 1;
+                                }
+                                
                                 return (
                                   <Button
                                     key={weekNumber}
                                     variant={
-                                      value.selectedYear === selectedWeekYear && 
+                                      value.selectedYear === displayYear && 
                                       value.selectedWeek === weekNumber 
                                         ? 'default' 
                                         : 'ghost'
@@ -407,11 +424,11 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                                       const dateRange = formatPaymentPeriodBadge(startDate, endDate);
                                       handleOptionSelect({
                                         type: 'week',
-                                        selectedYear: selectedWeekYear,
+                                        selectedYear: displayYear,
                                         selectedWeek: weekNumber,
                                         startDate,
                                         endDate,
-                                        label: `W${weekNumber}/${selectedWeekYear} (${dateRange})`
+                                        label: `W${weekNumber}/${displayYear} (${dateRange})`
                                       });
                                       setShowWeekYearSelector(false);
                                       setSelectedWeekYear(null);
