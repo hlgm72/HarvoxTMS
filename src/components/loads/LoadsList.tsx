@@ -135,7 +135,8 @@ const statusColors = {
   assigned: "bg-yellow-100 text-yellow-700 border-yellow-300",
   in_transit: "bg-orange-100 text-orange-700 border-orange-300",
   delivered: "bg-green-100 text-green-700 border-green-300",
-  completed: "bg-emerald-100 text-emerald-700 border-emerald-300"
+  completed: "bg-emerald-100 text-emerald-700 border-emerald-300",
+  cancelled: "bg-red-100 text-red-700 border-red-300"
 };
 
 const getStatusLabel = (status: string, t: any) => {

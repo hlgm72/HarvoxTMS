@@ -31,6 +31,7 @@ const statusColors: Record<string, string> = {
   at_delivery: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   delivered: "bg-green-500/10 text-green-500 border-green-500/20",
   completed: "bg-slate-500/10 text-slate-500 border-slate-500/20",
+  cancelled: "bg-red-500/10 text-red-500 border-red-500/20",
 };
 
 const statusLabels: Record<string, string> = {
@@ -42,6 +43,7 @@ const statusLabels: Record<string, string> = {
   at_delivery: "At Delivery", 
   delivered: "Delivered",
   completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 export function LoadStatusHistoryDialog({ 
