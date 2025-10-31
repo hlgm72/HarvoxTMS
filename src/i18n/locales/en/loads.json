@@ -910,7 +910,7 @@
     "restore_dialog": {
       "title": "Restore Load",
       "description": "Are you sure you want to restore load",
-      "description_2": "The load will be reactivated with 'In Transit' status and the driver's payroll will be recalculated if assigned.",
+      "description_2": "The load will be reactivated to its previous status and the driver's payroll will be recalculated if assigned.",
       "notes_label": "Notes (optional)",
       "notes_placeholder": "Reason for restoration...",
       "cancel": "Cancel",

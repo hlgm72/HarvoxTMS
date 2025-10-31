@@ -38,10 +38,28 @@ export const useRestoreLoad = () => {
         throw new Error('Solo se pueden restaurar cargas canceladas');
       }
 
-      // 2. Cambiar el estado de la carga a 'in_transit'
+      // 2. Buscar el estado anterior en el historial
+      const { data: historyData, error: historyError } = await supabase
+        .from('load_status_history')
+        .select('previous_status, new_status')
+        .eq('load_id', params.loadId)
+        .eq('new_status', 'cancelled')
+        .order('changed_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (historyError || !historyData?.previous_status) {
+        console.error('❌ useRestoreLoad - Error al obtener historial:', historyError);
+        throw new Error('No se pudo determinar el estado anterior de la carga');
+      }
+
+      const previousStatus = historyData.previous_status;
+      console.log('🔄 useRestoreLoad - Estado anterior encontrado:', previousStatus);
+
+      // 3. Cambiar el estado de la carga al estado anterior
       const { error: updateError } = await supabase.rpc('update_load_status_with_validation', {
         load_id_param: params.loadId,
-        new_status: 'in_transit'
+        new_status: previousStatus
       });
 
       if (updateError) {
@@ -49,22 +67,23 @@ export const useRestoreLoad = () => {
         throw new Error(updateError.message);
       }
 
-      // 3. Registrar en el historial
-      const { error: historyError } = await supabase
+      // 4. Registrar en el historial
+      const { error: historyInsertError } = await supabase
         .from('load_status_history')
         .insert({
           load_id: params.loadId,
-          new_status: 'in_transit',
-          notes: params.notes || 'Carga restaurada desde estado cancelado',
+          new_status: previousStatus,
+          previous_status: 'cancelled',
+          notes: params.notes || `Carga restaurada desde estado cancelado a ${previousStatus}`,
           changed_by: user.id
         });
 
-      if (historyError) {
-        console.error('⚠️ useRestoreLoad - Error al registrar historial:', historyError);
+      if (historyInsertError) {
+        console.error('⚠️ useRestoreLoad - Error al registrar historial:', historyInsertError);
         // No lanzamos error aquí, ya que el cambio de estado fue exitoso
       }
 
-      // 4. Recalcular payroll si hay driver asignado
+      // 5. Recalcular payroll si hay driver asignado
       if (loadData.driver_user_id && loadData.payment_period_id) {
         console.log('🔄 useRestoreLoad - Recalculando payroll para driver:', loadData.driver_user_id);
         
