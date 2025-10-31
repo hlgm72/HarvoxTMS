@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from 'react-i18next';
 
 interface RestoreLoadDialogProps {
   open: boolean;
@@ -26,6 +27,7 @@ export function RestoreLoadDialog({
   onCancel,
   isPending,
 }: RestoreLoadDialogProps) {
+  const { t } = useTranslation(['loads']);
   const [notes, setNotes] = useState('');
 
   const handleConfirm = () => {
@@ -42,20 +44,20 @@ export function RestoreLoadDialog({
     <AlertDialog open={open} onOpenChange={(isOpen) => !isOpen && handleCancel()}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Restaurar Carga</AlertDialogTitle>
+          <AlertDialogTitle>{t('list.restore_dialog.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de que deseas restaurar la carga <strong>{loadNumber}</strong>?
+            {t('list.restore_dialog.description')} <strong>{loadNumber}</strong>?
             <br />
             <br />
-            La carga será reactivada con estado "En Tránsito" y se recalculará el payroll del conductor si está asignada.
+            {t('list.restore_dialog.description_2')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         
         <div className="space-y-2">
-          <Label htmlFor="restore-notes">Notas (opcional)</Label>
+          <Label htmlFor="restore-notes">{t('list.restore_dialog.notes_label')}</Label>
           <Textarea
             id="restore-notes"
-            placeholder="Razón de la restauración..."
+            placeholder={t('list.restore_dialog.notes_placeholder')}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={isPending}
@@ -69,13 +71,13 @@ export function RestoreLoadDialog({
             onClick={handleCancel}
             disabled={isPending}
           >
-            Cancelar
+            {t('list.restore_dialog.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={isPending}
           >
-            {isPending ? 'Restaurando...' : 'Restaurar Carga'}
+            {isPending ? t('list.restore_dialog.confirming') : t('list.restore_dialog.confirm')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

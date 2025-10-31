@@ -655,7 +655,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                           })}
                         >
                           <ArrowRightLeft className="h-3 w-3 mr-2" />
-                          Restore Load
+                          {t('list.restore_load')}
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem 
