@@ -564,9 +564,9 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
               
               {/* Información del período de pago */}
               <div className="mb-3 pb-3 border-b border-border">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                    {t('list.payment_period')}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    {t('list.payment_period')}:
                   </label>
                   <PaymentPeriodInfo
                     periodStartDate={load.period_start_date}
