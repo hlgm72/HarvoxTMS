@@ -15,6 +15,8 @@ import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import PeriodReassignmentDialog from "./PeriodReassignmentDialog";
+import { RestoreLoadDialog } from "./RestoreLoadDialog";
+import { useRestoreLoad } from "@/hooks/useRestoreLoad";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
@@ -189,6 +191,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     isOpen: boolean;
     load?: any;
   }>({ isOpen: false });
+  
+  const [restoreDialog, setRestoreDialog] = useState<{
+    isOpen: boolean;
+    load?: any;
+  }>({ isOpen: false });
+  
+  const restoreLoadMutation = useRestoreLoad();
   
   const [editDialog, setEditDialog] = useState<{
     isOpen: boolean;
@@ -644,15 +653,27 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                         <Copy className="h-3 w-3 mr-2" />
                         {t('list.duplicate_load')}
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setReassignmentDialog({ 
-                          isOpen: true, 
-                          load 
-                        })}
-                      >
-                        <ArrowRightLeft className="h-3 w-3 mr-2" />
-                        {t('list.reassign_period')}
-                      </DropdownMenuItem>
+                      {load.status === 'cancelled' ? (
+                        <DropdownMenuItem 
+                          onClick={() => setRestoreDialog({ 
+                            isOpen: true, 
+                            load 
+                          })}
+                        >
+                          <ArrowRightLeft className="h-3 w-3 mr-2" />
+                          Restore Load
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem 
+                          onClick={() => setReassignmentDialog({ 
+                            isOpen: true, 
+                            load 
+                          })}
+                        >
+                          <ArrowRightLeft className="h-3 w-3 mr-2" />
+                          {t('list.reassign_period')}
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem 
                         onClick={() => setDocumentsDialog({ 
                           isOpen: true, 
@@ -714,6 +735,23 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
             currentPeriodId: reassignmentDialog.load.payment_period_id,
             driverUserId: reassignmentDialog.load.driver_user_id
           }}
+        />
+      )}
+      
+      {/* Dialog de restauración */}
+      {restoreDialog.load && (
+        <RestoreLoadDialog
+          open={restoreDialog.isOpen}
+          loadNumber={restoreDialog.load.load_number}
+          onConfirm={(notes) => {
+            restoreLoadMutation.mutate({
+              loadId: restoreDialog.load.id,
+              notes
+            });
+            setRestoreDialog({ isOpen: false });
+          }}
+          onCancel={() => setRestoreDialog({ isOpen: false })}
+          isPending={restoreLoadMutation.isPending}
         />
       )}
       
