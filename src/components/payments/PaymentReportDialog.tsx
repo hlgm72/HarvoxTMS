@@ -218,7 +218,8 @@ export function PaymentReportDialog({
             )
           )
         `)
-        .eq('driver_user_id', calculation.user_id);
+        .eq('driver_user_id', calculation.user_id)
+        .neq('status', 'cancelled'); // Excluir cargas canceladas
       
       // Aplicar filtro según criterio de la compañía
       query = query
