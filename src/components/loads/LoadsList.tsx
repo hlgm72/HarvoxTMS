@@ -447,7 +447,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                       {load.pickup_city} → {load.delivery_city}
                     </span>
                     <span className="flex items-center gap-1">
-                      <span>
+                      <span className="font-bold">
                         {formatCurrency(load.total_amount)}
                          {(() => {
                            const percentages = [
