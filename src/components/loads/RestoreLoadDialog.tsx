@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 interface RestoreLoadDialogProps {
   open: boolean;
   loadNumber: string;
+  previousStatus: string;
   onConfirm: (notes: string) => void;
   onCancel: () => void;
   isPending: boolean;
@@ -23,12 +24,27 @@ interface RestoreLoadDialogProps {
 export function RestoreLoadDialog({
   open,
   loadNumber,
+  previousStatus,
   onConfirm,
   onCancel,
   isPending,
 }: RestoreLoadDialogProps) {
   const { t } = useTranslation(['loads']);
   const [notes, setNotes] = useState('');
+
+  // Traducir el estado
+  const getStatusLabel = (status: string) => {
+    const statusMap: Record<string, string> = {
+      'pending': t('status.pending'),
+      'awaiting_dispatch': t('status.awaiting_dispatch'),
+      'assigned': t('status.assigned'),
+      'in_transit': t('status.in_transit'),
+      'delivered': t('status.delivered'),
+      'completed': t('status.completed'),
+      'cancelled': t('status.cancelled'),
+    };
+    return statusMap[status] || status;
+  };
 
   const handleConfirm = () => {
     onConfirm(notes);
@@ -49,7 +65,7 @@ export function RestoreLoadDialog({
             {t('list.restore_dialog.description')} <strong>{loadNumber}</strong>?
             <br />
             <br />
-            {t('list.restore_dialog.description_2')}
+            {t('list.restore_dialog.description_2', { status: getStatusLabel(previousStatus) })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         
