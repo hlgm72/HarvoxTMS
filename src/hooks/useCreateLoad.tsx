@@ -318,6 +318,27 @@ export const useCreateLoad = () => {
         }
       }
 
+      // 🚨 CRÍTICO: Si se asignó un conductor, cambiar estado a 'assigned'
+      if (data.driver_user_id) {
+        console.log('🔄 Driver asignado, actualizando estado a "assigned"...');
+        try {
+          const { error: statusError } = await supabase.rpc('update_load_status_with_validation', {
+            load_id_param: loadId,
+            new_status: 'assigned'
+          });
+
+          if (statusError) {
+            console.error('❌ Error actualizando estado a assigned:', statusError);
+            // No fallar la operación completa por este error
+          } else {
+            console.log('✅ Estado actualizado a "assigned" exitosamente');
+          }
+        } catch (statusUpdateError) {
+          console.error('❌ Error en actualización de estado:', statusUpdateError);
+          // No fallar la operación completa
+        }
+      }
+
       return loadId;
     },
     onSuccess: async (loadId, variables) => {
