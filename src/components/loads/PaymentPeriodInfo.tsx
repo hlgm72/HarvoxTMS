@@ -10,6 +10,7 @@ interface PaymentPeriodInfoProps {
   periodFrequency?: string;
   periodStatus?: string;
   className?: string;
+  showPeriodNumber?: boolean;
 }
 
 const PaymentPeriodInfo = ({ 
@@ -17,7 +18,8 @@ const PaymentPeriodInfo = ({
   periodEndDate, 
   periodFrequency, 
   periodStatus,
-  className 
+  className,
+  showPeriodNumber = true
 }: PaymentPeriodInfoProps) => {
   const { t } = useTranslation('loads');
   if (!periodStartDate || !periodEndDate) {
@@ -85,7 +87,7 @@ const PaymentPeriodInfo = ({
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>{formattedPeriod}</span>
-          {periodNumber && (
+          {showPeriodNumber && periodNumber && (
             <span className="text-xs text-muted-foreground ml-2">
               ({periodNumber})
             </span>

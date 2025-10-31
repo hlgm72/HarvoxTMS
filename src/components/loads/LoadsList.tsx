@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Eye, Edit, MapPin, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatCurrency, formatDateTimeAuto, formatNumber } from '@/lib/dateFormatting';
+import { formatCurrency, formatDateTimeAuto, formatNumber, getPeriodNumber } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { useUpdateLoadStatusWithValidation } from "@/hooks/useUpdateLoadStatusWithValidation";
@@ -565,14 +565,22 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
               {/* Información del período de pago */}
               <div className="mb-3 pb-3 border-b border-border">
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
-                    {t('list.payment_period')}
-                  </label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      {t('list.payment_period')}
+                    </label>
+                    {load.period_start_date && load.period_end_date && (
+                      <span className="text-sm font-medium">
+                        {getPeriodNumber(load.period_start_date, load.period_end_date, load.period_frequency)}
+                      </span>
+                    )}
+                  </div>
                   <PaymentPeriodInfo
                     periodStartDate={load.period_start_date}
                     periodEndDate={load.period_end_date}
                     periodFrequency={load.period_frequency}
                     periodStatus={load.period_status}
+                    showPeriodNumber={false}
                   />
                 </div>
               </div>
