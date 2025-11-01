@@ -615,8 +615,8 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                   
                   {/* Cancellation Note - Columna derecha, solo si está cancelado */}
                   {load.status === 'cancelled' && load.notes && (
-                    <div>
-                      <span className="text-xs text-muted-foreground">
+                    <div className="bg-red-100 text-red-700 border border-red-300 rounded-md px-3 py-2">
+                      <span className="text-xs">
                         <span className="font-semibold">{t('list.cancellation_note')}</span> {load.notes}
                       </span>
                     </div>
