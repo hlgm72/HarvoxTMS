@@ -778,16 +778,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               <Separator className="my-6" />
 
               <div className="space-y-4">
-                <h4 className="font-semibold">{t('system.coming_soon.future_settings')}</h4>
+                <h4 className="font-semibold">{tSettings('system.coming_soon.future_settings')}</h4>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-3">
-                    {t('system.coming_soon.coming_description')}
+                    {tSettings('system.coming_soon.coming_description')}
                   </p>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• {t('system.coming_soon.light_dark_mode')}</li>
-                    <li>• {t('system.coming_soon.notification_config')}</li>
-                    <li>• {t('system.coming_soon.interface_customization')}</li>
-                    <li>• {t('system.coming_soon.automatic_reports')}</li>
+                    <li>• {tSettings('system.coming_soon.light_dark_mode')}</li>
+                    <li>• {tSettings('system.coming_soon.notification_config')}</li>
+                    <li>• {tSettings('system.coming_soon.interface_customization')}</li>
+                    <li>• {tSettings('system.coming_soon.automatic_reports')}</li>
                   </ul>
                 </div>
               </div>
