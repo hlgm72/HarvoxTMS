@@ -43,26 +43,56 @@ export default function Loads() {
 
   // ✅ INICIALIZACIÓN AUTOMÁTICA: Establecer semana actual cuando availableWeeks esté disponible
   useEffect(() => {
-    // Solo inicializar si aún no hay filtro establecido y availableWeeks está disponible
-    if (!periodFilter && availableWeeks && availableWeeks.length > 0) {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentWeekNumber = getISOWeek(today);
-      const currentMonth = today.getMonth() + 1;
-      
-      // Buscar la semana actual en availableWeeks
-      const weekData = availableWeeks
-        .find(w => w.year === currentYear)
-        ?.months.find(m => m.month === currentMonth)
-        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-      
-      if (weekData) {
+    // Solo inicializar si aún no hay filtro establecido
+    if (!periodFilter) {
+      if (availableWeeks && availableWeeks.length > 0) {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentWeekNumber = getISOWeek(today);
+        const currentMonth = today.getMonth() + 1;
+        
+        // Buscar la semana actual en availableWeeks
+        const weekData = availableWeeks
+          .find(w => w.year === currentYear)
+          ?.months.find(m => m.month === currentMonth)
+          ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+        
+        if (weekData) {
+          setPeriodFilter({
+            type: 'week',
+            selectedYear: currentYear,
+            selectedWeek: currentWeekNumber,
+            startDate: weekData.startDate,
+            endDate: weekData.endDate,
+            label: `W${currentWeekNumber}/${currentYear}`
+          });
+        } else {
+          // Si no se encuentra la semana actual, usar la semana más reciente disponible
+          const mostRecentYear = availableWeeks[0];
+          const mostRecentMonth = mostRecentYear?.months[0];
+          const mostRecentWeek = mostRecentMonth?.weeks[0];
+          
+          if (mostRecentWeek) {
+            setPeriodFilter({
+              type: 'week',
+              selectedYear: mostRecentYear.year,
+              selectedWeek: mostRecentWeek.weekNumber,
+              startDate: mostRecentWeek.startDate,
+              endDate: mostRecentWeek.endDate,
+              label: `W${mostRecentWeek.weekNumber}/${mostRecentYear.year}`
+            });
+          }
+        }
+      } else if (availableWeeks !== undefined) {
+        // Si availableWeeks está definido pero vacío, usar la semana actual sin fechas de BD
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentWeekNumber = getISOWeek(today);
+        
         setPeriodFilter({
           type: 'week',
           selectedYear: currentYear,
           selectedWeek: currentWeekNumber,
-          startDate: weekData.startDate,
-          endDate: weekData.endDate,
           label: `W${currentWeekNumber}/${currentYear}`
         });
       }
