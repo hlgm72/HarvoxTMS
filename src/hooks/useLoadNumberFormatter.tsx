@@ -60,26 +60,22 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
       console.log('🧹 cleanValue (letters-digits):', cleanValue);
       
-      let result = '';
-      let letterCount = 0;
-      let digitCount = 0;
+      let letters = '';
+      let digits = '';
       
-      // Procesar caracter por caracter respetando el orden del patrón
+      // Separar letras y dígitos
       for (const char of cleanValue) {
-        // Primero deben ir exactamente 2 letras
-        if (/[a-zA-Z]/.test(char) && letterCount < 2) {
-          result += char.toUpperCase();
-          letterCount++;
-          // Agregar guion después de la segunda letra
-          if (letterCount === 2) {
-            result += '-';
-          }
+        if (/[a-zA-Z]/.test(char) && letters.length < 2) {
+          letters += char.toUpperCase();
+        } else if (/\d/.test(char) && letters.length === 2 && digits.length < 2) {
+          digits += char;
         }
-        // Después pueden ir hasta 2 dígitos (solo cuando ya tenemos 2 letras)
-        else if (/\d/.test(char) && letterCount === 2 && digitCount < 2) {
-          result += char;
-          digitCount++;
-        }
+      }
+      
+      // Solo agregar el guión si hay dígitos después de las letras
+      let result = letters;
+      if (letters.length === 2 && digits.length > 0) {
+        result += '-' + digits;
       }
       
       console.log('✅ formatValue output (letters-digits):', result);
