@@ -27,6 +27,75 @@ export const useUpdateLoadStatusWithValidation = () => {
         throw new Error('Usuario no autenticado');
       }
 
+      // ========== VALIDACIONES PARA CANCELACIÓN ==========
+      if (params.newStatus === 'cancelled') {
+        console.log('🔍 Validando cancelación de carga...');
+        
+        // Obtener datos de la carga para validaciones
+        const { data: loadData, error: loadError } = await supabase
+          .from('loads')
+          .select('status, payment_status, driver_user_id, payment_period_id')
+          .eq('id', params.loadId)
+          .single();
+
+        if (loadError) {
+          console.error('❌ Error obteniendo datos de la carga:', loadError);
+          throw new Error('Error verificando datos de la carga');
+        }
+
+        if (!loadData) {
+          throw new Error('Carga no encontrada');
+        }
+
+        // 1. Validación de estado operativo: solo 'created' o 'assigned'
+        const allowedStatuses = ['created', 'assigned'];
+        if (!allowedStatuses.includes(loadData.status)) {
+          throw new Error(`No se puede cancelar una carga con estado "${loadData.status}". Solo se pueden cancelar cargas en estado "Created" o "Assigned".`);
+        }
+        console.log('✅ Validación de estado operativo pasada');
+
+        // 2. Validación de estado financiero: no debe estar 'applied'
+        if (loadData.payment_status === 'applied') {
+          throw new Error('No se puede cancelar esta carga porque el payroll ya está pagado (estado: Applied).');
+        }
+        console.log('✅ Validación de estado financiero pasada');
+
+        // 3. Validación de período pagado/bloqueado (si tiene driver y período)
+        if (loadData.driver_user_id && loadData.payment_period_id) {
+          console.log('🔍 Validando período de pago...');
+          
+          const { data: validationData, error: validationError } = await supabase.rpc(
+            'can_modify_financial_data_with_user_check',
+            {
+              period_id: loadData.payment_period_id,
+              user_id_param: loadData.driver_user_id
+            }
+          );
+
+          if (validationError) {
+            console.error('❌ Error validando período de pago:', validationError);
+            throw new Error('Error verificando el estado del período de pago');
+          }
+
+          const validation = validationData as any;
+
+          // Verificar si el período está bloqueado
+          if (validation?.is_locked) {
+            throw new Error('No se puede cancelar esta carga porque el período de pago está bloqueado.');
+          }
+
+          // Verificar si el conductor ya está pagado
+          if (validation?.driver_is_paid) {
+            throw new Error('No se puede cancelar esta carga porque el conductor ya está pagado en este período.');
+          }
+
+          console.log('✅ Validación de período de pago pasada');
+        }
+
+        console.log('✅ Todas las validaciones de cancelación pasadas');
+      }
+      // ========== FIN VALIDACIONES PARA CANCELACIÓN ==========
+
       // Validar documentos requeridos si se intenta marcar como 'delivered'
       if (params.newStatus === 'delivered' && !params.skipDocumentValidation) {
         console.log('🔍 Validando documentos requeridos antes de marcar como entregada...');
