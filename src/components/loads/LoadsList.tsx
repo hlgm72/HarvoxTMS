@@ -296,29 +296,50 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     }
   };
 
-  const getStatusActions = (currentStatus: string, loadId: string) => {
+  const getStatusActions = (currentStatus: string, loadId: string, paymentStatus?: string) => {
     const actions: { status: string; label: string; icon: React.ReactNode; disabled?: boolean; warning?: string }[] = [];
+    
+    // Helper para determinar si se puede cancelar
+    const canCancel = (status: string, paymentStatus?: string) => {
+      // Solo se puede cancelar si está en 'created' o 'assigned'
+      const allowedStatuses = ['created', 'assigned'];
+      if (!allowedStatuses.includes(status)) return false;
+      
+      // No se puede cancelar si el payment_status es 'applied'
+      if (paymentStatus === 'applied') return false;
+      
+      return true;
+    };
     
     switch (currentStatus) {
       case 'draft':
       case 'open':
       case 'created':
         actions.push(
-          { status: 'assigned', label: t('actions.assign_status'), icon: <Play className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
+          { status: 'assigned', label: t('actions.assign_status'), icon: <Play className="h-3 w-3 mr-2" /> }
         );
+        // Solo agregar opción de cancelar si se cumplen las condiciones
+        if (canCancel(currentStatus, paymentStatus)) {
+          actions.push(
+            { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
+          );
+        }
         break;
       case 'assigned':
         actions.push(
-          { status: 'in_transit', label: t('actions.in_transit_status'), icon: <Play className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
+          { status: 'in_transit', label: t('actions.in_transit_status'), icon: <Play className="h-3 w-3 mr-2" /> }
         );
+        // Solo agregar opción de cancelar si se cumplen las condiciones
+        if (canCancel(currentStatus, paymentStatus)) {
+          actions.push(
+            { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
+          );
+        }
         break;
       case 'in_progress':
       case 'in_transit':
         actions.push(
-          { status: 'delivered', label: t('actions.delivered_status'), icon: <CheckCircle className="h-3 w-3 mr-2" /> },
-          { status: 'cancelled', label: t('actions.cancel_status'), icon: <XCircle className="h-3 w-3 mr-2" /> }
+          { status: 'delivered', label: t('actions.delivered_status'), icon: <CheckCircle className="h-3 w-3 mr-2" /> }
         );
         break;
       case 'delivered':
@@ -656,7 +677,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-background border shadow-lg z-40">
                       {/* Opciones de cambio de estado */}
-                      {getStatusActions(load.status, load.id).map((action) => (
+                      {getStatusActions(load.status, load.id, load.payment_status).map((action) => (
                         <DropdownMenuItem
                           key={action.status}
                           onClick={() => handleUpdateStatus(load.id, action.status)}
@@ -667,7 +688,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                         </DropdownMenuItem>
                       ))}
                       
-                      {getStatusActions(load.status, load.id).length > 0 && (
+                      {getStatusActions(load.status, load.id, load.payment_status).length > 0 && (
                         <div className="border-t my-1" />
                       )}
 
