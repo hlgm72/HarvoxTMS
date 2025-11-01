@@ -3866,6 +3866,10 @@ export type Database = {
               email: string
               id: string
               load_assignment_criteria: string
+              load_number_pattern: string
+              load_number_pattern_description: string
+              load_number_pattern_examples: Json
+              load_number_pattern_explanation: string
               logo_url: string
               max_users: number
               max_vehicles: number
