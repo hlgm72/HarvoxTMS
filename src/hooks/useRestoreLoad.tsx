@@ -46,11 +46,16 @@ export const useRestoreLoad = () => {
         .eq('new_status', 'cancelled')
         .order('changed_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (historyError || !historyData?.previous_status) {
+      if (historyError) {
         console.error('❌ useRestoreLoad - Error al obtener historial:', historyError);
-        throw new Error('No se pudo determinar el estado anterior de la carga');
+        throw new Error('Error al consultar el historial de la carga');
+      }
+
+      if (!historyData?.previous_status) {
+        console.error('❌ useRestoreLoad - No se encontró previous_status en el historial');
+        throw new Error('No se pudo determinar el estado anterior de la carga. El historial no contiene esta información.');
       }
 
       const previousStatus = historyData.previous_status;

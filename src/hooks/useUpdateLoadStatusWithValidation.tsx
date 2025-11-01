@@ -28,6 +28,8 @@ export const useUpdateLoadStatusWithValidation = () => {
       }
 
       // ========== VALIDACIONES PARA CANCELACIÓN ==========
+      let previousStatus: string | null = null;
+      
       if (params.newStatus === 'cancelled') {
         console.log('🔍 Validando cancelación de carga...');
         
@@ -46,6 +48,10 @@ export const useUpdateLoadStatusWithValidation = () => {
         if (!loadData) {
           throw new Error('Carga no encontrada');
         }
+
+        // Guardar el estado anterior para el historial
+        previousStatus = loadData.status;
+        console.log('📝 Estado anterior guardado:', previousStatus);
 
         // 1. Validación de estado operativo: solo 'created' o 'assigned'
         const allowedStatuses = ['created', 'assigned'];
@@ -209,22 +215,23 @@ export const useUpdateLoadStatusWithValidation = () => {
         }
       }
 
-      // 🔄 Registrar nota en historial si el cambio es una cancelación (incluso sin stopId)
-      if (params.newStatus === 'cancelled' && params.notes) {
-        console.log('📝 Registrando nota de cancelación en historial...');
+      // 🔄 Registrar en historial si el cambio es una cancelación (incluso sin stopId)
+      if (params.newStatus === 'cancelled') {
+        console.log('📝 Registrando cancelación en historial...');
         const { error: historyError } = await supabase
           .from('load_status_history')
           .insert({
             load_id: params.loadId,
             new_status: params.newStatus,
+            previous_status: previousStatus,
             changed_by: user.id,
-            notes: params.notes
+            notes: params.notes || 'Carga cancelada'
           });
 
         if (historyError) {
           console.error('❌ Error registrando historial de cancelación:', historyError);
         } else {
-          console.log('✅ Nota de cancelación registrada en historial');
+          console.log('✅ Cancelación registrada en historial con previous_status:', previousStatus);
         }
       }
 
