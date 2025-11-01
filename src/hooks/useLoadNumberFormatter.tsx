@@ -18,25 +18,36 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
   const formatValue = useCallback((value: string): string => {
     if (!pattern) return value;
 
-    // Remover caracteres no válidos según el patrón
-    let cleaned = value.replace(/[^0-9a-zA-Z]/g, '');
-
     // Detectar patrones comunes y formatear
     // Patrón: ^\d{2}-\d{3}[a-zA-Z]{0,2}$ (Ej: 12-345AB)
     if (pattern.match(/\^\\d\{2\}-\\d\{3\}/)) {
-      // Extraer solo los primeros 5 dígitos
-      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, 5);
-      // Extraer hasta 2 letras al final
-      const letters = cleaned.replace(/[^a-zA-Z]/g, '').slice(0, 2);
+      // Procesar caracter por caracter para respetar el orden del patrón
+      let result = '';
+      let digitCount = 0;
+      let letterCount = 0;
       
-      if (digits.length <= 2) {
-        return digits;
-      } else if (digits.length <= 5) {
-        return `${digits.slice(0, 2)}-${digits.slice(2)}`;
-      } else {
-        return `${digits.slice(0, 2)}-${digits.slice(2, 5)}${letters}`;
+      for (const char of value) {
+        // Si es un dígito y aún necesitamos dígitos
+        if (/\d/.test(char) && digitCount < 5) {
+          result += char;
+          digitCount++;
+          // Agregar guion después del segundo dígito
+          if (digitCount === 2) {
+            result += '-';
+          }
+        }
+        // Si es una letra y ya tenemos los 5 dígitos requeridos
+        else if (/[a-zA-Z]/.test(char) && digitCount === 5 && letterCount < 2) {
+          result += char.toUpperCase();
+          letterCount++;
+        }
       }
+      
+      return result;
     }
+
+    // Remover caracteres no válidos según el patrón (para otros patrones)
+    let cleaned = value.replace(/[^0-9a-zA-Z]/g, '');
 
     // Patrón: ^\d{3}-\d{4}$ (Ej: 123-4567)
     if (pattern.match(/\^\\d\{3\}-\\d\{4\}/)) {
