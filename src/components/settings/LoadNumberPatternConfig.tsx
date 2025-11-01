@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface PatternResult {
@@ -31,15 +31,10 @@ export const LoadNumberPatternConfig = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [result, setResult] = useState<PatternResult | null>(null);
-  const { toast } = useToast();
 
   const handleGenerate = async () => {
     if (!description.trim()) {
-      toast({
-        title: "Descripción requerida",
-        description: "Por favor describe el formato que deseas validar",
-        variant: "destructive",
-      });
+      toast.error("Por favor describe el formato que deseas validar");
       return;
     }
 
@@ -59,17 +54,10 @@ export const LoadNumberPatternConfig = ({
 
       setResult(data);
       
-      toast({
-        title: "Patrón generado",
-        description: "Revisa los ejemplos y guarda si es correcto",
-      });
+      toast.success("Patrón generado. Revisa los ejemplos y guarda si es correcto");
     } catch (error: any) {
       console.error('Error generating pattern:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo generar el patrón. Intenta de nuevo.",
-        variant: "destructive",
-      });
+      toast.error(error.message || "No se pudo generar el patrón. Intenta de nuevo");
     } finally {
       setIsGenerating(false);
     }
@@ -87,21 +75,14 @@ export const LoadNumberPatternConfig = ({
 
       if (error) throw error;
 
-      toast({
-        title: "Patrón guardado",
-        description: "El formato de números de carga ha sido actualizado",
-      });
+      toast.success("El formato de números de carga ha sido actualizado");
 
       onPatternSaved?.(result.pattern);
       setDescription('');
       setResult(null);
     } catch (error: any) {
       console.error('Error saving pattern:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo guardar el patrón",
-        variant: "destructive",
-      });
+      toast.error("No se pudo guardar el patrón");
     } finally {
       setIsSaving(false);
     }
