@@ -589,26 +589,41 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                 </div>
               </div>
               
-              {/* Información del período de pago */}
+              {/* Información del período de pago y nota de cancelación */}
               <div className="mb-3 pb-3 border-b border-border">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      {t('list.payment_period')}
-                    </label>
-                    {load.period_start_date && load.period_end_date && (
-                      <span className="text-sm font-medium">
-                        {getPeriodNumber(load.period_start_date, load.period_end_date, load.period_frequency)}
-                      </span>
-                    )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Payment Period - Columna izquierda */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        {t('list.payment_period')}
+                      </label>
+                      {load.period_start_date && load.period_end_date && (
+                        <span className="text-sm font-medium">
+                          {getPeriodNumber(load.period_start_date, load.period_end_date, load.period_frequency)}
+                        </span>
+                      )}
+                    </div>
+                    <PaymentPeriodInfo
+                      periodStartDate={load.period_start_date}
+                      periodEndDate={load.period_end_date}
+                      periodFrequency={load.period_frequency}
+                      periodStatus={load.period_status}
+                      showPeriodNumber={false}
+                    />
                   </div>
-                  <PaymentPeriodInfo
-                    periodStartDate={load.period_start_date}
-                    periodEndDate={load.period_end_date}
-                    periodFrequency={load.period_frequency}
-                    periodStatus={load.period_status}
-                    showPeriodNumber={false}
-                  />
+                  
+                  {/* Cancellation Note - Columna derecha, solo si está cancelado */}
+                  {load.status === 'cancelled' && load.notes && (
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        {t('list.cancellation_note')}
+                      </label>
+                      <p className="text-sm text-foreground mt-2 p-2 bg-muted/50 rounded-md border border-border">
+                        {load.notes}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
               

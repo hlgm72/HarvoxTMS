@@ -925,6 +925,7 @@
     "logo_alt": "Logo de la Empresa",
     "commodity": "Mercancía",
     "payment_period": "Período de Pago",
+    "cancellation_note": "Nota de Cancelación",
     "commodity_info": "Información de Mercancía",
     "dates_schedule": "Fechas y Horario",
     "pickup": "Recogida:",
