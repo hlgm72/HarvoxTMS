@@ -769,6 +769,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 <LoadNumberPatternConfig
                   companyId={company.id}
                   currentPattern={formData.load_number_pattern}
+                  currentDescription={formData.load_number_pattern_description}
+                  currentExplanation={formData.load_number_pattern_explanation}
+                  currentExamples={formData.load_number_pattern_examples}
                   onPatternSaved={(pattern) => {
                     setFormData(prev => ({ ...prev, load_number_pattern: pattern }));
                   }}

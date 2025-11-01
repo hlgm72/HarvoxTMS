@@ -205,6 +205,7 @@
       "title": "Load Number Format",
       "description": "Describe in natural language how load numbers should be and AI will generate the validation pattern",
       "current_pattern": "Current pattern:",
+      "saved_description": "Your Description:",
       "describe_format": "Describe the format",
       "placeholder": "Example: Load numbers will be 2 digits followed by a hyphen and then 3 digits minimum and optionally two letters",
       "generate_button": "Generate Pattern",

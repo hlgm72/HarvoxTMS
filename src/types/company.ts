@@ -30,4 +30,10 @@ export interface Company {
   default_leasing_percentage?: number;
   load_assignment_criteria?: string;
   load_number_pattern?: string;
+  load_number_pattern_description?: string;
+  load_number_pattern_explanation?: string;
+  load_number_pattern_examples?: {
+    valid: string[];
+    invalid: string[];
+  };
 }

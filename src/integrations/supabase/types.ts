@@ -68,6 +68,9 @@ export type Database = {
           id: string
           load_assignment_criteria: string | null
           load_number_pattern: string | null
+          load_number_pattern_description: string | null
+          load_number_pattern_examples: Json | null
+          load_number_pattern_explanation: string | null
           logo_url: string | null
           max_users: number | null
           max_vehicles: number | null
@@ -97,6 +100,9 @@ export type Database = {
           id?: string
           load_assignment_criteria?: string | null
           load_number_pattern?: string | null
+          load_number_pattern_description?: string | null
+          load_number_pattern_examples?: Json | null
+          load_number_pattern_explanation?: string | null
           logo_url?: string | null
           max_users?: number | null
           max_vehicles?: number | null
@@ -126,6 +132,9 @@ export type Database = {
           id?: string
           load_assignment_criteria?: string | null
           load_number_pattern?: string | null
+          load_number_pattern_description?: string | null
+          load_number_pattern_examples?: Json | null
+          load_number_pattern_explanation?: string | null
           logo_url?: string | null
           max_users?: number | null
           max_vehicles?: number | null

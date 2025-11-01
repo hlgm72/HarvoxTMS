@@ -20,16 +20,25 @@ interface PatternResult {
 interface LoadNumberPatternConfigProps {
   companyId: string;
   currentPattern?: string;
+  currentDescription?: string;
+  currentExplanation?: string;
+  currentExamples?: {
+    valid: string[];
+    invalid: string[];
+  };
   onPatternSaved?: (pattern: string) => void;
 }
 
 export const LoadNumberPatternConfig = ({ 
   companyId, 
   currentPattern,
+  currentDescription,
+  currentExplanation,
+  currentExamples,
   onPatternSaved 
 }: LoadNumberPatternConfigProps) => {
   const { t } = useTranslation('settings');
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(currentDescription || '');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [result, setResult] = useState<PatternResult | null>(null);
@@ -72,7 +81,12 @@ export const LoadNumberPatternConfig = ({
     try {
       const { error } = await supabase
         .from('companies')
-        .update({ load_number_pattern: result.pattern })
+        .update({ 
+          load_number_pattern: result.pattern,
+          load_number_pattern_description: description,
+          load_number_pattern_explanation: result.explanation,
+          load_number_pattern_examples: result.examples
+        })
         .eq('id', companyId);
 
       if (error) throw error;
@@ -80,7 +94,6 @@ export const LoadNumberPatternConfig = ({
       toast.success(t('system.load_pattern.pattern_saved'));
 
       onPatternSaved?.(result.pattern);
-      setDescription('');
       setResult(null);
     } catch (error: any) {
       console.error('Error saving pattern:', error);
@@ -103,8 +116,57 @@ export const LoadNumberPatternConfig = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {currentPattern && (
-          <div className="text-sm p-3 bg-muted rounded-md">
-            <span className="font-medium">{t('system.load_pattern.current_pattern')}</span> <code className="ml-2">{currentPattern}</code>
+          <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
+            <div>
+              <span className="font-semibold text-sm">{t('system.load_pattern.current_pattern')}</span>
+              <code className="block mt-1 text-sm bg-background p-2 rounded border">{currentPattern}</code>
+            </div>
+            
+            {currentDescription && (
+              <div>
+                <span className="font-semibold text-sm">{t('system.load_pattern.saved_description')}</span>
+                <p className="mt-1 text-sm text-muted-foreground">{currentDescription}</p>
+              </div>
+            )}
+
+            {currentExplanation && (
+              <div>
+                <span className="font-semibold text-sm">{t('system.load_pattern.explanation')}</span>
+                <p className="mt-1 text-sm text-muted-foreground">{currentExplanation}</p>
+              </div>
+            )}
+
+            {currentExamples && (
+              <div className="grid md:grid-cols-2 gap-3 mt-2">
+                <div>
+                  <h4 className="font-semibold text-sm flex items-center gap-2 text-green-600 mb-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {t('system.load_pattern.valid_examples')}
+                  </h4>
+                  <ul className="space-y-1">
+                    {currentExamples.valid.map((example, idx) => (
+                      <li key={idx} className="text-xs font-mono bg-green-50 dark:bg-green-950/30 p-2 rounded">
+                        {example}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-sm flex items-center gap-2 text-red-600 mb-2">
+                    <XCircle className="h-4 w-4" />
+                    {t('system.load_pattern.invalid_examples')}
+                  </h4>
+                  <ul className="space-y-1">
+                    {currentExamples.invalid.map((example, idx) => (
+                      <li key={idx} className="text-xs font-mono bg-red-50 dark:bg-red-950/30 p-2 rounded">
+                        {example}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

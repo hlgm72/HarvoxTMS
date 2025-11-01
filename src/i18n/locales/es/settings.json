@@ -205,6 +205,7 @@
       "title": "Formato de Números de Carga",
       "description": "Describe en lenguaje natural cómo deben ser los números de carga y la IA generará el patrón de validación",
       "current_pattern": "Patrón actual:",
+      "saved_description": "Tu Descripción:",
       "describe_format": "Describe el formato",
       "placeholder": "Ejemplo: Los números de las cargas serán 2 dígitos seguidos de un guion y luego 3 dígitos como mínimo y opcionalmente dos letras",
       "generate_button": "Generar Patrón",
