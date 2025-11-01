@@ -218,6 +218,21 @@ export const useUpdateLoadStatusWithValidation = () => {
       // 🔄 Registrar en historial si el cambio es una cancelación (incluso sin stopId)
       if (params.newStatus === 'cancelled') {
         console.log('📝 Registrando cancelación en historial...');
+        
+        // ✅ Actualizar el campo notes en la tabla loads
+        if (params.notes) {
+          const { error: notesError } = await supabase
+            .from('loads')
+            .update({ notes: params.notes })
+            .eq('id', params.loadId);
+
+          if (notesError) {
+            console.error('❌ Error actualizando notas en loads:', notesError);
+          } else {
+            console.log('✅ Notas de cancelación guardadas en loads');
+          }
+        }
+        
         const { error: historyError } = await supabase
           .from('load_status_history')
           .insert({
