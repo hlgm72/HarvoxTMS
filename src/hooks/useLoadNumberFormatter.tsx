@@ -54,8 +54,8 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       return result;
     }
 
-    // Patrón: ^[a-zA-Z]{2}-\d{2}$ (Ej: AB-12)
-    if (pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/)) {
+    // Patrón: ^[a-zA-Z]{2}-\d{2}$ o ^[A-Za-z]{2}-\d{2}$ (Ej: AB-12)
+    if (pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/) || pattern.match(/\^\[A-Za-z\]\{2\}-\\d\{2\}/)) {
       // Limpiar el valor: extraer solo letras y dígitos
       const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
       console.log('🧹 cleanValue (letters-digits):', cleanValue);
