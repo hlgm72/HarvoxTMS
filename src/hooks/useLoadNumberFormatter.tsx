@@ -16,6 +16,8 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
    * Formatea el valor según el patrón detectado
    */
   const formatValue = useCallback((value: string): string => {
+    console.log('🔍 formatValue input:', value, 'pattern:', pattern);
+    
     if (!pattern) return value;
 
     // Detectar patrones comunes y formatear
@@ -23,6 +25,7 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     if (pattern.match(/\^\\d\{2\}-\\d\{3\}/)) {
       // Limpiar el valor: extraer solo dígitos y letras
       const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
+      console.log('🧹 cleanValue:', cleanValue);
       
       let result = '';
       let digitCount = 0;
@@ -47,6 +50,7 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
         // Si es una letra pero aún no tenemos 5 dígitos, ignorarla (no válido según el patrón)
       }
       
+      console.log('✅ formatValue output:', result);
       return result;
     }
 
@@ -98,7 +102,9 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
    */
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target;
+    console.log('📝 handleChange - raw input value:', input.value);
     const newValue = formatValue(input.value);
+    console.log('📝 handleChange - formatted value:', newValue);
     
     onChange(newValue);
     
