@@ -4,9 +4,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
+import { useFleetNotifications } from '@/components/notifications';
 
 interface PatternResult {
   pattern: string;
@@ -38,6 +38,7 @@ export const LoadNumberPatternConfig = ({
   onPatternSaved 
 }: LoadNumberPatternConfigProps) => {
   const { t } = useTranslation('settings');
+  const { showSuccess, showError } = useFleetNotifications();
   const [description, setDescription] = useState(currentDescription || '');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -45,7 +46,7 @@ export const LoadNumberPatternConfig = ({
 
   const handleGenerate = async () => {
     if (!description.trim()) {
-      toast.error(t('system.load_pattern.describe_error'));
+      showError(t('system.load_pattern.describe_error'));
       return;
     }
 
@@ -65,10 +66,10 @@ export const LoadNumberPatternConfig = ({
 
       setResult(data);
       
-      toast.success(t('system.load_pattern.pattern_generated'));
+      showSuccess(t('system.load_pattern.pattern_generated'));
     } catch (error: any) {
       console.error('Error generating pattern:', error);
-      toast.error(error.message || t('system.load_pattern.generate_error'));
+      showError(error.message || t('system.load_pattern.generate_error'));
     } finally {
       setIsGenerating(false);
     }
@@ -91,13 +92,13 @@ export const LoadNumberPatternConfig = ({
 
       if (error) throw error;
 
-      toast.success(t('system.load_pattern.pattern_saved'));
+      showSuccess(t('system.load_pattern.pattern_saved'));
 
       onPatternSaved?.(result.pattern);
       setResult(null);
     } catch (error: any) {
       console.error('Error saving pattern:', error);
-      toast.error(t('system.load_pattern.save_error'));
+      showError(t('system.load_pattern.save_error'));
     } finally {
       setIsSaving(false);
     }

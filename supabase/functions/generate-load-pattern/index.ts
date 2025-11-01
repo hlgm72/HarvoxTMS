@@ -71,12 +71,12 @@ Respuesta: ^\\d{4}-\\d{3}$`;
                       valid: {
                         type: "array",
                         items: { type: "string" },
-                        description: "Ejemplos de números válidos (3-5 ejemplos)"
+                        description: "Exactamente 3 ejemplos de números válidos"
                       },
                       invalid: {
                         type: "array",
                         items: { type: "string" },
-                        description: "Ejemplos de números inválidos (2-3 ejemplos)"
+                        description: "Exactamente 3 ejemplos de números inválidos"
                       }
                     },
                     required: ["valid", "invalid"]
