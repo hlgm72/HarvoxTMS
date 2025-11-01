@@ -73,14 +73,12 @@ export const useSecureCompanyData = (companyId?: string, requireFinancialAccess 
       } else {
         // Use new secure RPC function for basic data with enhanced access control
         const { data, error } = await supabase
-          .rpc('get_companies_basic_info', { 
-            target_company_id: companyId || null 
-          });
+          .rpc('get_companies_basic_info');
 
         if (error) throw error;
         
         if (companyId) {
-          return data?.[0] as CompanyPublic || null;
+          return data?.find(c => c.id === companyId) as CompanyPublic || null;
         } else {
           return (data as CompanyPublic[]) || [];
         }
@@ -141,14 +139,12 @@ export const useCompanyPublicData = (companyId?: string) => {
     queryFn: async () => {
       // Use new secure RPC function for basic data with enhanced access control
       const { data, error } = await supabase
-        .rpc('get_companies_basic_info', { 
-          target_company_id: companyId || null 
-        });
+        .rpc('get_companies_basic_info');
 
       if (error) throw error;
       
       if (companyId) {
-        return data?.[0] as CompanyPublic || null;
+        return data?.find(c => c.id === companyId) as CompanyPublic || null;
       } else {
         return (data as CompanyPublic[]) || [];
       }

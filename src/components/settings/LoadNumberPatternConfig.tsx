@@ -7,6 +7,7 @@ import { Loader2, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useFleetNotifications } from '@/components/notifications';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface PatternResult {
   pattern: string;
@@ -39,6 +40,7 @@ export const LoadNumberPatternConfig = ({
 }: LoadNumberPatternConfigProps) => {
   const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
+  const queryClient = useQueryClient();
   const [description, setDescription] = useState(currentDescription || '');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -99,6 +101,10 @@ export const LoadNumberPatternConfig = ({
         .eq('id', companyId);
 
       if (error) throw error;
+
+      // Invalidate queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['user-company'] });
+      queryClient.invalidateQueries({ queryKey: ['company-users'] });
 
       showSuccess(t('system.load_pattern.pattern_saved'));
 

@@ -547,11 +547,9 @@ export default function Users() {
     try {
       // Obtener información de la empresa usando RPC seguro
       const { data: companyData, error: companyError } = await supabase
-        .rpc('get_companies_basic_info', {
-          target_company_id: userRole.company_id
-        })
+        .rpc('get_companies_basic_info')
         .then(result => ({
-          data: result.data?.[0] || null,
+          data: result.data?.find(c => c.id === userRole.company_id) || null,
           error: result.error
         }));
 
