@@ -21,13 +21,16 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     // Detectar patrones comunes y formatear
     // Patrón: ^\d{2}-\d{3}[a-zA-Z]{0,2}$ (Ej: 12-345AB)
     if (pattern.match(/\^\\d\{2\}-\\d\{3\}/)) {
-      // Procesar caracter por caracter para respetar el orden del patrón
+      // Limpiar el valor: extraer solo dígitos y letras
+      const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
+      
       let result = '';
       let digitCount = 0;
       let letterCount = 0;
       
-      for (const char of value) {
-        // Si es un dígito y aún necesitamos dígitos
+      // Procesar caracter por caracter respetando el orden del patrón
+      for (const char of cleanValue) {
+        // Primero deben ir exactamente 5 dígitos
         if (/\d/.test(char) && digitCount < 5) {
           result += char;
           digitCount++;
@@ -36,11 +39,12 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
             result += '-';
           }
         }
-        // Si es una letra y ya tenemos los 5 dígitos requeridos
+        // Después pueden ir hasta 2 letras (solo cuando ya tenemos 5 dígitos)
         else if (/[a-zA-Z]/.test(char) && digitCount === 5 && letterCount < 2) {
           result += char.toUpperCase();
           letterCount++;
         }
+        // Si es una letra pero aún no tenemos 5 dígitos, ignorarla (no válido según el patrón)
       }
       
       return result;
