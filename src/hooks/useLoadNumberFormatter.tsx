@@ -1,0 +1,110 @@
+import { useState, useCallback } from 'react';
+
+interface UseLoadNumberFormatterProps {
+  pattern?: string;
+  onChange: (value: string) => void;
+}
+
+/**
+ * Hook para formatear automáticamente el número de carga según el patrón configurado
+ * Soporta patrones comunes como: ^\d{2}-\d{3}[a-zA-Z]{0,2}$
+ */
+export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberFormatterProps) => {
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+
+  /**
+   * Formatea el valor según el patrón detectado
+   */
+  const formatValue = useCallback((value: string): string => {
+    if (!pattern) return value;
+
+    // Remover caracteres no válidos según el patrón
+    let cleaned = value.replace(/[^0-9a-zA-Z]/g, '');
+
+    // Detectar patrones comunes y formatear
+    // Patrón: ^\d{2}-\d{3}[a-zA-Z]{0,2}$ (Ej: 12-345AB)
+    if (pattern.match(/\^\\d\{2\}-\\d\{3\}/)) {
+      // Extraer solo los primeros 5 dígitos
+      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, 5);
+      // Extraer hasta 2 letras al final
+      const letters = cleaned.replace(/[^a-zA-Z]/g, '').slice(0, 2);
+      
+      if (digits.length <= 2) {
+        return digits;
+      } else if (digits.length <= 5) {
+        return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+      } else {
+        return `${digits.slice(0, 2)}-${digits.slice(2, 5)}${letters}`;
+      }
+    }
+
+    // Patrón: ^\d{3}-\d{4}$ (Ej: 123-4567)
+    if (pattern.match(/\^\\d\{3\}-\\d\{4\}/)) {
+      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, 7);
+      if (digits.length <= 3) {
+        return digits;
+      } else {
+        return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      }
+    }
+
+    // Patrón: ^\d{4}-\d{3}$ (Ej: 2024-001)
+    if (pattern.match(/\^\\d\{4\}-\\d\{3\}/)) {
+      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, 7);
+      if (digits.length <= 4) {
+        return digits;
+      } else {
+        return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+      }
+    }
+
+    // Patrón genérico con guiones: detectar posición del guion
+    const dashMatch = pattern.match(/\\d\{(\d+)\}-\\d\{(\d+)\}/);
+    if (dashMatch) {
+      const firstGroup = parseInt(dashMatch[1]);
+      const secondGroup = parseInt(dashMatch[2]);
+      const totalDigits = firstGroup + secondGroup;
+      
+      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, totalDigits);
+      
+      if (digits.length <= firstGroup) {
+        return digits;
+      } else {
+        return `${digits.slice(0, firstGroup)}-${digits.slice(firstGroup)}`;
+      }
+    }
+
+    // Si no coincide con ningún patrón conocido, devolver el valor limpio
+    return cleaned;
+  }, [pattern]);
+
+  /**
+   * Handler para el cambio de valor del input
+   */
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target;
+    const newValue = formatValue(input.value);
+    
+    onChange(newValue);
+    
+    // Guardar la posición del cursor para restaurarla después del formato
+    if (input.selectionStart !== null) {
+      setCursorPosition(input.selectionStart);
+    }
+  }, [formatValue, onChange]);
+
+  /**
+   * Restaurar la posición del cursor después del formato
+   */
+  const restoreCursor = useCallback((input: HTMLInputElement) => {
+    if (cursorPosition !== null && input) {
+      input.setSelectionRange(cursorPosition, cursorPosition);
+    }
+  }, [cursorPosition]);
+
+  return {
+    handleChange,
+    formatValue,
+    restoreCursor
+  };
+};

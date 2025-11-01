@@ -9,6 +9,7 @@ import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
 import { useLoadNumberPatternValidation } from "@/hooks/useLoadNumberPatternValidation";
+import { useLoadNumberFormatter } from "@/hooks/useLoadNumberFormatter";
 import { usePONumberValidation } from "@/hooks/usePONumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm, LoadFormData } from "@/hooks/useLoadForm";
@@ -148,6 +149,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     loadNumber: currentLoadNumber,
     pattern: companyData?.load_number_pattern,
     skipValidation: mode === 'edit' && !form.formState.dirtyFields.load_number
+  });
+
+  // Load number formatter
+  const loadNumberFormatter = useLoadNumberFormatter({
+    pattern: companyData?.load_number_pattern,
+    onChange: (value) => {
+      form.setValue("load_number", value, { shouldValidate: true });
+    }
   });
 
   // PO number validation
@@ -968,21 +977,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Load Number */}
-                    <FormField
+                     <FormField
                       control={form.control}
                       name="load_number"
                       render={({ field }) => {
-                        const textHandlers = createTextHandlers(
-                          (value) => {
-                            field.onChange(value);
-                            // Limpiar error cuando el usuario comience a escribir
-                            if (form.formState.errors.load_number) {
-                              form.clearErrors("load_number");
-                            }
-                          },
-                          'text'
-                        );
-                        
                         return (
                            <FormItem>
                               <FormLabel>{t("loads:create_wizard.form.load_number")} {t("loads:create_wizard.form.load_number_required")}</FormLabel>
@@ -991,8 +989,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                   <Input 
                                     placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                     value={field.value || ''}
-                                    onChange={textHandlers.onChange}
-                                    onBlur={textHandlers.onBlur}
+                                    onChange={(e) => {
+                                      if (companyData?.load_number_pattern) {
+                                        loadNumberFormatter.handleChange(e);
+                                      } else {
+                                        field.onChange(e.target.value);
+                                      }
+                                      // Limpiar error cuando el usuario comience a escribir
+                                      if (form.formState.errors.load_number) {
+                                        form.clearErrors("load_number");
+                                      }
+                                    }}
+                                    onBlur={field.onBlur}
                                     autoFocus
                                     className={
                                       loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
