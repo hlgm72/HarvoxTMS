@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -43,6 +43,11 @@ export const LoadNumberPatternConfig = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [result, setResult] = useState<PatternResult | null>(null);
+
+  // Sync description state with currentDescription prop
+  useEffect(() => {
+    setDescription(currentDescription || '');
+  }, [currentDescription]);
 
   const handleGenerate = async () => {
     if (!description.trim()) {
