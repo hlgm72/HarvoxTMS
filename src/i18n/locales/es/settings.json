@@ -134,6 +134,8 @@
   },
   "system": {
     "title": "Configuración del Sistema",
+    "max_users": "Máximo de Usuarios",
+    "max_vehicles": "Máximo de Vehículos",
     "security": {
       "title": "Seguridad y Acceso",
       "description": "Configuraciones de seguridad y control de acceso para tu empresa.",
@@ -144,8 +146,34 @@
       "description": "Configura integraciones con sistemas externos como Geotab, contabilidad, etc.",
       "manage": "Gestionar Integraciones"
     },
+    "load_pattern": {
+      "title": "Formato de Números de Carga",
+      "description": "Describe en lenguaje natural cómo deben ser los números de carga y la IA generará el patrón de validación",
+      "current_pattern": "Patrón actual:",
+      "describe_format": "Describe el formato",
+      "placeholder": "Ejemplo: Los números de las cargas serán 2 dígitos seguidos de un guion y luego 3 dígitos como mínimo y opcionalmente dos letras",
+      "generate_button": "Generar Patrón",
+      "generating": "Generando patrón...",
+      "explanation": "Explicación:",
+      "generated_pattern": "Patrón generado:",
+      "valid_examples": "Ejemplos válidos:",
+      "invalid_examples": "Ejemplos inválidos:",
+      "save_button": "Guardar Patrón",
+      "saving": "Guardando...",
+      "describe_error": "Por favor describe el formato que deseas validar",
+      "pattern_generated": "Patrón generado. Revisa los ejemplos y guarda si es correcto",
+      "pattern_saved": "El formato de números de carga ha sido actualizado",
+      "save_error": "No se pudo guardar el patrón",
+      "generate_error": "No se pudo generar el patrón. Intenta de nuevo"
+    },
     "coming_soon": {
       "title": "Próximamente",
+      "future_settings": "Configuraciones Futuras",
+      "coming_description": "Próximamente estará disponible:",
+      "light_dark_mode": "Modo claro/oscuro",
+      "notification_config": "Configuración de notificaciones",
+      "interface_customization": "Personalización de la interfaz",
+      "automatic_reports": "Configuración de reportes automáticos",
       "automatic_backups": "Configuración de backups automáticos",
       "audit_config": "Configuración de auditoría", 
       "api_config": "Configuración de API"

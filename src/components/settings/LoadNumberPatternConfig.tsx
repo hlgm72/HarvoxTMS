@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 
 interface PatternResult {
   pattern: string;
@@ -27,6 +28,7 @@ export const LoadNumberPatternConfig = ({
   currentPattern,
   onPatternSaved 
 }: LoadNumberPatternConfigProps) => {
+  const { t } = useTranslation('settings');
   const [description, setDescription] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -34,7 +36,7 @@ export const LoadNumberPatternConfig = ({
 
   const handleGenerate = async () => {
     if (!description.trim()) {
-      toast.error("Por favor describe el formato que deseas validar");
+      toast.error(t('system.load_pattern.describe_error'));
       return;
     }
 
@@ -54,10 +56,10 @@ export const LoadNumberPatternConfig = ({
 
       setResult(data);
       
-      toast.success("Patrón generado. Revisa los ejemplos y guarda si es correcto");
+      toast.success(t('system.load_pattern.pattern_generated'));
     } catch (error: any) {
       console.error('Error generating pattern:', error);
-      toast.error(error.message || "No se pudo generar el patrón. Intenta de nuevo");
+      toast.error(error.message || t('system.load_pattern.generate_error'));
     } finally {
       setIsGenerating(false);
     }
@@ -75,14 +77,14 @@ export const LoadNumberPatternConfig = ({
 
       if (error) throw error;
 
-      toast.success("El formato de números de carga ha sido actualizado");
+      toast.success(t('system.load_pattern.pattern_saved'));
 
       onPatternSaved?.(result.pattern);
       setDescription('');
       setResult(null);
     } catch (error: any) {
       console.error('Error saving pattern:', error);
-      toast.error("No se pudo guardar el patrón");
+      toast.error(t('system.load_pattern.save_error'));
     } finally {
       setIsSaving(false);
     }
@@ -93,24 +95,24 @@ export const LoadNumberPatternConfig = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="h-5 w-5" />
-          Formato de Números de Carga
+          {t('system.load_pattern.title')}
         </CardTitle>
         <CardDescription>
-          Describe en lenguaje natural cómo deben ser los números de carga y la IA generará el patrón de validación
+          {t('system.load_pattern.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {currentPattern && (
           <div className="text-sm p-3 bg-muted rounded-md">
-            <span className="font-medium">Patrón actual:</span> <code className="ml-2">{currentPattern}</code>
+            <span className="font-medium">{t('system.load_pattern.current_pattern')}</span> <code className="ml-2">{currentPattern}</code>
           </div>
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="description">Describe el formato</Label>
+          <Label htmlFor="description">{t('system.load_pattern.describe_format')}</Label>
           <Textarea
             id="description"
-            placeholder="Ejemplo: Los números de las cargas serán 2 dígitos seguidos de un guion y luego 3 dígitos como mínimo y opcionalmente dos letras"
+            placeholder={t('system.load_pattern.placeholder')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
@@ -126,12 +128,12 @@ export const LoadNumberPatternConfig = ({
           {isGenerating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generando patrón...
+              {t('system.load_pattern.generating')}
             </>
           ) : (
             <>
               <Sparkles className="mr-2 h-4 w-4" />
-              Generar Patrón
+              {t('system.load_pattern.generate_button')}
             </>
           )}
         </Button>
@@ -139,12 +141,12 @@ export const LoadNumberPatternConfig = ({
         {result && (
           <div className="space-y-4 mt-6 p-4 border rounded-lg bg-muted/30">
             <div>
-              <h4 className="font-semibold mb-2">Explicación:</h4>
+              <h4 className="font-semibold mb-2">{t('system.load_pattern.explanation')}</h4>
               <p className="text-sm text-muted-foreground">{result.explanation}</p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2">Patrón generado:</h4>
+              <h4 className="font-semibold mb-2">{t('system.load_pattern.generated_pattern')}</h4>
               <code className="block text-sm bg-background p-2 rounded border">
                 {result.pattern}
               </code>
@@ -154,7 +156,7 @@ export const LoadNumberPatternConfig = ({
               <div>
                 <h4 className="font-semibold mb-2 flex items-center gap-2 text-green-600">
                   <CheckCircle2 className="h-4 w-4" />
-                  Ejemplos válidos:
+                  {t('system.load_pattern.valid_examples')}
                 </h4>
                 <ul className="space-y-1">
                   {result.examples.valid.map((example, idx) => (
@@ -168,7 +170,7 @@ export const LoadNumberPatternConfig = ({
               <div>
                 <h4 className="font-semibold mb-2 flex items-center gap-2 text-red-600">
                   <XCircle className="h-4 w-4" />
-                  Ejemplos inválidos:
+                  {t('system.load_pattern.invalid_examples')}
                 </h4>
                 <ul className="space-y-1">
                   {result.examples.invalid.map((example, idx) => (
@@ -189,10 +191,10 @@ export const LoadNumberPatternConfig = ({
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando...
+                  {t('system.load_pattern.saving')}
                 </>
               ) : (
-                'Guardar Patrón'
+                t('system.load_pattern.save_button')
               )}
             </Button>
           </div>

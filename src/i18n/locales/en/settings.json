@@ -134,6 +134,8 @@
   },
   "system": {
     "title": "System Configuration",
+    "max_users": "Maximum Users",
+    "max_vehicles": "Maximum Vehicles",
     "security": {
       "title": "Security & Access",
       "description": "Security settings and access control for your company.",
@@ -144,8 +146,34 @@
       "description": "Configure integrations with external systems like Geotab, accounting, etc.",
       "manage": "Manage Integrations"
     },
+    "load_pattern": {
+      "title": "Load Number Format",
+      "description": "Describe in natural language how load numbers should be and AI will generate the validation pattern",
+      "current_pattern": "Current pattern:",
+      "describe_format": "Describe the format",
+      "placeholder": "Example: Load numbers will be 2 digits followed by a hyphen and then 3 digits minimum and optionally two letters",
+      "generate_button": "Generate Pattern",
+      "generating": "Generating pattern...",
+      "explanation": "Explanation:",
+      "generated_pattern": "Generated pattern:",
+      "valid_examples": "Valid examples:",
+      "invalid_examples": "Invalid examples:",
+      "save_button": "Save Pattern",
+      "saving": "Saving...",
+      "describe_error": "Please describe the format you want to validate",
+      "pattern_generated": "Pattern generated. Review the examples and save if correct",
+      "pattern_saved": "Load number format has been updated",
+      "save_error": "Could not save pattern",
+      "generate_error": "Could not generate pattern. Try again"
+    },
     "coming_soon": {
       "title": "Coming Soon",
+      "future_settings": "Future Settings",
+      "coming_description": "Coming soon:",
+      "light_dark_mode": "Light/dark mode",
+      "notification_config": "Notification settings",
+      "interface_customization": "Interface customization",
+      "automatic_reports": "Automatic report configuration",
       "automatic_backups": "Automatic backup configuration",
       "audit_config": "Audit configuration", 
       "api_config": "API configuration"

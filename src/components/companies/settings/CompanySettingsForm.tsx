@@ -729,19 +729,19 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </Card>
         </TabsContent>
 
-        {/* Configuración del Sistema */}
+        {/* System Configuration */}
         <TabsContent value="system">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5 text-primary" />
-                Configuración del Sistema
+                {t('system.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="max_users">Máximo de Usuarios</Label>
+                  <Label htmlFor="max_users">{t('system.max_users')}</Label>
                   <Input
                     id="max_users"
                     type="number"
@@ -752,7 +752,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="max_vehicles">Máximo de Vehículos</Label>
+                  <Label htmlFor="max_vehicles">{t('system.max_vehicles')}</Label>
                   <Input
                     id="max_vehicles"
                     type="number"
@@ -778,16 +778,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               <Separator className="my-6" />
 
               <div className="space-y-4">
-                <h4 className="font-semibold">Configuraciones Futuras</h4>
+                <h4 className="font-semibold">{t('system.coming_soon.future_settings')}</h4>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-3">
-                    Próximamente estará disponible:
+                    {t('system.coming_soon.coming_description')}
                   </p>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Modo claro/oscuro</li>
-                    <li>• Configuración de notificaciones</li>
-                    <li>• Personalización de la interfaz</li>
-                    <li>• Configuración de reportes automáticos</li>
+                    <li>• {t('system.coming_soon.light_dark_mode')}</li>
+                    <li>• {t('system.coming_soon.notification_config')}</li>
+                    <li>• {t('system.coming_soon.interface_customization')}</li>
+                    <li>• {t('system.coming_soon.automatic_reports')}</li>
                   </ul>
                 </div>
               </div>
