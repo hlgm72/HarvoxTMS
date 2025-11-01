@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { formatDateAuto } from '@/lib/dateFormatting';
+import { LoadNumberPatternConfig } from '@/components/settings/LoadNumberPatternConfig';
 
 interface CompanySettingsFormProps {
   company: Company;
@@ -763,6 +764,18 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               </div>
 
               <Separator />
+
+              <div className="mt-6">
+                <LoadNumberPatternConfig
+                  companyId={company.id}
+                  currentPattern={formData.load_number_pattern}
+                  onPatternSaved={(pattern) => {
+                    setFormData(prev => ({ ...prev, load_number_pattern: pattern }));
+                  }}
+                />
+              </div>
+
+              <Separator className="my-6" />
 
               <div className="space-y-4">
                 <h4 className="font-semibold">Configuraciones Futuras</h4>
