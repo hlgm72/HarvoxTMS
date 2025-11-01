@@ -67,6 +67,7 @@ export type Database = {
           email: string | null
           id: string
           load_assignment_criteria: string | null
+          load_number_pattern: string | null
           logo_url: string | null
           max_users: number | null
           max_vehicles: number | null
@@ -95,6 +96,7 @@ export type Database = {
           email?: string | null
           id?: string
           load_assignment_criteria?: string | null
+          load_number_pattern?: string | null
           logo_url?: string | null
           max_users?: number | null
           max_vehicles?: number | null
@@ -123,6 +125,7 @@ export type Database = {
           email?: string | null
           id?: string
           load_assignment_criteria?: string | null
+          load_number_pattern?: string | null
           logo_url?: string | null
           max_users?: number | null
           max_vehicles?: number | null
