@@ -735,13 +735,13 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5 text-primary" />
-                {t('system.title')}
+                {tSettings('system.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="max_users">{t('system.max_users')}</Label>
+                  <Label htmlFor="max_users">{tSettings('system.max_users')}</Label>
                   <Input
                     id="max_users"
                     type="number"
@@ -752,7 +752,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="max_vehicles">{t('system.max_vehicles')}</Label>
+                  <Label htmlFor="max_vehicles">{tSettings('system.max_vehicles')}</Label>
                   <Input
                     id="max_vehicles"
                     type="number"
