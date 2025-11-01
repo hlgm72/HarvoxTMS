@@ -295,6 +295,7 @@
     "validation": {
       "validation_error": "Validation Error",
       "load_number_required": "Load number is required",
+      "invalid_pattern_format": "Load number does not match the required format",
       "client_required": "Client/Broker is required",
       "commodity_required": "Commodity description is required",
       "amount_required": "Total amount must be greater than 0",

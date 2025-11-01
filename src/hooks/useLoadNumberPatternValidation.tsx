@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTranslation } from 'react-i18next';
 
 interface UseLoadNumberPatternValidationProps {
   loadNumber: string;
@@ -12,6 +13,7 @@ export const useLoadNumberPatternValidation = ({
   pattern,
   skipValidation = false 
 }: UseLoadNumberPatternValidationProps) => {
+  const { t } = useTranslation('loads');
   const [isValidFormat, setIsValidFormat] = useState(true);
   const [formatError, setFormatError] = useState<string | null>(null);
   
@@ -31,7 +33,7 @@ export const useLoadNumberPatternValidation = ({
       
       setIsValidFormat(isValid);
       if (!isValid) {
-        setFormatError('El número de carga no cumple con el formato requerido');
+        setFormatError(t('create_wizard.validation.invalid_pattern_format'));
       }
     } catch (error) {
       console.error('Invalid regex pattern:', error);

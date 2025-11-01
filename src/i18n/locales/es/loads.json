@@ -294,6 +294,7 @@
     "validation": {
       "validation_error": "Error de validación",
       "load_number_required": "El número de carga es requerido",
+      "invalid_pattern_format": "El número de carga no cumple con el formato requerido",
       "client_required": "Cliente/Broker es requerido",
       "commodity_required": "La descripción de mercancía es requerida",
       "amount_required": "El monto total debe ser mayor a 0",
