@@ -911,6 +911,7 @@
       "title": "Restore Load",
       "description": "Are you sure you want to restore load",
       "description_2": "The load will be reactivated to '{{status}}' status and the driver's payroll will be recalculated if assigned.",
+      "description_edit": "The load editor for {{loadNumber}} will open so you can make the necessary adjustments before restoring it. All financial validations will be applied based on the period and assigned driver.",
       "notes_label": "Notes (optional)",
       "notes_placeholder": "Reason for restoration...",
       "cancel": "Cancel",

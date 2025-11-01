@@ -911,6 +911,7 @@
       "title": "Restaurar Carga",
       "description": "¿Estás seguro de que deseas restaurar la carga",
       "description_2": "La carga será reactivada a estado '{{status}}' y se recalculará el payroll del conductor si está asignada.",
+      "description_edit": "Se abrirá el editor de la carga {{loadNumber}} para que puedas realizar los ajustes necesarios antes de restaurarla. Se aplicarán todas las validaciones financieras según el período y el conductor asignado.",
       "notes_label": "Notas (opcional)",
       "notes_placeholder": "Razón de la restauración...",
       "cancel": "Cancelar",
