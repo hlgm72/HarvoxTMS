@@ -18,7 +18,10 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
   const formatValue = useCallback((value: string): string => {
     console.log('🔍 formatValue input:', value, 'pattern:', pattern);
     
-    if (!pattern) return value;
+    if (!pattern) {
+      console.log('❌ No pattern defined, returning raw value');
+      return value;
+    }
 
     // Detectar patrones comunes y formatear
     // Patrón: ^\d{2}-\d{3}[a-zA-Z]{0,2}$ (Ej: 12-345AB)
@@ -58,6 +61,7 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
 
     // Patrón: ^[a-zA-Z]{2}-\d{2}$ o ^[A-Za-z]{2}-\d{2}$ (Ej: AB-12)
     if (pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/) || pattern.match(/\^\[A-Za-z\]\{2\}-\\d\{2\}/)) {
+      console.log('✅ Pattern matched: Letters-Dash-Digits');
       // Limpiar el valor: extraer solo letras y dígitos
       const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
       console.log('🧹 cleanValue (letters-digits):', cleanValue);
@@ -65,7 +69,7 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       let letters = '';
       let digits = '';
       
-      // Separar letras y dígitos
+      // Separar letras y dígitos del valor limpio
       for (const char of cleanValue) {
         if (/[a-zA-Z]/.test(char) && letters.length < 2) {
           letters += char.toUpperCase();
@@ -74,13 +78,13 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
         }
       }
       
-      // Solo agregar el guión si hay dígitos después de las letras
+      // Construir resultado: solo agregar el guión si hay dígitos después de las letras
       let result = letters;
       if (letters.length === 2 && digits.length > 0) {
         result += '-' + digits;
       }
       
-      console.log('✅ formatValue output (letters-digits):', result);
+      console.log('✅ formatValue output (letters-digits):', result, '| letters:', letters, '| digits:', digits);
       return result;
     }
 
