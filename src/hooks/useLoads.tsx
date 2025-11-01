@@ -281,7 +281,6 @@ export const useLoads = (filters?: LoadsFilters) => {
           .from('loads')
           .select('*')
           .in('created_by', companyUsers)
-          .neq('status', 'cancelled') // Excluir cargas canceladas
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
           .limit(200); // Reducido de 500 a 200 para mejorar performance inicial
