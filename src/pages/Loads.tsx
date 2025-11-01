@@ -28,39 +28,8 @@ export default function Loads() {
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
   
-  // Inicializar con semana actual
-  const getCurrentWeek = (): PeriodFilterValue => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentWeekNumber = getISOWeek(today);
-    const currentMonth = today.getMonth() + 1;
-    
-    // Buscar la semana actual en availableWeeks
-    const weekData = availableWeeks
-      ?.find(w => w.year === currentYear)
-      ?.months.find(m => m.month === currentMonth)
-      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-    
-    if (weekData) {
-      return {
-        type: 'week',
-        selectedYear: currentYear,
-        selectedWeek: currentWeekNumber,
-        startDate: weekData.startDate,
-        endDate: weekData.endDate,
-        label: `W${currentWeekNumber}/${currentYear}`
-      };
-    }
-    
-    // Fallback si no hay datos de semana disponibles
-    return {
-      type: 'week',
-      selectedYear: currentYear,
-      selectedWeek: currentWeekNumber
-    };
-  };
-  
-  const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue>(getCurrentWeek());
+  // Inicializar el estado como null, se establecerá cuando availableWeeks esté disponible
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilterValue | null>(null);
   
   // ✅ CORRECCIÓN: Usar nombres consistentes driver/broker en lugar de driverId/brokerId
   const [filters, setFilters] = useState({
@@ -72,10 +41,10 @@ export default function Loads() {
     sortBy: 'date_desc'
   });
 
-  // ✅ INICIALIZACIÓN AUTOMÁTICA: Poblar semana actual cuando esté disponible
+  // ✅ INICIALIZACIÓN AUTOMÁTICA: Establecer semana actual cuando availableWeeks esté disponible
   useEffect(() => {
-    // Solo inicializar si la semana actual aún no tiene fechas
-    if (periodFilter.type === 'week' && !periodFilter.startDate && availableWeeks) {
+    // Solo inicializar si aún no hay filtro establecido y availableWeeks está disponible
+    if (!periodFilter && availableWeeks && availableWeeks.length > 0) {
       const today = new Date();
       const currentYear = today.getFullYear();
       const currentWeekNumber = getISOWeek(today);
@@ -83,7 +52,7 @@ export default function Loads() {
       
       // Buscar la semana actual en availableWeeks
       const weekData = availableWeeks
-        ?.find(w => w.year === currentYear)
+        .find(w => w.year === currentYear)
         ?.months.find(m => m.month === currentMonth)
         ?.weeks.find(w => w.weekNumber === currentWeekNumber);
       
@@ -98,7 +67,7 @@ export default function Loads() {
         });
       }
     }
-  }, [availableWeeks, periodFilter.type, periodFilter.startDate]);
+  }, [availableWeeks, periodFilter]);
 
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
@@ -253,51 +222,63 @@ export default function Loads() {
       />
 
       <div className="p-2 md:p-4 space-y-6">
-        <LoadDocumentsProvider>
-          <LoadsList 
-            filters={{
-              search: filters.search,
-              status: filters.status,
-              driver: filters.driver,
-              broker: filters.broker,
-              dateRange: { from: undefined, to: undefined }
-            }}
-            periodFilter={periodFilter}
-            onCreateLoad={() => setIsCreateDialogOpen(true)}
-            onStatsChange={setLoadsStats}
-          />
-        </LoadDocumentsProvider>
+        {!periodFilter ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center space-y-2">
+              <div className="text-muted-foreground">{t('subtitle.loading')}</div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <LoadDocumentsProvider>
+              <LoadsList 
+                filters={{
+                  search: filters.search,
+                  status: filters.status,
+                  driver: filters.driver,
+                  broker: filters.broker,
+                  dateRange: { from: undefined, to: undefined }
+                }}
+                periodFilter={periodFilter}
+                onCreateLoad={() => setIsCreateDialogOpen(true)}
+                onStatsChange={setLoadsStats}
+              />
+            </LoadDocumentsProvider>
 
-        <CreateLoadDialog
-          isOpen={isCreateDialogOpen}
-          onClose={() => setIsCreateDialogOpen(false)}
-          mode="create"
-        />
+            <CreateLoadDialog
+              isOpen={isCreateDialogOpen}
+              onClose={() => setIsCreateDialogOpen(false)}
+              mode="create"
+            />
+          </>
+        )}
       </div>
 
       {/* ✅ Floating Actions con filtros sincronizados */}
-      <LoadsFloatingActions
-        filters={{
-          status: filters.status,
-          driver: filters.driver,
-          broker: filters.broker,
-          brokerName: filters.brokerName, // Pasar el nombre del cliente
-          dateRange: { from: undefined, to: undefined }
-        }}
-        periodFilter={periodFilter}
-        onFiltersChange={(newFilters) => {
-          setFilters(prev => ({
-            ...prev,
-            status: newFilters.status,
-            driver: newFilters.driver,
-            broker: newFilters.broker,
-            brokerName: newFilters.brokerName || "" // Guardar el nombre del cliente
-          }));
-        }}
-        onPeriodFilterChange={(newPeriodFilter) => {
-          setPeriodFilter(newPeriodFilter);
-        }}
-      />
+      {periodFilter && (
+        <LoadsFloatingActions
+          filters={{
+            status: filters.status,
+            driver: filters.driver,
+            broker: filters.broker,
+            brokerName: filters.brokerName, // Pasar el nombre del cliente
+            dateRange: { from: undefined, to: undefined }
+          }}
+          periodFilter={periodFilter}
+          onFiltersChange={(newFilters) => {
+            setFilters(prev => ({
+              ...prev,
+              status: newFilters.status,
+              driver: newFilters.driver,
+              broker: newFilters.broker,
+              brokerName: newFilters.brokerName || "" // Guardar el nombre del cliente
+            }));
+          }}
+          onPeriodFilterChange={(newPeriodFilter) => {
+            setPeriodFilter(newPeriodFilter);
+          }}
+        />
+      )}
     </>
   );
 }
