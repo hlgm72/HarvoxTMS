@@ -16,7 +16,6 @@ import { useLoadDocumentValidation } from "@/hooks/useLoadDocumentValidation";
 import { PeriodFilterValue } from "./PeriodFilter";
 import PaymentPeriodInfo from "./PaymentPeriodInfo";
 import { RestoreLoadDialog } from "./RestoreLoadDialog";
-import { useRestoreLoad } from "@/hooks/useRestoreLoad";
 import { LoadDocumentsSection } from "./LoadDocumentsSection";
 import { EmptyLoadsState } from "./EmptyLoadsState";
 import { CreateLoadDialog } from "./CreateLoadDialog";
@@ -190,40 +189,11 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
   const [restoreDialog, setRestoreDialog] = useState<{
     isOpen: boolean;
     load?: any;
-    previousStatus?: string;
   }>({ isOpen: false });
-  
-  const restoreLoadMutation = useRestoreLoad();
 
-  // Función para obtener el estado anterior y abrir el diálogo de restauración
-  const handleRestoreClick = async (load: any) => {
-    try {
-      // Buscar el estado anterior en el historial
-      const { data: historyData, error } = await supabase
-        .from('load_status_history')
-        .select('previous_status')
-        .eq('load_id', load.id)
-        .eq('new_status', 'cancelled')
-        .order('changed_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error obteniendo estado anterior:', error);
-        // Abrir el dialog sin estado anterior
-        setRestoreDialog({ isOpen: true, load });
-        return;
-      }
-
-      setRestoreDialog({ 
-        isOpen: true, 
-        load,
-        previousStatus: historyData?.previous_status || 'pending'
-      });
-    } catch (error) {
-      console.error('Error en handleRestoreClick:', error);
-      setRestoreDialog({ isOpen: true, load });
-    }
+  // Función para abrir el diálogo de confirmación de restauración
+  const handleRestoreClick = (load: any) => {
+    setRestoreDialog({ isOpen: true, load });
   };
   
   const [editDialog, setEditDialog] = useState<{
@@ -762,16 +732,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
         <RestoreLoadDialog
           open={restoreDialog.isOpen}
           loadNumber={restoreDialog.load.load_number}
-          previousStatus={restoreDialog.previousStatus || 'pending'}
-          onConfirm={(notes) => {
-            restoreLoadMutation.mutate({
-              loadId: restoreDialog.load.id,
-              notes
-            });
+          onConfirm={() => {
+            // Cerrar el dialog de restauración y abrir el de edición
+            const loadToEdit = restoreDialog.load;
             setRestoreDialog({ isOpen: false });
+            setEditDialog({ isOpen: true, load: loadToEdit });
           }}
           onCancel={() => setRestoreDialog({ isOpen: false })}
-          isPending={restoreLoadMutation.isPending}
         />
       )}
       
