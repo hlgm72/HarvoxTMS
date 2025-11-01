@@ -132,6 +132,61 @@
       "error_message": "No se ha podido completar la actualización de las preferencias. Por favor, inténtelo nuevamente."
     }
   },
+  "payments": {
+    "title": "Configuración de Pagos",
+    "critical_config": {
+      "title": "Configuración Crítica",
+      "description": "Estos ajustes afectan directamente los pagos a los conductores. Revisa cuidadosamente antes de guardar cambios."
+    },
+    "frequency": {
+      "label": "Frecuencia de Pago",
+      "weekly": "Semanal",
+      "biweekly": "Quincenal",
+      "monthly": "Mensual"
+    },
+    "cycle_start_day": {
+      "label": "Día de Inicio del Ciclo"
+    },
+    "payment_day": {
+      "label": "Día de Pago"
+    },
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "preview": {
+      "title": "Vista Previa de Períodos",
+      "description": "Ve cómo se verán los próximos períodos con esta configuración",
+      "show": "Mostrar Vista Previa",
+      "hide": "Ocultar Vista Previa",
+      "next_periods": "Próximos Períodos de Pago",
+      "period": "Período",
+      "days_7": "7 días",
+      "days_14": "14 días",
+      "monthly": "Mensual",
+      "note": "* Esta vista previa muestra cómo se generarían los períodos con la configuración actual"
+    },
+    "load_assignment": {
+      "title": "Criterio de Asignación de Cargas",
+      "description": "Selecciona qué fecha utilizar para asignar cargas a períodos de pago",
+      "delivery_date": "Fecha de Entrega (Recomendado)",
+      "delivery_date_description": "Asignar cargas basándose en la fecha de entrega. Representa cuando se completa el servicio.",
+      "pickup_date": "Fecha de Recogida",
+      "pickup_date_description": "Asignar cargas basándose en la fecha de recogida. Representa cuando inicia el servicio."
+    },
+    "owner_operator_defaults": {
+      "title": "Configuración por Defecto - Owner Operators",
+      "description": "Estos porcentajes se aplicarán automáticamente a nuevos Owner Operators. Pueden ser modificados individualmente después.",
+      "leasing": "Leasing (%)",
+      "factoring": "Factoring (%)",
+      "dispatching": "Dispatching (%)"
+    }
+  },
   "system": {
     "title": "Configuración del Sistema",
     "max_users": "Máximo de Usuarios",

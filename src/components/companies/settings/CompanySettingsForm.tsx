@@ -31,6 +31,7 @@ interface CompanySettingsFormProps {
 
 export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormProps) {
   const { t } = useTranslation('common');
+  const { t: tSettings } = useTranslation('settings');
   const [formData, setFormData] = useState<Company>(company);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('company');
@@ -471,13 +472,13 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
           </Card>
         </TabsContent>
 
-        {/* Configuración de Pagos */}
+        {/* Payment Configuration */}
         <TabsContent value="payments">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5 text-primary" />
-                Configuración de Pagos
+                {tSettings('payments.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -485,10 +486,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-blue-900">Configuración Crítica</h4>
+                    <h4 className="font-semibold text-blue-900">{tSettings('payments.critical_config.title')}</h4>
                     <p className="text-sm text-blue-700">
-                      Estos ajustes afectan directamente los pagos a los conductores. 
-                      Revisa cuidadosamente antes de guardar cambios.
+                      {tSettings('payments.critical_config.description')}
                     </p>
                   </div>
                 </div>
@@ -496,7 +496,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="default_payment_frequency">Frecuencia de Pago</Label>
+                  <Label htmlFor="default_payment_frequency">{tSettings('payments.frequency.label')}</Label>
                   <Select 
                     value={formData.default_payment_frequency || 'weekly'} 
                     onValueChange={(value) => handleInputChange('default_payment_frequency', value)}
@@ -505,15 +505,15 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="weekly">Semanal</SelectItem>
-                      <SelectItem value="biweekly">Quincenal</SelectItem>
-                      <SelectItem value="monthly">Mensual</SelectItem>
+                      <SelectItem value="weekly">{tSettings('payments.frequency.weekly')}</SelectItem>
+                      <SelectItem value="biweekly">{tSettings('payments.frequency.biweekly')}</SelectItem>
+                      <SelectItem value="monthly">{tSettings('payments.frequency.monthly')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="payment_cycle_start_day">Día de Inicio del Ciclo</Label>
+                  <Label htmlFor="payment_cycle_start_day">{tSettings('payments.cycle_start_day.label')}</Label>
                   <Select 
                     value={formData.payment_cycle_start_day?.toString() || '1'} 
                     onValueChange={(value) => handleInputChange('payment_cycle_start_day', parseInt(value))}
@@ -522,19 +522,19 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Lunes</SelectItem>
-                      <SelectItem value="2">Martes</SelectItem>
-                      <SelectItem value="3">Miércoles</SelectItem>
-                      <SelectItem value="4">Jueves</SelectItem>
-                      <SelectItem value="5">Viernes</SelectItem>
-                      <SelectItem value="6">Sábado</SelectItem>
-                      <SelectItem value="7">Domingo</SelectItem>
+                      <SelectItem value="1">{tSettings('payments.days.monday')}</SelectItem>
+                      <SelectItem value="2">{tSettings('payments.days.tuesday')}</SelectItem>
+                      <SelectItem value="3">{tSettings('payments.days.wednesday')}</SelectItem>
+                      <SelectItem value="4">{tSettings('payments.days.thursday')}</SelectItem>
+                      <SelectItem value="5">{tSettings('payments.days.friday')}</SelectItem>
+                      <SelectItem value="6">{tSettings('payments.days.saturday')}</SelectItem>
+                      <SelectItem value="7">{tSettings('payments.days.sunday')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="payment_day">Día de Pago</Label>
+                  <Label htmlFor="payment_day">{tSettings('payments.payment_day.label')}</Label>
                   <Select 
                     value={formData.payment_day || 'friday'} 
                     onValueChange={(value) => handleInputChange('payment_day', value)}
@@ -543,11 +543,11 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="monday">Lunes</SelectItem>
-                      <SelectItem value="tuesday">Martes</SelectItem>
-                      <SelectItem value="wednesday">Miércoles</SelectItem>
-                      <SelectItem value="thursday">Jueves</SelectItem>
-                      <SelectItem value="friday">Viernes</SelectItem>
+                      <SelectItem value="monday">{tSettings('payments.days.monday')}</SelectItem>
+                      <SelectItem value="tuesday">{tSettings('payments.days.tuesday')}</SelectItem>
+                      <SelectItem value="wednesday">{tSettings('payments.days.wednesday')}</SelectItem>
+                      <SelectItem value="thursday">{tSettings('payments.days.thursday')}</SelectItem>
+                      <SelectItem value="friday">{tSettings('payments.days.friday')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -557,9 +557,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
               <Separator />
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Vista Previa de Períodos</h4>
+                  <h4 className="font-medium">{tSettings('payments.preview.title')}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Ve cómo se verán los próximos períodos con esta configuración
+                    {tSettings('payments.preview.description')}
                   </p>
                 </div>
                 <Button
@@ -569,7 +569,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   onClick={() => setShowPaymentPreview(!showPaymentPreview)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
-                  {showPaymentPreview ? 'Ocultar' : 'Mostrar'} Vista Previa
+                  {showPaymentPreview ? tSettings('payments.preview.hide') : tSettings('payments.preview.show')}
                 </Button>
               </div>
 
@@ -578,29 +578,29 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
                   <h5 className="font-medium flex items-center gap-2">
                     <CalendarDays className="h-4 w-4" />
-                    Próximos Períodos de Pago
+                    {tSettings('payments.preview.next_periods')}
                   </h5>
                   <div className="grid gap-2">
                     {generatePreviewPeriods().map((period, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-background rounded border">
                         <div className="flex items-center gap-3">
                           <Badge variant="outline">
-                            Período {index + 1}
+                            {tSettings('payments.preview.period')} {index + 1}
                           </Badge>
                            <span className="text-sm">
                              {formatDateAuto(period.start)} - {formatDateAuto(period.end)}
                            </span>
                         </div>
                         <Badge variant="secondary">
-                          {(formData.default_payment_frequency || 'weekly') === 'weekly' && '7 días'}
-                          {(formData.default_payment_frequency || 'weekly') === 'biweekly' && '14 días'}
-                          {(formData.default_payment_frequency || 'weekly') === 'monthly' && 'Mensual'}
+                          {(formData.default_payment_frequency || 'weekly') === 'weekly' && tSettings('payments.preview.days_7')}
+                          {(formData.default_payment_frequency || 'weekly') === 'biweekly' && tSettings('payments.preview.days_14')}
+                          {(formData.default_payment_frequency || 'weekly') === 'monthly' && tSettings('payments.preview.monthly')}
                         </Badge>
                       </div>
                     ))}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    * Esta vista previa muestra cómo se generarían los períodos con la configuración actual
+                    {tSettings('payments.preview.note')}
                   </p>
                 </div>
               )}
@@ -610,9 +610,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 <div className="flex items-center gap-3 mb-4">
                   <CreditCard className="h-5 w-5 text-green-600" />
                   <div>
-                    <h4 className="font-semibold text-green-900">Criterio de Asignación de Cargas</h4>
+                    <h4 className="font-semibold text-green-900">{tSettings('payments.load_assignment.title')}</h4>
                     <p className="text-sm text-green-700">
-                      Selecciona qué fecha utilizar para asignar cargas a períodos de pago
+                      {tSettings('payments.load_assignment.description')}
                     </p>
                   </div>
                 </div>
@@ -630,9 +630,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                         className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                       />
                       <Label htmlFor="delivery_date" className="flex-1 cursor-pointer">
-                        <div className="font-medium text-green-900">Fecha de Entrega (Recomendado)</div>
+                        <div className="font-medium text-green-900">{tSettings('payments.load_assignment.delivery_date')}</div>
                         <div className="text-sm text-green-700">
-                          Asignar cargas basándose en la fecha de entrega. Representa cuando se completa el servicio.
+                          {tSettings('payments.load_assignment.delivery_date_description')}
                         </div>
                       </Label>
                     </div>
@@ -647,9 +647,9 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                         className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                       />
                       <Label htmlFor="pickup_date" className="flex-1 cursor-pointer">
-                        <div className="font-medium text-green-900">Fecha de Recogida</div>
+                        <div className="font-medium text-green-900">{tSettings('payments.load_assignment.pickup_date')}</div>
                         <div className="text-sm text-green-700">
-                          Asignar cargas basándose en la fecha de recogida. Representa cuando inicia el servicio.
+                          {tSettings('payments.load_assignment.pickup_date_description')}
                         </div>
                       </Label>
                     </div>
@@ -662,16 +662,16 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                 <div className="flex items-center gap-3 mb-4">
                   <Truck className="h-5 w-5 text-amber-600" />
                   <div>
-                    <h4 className="font-semibold text-amber-900">Configuración por Defecto - Owner Operators</h4>
+                    <h4 className="font-semibold text-amber-900">{tSettings('payments.owner_operator_defaults.title')}</h4>
                     <p className="text-sm text-amber-700">
-                      Estos porcentajes se aplicarán automáticamente a nuevos Owner Operators. Pueden ser modificados individualmente después.
+                      {tSettings('payments.owner_operator_defaults.description')}
                     </p>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="default_leasing_percentage">Leasing (%)</Label>
+                    <Label htmlFor="default_leasing_percentage">{tSettings('payments.owner_operator_defaults.leasing')}</Label>
                     <div className="relative">
                       <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -689,7 +689,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="default_factoring_percentage">Factoring (%)</Label>
+                    <Label htmlFor="default_factoring_percentage">{tSettings('payments.owner_operator_defaults.factoring')}</Label>
                     <div className="relative">
                       <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -707,7 +707,7 @@ export function CompanySettingsForm({ company, onUpdate }: CompanySettingsFormPr
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="default_dispatching_percentage">Dispatching (%)</Label>
+                    <Label htmlFor="default_dispatching_percentage">{tSettings('payments.owner_operator_defaults.dispatching')}</Label>
                     <div className="relative">
                       <Percent className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input

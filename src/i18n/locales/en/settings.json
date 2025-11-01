@@ -132,6 +132,61 @@
       "error_message": "Could not complete the preferences update. Please try again."
     }
   },
+  "payments": {
+    "title": "Payment Configuration",
+    "critical_config": {
+      "title": "Critical Configuration",
+      "description": "These settings directly affect driver payments. Review carefully before saving changes."
+    },
+    "frequency": {
+      "label": "Payment Frequency",
+      "weekly": "Weekly",
+      "biweekly": "Biweekly",
+      "monthly": "Monthly"
+    },
+    "cycle_start_day": {
+      "label": "Cycle Start Day"
+    },
+    "payment_day": {
+      "label": "Payment Day"
+    },
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "preview": {
+      "title": "Period Preview",
+      "description": "See how upcoming periods will look with this configuration",
+      "show": "Show Preview",
+      "hide": "Hide Preview",
+      "next_periods": "Upcoming Payment Periods",
+      "period": "Period",
+      "days_7": "7 days",
+      "days_14": "14 days",
+      "monthly": "Monthly",
+      "note": "* This preview shows how periods would be generated with the current configuration"
+    },
+    "load_assignment": {
+      "title": "Load Assignment Criteria",
+      "description": "Select which date to use for assigning loads to payment periods",
+      "delivery_date": "Delivery Date (Recommended)",
+      "delivery_date_description": "Assign loads based on delivery date. Represents when the service is completed.",
+      "pickup_date": "Pickup Date",
+      "pickup_date_description": "Assign loads based on pickup date. Represents when the service starts."
+    },
+    "owner_operator_defaults": {
+      "title": "Default Configuration - Owner Operators",
+      "description": "These percentages will be automatically applied to new Owner Operators. They can be modified individually afterwards.",
+      "leasing": "Leasing (%)",
+      "factoring": "Factoring (%)",
+      "dispatching": "Dispatching (%)"
+    }
+  },
   "system": {
     "title": "System Configuration",
     "max_users": "Maximum Users",
