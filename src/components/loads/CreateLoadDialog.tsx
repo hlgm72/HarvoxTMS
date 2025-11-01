@@ -8,6 +8,7 @@ import { useClients, Client, useClientContacts } from "@/hooks/useClients";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
 import { useCreateLoad } from "@/hooks/useCreateLoad";
 import { useLoadNumberValidation } from "@/hooks/useLoadNumberValidation";
+import { useLoadNumberPatternValidation } from "@/hooks/useLoadNumberPatternValidation";
 import { usePONumberValidation } from "@/hooks/usePONumberValidation";
 import { useLoadData } from "@/hooks/useLoadData";
 import { useLoadForm, LoadFormData } from "@/hooks/useLoadForm";
@@ -141,6 +142,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     mode === 'edit' && !form.formState.dirtyFields.load_number, // Skip validation if in edit mode and field not dirty
     mode === 'edit' ? activeLoadData?.id : undefined
   );
+
+  // Load number pattern validation
+  const patternValidation = useLoadNumberPatternValidation({
+    loadNumber: currentLoadNumber,
+    pattern: companyData?.load_number_pattern,
+    skipValidation: mode === 'edit' && !form.formState.dirtyFields.load_number
+  });
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
@@ -573,6 +581,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       return;
     }
 
+    // Validar formato del número según el patrón de la compañía
+    if (!patternValidation.isValidFormat) {
+      console.log('🚨 onSubmit blocked - load number does not match pattern');
+      form.setError("load_number", {
+        type: "manual",
+        message: patternValidation.formatError || "El formato del número de carga no es válido"
+      });
+      showError(t("loads:create_wizard.validation.validation_error"), patternValidation.formatError || "El formato del número de carga no es válido");
+      setCurrentPhase(1);
+      return;
+    }
+
     // Validar PO number si no está vacío (es opcional)
     if (currentPONumber && currentPONumber.trim() !== '' && !poNumberValidation.isValid) {
       console.log('🚨 onSubmit blocked - invalid PO number');
@@ -975,9 +995,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                     onBlur={textHandlers.onBlur}
                                     autoFocus
                                     className={
-                                      loadNumberValidation.isDuplicate 
+                                      loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
                                         ? "border-destructive focus:border-destructive" 
-                                        : loadNumberValidation.isValid 
+                                        : loadNumberValidation.isValid && patternValidation.isValidFormat
                                         ? "border-green-500 focus:border-green-500" 
                                         : ""
                                     }
@@ -986,10 +1006,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                                     )}
-                                    {!loadNumberValidation.isValidating && loadNumberValidation.isDuplicate && (
+                                    {!loadNumberValidation.isValidating && (loadNumberValidation.isDuplicate || !patternValidation.isValidFormat) && (
                                       <AlertTriangle className="h-4 w-4 text-destructive" />
                                     )}
-                                    {!loadNumberValidation.isValidating && loadNumberValidation.isValid && currentLoadNumber && (
+                                    {!loadNumberValidation.isValidating && loadNumberValidation.isValid && patternValidation.isValidFormat && currentLoadNumber && (
                                       <Check className="h-4 w-4 text-green-500" />
                                     )}
                                   </div>
@@ -999,6 +1019,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                              {loadNumberValidation.isDuplicate && (
                                <p className="text-sm text-destructive mt-1">
                                  {t("loads:create_wizard.form.load_number_duplicate")}
+                               </p>
+                             )}
+                             {!patternValidation.isValidFormat && patternValidation.formatError && (
+                               <p className="text-sm text-destructive mt-1">
+                                 {patternValidation.formatError}
                                </p>
                              )}
                            </FormItem>
