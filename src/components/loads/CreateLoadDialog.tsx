@@ -28,7 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check, ClipboardList, MapPin, UserCheck, Upload } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CheckCircle, Circle, ArrowRight, Loader2, AlertTriangle, Check, ClipboardList, MapPin, UserCheck, Upload, Info } from "lucide-react";
 import { useFleetNotifications } from "@/components/notifications";
 import { ClientCombobox } from "@/components/clients/ClientCombobox";
 import { ContactCombobox } from "@/components/clients/ContactCombobox";
@@ -982,8 +983,22 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                       name="load_number"
                       render={({ field }) => {
                         return (
-                           <FormItem>
-                              <FormLabel>{t("loads:create_wizard.form.load_number")} {t("loads:create_wizard.form.load_number_required")}</FormLabel>
+                            <FormItem>
+                               <FormLabel className="flex items-center gap-1">
+                                 {t("loads:create_wizard.form.load_number")} {t("loads:create_wizard.form.load_number_required")}
+                                 {companyData?.load_number_pattern && companyData?.load_number_pattern_explanation && (
+                                   <TooltipProvider>
+                                     <Tooltip>
+                                       <TooltipTrigger asChild>
+                                         <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                       </TooltipTrigger>
+                                       <TooltipContent side="right" className="max-w-xs">
+                                         <p className="text-sm">{companyData.load_number_pattern_explanation}</p>
+                                       </TooltipContent>
+                                     </Tooltip>
+                                   </TooltipProvider>
+                                 )}
+                               </FormLabel>
                               <FormControl>
                                 <div className="relative">
                                    <Input 
@@ -1028,12 +1043,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                   </div>
                                 </div>
                               </FormControl>
-                             {companyData?.load_number_pattern && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {companyData.load_number_pattern_explanation || t("loads:create_wizard.form.load_number_pattern_required")}
-                                </p>
-                              )}
-                             <FormMessage />
+                              <FormMessage />
                              {loadNumberValidation.isDuplicate && (
                                <p className="text-sm text-destructive mt-1">
                                  {t("loads:create_wizard.form.load_number_duplicate")}
