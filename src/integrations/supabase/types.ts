@@ -3833,9 +3833,12 @@ export type Database = {
         Returns: {
           city: string
           created_at: string
-          default_payment_frequency: string
           email: string
           id: string
+          load_number_pattern: string
+          load_number_pattern_description: string
+          load_number_pattern_examples: Json
+          load_number_pattern_explanation: string
           logo_url: string
           name: string
           phone: string
