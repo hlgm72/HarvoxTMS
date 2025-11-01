@@ -11,14 +11,16 @@ serve(async (req) => {
   }
 
   try {
-    const { description } = await req.json();
+    const { description, language = 'es' } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `Eres un experto en expresiones regulares. Tu tarea es convertir descripciones en lenguaje natural de formatos de números en expresiones regulares válidas de JavaScript.
+    // System prompts por idioma
+    const systemPrompts = {
+      es: `Eres un experto en expresiones regulares. Tu tarea es convertir descripciones en lenguaje natural de formatos de números en expresiones regulares válidas de JavaScript.
 
 IMPORTANTE: 
 - Devuelve SOLO el patrón regex sin delimitadores (sin / al inicio o final)
@@ -34,7 +36,28 @@ Usuario: "Empieza con las letras FL seguido de 4 números"
 Respuesta: ^FL\\d{4}$
 
 Usuario: "4 dígitos del año, guion, 3 dígitos secuenciales"
-Respuesta: ^\\d{4}-\\d{3}$`;
+Respuesta: ^\\d{4}-\\d{3}$`,
+
+      en: `You are an expert in regular expressions. Your task is to convert natural language descriptions of number formats into valid JavaScript regular expressions.
+
+IMPORTANT: 
+- Return ONLY the regex pattern without delimiters (no / at the beginning or end)
+- Do not include flags (like /g, /i)
+- Use ^ at the beginning and $ at the end for exact matching
+- Validate that the regex is correct
+
+Examples:
+User: "2 digits, hyphen, 3 digits minimum, optionally 2 letters"
+Response: ^\\d{2}-\\d{3,}[A-Z]{0,2}$
+
+User: "Starts with letters FL followed by 4 numbers"
+Response: ^FL\\d{4}$
+
+User: "4 year digits, hyphen, 3 sequential digits"
+Response: ^\\d{4}-\\d{3}$`
+    };
+
+    const systemPrompt = systemPrompts[language] || systemPrompts.es;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -53,17 +76,23 @@ Respuesta: ^\\d{4}-\\d{3}$`;
             type: "function",
             function: {
               name: "generate_regex_pattern",
-              description: "Genera un patrón regex a partir de una descripción en lenguaje natural",
+              description: language === 'en' 
+                ? "Generate a regex pattern from a natural language description"
+                : "Genera un patrón regex a partir de una descripción en lenguaje natural",
               parameters: {
                 type: "object",
                 properties: {
                   pattern: {
                     type: "string",
-                    description: "El patrón regex sin delimitadores ni flags"
+                    description: language === 'en'
+                      ? "The regex pattern without delimiters or flags"
+                      : "El patrón regex sin delimitadores ni flags"
                   },
                   explanation: {
                     type: "string",
-                    description: "Explicación breve de qué valida el patrón"
+                    description: language === 'en'
+                      ? "Brief explanation of what the pattern validates"
+                      : "Explicación breve de qué valida el patrón"
                   },
                   examples: {
                     type: "object",
@@ -71,12 +100,16 @@ Respuesta: ^\\d{4}-\\d{3}$`;
                       valid: {
                         type: "array",
                         items: { type: "string" },
-                        description: "Exactamente 3 ejemplos de números válidos"
+                        description: language === 'en'
+                          ? "Exactly 3 examples of valid numbers"
+                          : "Exactamente 3 ejemplos de números válidos"
                       },
                       invalid: {
                         type: "array",
                         items: { type: "string" },
-                        description: "Exactamente 3 ejemplos de números inválidos"
+                        description: language === 'en'
+                          ? "Exactly 3 examples of invalid numbers"
+                          : "Exactamente 3 ejemplos de números inválidos"
                       }
                     },
                     required: ["valid", "invalid"]

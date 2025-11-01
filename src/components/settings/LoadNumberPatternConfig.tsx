@@ -37,7 +37,7 @@ export const LoadNumberPatternConfig = ({
   currentExamples,
   onPatternSaved 
 }: LoadNumberPatternConfigProps) => {
-  const { t } = useTranslation('settings');
+  const { t, i18n } = useTranslation('settings');
   const { showSuccess, showError } = useFleetNotifications();
   const [description, setDescription] = useState(currentDescription || '');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -55,7 +55,10 @@ export const LoadNumberPatternConfig = ({
 
     try {
       const { data, error } = await supabase.functions.invoke('generate-load-pattern', {
-        body: { description }
+        body: { 
+          description,
+          language: i18n.language // Enviar el idioma actual
+        }
       });
 
       if (error) throw error;
