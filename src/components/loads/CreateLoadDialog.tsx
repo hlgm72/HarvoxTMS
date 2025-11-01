@@ -986,13 +986,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                               <FormLabel>{t("loads:create_wizard.form.load_number")} {t("loads:create_wizard.form.load_number_required")}</FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <Input 
+                                   <Input 
                                     placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                     value={field.value || ''}
                                     onChange={(e) => {
+                                      console.log('🔍 Input onChange - companyData:', companyData);
+                                      console.log('🔍 Pattern:', companyData?.load_number_pattern);
+                                      
                                       if (companyData?.load_number_pattern) {
+                                        console.log('✅ Using formatter');
                                         loadNumberFormatter.handleChange(e);
                                       } else {
+                                        console.log('❌ No pattern, using default');
                                         field.onChange(e.target.value);
                                       }
                                       // Limpiar error cuando el usuario comience a escribir
