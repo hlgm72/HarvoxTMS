@@ -27,7 +27,12 @@ interface LoadNumberPatternConfigProps {
     valid: string[];
     invalid: string[];
   };
-  onPatternSaved?: (pattern: string) => void;
+  onPatternSaved?: (data: {
+    pattern: string;
+    description: string;
+    explanation: string;
+    examples: { valid: string[]; invalid: string[] };
+  }) => void;
 }
 
 export const LoadNumberPatternConfig = ({ 
@@ -108,7 +113,12 @@ export const LoadNumberPatternConfig = ({
 
       showSuccess(t('system.load_pattern.pattern_saved'));
 
-      onPatternSaved?.(result.pattern);
+      onPatternSaved?.({
+        pattern: result.pattern,
+        description: description,
+        explanation: result.explanation,
+        examples: result.examples
+      });
       setResult(null);
     } catch (error: any) {
       console.error('Error saving pattern:', error);
