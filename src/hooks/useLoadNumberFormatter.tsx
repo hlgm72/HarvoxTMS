@@ -54,6 +54,38 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       return result;
     }
 
+    // Patrón: ^[a-zA-Z]{2}-\d{2}$ (Ej: AB-12)
+    if (pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/)) {
+      // Limpiar el valor: extraer solo letras y dígitos
+      const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
+      console.log('🧹 cleanValue (letters-digits):', cleanValue);
+      
+      let result = '';
+      let letterCount = 0;
+      let digitCount = 0;
+      
+      // Procesar caracter por caracter respetando el orden del patrón
+      for (const char of cleanValue) {
+        // Primero deben ir exactamente 2 letras
+        if (/[a-zA-Z]/.test(char) && letterCount < 2) {
+          result += char.toUpperCase();
+          letterCount++;
+          // Agregar guion después de la segunda letra
+          if (letterCount === 2) {
+            result += '-';
+          }
+        }
+        // Después pueden ir hasta 2 dígitos (solo cuando ya tenemos 2 letras)
+        else if (/\d/.test(char) && letterCount === 2 && digitCount < 2) {
+          result += char;
+          digitCount++;
+        }
+      }
+      
+      console.log('✅ formatValue output (letters-digits):', result);
+      return result;
+    }
+
     // Remover caracteres no válidos según el patrón (para otros patrones)
     let cleaned = value.replace(/[^0-9a-zA-Z]/g, '');
 
