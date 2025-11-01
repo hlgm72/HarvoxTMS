@@ -3828,51 +3828,28 @@ export type Database = {
         Args: { period_id: string }
         Returns: Json
       }
-      get_companies_basic_info:
-        | {
-            Args: { target_company_id?: string }
-            Returns: {
-              city: string
-              created_at: string
-              email: string
-              id: string
-              load_number_pattern: string
-              load_number_pattern_description: string
-              load_number_pattern_examples: Json
-              load_number_pattern_explanation: string
-              logo_url: string
-              name: string
-              phone: string
-              plan_type: string
-              state_id: string
-              status: string
-              street_address: string
-              updated_at: string
-              zip_code: string
-            }[]
-          }
-        | {
-            Args: never
-            Returns: {
-              city: string
-              created_at: string
-              email: string
-              id: string
-              load_number_pattern: string
-              load_number_pattern_description: string
-              load_number_pattern_examples: Json
-              load_number_pattern_explanation: string
-              logo_url: string
-              name: string
-              phone: string
-              plan_type: string
-              state_id: string
-              status: string
-              street_address: string
-              updated_at: string
-              zip_code: string
-            }[]
-          }
+      get_companies_basic_info: {
+        Args: never
+        Returns: {
+          city: string
+          created_at: string
+          email: string
+          id: string
+          load_number_pattern: string
+          load_number_pattern_description: string
+          load_number_pattern_examples: Json
+          load_number_pattern_explanation: string
+          logo_url: string
+          name: string
+          phone: string
+          plan_type: string
+          state_id: string
+          status: string
+          street_address: string
+          updated_at: string
+          zip_code: string
+        }[]
+      }
       get_companies_financial_data:
         | {
             Args: { target_company_id?: string }
