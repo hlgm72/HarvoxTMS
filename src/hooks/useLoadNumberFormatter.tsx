@@ -27,27 +27,29 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
       console.log('🧹 cleanValue:', cleanValue);
       
-      let result = '';
-      let digitCount = 0;
-      let letterCount = 0;
+      // Separar dígitos y letras
+      let digits = '';
+      let letters = '';
       
-      // Procesar caracter por caracter respetando el orden del patrón
       for (const char of cleanValue) {
-        // Primero deben ir exactamente 5 dígitos
-        if (/\d/.test(char) && digitCount < 5) {
-          result += char;
-          digitCount++;
-          // Agregar guion después del segundo dígito
-          if (digitCount === 2) {
-            result += '-';
-          }
+        if (/\d/.test(char) && digits.length < 5) {
+          digits += char;
+        } else if (/[a-zA-Z]/.test(char) && digits.length === 5 && letters.length < 2) {
+          letters += char.toUpperCase();
         }
-        // Después pueden ir hasta 2 letras (solo cuando ya tenemos 5 dígitos)
-        else if (/[a-zA-Z]/.test(char) && digitCount === 5 && letterCount < 2) {
-          result += char.toUpperCase();
-          letterCount++;
-        }
-        // Si es una letra pero aún no tenemos 5 dígitos, ignorarla (no válido según el patrón)
+      }
+      
+      // Solo agregar el guion si hay al menos 3 dígitos (contenido después del guion)
+      let result = '';
+      if (digits.length <= 2) {
+        result = digits;
+      } else {
+        result = digits.slice(0, 2) + '-' + digits.slice(2);
+      }
+      
+      // Agregar letras si existen
+      if (letters.length > 0) {
+        result += letters;
       }
       
       console.log('✅ formatValue output:', result);
