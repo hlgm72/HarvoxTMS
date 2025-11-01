@@ -990,7 +990,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                    <TooltipProvider>
                                      <Tooltip>
                                        <TooltipTrigger asChild>
-                                         <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                                         <button
+                                           type="button"
+                                           className="inline-flex"
+                                           onClick={(e) => e.preventDefault()}
+                                         >
+                                           <Info className="h-3.5 w-3.5 text-muted-foreground cursor-pointer" />
+                                         </button>
                                        </TooltipTrigger>
                                        <TooltipContent side="right" className="max-w-xs">
                                          <p className="text-sm">{companyData.load_number_pattern_explanation}</p>
