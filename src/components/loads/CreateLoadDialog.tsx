@@ -272,7 +272,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       const fetchCompanyData = async () => {
         try {
           const { data, error } = await supabase
-            .rpc('get_companies_basic_info', {
+            .rpc('get_companies_financial_data', {
               target_company_id: selectedCompany.id
             })
             .then(result => ({
@@ -289,7 +289,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       
       fetchCompanyData();
     }
-  }, [selectedCompany?.id]);
+  }, [selectedCompany?.id, isOpen]);
 
   // Reset all states when opening in create mode
   useEffect(() => {

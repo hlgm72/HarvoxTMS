@@ -35,5 +35,5 @@ export interface Company {
   load_number_pattern_examples?: {
     valid: string[];
     invalid: string[];
-  };
+  } | any; // Allow any for compatibility with Json type from Supabase
 }
