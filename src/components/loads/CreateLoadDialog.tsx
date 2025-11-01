@@ -1029,10 +1029,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                 </div>
                               </FormControl>
                              {companyData?.load_number_pattern && (
-                               <p className="text-xs text-muted-foreground mt-1">
-                                 {t("loads:create_wizard.form.load_number_pattern_required")} <code className="bg-muted px-1 py-0.5 rounded">{companyData.load_number_pattern}</code>
-                               </p>
-                             )}
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {companyData.load_number_pattern_explanation || t("loads:create_wizard.form.load_number_pattern_required")}
+                                </p>
+                              )}
                              <FormMessage />
                              {loadNumberValidation.isDuplicate && (
                                <p className="text-sm text-destructive mt-1">
