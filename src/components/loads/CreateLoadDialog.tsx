@@ -182,7 +182,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return match ? match[1] : '';
   }, [companyData?.load_number_pattern]);
 
-  const { ref: loadNumberInputRef } = useIMask(
+  const { ref: loadNumberInputRef, maskRef } = useIMask(
     {
       mask: loadNumberMask,
       lazy: false, // Muestra las partes fijas automáticamente
@@ -209,6 +209,21 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       }
     }
   );
+
+  // Handler para posicionar el cursor después de partes fijas al hacer focus
+  const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (mode === 'create' && maskRef.current) {
+      // Esperar un tick para que IMask procese el focus
+      setTimeout(() => {
+        const masked = maskRef.current;
+        if (masked && masked.value === '') {
+          // Si el campo está vacío, posicionar el cursor después de las partes fijas
+          const fixedLength = fixedPrefix.length;
+          masked.updateCursor(fixedLength);
+        }
+      }, 0);
+    }
+  };
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
@@ -1057,19 +1072,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                </FormLabel>
                                <FormControl>
                                  <div className="relative">
-                                   <Input
-                                     ref={loadNumberInputRef as any}
-                                     placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                     onBlur={field.onBlur}
-                                     autoFocus
-                                     className={
-                                       loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                         ? "border-destructive focus-visible:ring-destructive" 
-                                         : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                         ? "border-green-500 focus-visible:ring-green-500" 
-                                         : ""
-                                     }
-                                   />
+                                    <Input
+                                      ref={loadNumberInputRef as any}
+                                      placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                      onBlur={field.onBlur}
+                                      onFocus={handleLoadNumberFocus}
+                                      autoFocus
+                                      className={
+                                        loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                          ? "border-destructive focus-visible:ring-destructive" 
+                                          : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                          ? "border-green-500 focus-visible:ring-green-500" 
+                                          : ""
+                                      }
+                                    />
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
