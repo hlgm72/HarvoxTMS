@@ -246,7 +246,15 @@
     "validation": {
       "checking_period": "Verificando período de pago...",
       "payroll_paid_title": "Nómina del Período ya pagada - No se puede modificar",
-      "payroll_paid_message": "La nómina del conductor para el período {{periodLabel}} ({{startDate}} - {{endDate}}) ya fue pagada. No se pueden crear ni modificar gastos de combustible para períodos pagados."
+      "payroll_paid_message": "La nómina del conductor para el período {{periodLabel}} ({{startDate}} - {{endDate}}) ya fue pagada. No se pueden crear ni modificar gastos de combustible para períodos pagados.",
+      "select_driver": "Selecciona un conductor",
+      "select_vehicle": "Selecciona un vehículo",
+      "select_fuel_type": "Selecciona el tipo de combustible",
+      "select_state": "Selecciona el estado",
+      "select_date": "Selecciona una fecha",
+      "gallons_positive": "Los galones deben ser positivos",
+      "price_positive": "El precio por galón debe ser positivo",
+      "total_positive": "El monto total debe ser positivo"
     }
   },
   "edit_dialog": {

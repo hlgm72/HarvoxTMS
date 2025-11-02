@@ -246,7 +246,15 @@
     "validation": {
       "checking_period": "Checking payment period...",
       "payroll_paid_title": "Period Payroll Already Paid - Cannot Modify",
-      "payroll_paid_message": "The driver's payroll for period {{periodLabel}} ({{startDate}} - {{endDate}}) has already been paid. Fuel expenses cannot be created or modified for paid periods."
+      "payroll_paid_message": "The driver's payroll for period {{periodLabel}} ({{startDate}} - {{endDate}}) has already been paid. Fuel expenses cannot be created or modified for paid periods.",
+      "select_driver": "Select a driver",
+      "select_vehicle": "Select a vehicle",
+      "select_fuel_type": "Select fuel type",
+      "select_state": "Select state",
+      "select_date": "Select date",
+      "gallons_positive": "Gallons must be positive",
+      "price_positive": "Price per gallon must be positive",
+      "total_positive": "Total amount must be positive"
     }
   },
   "edit_dialog": {

@@ -37,37 +37,6 @@ import { shouldDisableFinancialOperation, getFinancialOperationTooltip } from '@
 import { useQuery } from '@tanstack/react-query';
 import { formatPeriodLabel } from '@/utils/periodUtils';
 
-const formSchema = z.object({
-  driver_user_id: z.string().min(1, 'Selecciona un conductor'),
-  payment_period_id: z.string().optional(), // Opcional para creación (se genera automáticamente), requerido para edición
-  transaction_date: z.date({
-    required_error: 'La fecha es requerida',
-  }),
-  fuel_type: z.string().min(1, 'Selecciona el tipo de combustible'),
-  gallons_purchased: z.coerce.number().positive('Los galones deben ser positivos'),
-  price_per_gallon: z.coerce.number().positive('El precio por galón debe ser positivo'),
-  total_amount: z.coerce.number().positive('El monto total debe ser positivo'),
-  vehicle_id: z.string().min(1, 'Selecciona un vehículo'),
-  
-  // Información de la estación
-  station_name: z.string().optional(),
-  station_city: z.string().optional(),
-  station_state: z.string().min(1, 'Selecciona el estado'),
-  
-  // Información de pago/tarjeta
-  driver_card_id: z.string().optional(),
-  invoice_number: z.string().optional(),
-  
-  // Desglose de costos (opcional)
-  gross_amount: z.coerce.number().optional(),
-  discount_amount: z.coerce.number().optional(),
-  fees: z.coerce.number().optional(),
-  
-  receipt_url: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-type FormData = z.infer<typeof formSchema>;
 
 interface FuelExpenseDialogProps {
   open: boolean;
@@ -96,6 +65,39 @@ export function FuelExpenseDialog({
   
   // 🛡️ Prevenir auto-selección de período durante carga de datos de edición
   const isLoadingEditData = React.useRef(false);
+
+  // Create validation schema with translations
+  const formSchema = React.useMemo(() => z.object({
+    driver_user_id: z.string().min(1, t('fuel:create_dialog.validation.select_driver')),
+    payment_period_id: z.string().optional(),
+    transaction_date: z.date({
+      required_error: t('fuel:create_dialog.validation.select_date') || 'Date is required',
+    }),
+    fuel_type: z.string().min(1, t('fuel:create_dialog.validation.select_fuel_type')),
+    gallons_purchased: z.coerce.number().positive(t('fuel:create_dialog.validation.gallons_positive')),
+    price_per_gallon: z.coerce.number().positive(t('fuel:create_dialog.validation.price_positive')),
+    total_amount: z.coerce.number().positive(t('fuel:create_dialog.validation.total_positive')),
+    vehicle_id: z.string().min(1, t('fuel:create_dialog.validation.select_vehicle')),
+    
+    // Información de la estación
+    station_name: z.string().optional(),
+    station_city: z.string().optional(),
+    station_state: z.string().min(1, t('fuel:create_dialog.validation.select_state')),
+    
+    // Información de pago/tarjeta
+    driver_card_id: z.string().optional(),
+    invoice_number: z.string().optional(),
+    
+    // Desglose de costos (opcional)
+    gross_amount: z.coerce.number().optional(),
+    discount_amount: z.coerce.number().optional(),
+    fees: z.coerce.number().optional(),
+    
+    receipt_url: z.string().optional(),
+    notes: z.string().optional(),
+  }), [t]);
+
+  type FormData = z.infer<typeof formSchema>;
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
