@@ -1131,35 +1131,37 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  )}
                                </FormLabel>
                                <FormControl>
-                                  <div className="relative">
-                                     <Input
-                                       ref={loadNumberInputRef as any}
-                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                       onBlur={field.onBlur}
-                                       onFocus={handleLoadNumberFocus}
-                                       onClick={handleLoadNumberFocus as any}
-                                       autoFocus
-                                       className={
-                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                           ? "border-destructive focus-visible:ring-destructive" 
-                                           : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                           ? "border-green-500 focus-visible:ring-green-500" 
-                                           : ""
-                                       }
-                                     />
-                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    {loadNumberValidation.isValidating && (
-                                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                                    )}
-                                    {!loadNumberValidation.isValidating && (loadNumberValidation.isDuplicate || !patternValidation.isValidFormat) && (
-                                      <AlertTriangle className="h-4 w-4 text-destructive" />
-                                    )}
-                                    {!loadNumberValidation.isValidating && loadNumberValidation.isValid && patternValidation.isValidFormat && currentLoadNumber && (
-                                      <Check className="h-4 w-4 text-green-500" />
-                                    )}
-                                  </div>
-                                </div>
-                              </FormControl>
+                                   <div className="relative">
+                                      <Input 
+                                        id="load_number"
+                                        name="load_number"
+                                        ref={loadNumberInputRef as any}
+                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                        onBlur={field.onBlur}
+                                        onFocus={handleLoadNumberFocus}
+                                        onClick={handleLoadNumberFocus as any}
+                                        autoFocus
+                                        className={
+                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                            ? "border-destructive focus-visible:ring-destructive" 
+                                            : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                            ? "border-green-500 focus-visible:ring-green-500" 
+                                            : ""
+                                        }
+                                      />
+                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                     {loadNumberValidation.isValidating && (
+                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                     )}
+                                     {!loadNumberValidation.isValidating && (loadNumberValidation.isDuplicate || !patternValidation.isValidFormat) && (
+                                       <AlertTriangle className="h-4 w-4 text-destructive" />
+                                     )}
+                                     {!loadNumberValidation.isValidating && loadNumberValidation.isValid && patternValidation.isValidFormat && currentLoadNumber && (
+                                       <Check className="h-4 w-4 text-green-500" />
+                                     )}
+                                   </div>
+                                 </div>
+                               </FormControl>
                               <FormMessage />
                              {loadNumberValidation.isDuplicate && (
                                <p className="text-sm text-destructive mt-1">
@@ -1189,21 +1191,23 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                           return (
                              <FormItem>
                                <FormLabel className="flex items-center gap-1">{t("loads:create_wizard.form.po_number")}</FormLabel>
-                               <FormControl>
-                                <div className="relative">
-                                  <Input 
-                                    placeholder={t("loads:create_wizard.form.po_number_placeholder")}
-                                    value={field.value || ''}
-                                    onChange={textHandlers.onChange}
-                                    onBlur={textHandlers.onBlur}
-                                    className={
-                                      !poNumberValidation.isValid 
-                                        ? "border-destructive focus:border-destructive" 
-                                        : poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== ''
-                                        ? "border-green-500 focus:border-green-500" 
-                                        : ""
-                                    }
-                                  />
+                                <FormControl>
+                                 <div className="relative">
+                                   <Input 
+                                     id="po_number"
+                                     name="po_number"
+                                     placeholder={t("loads:create_wizard.form.po_number_placeholder")}
+                                     value={field.value || ''}
+                                     onChange={textHandlers.onChange}
+                                     onBlur={textHandlers.onBlur}
+                                     className={
+                                       !poNumberValidation.isValid 
+                                         ? "border-destructive focus:border-destructive" 
+                                         : poNumberValidation.isValid && currentPONumber && currentPONumber.trim() !== ''
+                                         ? "border-green-500 focus:border-green-500" 
+                                         : ""
+                                     }
+                                   />
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {poNumberValidation.isLoading && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -1237,6 +1241,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                             <FormLabel>{t("loads:create_wizard.form.commodity")}</FormLabel>
                             <FormControl>
                               <AutocompleteInput
+                                id="commodity"
+                                name="commodity"
                                 value={field.value || ''}
                                 onChange={(value) => {
                                   field.onChange(value);
@@ -1272,35 +1278,37 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          };
 
                          return (
-                            <FormItem>
-                              <FormLabel>{t("loads:create_wizard.form.weight")}</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  type="text"
-                                  placeholder={t("loads:create_wizard.form.weight_placeholder")}
-                                  value={formatWeight(field.value)}
-                                  onChange={(e) => {
-                                    console.log('🔍 Weight input onChange:', e.target.value);
-                                    const parsed = parseWeight(e.target.value);
-                                    console.log('🔍 Weight parsed value:', parsed);
-                                    field.onChange(parsed);
-                                    console.log('🔍 Weight field value after onChange:', field.value);
-                                  }}
-                                  onBlur={(e) => {
-                                    console.log('🔍 Weight input onBlur:', e.target.value);
-                                    // Re-format on blur to ensure consistent formatting
-                                    const parsed = parseWeight(e.target.value);
-                                    console.log('🔍 Weight parsed on blur:', parsed);
-                                    if (parsed) {
-                                      e.target.value = formatWeight(parsed);
-                                      console.log('🔍 Weight formatted on blur:', e.target.value);
-                                    }
-                                    field.onBlur();
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                             <FormItem>
+                               <FormLabel>{t("loads:create_wizard.form.weight")}</FormLabel>
+                               <FormControl>
+                                 <Input 
+                                   id="weight_lbs"
+                                   name="weight_lbs"
+                                   type="text"
+                                   placeholder={t("loads:create_wizard.form.weight_placeholder")}
+                                   value={formatWeight(field.value)}
+                                   onChange={(e) => {
+                                     console.log('🔍 Weight input onChange:', e.target.value);
+                                     const parsed = parseWeight(e.target.value);
+                                     console.log('🔍 Weight parsed value:', parsed);
+                                     field.onChange(parsed);
+                                     console.log('🔍 Weight field value after onChange:', field.value);
+                                   }}
+                                   onBlur={(e) => {
+                                     console.log('🔍 Weight input onBlur:', e.target.value);
+                                     // Re-format on blur to ensure consistent formatting
+                                     const parsed = parseWeight(e.target.value);
+                                     console.log('🔍 Weight parsed on blur:', parsed);
+                                     if (parsed) {
+                                       e.target.value = formatWeight(parsed);
+                                       console.log('🔍 Weight formatted on blur:', e.target.value);
+                                     }
+                                     field.onBlur();
+                                   }}
+                                 />
+                               </FormControl>
+                               <FormMessage />
+                             </FormItem>
                          );
                        }}
                      />
@@ -1314,6 +1322,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                              <FormLabel>{t("loads:create_wizard.form.total_amount")} {t("loads:create_wizard.form.total_amount_required")}</FormLabel>
                              <FormControl>
                                  <Input 
+                                  id="total_amount"
+                                  name="total_amount"
                                   type="text"
                                   inputMode="decimal"
                                   pattern="[0-9]*"
