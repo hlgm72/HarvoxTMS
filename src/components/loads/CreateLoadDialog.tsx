@@ -177,6 +177,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     {
       mask: loadNumberMask,
       lazy: false, // Muestra los literales fijos automáticamente
+      placeholderChar: ' ', // Oculta los guiones bajos del placeholder
       eager: true, // Inserta caracteres fijos automáticamente
       definitions: {
         '0': /[0-9]/,
