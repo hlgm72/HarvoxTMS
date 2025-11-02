@@ -94,57 +94,54 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     // Aplicar el formato según la estructura
     let result = '';
     let charIndex = 0;
+    let expectedCharsBeforeSeparator = 0;
     
     for (const segment of structure) {
       if (segment.type === 'separator') {
-        // Calcular cuántos caracteres (sin separadores) hemos agregado hasta ahora
+        // Solo agregar el separador si ya hemos procesado suficientes caracteres
         const currentLength = result.replace(/[^0-9a-zA-Z]/g, '').length;
         
-        // Agregar el separador si hemos alcanzado la posición correcta
-        // (es decir, si hemos completado la sección anterior)
-        if (cleanValue.length >= currentLength) {
+        // Agregar separador solo si hemos completado exactamente la sección anterior
+        // y tenemos más caracteres disponibles
+        if (currentLength === expectedCharsBeforeSeparator && charIndex < cleanValue.length) {
           result += segment.value;
         }
       } else if (segment.type === 'digit') {
         // Extraer dígitos
-        for (let i = 0; i < (segment.length || 0) && charIndex < cleanValue.length; i++) {
+        const segmentLength = segment.length || 0;
+        let addedInSegment = 0;
+        
+        while (addedInSegment < segmentLength && charIndex < cleanValue.length) {
           const char = cleanValue[charIndex];
           if (/\d/.test(char)) {
             result += char;
             charIndex++;
+            addedInSegment++;
           } else {
-            // Si no es un dígito, buscar el siguiente
-            while (charIndex < cleanValue.length && !/\d/.test(cleanValue[charIndex])) {
-              charIndex++;
-            }
-            if (charIndex < cleanValue.length && /\d/.test(cleanValue[charIndex])) {
-              result += cleanValue[charIndex];
-              charIndex++;
-            } else {
-              break;
-            }
+            // Si no es un dígito, saltar
+            charIndex++;
           }
         }
+        
+        expectedCharsBeforeSeparator += segmentLength;
       } else if (segment.type === 'letter') {
         // Extraer letras
-        for (let i = 0; i < (segment.length || 0) && charIndex < cleanValue.length; i++) {
+        const segmentLength = segment.length || 0;
+        let addedInSegment = 0;
+        
+        while (addedInSegment < segmentLength && charIndex < cleanValue.length) {
           const char = cleanValue[charIndex];
           if (/[a-zA-Z]/.test(char)) {
             result += char.toUpperCase();
             charIndex++;
+            addedInSegment++;
           } else {
-            // Si no es una letra, buscar la siguiente
-            while (charIndex < cleanValue.length && !/[a-zA-Z]/.test(cleanValue[charIndex])) {
-              charIndex++;
-            }
-            if (charIndex < cleanValue.length && /[a-zA-Z]/.test(cleanValue[charIndex])) {
-              result += cleanValue[charIndex].toUpperCase();
-              charIndex++;
-            } else {
-              break;
-            }
+            // Si no es una letra, saltar
+            charIndex++;
           }
         }
+        
+        expectedCharsBeforeSeparator += segmentLength;
       }
     }
     
