@@ -189,7 +189,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       mask: loadNumberMask,
       lazy: false, // Muestra las partes fijas automáticamente
       eager: true, // Inserta caracteres fijos automáticamente
-      placeholderChar: '_',
+      placeholderChar: '\u2000', // Espacio invisible en lugar de guión bajo
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
