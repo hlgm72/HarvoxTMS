@@ -413,10 +413,10 @@ export default function FuelManagement() {
       <div className="p-2 md:p-4 space-y-4 md:space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 h-auto gap-1 bg-white/90 dark:bg-gray-900/90 border border-border shadow-sm">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 h-auto gap-1 p-1 bg-muted/30 rounded-lg min-h-[60px]">
             <TabsTrigger 
               value="expenses" 
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <Fuel className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.expenses_full')}</span>
@@ -424,7 +424,7 @@ export default function FuelManagement() {
             </TabsTrigger>
             <TabsTrigger 
               value="cards" 
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.fuel_cards_full')}</span>
@@ -432,7 +432,7 @@ export default function FuelManagement() {
             </TabsTrigger>
             <TabsTrigger 
               value="sync" 
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">FleetOne Sync</span>
@@ -440,7 +440,7 @@ export default function FuelManagement() {
             </TabsTrigger>
             <TabsTrigger 
               value="analyzer" 
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">{t('fuel:page.tabs.pdf_analyzer')}</span>
@@ -448,7 +448,7 @@ export default function FuelManagement() {
             </TabsTrigger>
             <TabsTrigger 
               value="ifta" 
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200"
             >
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">IFTA - Fuel only</span>
