@@ -68,7 +68,7 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
   }, []);
 
   /**
-   * Formatea el valor según el patrón detectado
+   * Formatea el valor según el patrón detectado con auto-inserción de separadores
    */
   const formatValue = useCallback((value: string): string => {
     console.log('🔍 formatValue input:', value, 'pattern:', pattern);
@@ -91,23 +91,22 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
     console.log('🧹 cleanValue:', cleanValue);
     
-    // Aplicar el formato según la estructura
+    // Aplicar el formato según la estructura con auto-inserción de separadores
     let result = '';
     let charIndex = 0;
-    let expectedCharsBeforeSeparator = 0;
+    let charsProcessed = 0;
     
-    for (const segment of structure) {
+    for (let i = 0; i < structure.length; i++) {
+      const segment = structure[i];
+      
       if (segment.type === 'separator') {
-        // Solo agregar el separador si ya hemos procesado suficientes caracteres
-        const currentLength = result.replace(/[^0-9a-zA-Z]/g, '').length;
-        
-        // Agregar separador solo si hemos completado exactamente la sección anterior
-        // y tenemos más caracteres disponibles
-        if (currentLength === expectedCharsBeforeSeparator && charIndex < cleanValue.length) {
+        // Auto-insertar el separador si hemos completado el segmento anterior
+        // y aún hay caracteres por procesar
+        if (charIndex < cleanValue.length) {
           result += segment.value;
         }
       } else if (segment.type === 'digit') {
-        // Extraer dígitos
+        // Extraer dígitos del segmento
         const segmentLength = segment.length || 0;
         let addedInSegment = 0;
         
@@ -117,15 +116,19 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
             result += char;
             charIndex++;
             addedInSegment++;
+            charsProcessed++;
           } else {
             // Si no es un dígito, saltar
             charIndex++;
           }
         }
         
-        expectedCharsBeforeSeparator += segmentLength;
+        // Si no completamos el segmento, salir (no agregar más separadores)
+        if (addedInSegment < segmentLength) {
+          break;
+        }
       } else if (segment.type === 'letter') {
-        // Extraer letras
+        // Extraer letras del segmento
         const segmentLength = segment.length || 0;
         let addedInSegment = 0;
         
@@ -135,13 +138,17 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
             result += char.toUpperCase();
             charIndex++;
             addedInSegment++;
+            charsProcessed++;
           } else {
             // Si no es una letra, saltar
             charIndex++;
           }
         }
         
-        expectedCharsBeforeSeparator += segmentLength;
+        // Si no completamos el segmento, salir (no agregar más separadores)
+        if (addedInSegment < segmentLength) {
+          break;
+        }
       }
     }
     
