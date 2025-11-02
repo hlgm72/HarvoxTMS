@@ -231,8 +231,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     {
       onAccept: (value, maskRef) => {
         const upperValue = value.toUpperCase();
-        console.log('🎭 IMask onAccept - value:', upperValue);
-        console.log('🎭 IMask onAccept - unmaskedValue:', maskRef.unmaskedValue);
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
           form.clearErrors("load_number");
@@ -479,35 +477,21 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [selectedClient, clientContacts, form, showSuccess]);
 
-  // Sync IMask with form value when editing - use input element directly
+  // Sync IMask with form value when editing
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData?.load_number && isFormReady) {
-      console.log('🔍 Scheduling IMask sync for load_number:', activeLoadData.load_number);
-      
       // Use timeout to ensure IMask and input are fully initialized
       const timeoutId = setTimeout(() => {
-        const loadNumber = activeLoadData.load_number;
-        
-        console.log('🔍 maskRef.current exists:', !!maskRef.current);
-        
         if (maskRef.current) {
           try {
-            // Simply set the unmasked value - IMask should handle the rest
-            maskRef.current.unmaskedValue = loadNumber;
-            console.log('🔍 Updated maskRef.unmaskedValue to:', loadNumber);
-            console.log('🔍 Final maskRef.value:', maskRef.current.value);
-            console.log('🔍 Final maskRef.unmaskedValue:', maskRef.current.unmaskedValue);
-            
-            // Force update the display
+            // Set unmasked value and force update
+            maskRef.current.unmaskedValue = activeLoadData.load_number;
             maskRef.current.updateValue();
-            console.log('🔍 Called updateValue()');
           } catch (e) {
-            console.error('❌ Error updating IMask:', e);
+            console.error('Error updating IMask:', e);
           }
-        } else {
-          console.warn('⚠️ maskRef.current is not available after timeout');
         }
-      }, 200); // Increased delay to 200ms for better reliability
+      }, 200);
       
       return () => clearTimeout(timeoutId);
     }
@@ -516,11 +500,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Initialize form and states when load data is available
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
-      console.log('🔄 CreateLoadDialog - Initializing with load_number:', activeLoadData.load_number);
-      console.log('🔄 CreateLoadDialog - Full activeLoadData:', activeLoadData);
-      // console.log('🔄 CreateLoadDialog - Available clients:', clients.length);
-      // console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
-
       // Update ATM input
       atmInput.setValue(activeLoadData.total_amount || 0);
 
