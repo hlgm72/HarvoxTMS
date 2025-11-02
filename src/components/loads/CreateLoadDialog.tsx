@@ -1093,10 +1093,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                            'text'
                          );
                          
-                         return (
-                            <FormItem>
-                              <FormLabel>{t("loads:create_wizard.form.po_number")}</FormLabel>
-                              <FormControl>
+                          return (
+                             <FormItem>
+                               <FormLabel className="flex items-center gap-1">{t("loads:create_wizard.form.po_number")}</FormLabel>
+                               <FormControl>
                                 <div className="relative">
                                   <Input 
                                     placeholder={t("loads:create_wizard.form.po_number_placeholder")}
