@@ -187,6 +187,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       mask: loadNumberMask,
       lazy: false, // Muestra las partes fijas automáticamente
       eager: true, // Inserta caracteres fijos automáticamente
+      overwrite: true, // Sobrescribe en lugar de insertar
+      autofix: true, // Inserta automáticamente caracteres fijos
+      placeholderChar: '_', // Caracter para posiciones no completadas
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
@@ -200,6 +203,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         if (form.formState.errors.load_number) {
           form.clearErrors("load_number");
         }
+      },
+      onComplete: (value) => {
+        console.log('✅ Load number completed:', value);
       }
     }
   );
