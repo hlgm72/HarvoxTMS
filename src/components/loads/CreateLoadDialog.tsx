@@ -164,6 +164,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Load number formatter with IMask
   const { ref: inputRef } = useIMask({
     mask: loadNumberFormatter.mask || '',
+    lazy: false, // Mostrar la máscara siempre
+    placeholderChar: '_',
+    definitions: {
+      '0': /[0-9]/,  // dígito requerido
+      'A': /[A-Z]/,  // letra mayúscula requerida
+      'a': /[a-zA-Z]/, // letra opcional
+    },
     onAccept: (value: string) => {
       const upperValue = value.toUpperCase();
       form.setValue("load_number", upperValue, { shouldValidate: true });
