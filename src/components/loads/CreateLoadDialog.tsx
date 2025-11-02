@@ -229,9 +229,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       prepare: (str: string) => str.toUpperCase(), // Convierte a mayúsculas automáticamente
     },
     {
-      onAccept: (value) => {
+      onAccept: (value, maskRef) => {
         const upperValue = value.toUpperCase();
         console.log('🎭 IMask onAccept - value:', upperValue);
+        console.log('🎭 IMask onAccept - unmaskedValue:', maskRef.unmaskedValue);
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
           form.clearErrors("load_number");
@@ -484,13 +485,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       const loadNumber = activeLoadData.load_number;
       console.log('🔍 Syncing IMask - Load Number:', loadNumber);
       console.log('🔍 Syncing IMask - maskRef exists:', !!maskRef.current);
-      console.log('🔍 Syncing IMask - Current maskRef value:', maskRef.current?.value);
       
       if (loadNumber) {
-        // Update IMask value directly
-        maskRef.current.value = loadNumber;
-        maskRef.current.updateValue();
-        console.log('🔍 After sync - maskRef value:', maskRef.current.value);
+        // Set the unmasked value directly
+        maskRef.current.unmaskedValue = loadNumber;
+        console.log('🔍 After sync - maskRef.current.value:', maskRef.current.value);
+        console.log('🔍 After sync - maskRef.current.unmaskedValue:', maskRef.current.unmaskedValue);
       }
     }
   }, [mode, activeLoadData, isFormReady, maskRef]);
@@ -1138,7 +1138,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                      <Input
                                        ref={loadNumberInputRef as any}
                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                       value={form.watch("load_number")}
                                        onBlur={field.onBlur}
                                        onFocus={handleLoadNumberFocus}
                                        onClick={handleLoadNumberFocus as any}
