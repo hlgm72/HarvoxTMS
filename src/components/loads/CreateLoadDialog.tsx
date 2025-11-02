@@ -231,6 +231,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     {
       onAccept: (value) => {
         const upperValue = value.toUpperCase();
+        console.log('🎭 IMask onAccept - value:', upperValue);
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
           form.clearErrors("load_number");
@@ -1133,22 +1134,23 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  )}
                                </FormLabel>
                                <FormControl>
-                                 <div className="relative">
-                                    <Input
-                                      ref={loadNumberInputRef as any}
-                                      placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                      onBlur={field.onBlur}
-                                      onFocus={handleLoadNumberFocus}
-                                      onClick={handleLoadNumberFocus as any}
-                                      autoFocus
-                                      className={
-                                        loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                          ? "border-destructive focus-visible:ring-destructive" 
-                                          : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                          ? "border-green-500 focus-visible:ring-green-500" 
-                                          : ""
-                                      }
-                                    />
+                                  <div className="relative">
+                                     <Input
+                                       ref={loadNumberInputRef as any}
+                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                       value={form.watch("load_number")}
+                                       onBlur={field.onBlur}
+                                       onFocus={handleLoadNumberFocus}
+                                       onClick={handleLoadNumberFocus as any}
+                                       autoFocus
+                                       className={
+                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                           ? "border-destructive focus-visible:ring-destructive" 
+                                           : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                           ? "border-green-500 focus-visible:ring-green-500" 
+                                           : ""
+                                       }
+                                     />
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
