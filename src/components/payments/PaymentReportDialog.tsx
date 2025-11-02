@@ -737,7 +737,7 @@ export function PaymentReportDialog({
                 src={pdfUrl}
                 className="w-full h-full border-0"
                 title="PDF Viewer"
-                sandbox="allow-same-origin allow-scripts allow-downloads"
+                sandbox="allow-scripts allow-downloads"
               />
             </div>
           </DialogContent>
