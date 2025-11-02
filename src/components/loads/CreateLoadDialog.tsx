@@ -481,10 +481,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady && maskRef.current) {
       const loadNumber = activeLoadData.load_number;
+      console.log('🔍 Syncing IMask - Load Number:', loadNumber);
+      console.log('🔍 Syncing IMask - maskRef exists:', !!maskRef.current);
+      console.log('🔍 Syncing IMask - Current maskRef value:', maskRef.current?.value);
+      
       if (loadNumber) {
         // Update IMask value directly
         maskRef.current.value = loadNumber;
         maskRef.current.updateValue();
+        console.log('🔍 After sync - maskRef value:', maskRef.current.value);
       }
     }
   }, [mode, activeLoadData, isFormReady, maskRef]);
@@ -492,7 +497,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Initialize form and states when load data is available
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
-      // console.log(`🔄 CreateLoadDialog - Initializing ${mode} mode with data:`, activeLoadData);
+      console.log('🔄 CreateLoadDialog - Initializing with load_number:', activeLoadData.load_number);
+      console.log('🔄 CreateLoadDialog - Full activeLoadData:', activeLoadData);
       // console.log('🔄 CreateLoadDialog - Available clients:', clients.length);
       // console.log('🔄 CreateLoadDialog - Available drivers:', drivers.length);
 
