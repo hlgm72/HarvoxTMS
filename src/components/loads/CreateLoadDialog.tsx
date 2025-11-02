@@ -209,16 +209,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const input = e.currentTarget; // Guardar referencia antes del setTimeout
+    
     setTimeout(() => {
-      if (maskRef.current) {
+      if (maskRef.current && input) {
         // Encontrar la primera posición editable (después de partes fijas)
         const masked = maskRef.current;
         let cursorPos = 0;
         
-        // Buscar el primer placeholder '_' o posición vacía
+        // Buscar el primer placeholder o posición vacía
         const value = masked.value;
         for (let i = 0; i < value.length; i++) {
-          if (value[i] === '_' || value[i] === ' ') {
+          if (value[i] === '\u2000' || value[i] === ' ' || value[i] === '_') {
             cursorPos = i;
             break;
           }
@@ -230,7 +232,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         }
         
         masked.updateCursor(cursorPos);
-        e.currentTarget.setSelectionRange(cursorPos, cursorPos);
+        input.setSelectionRange(cursorPos, cursorPos);
       }
     }, 10);
   };
