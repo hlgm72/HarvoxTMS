@@ -133,6 +133,14 @@ export default function FuelManagement() {
     }
   };
 
+  // Determinar si necesitamos esperar a que calculatedPeriods esté disponible
+  const needsCalculatedPeriods = 
+    filters.periodFilter?.type === 'current' || 
+    filters.periodFilter?.type === 'previous' ||
+    (!filters.periodFilter?.startDate && !filters.periodFilter?.endDate && !filters.periodFilter?.periodId);
+  
+  const isReadyForQuery = !needsCalculatedPeriods || !!calculatedPeriods;
+
   // Convertir filtros para las consultas - maneja período actual y seleccionado  
   const queryFilters = {
     search: filters.search || undefined,
@@ -189,8 +197,11 @@ export default function FuelManagement() {
     })())
   };
 
-  // Obtener estadísticas con los filtros aplicados
-  const { data: stats, isLoading: statsLoading } = useFuelStats(queryFilters);
+  // Obtener estadísticas con los filtros aplicados - deshabilitar hasta que esté listo
+  const { data: stats, isLoading: statsLoading } = useFuelStats({
+    ...queryFilters,
+    enabled: isReadyForQuery
+  });
 
   // Get period description (similar to Load Management)
   const getPeriodDescription = () => {

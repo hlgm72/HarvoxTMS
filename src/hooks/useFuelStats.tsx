@@ -9,14 +9,16 @@ export interface FuelStatsFilters {
   driverId?: string;
   startDate?: string;
   endDate?: string;
+  enabled?: boolean;
 }
 
 export function useFuelStats(filters: FuelStatsFilters = {}) {
   const { user } = useAuth();
   const { selectedCompany } = useUserCompanies();
+  const { enabled = true, ...queryFilters } = filters;
 
   return useQuery({
-    queryKey: ['fuel-stats', user?.id, selectedCompany?.id, filters],
+    queryKey: ['fuel-stats', user?.id, selectedCompany?.id, queryFilters],
     queryFn: async () => {
       if (!user?.id || !selectedCompany?.id) {
         throw new Error('User or company not found');
@@ -36,28 +38,28 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
         `);
 
       // ✅ Aplicar filtros - detectar períodos calculados y usar fechas en su lugar
-      const isCalculatedPeriod = filters.periodId?.startsWith('calculated-');
+      const isCalculatedPeriod = queryFilters.periodId?.startsWith('calculated-');
       
-      if (filters.periodId && filters.periodId !== 'all' && !isCalculatedPeriod) {
+      if (queryFilters.periodId && queryFilters.periodId !== 'all' && !isCalculatedPeriod) {
         // Usar periodId real de la base de datos
-        query = query.eq('payment_period_id', filters.periodId);
-      } else if (isCalculatedPeriod || !filters.periodId || filters.startDate || filters.endDate) {
+        query = query.eq('payment_period_id', queryFilters.periodId);
+      } else if (isCalculatedPeriod || !queryFilters.periodId || queryFilters.startDate || queryFilters.endDate) {
         // Si es período calculado o no hay periodId, usar fechas si están disponibles
-        if (filters.startDate && filters.endDate) {
-          const startUTC = convertUserDateToUTC(new Date(filters.startDate));
-          const endUTC = convertUserDateToUTC(new Date(filters.endDate));
+        if (queryFilters.startDate && queryFilters.endDate) {
+          const startUTC = convertUserDateToUTC(new Date(queryFilters.startDate));
+          const endUTC = convertUserDateToUTC(new Date(queryFilters.endDate));
           query = query
             .gte('transaction_date', startUTC.split('T')[0])
             .lte('transaction_date', endUTC.split('T')[0]);
-        } else if (filters.startDate) {
-          query = query.gte('transaction_date', filters.startDate);
-        } else if (filters.endDate) {
-          query = query.lte('transaction_date', filters.endDate);
+        } else if (queryFilters.startDate) {
+          query = query.gte('transaction_date', queryFilters.startDate);
+        } else if (queryFilters.endDate) {
+          query = query.lte('transaction_date', queryFilters.endDate);
         }
       }
 
-      if (filters.driverId && filters.driverId !== 'all') {
-        query = query.eq('driver_user_id', filters.driverId);
+      if (queryFilters.driverId && queryFilters.driverId !== 'all') {
+        query = query.eq('driver_user_id', queryFilters.driverId);
       }
 
       const { data, error } = await query;
@@ -133,6 +135,6 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
         verified: byStatus.verified || 0
       };
     },
-    enabled: !!user?.id && !!selectedCompany?.id,
+    enabled: !!user?.id && !!selectedCompany?.id && enabled,
   });
 }
