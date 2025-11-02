@@ -159,6 +159,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Importar la función de conversión
     const mask = companyData.load_number_pattern
       .replace(/^\^|\$$/g, '')
+      // Convertir literales fijos al inicio en formato {literal}
+      .replace(/^(\d+[-\/\.:])/g, '{$1}')
       .replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)))
       .replace(/\\d/g, '0')
       .replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
@@ -185,8 +187,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { ref: loadNumberInputRef, maskRef } = useIMask(
     {
       mask: loadNumberMask,
-      lazy: true, // Solo muestra lo que está escrito
+      lazy: false, // Muestra las partes fijas automáticamente
       eager: true, // Inserta caracteres fijos automáticamente
+      placeholderChar: '_',
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
@@ -204,54 +207,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
-  // Inicializar el campo con el prefijo fijo
-  useEffect(() => {
-    if (mode === 'create' && fixedPrefix && isOpen && isFormReady) {
-      const currentValue = form.getValues("load_number");
-      
-      if (!currentValue) {
-        // Establecer el valor en el formulario
-        form.setValue("load_number", fixedPrefix, { shouldValidate: false });
-        
-        // Forzar a IMask a actualizar su valor
-        if (maskRef.current) {
-          setTimeout(() => {
-            if (maskRef.current) {
-              maskRef.current.value = fixedPrefix;
-              maskRef.current.updateValue();
-            }
-          }, 50);
-        }
-      }
-    }
-  }, [fixedPrefix, mode, isOpen, isFormReady, form, maskRef]);
-
-  // Handler para posicionar el cursor después del prefijo al hacer focus
+  // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    const input = e.currentTarget;
-    const currentValue = input.value;
-    
-    // Si el valor es solo el prefijo fijo, posicionar el cursor al final
-    if (currentValue === fixedPrefix || currentValue === '') {
-      setTimeout(() => {
-        const cursorPos = fixedPrefix.length;
-        input.setSelectionRange(cursorPos, cursorPos);
-      }, 0);
-    }
-  };
-  
-  // Handler para mantener el cursor en posición correcta al hacer click
-  const handleLoadNumberClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const input = e.currentTarget;
-    const currentValue = input.value;
-    
-    // Si el valor es solo el prefijo o está vacío, posicionar cursor después del prefijo
-    if (currentValue === fixedPrefix || currentValue === '' || currentValue.replace(/[_-]/g, '').trim() === fixedPrefix.replace(/[_-]/g, '').trim()) {
-      setTimeout(() => {
-        const cursorPos = fixedPrefix.length;
-        input.setSelectionRange(cursorPos, cursorPos);
-      }, 0);
-    }
+    setTimeout(() => {
+      if (maskRef.current) {
+        // Encontrar la primera posición editable (después de partes fijas)
+        const masked = maskRef.current;
+        let cursorPos = 0;
+        
+        // Buscar el primer placeholder '_' o posición vacía
+        const value = masked.value;
+        for (let i = 0; i < value.length; i++) {
+          if (value[i] === '_' || value[i] === ' ') {
+            cursorPos = i;
+            break;
+          }
+        }
+        
+        // Si no encontramos placeholder, poner después del último carácter fijo
+        if (cursorPos === 0 && fixedPrefix) {
+          cursorPos = fixedPrefix.length;
+        }
+        
+        masked.updateCursor(cursorPos);
+        e.currentTarget.setSelectionRange(cursorPos, cursorPos);
+      }
+    }, 10);
   };
 
   // PO number validation
@@ -1106,7 +1087,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                       onBlur={field.onBlur}
                                       onFocus={handleLoadNumberFocus}
-                                      onClick={handleLoadNumberClick}
+                                      onClick={handleLoadNumberFocus as any}
                                       autoFocus
                                       className={
                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
