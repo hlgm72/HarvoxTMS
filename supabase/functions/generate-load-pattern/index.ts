@@ -91,8 +91,8 @@ Response: ^\\d{4}-\\d{3}$`
                   explanation: {
                     type: "string",
                     description: language === 'en'
-                      ? "Brief explanation of what the pattern validates"
-                      : "Explicación breve de qué valida el patrón"
+                      ? "Simple explanation in plain language of what format is accepted (e.g., 'This format accepts exactly two numbers, a dash, three numbers, and optionally two uppercase letters'). Avoid technical terms."
+                      : "Explicación simple en lenguaje natural de qué formato se acepta (ej: 'Este formato acepta exactamente dos números, un guion, tres números y opcionalmente dos letras mayúsculas'). Evita términos técnicos."
                   },
                   examples: {
                     type: "object",
