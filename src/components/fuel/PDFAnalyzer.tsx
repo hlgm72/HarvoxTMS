@@ -112,7 +112,9 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // Use pdfjs from react-pdf (same as DocumentPreview) - already configured by pdfService
+          // CRITICAL: Always set worker to empty string to force main thread execution
+          pdfjs.GlobalWorkerOptions.workerSrc = '';
+          
           const pdf = await pdfjs.getDocument({ data: typedarray }).promise;
 
           let fullText = '';
