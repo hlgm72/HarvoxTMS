@@ -5,6 +5,7 @@ import { useCompanyCache } from "@/hooks/useCompanyCache";
 
 interface IFTAVehicleData {
   vehicle_id: string | null;
+  vehicle_number: string | null;
   driver_user_id: string;
   driver_name: string;
   total_gallons: number;
@@ -147,6 +148,18 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
         profiles?.map((p) => [p.user_id, `${p.first_name} ${p.last_name}`]) || []
       );
 
+      // Fetch vehicle information for expenses with vehicle_id
+      const vehicleIds = [...new Set(filteredExpenses.filter((exp: any) => exp.vehicle_id).map((exp: any) => exp.vehicle_id))];
+      const { data: vehicles } = await supabase
+        .from("company_equipment")
+        .select("id, equipment_number")
+        .in("id", vehicleIds);
+
+      // Create a map of vehicles for quick lookup
+      const vehicleMapLookup = new Map(
+        vehicles?.map((v) => [v.id, v.equipment_number]) || []
+      );
+
       // Group by vehicle/driver
       const vehicleMap = new Map<string, IFTAVehicleData>();
       const stateMap = new Map<string, IFTAStateSummary>();
@@ -165,6 +178,7 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
         if (!vehicleMap.has(key)) {
           vehicleMap.set(key, {
             vehicle_id: expense.vehicle_id,
+            vehicle_number: expense.vehicle_id ? vehicleMapLookup.get(expense.vehicle_id) || null : null,
             driver_user_id: expense.driver_user_id,
             driver_name: profileMap.get(expense.driver_user_id) || "Unknown Driver",
             total_gallons: 0,

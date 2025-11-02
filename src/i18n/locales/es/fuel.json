@@ -418,6 +418,8 @@
     "q2": "T2 (Abr-Jun)",
     "q3": "T3 (Jul-Sep)",
     "q4": "T4 (Oct-Dic)",
+    "vehicle": "Vehículo",
+    "driver": "Conductor",
     "driver_vehicle": "Conductor/Vehículo",
     "total_gallons": "Galones Totales",
     "gallons": "Galones",

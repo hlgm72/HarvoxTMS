@@ -19,6 +19,7 @@ interface StateData {
 
 interface VehicleData {
   vehicle_id: string | null;
+  vehicle_number: string | null;
   driver_user_id: string;
   driver_name: string;
   total_gallons: number;
@@ -58,7 +59,8 @@ export const IFTAReportTable = ({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]"></TableHead>
-            <TableHead>{t("ifta.driver_vehicle")}</TableHead>
+            <TableHead>{t("ifta.vehicle")}</TableHead>
+            <TableHead>{t("ifta.driver")}</TableHead>
             <TableHead className="text-right">{t("ifta.transactions")}</TableHead>
             <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
           </TableRow>
@@ -81,6 +83,9 @@ export const IFTAReportTable = ({
                     <ChevronRight className="h-4 w-4" />
                   )}
                 </TableCell>
+                <TableCell className="font-medium">
+                  {vehicle.vehicle_number || '—'}
+                </TableCell>
                 <TableCell className="font-medium">{vehicle.driver_name}</TableCell>
                 <TableCell className="text-right">{vehicle.transaction_count}</TableCell>
                 <TableCell className="text-right font-semibold">
@@ -92,7 +97,7 @@ export const IFTAReportTable = ({
             if (isExpanded) {
               rows.push(
                 <TableRow key={`${key}-expanded`}>
-                  <TableCell colSpan={4} className="bg-muted/30 p-0">
+                  <TableCell colSpan={5} className="bg-muted/30 p-0">
                     <div className="px-12 py-4">
                       <h4 className="text-sm font-medium mb-3">
                         {t("ifta.breakdown_by_state")}
@@ -133,7 +138,7 @@ export const IFTAReportTable = ({
           })}
           <TableRow className="bg-primary/5 font-bold">
             <TableCell></TableCell>
-            <TableCell>{t("ifta.company_total")}</TableCell>
+            <TableCell colSpan={2}>{t("ifta.company_total")}</TableCell>
             <TableCell className="text-right">{totalTransactions}</TableCell>
             <TableCell className="text-right">{formatGallons(totalGallons)}</TableCell>
           </TableRow>
