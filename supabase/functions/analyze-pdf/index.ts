@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
+import pdf from 'npm:pdf-parse/lib/pdf-parse.js';
 
 const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
@@ -14,13 +15,37 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting PDF text analysis...');
+    console.log('Starting PDF analysis...');
     
-    const { pdfText } = await req.json();
+    const { pdfBase64, pdfText } = await req.json();
 
-    if (!pdfText) {
+    // Support both base64 PDF (new) and text (old)
+    let textToAnalyze;
+    
+    if (pdfBase64) {
+      console.log('Processing PDF from base64...');
+      try {
+        // Decode base64 to buffer
+        const pdfBuffer = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
+        
+        // Extract text using pdf-parse
+        console.log('Extracting text from PDF...');
+        const data = await pdf(pdfBuffer);
+        textToAnalyze = data.text;
+        console.log('Text extracted successfully, length:', textToAnalyze.length);
+      } catch (pdfError) {
+        console.error('PDF extraction error:', pdfError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to extract text from PDF', details: pdfError.message }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else if (pdfText) {
+      // Backward compatibility with old method
+      textToAnalyze = pdfText;
+    } else {
       return new Response(
-        JSON.stringify({ error: 'PDF text is required' }),
+        JSON.stringify({ error: 'PDF base64 or text is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -32,8 +57,8 @@ serve(async (req) => {
       );
     }
 
-    console.log('Text received, analyzing with Lovable AI (Gemini)...');
-    console.log('Text length:', pdfText.length);
+    console.log('Text ready, analyzing with Lovable AI (Gemini)...');
+    console.log('Text length:', textToAnalyze.length);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -52,7 +77,7 @@ serve(async (req) => {
             role: 'user',
             content: `Extract every transaction from this PDF:
 
-${pdfText}
+${textToAnalyze}
 
 Extract these fields for each:
 date (YYYY-MM-DD), card, unit, invoice, location_name, city, state, qty, gross_ppg, gross_amt, disc_amt, fees, total_amt
