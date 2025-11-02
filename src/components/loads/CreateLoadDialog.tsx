@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { useIMask } from "react-imask";
 import { useCompanyDrivers, CompanyDriver } from "@/hooks/useCompanyDrivers";
 import { useCompanyDispatchers } from "@/hooks/useCompanyDispatchers";
 import { useClients, Client, useClientContacts } from "@/hooks/useClients";
@@ -152,15 +153,40 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     skipValidation: mode === 'edit' && !form.formState.dirtyFields.load_number
   });
 
-  // Handler para el campo load number
-  const handleLoadNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const upperValue = e.target.value.toUpperCase();
-    form.setValue("load_number", upperValue, { shouldValidate: true });
-    // Limpiar errores cuando el usuario escribe
-    if (form.formState.errors.load_number) {
-      form.clearErrors("load_number");
+  // Load number formatter con IMask
+  const { ref: loadNumberInputRef, value: maskedValue } = useIMask(
+    {
+      mask: companyData?.load_number_pattern ? (() => {
+        // Convertir el patrón regex a máscara IMask
+        const pattern = companyData.load_number_pattern;
+        // Ejemplo: ^\d{2}-\d{3}[A-Z]{0,2}$ → 00-000[AA]
+        return pattern
+          .replace(/\^\\/g, '')
+          .replace(/\$$/g, '')
+          .replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)))
+          .replace(/\\d/g, '0')
+          .replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => `[${'A'.repeat(parseInt(count))}]`)
+          .replace(/\[A-Z\]/g, 'A')
+          .replace(/\[a-z\]/g, 'a');
+      })() : '',
+      lazy: true, // No mostrar la máscara hasta que el usuario escriba
+      overwrite: true,
+      definitions: {
+        '0': /[0-9]/,
+        'A': /[A-Z]/,
+        'a': /[a-zA-Z]/,
+      },
+    },
+    {
+      onAccept: (value) => {
+        const upperValue = value.toUpperCase();
+        form.setValue("load_number", upperValue, { shouldValidate: true });
+        if (form.formState.errors.load_number) {
+          form.clearErrors("load_number");
+        }
+      }
     }
-  };
+  );
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
@@ -1010,9 +1036,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                <FormControl>
                                  <div className="relative">
                                    <Input
+                                     ref={loadNumberInputRef as any}
                                      placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                     value={field.value || ''}
-                                     onChange={handleLoadNumberChange}
                                      onBlur={field.onBlur}
                                      autoFocus
                                      className={
