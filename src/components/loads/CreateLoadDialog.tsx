@@ -1008,55 +1008,34 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                </FormLabel>
                                <FormControl>
                                  <div className="relative">
-                                   {companyData?.load_number_pattern && loadNumberFormatter.mask ? (
-                                     <InputMask
-                                       mask={loadNumberFormatter.mask}
-                                       value={field.value || ''}
-                                       onChange={(e) => {
-                                         loadNumberFormatter.handleChange(e);
-                                         if (form.formState.errors.load_number) {
-                                           form.clearErrors("load_number");
-                                         }
-                                       }}
-                                       onBlur={field.onBlur}
-                                       maskChar=""
-                                     >
-                                       {(inputProps: any) => (
-                                         <Input
-                                           {...inputProps}
-                                           placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                           autoFocus
-                                           className={
-                                             loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                               ? "border-destructive focus:border-destructive" 
-                                               : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                               ? "border-green-500 focus:border-green-500" 
-                                               : ""
-                                           }
-                                         />
-                                       )}
-                                     </InputMask>
-                                   ) : (
-                                     <Input 
-                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                       value={field.value || ''}
-                                       onChange={(e) => {
-                                         field.onChange(e.target.value);
-                                         if (form.formState.errors.load_number) {
-                                           form.clearErrors("load_number");
-                                         }
-                                       }}
-                                       onBlur={field.onBlur}
-                                       autoFocus
-                                       className={
-                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                           ? "border-destructive focus:border-destructive" 
-                                           : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                           ? "border-green-500 focus:border-green-500" 
-                                           : ""
+                                   <InputMask
+                                     mask={companyData?.load_number_pattern ? loadNumberFormatter.mask : ''}
+                                     value={field.value || ''}
+                                     onChange={(e) => {
+                                       const value = e.target.value.toUpperCase();
+                                       form.setValue("load_number", value, { shouldValidate: true });
+                                       if (form.formState.errors.load_number) {
+                                         form.clearErrors("load_number");
                                        }
-                                     />
-                                   )}
+                                     }}
+                                     onBlur={field.onBlur}
+                                     maskChar=""
+                                     disabled={false}
+                                   >
+                                     {() => (
+                                       <Input
+                                         placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                         autoFocus
+                                         className={
+                                           loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                             ? "border-destructive focus:border-destructive" 
+                                             : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                             ? "border-green-500 focus:border-green-500" 
+                                             : ""
+                                         }
+                                       />
+                                     )}
+                                   </InputMask>
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
