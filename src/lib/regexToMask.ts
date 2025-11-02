@@ -33,9 +33,9 @@ export function regexToMask(pattern: string): string {
     [/\[A-Z\]\{3\}/g, "AAA"],
     [/\[A-Z\]\{4\}/g, "AAAA"],
     [/\[A-Z\]\{0,1\}/g, "[A]"],
-    [/\[A-Z\]\{0,2\}/g, "[AA]"],
-    [/\[A-Z\]\{0,3\}/g, "[AAA]"],
-    [/\[A-Z\]\{0,4\}/g, "[AAAA]"],
+    [/\[A-Z\]\{0,2\}/g, "[A][A]"],
+    [/\[A-Z\]\{0,3\}/g, "[A][A][A]"],
+    [/\[A-Z\]\{0,4\}/g, "[A][A][A][A]"],
     
     // Letras minúsculas
     [/\[a-z\]\{1\}/g, "a"],

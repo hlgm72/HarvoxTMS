@@ -153,28 +153,33 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     skipValidation: mode === 'edit' && !form.formState.dirtyFields.load_number
   });
 
-  // Load number formatter con IMask
-  const { ref: loadNumberInputRef, value: maskedValue } = useIMask(
+  // Load number formatter con IMask usando regexToMask
+  const loadNumberMask = useMemo(() => {
+    if (!companyData?.load_number_pattern) return '';
+    // Importar la función de conversión
+    const mask = companyData.load_number_pattern
+      .replace(/^\^|\$$/g, '')
+      .replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)))
+      .replace(/\\d/g, '0')
+      .replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
+        // Letras opcionales: [A-Z]{0,2} → [A][A]
+        return '[A]'.repeat(parseInt(count));
+      })
+      .replace(/\[A-Z\]\{(\d+)\}/g, (_, count) => 'A'.repeat(parseInt(count)))
+      .replace(/\[A-Z\]/g, 'A')
+      .replace(/\\-/g, '-');
+    
+    console.log('🎭 Load number mask:', companyData.load_number_pattern, '→', mask);
+    return mask;
+  }, [companyData?.load_number_pattern]);
+
+  const { ref: loadNumberInputRef } = useIMask(
     {
-      mask: companyData?.load_number_pattern ? (() => {
-        // Convertir el patrón regex a máscara IMask
-        const pattern = companyData.load_number_pattern;
-        // Ejemplo: ^\d{2}-\d{3}[A-Z]{0,2}$ → 00-000[AA]
-        return pattern
-          .replace(/\^\\/g, '')
-          .replace(/\$$/g, '')
-          .replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)))
-          .replace(/\\d/g, '0')
-          .replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => `[${'A'.repeat(parseInt(count))}]`)
-          .replace(/\[A-Z\]/g, 'A')
-          .replace(/\[a-z\]/g, 'a');
-      })() : '',
-      lazy: true, // No mostrar la máscara hasta que el usuario escriba
-      overwrite: true,
+      mask: loadNumberMask,
+      lazy: true,
       definitions: {
         '0': /[0-9]/,
         'A': /[A-Z]/,
-        'a': /[a-zA-Z]/,
       },
     },
     {
