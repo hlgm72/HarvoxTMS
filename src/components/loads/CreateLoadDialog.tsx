@@ -180,8 +180,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       eager: true, // Inserta caracteres fijos automáticamente
       definitions: {
         '0': /[0-9]/,
-        'A': /[A-Z]/,
+        'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
       },
+      prepare: (str: string) => str.toUpperCase(), // Convierte a mayúsculas automáticamente
     },
     {
       onAccept: (value) => {
