@@ -20,22 +20,22 @@ interface IFTAStateSummaryProps {
 }
 
 export const IFTAStateSummary = ({ stateSummary }: IFTAStateSummaryProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('fuel');
 
   const formatGallons = (gallons: number) => gallons.toFixed(2);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("fuel.ifta.state_summary")}</CardTitle>
+        <CardTitle>{t("ifta.state_summary")}</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("fuel.ifta.state")}</TableHead>
-              <TableHead className="text-right">{t("fuel.ifta.total_gallons")}</TableHead>
-              <TableHead className="text-right">{t("fuel.ifta.transactions")}</TableHead>
+              <TableHead>{t("ifta.state")}</TableHead>
+              <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
+              <TableHead className="text-right">{t("ifta.transactions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

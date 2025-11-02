@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const IFTAReport = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['fuel', 'common']);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentQuarter = Math.floor(currentDate.getMonth() / 3) + 1;
@@ -41,7 +41,7 @@ export const IFTAReport = () => {
       <div className="flex justify-between items-center">
         <div>
           <p className="text-sm text-muted-foreground">
-            {t("fuel.ifta.description")}
+            {t("ifta.description")}
           </p>
         </div>
         <IFTAQuarterSelector
@@ -63,7 +63,7 @@ export const IFTAReport = () => {
         </div>
       ) : (
         <Alert>
-          <AlertDescription>{t("fuel.ifta.no_data")}</AlertDescription>
+          <AlertDescription>{t("ifta.no_data")}</AlertDescription>
         </Alert>
       )}
     </div>

@@ -14,7 +14,7 @@ export const IFTAQuarterSelector = ({
   onYearChange,
   onQuarterChange,
 }: IFTAQuarterSelectorProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('fuel');
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -22,7 +22,7 @@ export const IFTAQuarterSelector = ({
   return (
     <div className="flex gap-4 items-center">
       <div className="flex items-center gap-2">
-        <label className="text-sm font-medium">{t("fuel.ifta.year")}</label>
+        <label className="text-sm font-medium">{t("ifta.year")}</label>
         <Select value={year.toString()} onValueChange={(v) => onYearChange(parseInt(v))}>
           <SelectTrigger className="w-[120px]">
             <SelectValue />
@@ -38,16 +38,16 @@ export const IFTAQuarterSelector = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <label className="text-sm font-medium">{t("fuel.ifta.quarter")}</label>
+        <label className="text-sm font-medium">{t("ifta.quarter")}</label>
         <Select value={quarter.toString()} onValueChange={(v) => onQuarterChange(parseInt(v))}>
           <SelectTrigger className="w-[120px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">{t("fuel.ifta.q1")}</SelectItem>
-            <SelectItem value="2">{t("fuel.ifta.q2")}</SelectItem>
-            <SelectItem value="3">{t("fuel.ifta.q3")}</SelectItem>
-            <SelectItem value="4">{t("fuel.ifta.q4")}</SelectItem>
+            <SelectItem value="1">{t("ifta.q1")}</SelectItem>
+            <SelectItem value="2">{t("ifta.q2")}</SelectItem>
+            <SelectItem value="3">{t("ifta.q3")}</SelectItem>
+            <SelectItem value="4">{t("ifta.q4")}</SelectItem>
           </SelectContent>
         </Select>
       </div>

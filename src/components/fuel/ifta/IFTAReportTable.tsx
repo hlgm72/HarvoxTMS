@@ -37,7 +37,7 @@ export const IFTAReportTable = ({
   totalGallons,
   totalTransactions,
 }: IFTAReportTableProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('fuel');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const toggleRow = (key: string) => {
@@ -58,9 +58,9 @@ export const IFTAReportTable = ({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]"></TableHead>
-            <TableHead>{t("fuel.ifta.driver_vehicle")}</TableHead>
-            <TableHead className="text-right">{t("fuel.ifta.total_gallons")}</TableHead>
-            <TableHead className="text-right">{t("fuel.ifta.transactions")}</TableHead>
+            <TableHead>{t("ifta.driver_vehicle")}</TableHead>
+            <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
+            <TableHead className="text-right">{t("ifta.transactions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -95,17 +95,17 @@ export const IFTAReportTable = ({
                   <TableCell colSpan={4} className="bg-muted/30 p-0">
                     <div className="px-12 py-4">
                       <h4 className="text-sm font-medium mb-3">
-                        {t("fuel.ifta.breakdown_by_state")}
+                        {t("ifta.breakdown_by_state")}
                       </h4>
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>{t("fuel.ifta.state")}</TableHead>
+                            <TableHead>{t("ifta.state")}</TableHead>
                             <TableHead className="text-right">
-                              {t("fuel.ifta.gallons")}
+                              {t("ifta.gallons")}
                             </TableHead>
                             <TableHead className="text-right">
-                              {t("fuel.ifta.transactions")}
+                              {t("ifta.transactions")}
                             </TableHead>
                           </TableRow>
                         </TableHeader>
@@ -133,7 +133,7 @@ export const IFTAReportTable = ({
           })}
           <TableRow className="bg-primary/5 font-bold">
             <TableCell></TableCell>
-            <TableCell>{t("fuel.ifta.company_total")}</TableCell>
+            <TableCell>{t("ifta.company_total")}</TableCell>
             <TableCell className="text-right">{formatGallons(totalGallons)}</TableCell>
             <TableCell className="text-right">{totalTransactions}</TableCell>
           </TableRow>
