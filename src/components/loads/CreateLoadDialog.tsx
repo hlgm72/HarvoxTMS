@@ -177,6 +177,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     {
       mask: loadNumberMask,
       lazy: true,
+      eager: true, // Inserta caracteres fijos automáticamente
       definitions: {
         '0': /[0-9]/,
         'A': /[A-Z]/,
