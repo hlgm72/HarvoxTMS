@@ -112,8 +112,14 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // CRITICAL: Always set worker to empty string to force main thread execution
-          pdfjs.GlobalWorkerOptions.workerSrc = '';
+          // Create a minimal inline worker to avoid CORB
+          if (!pdfjs.GlobalWorkerOptions.workerSrc || pdfjs.GlobalWorkerOptions.workerSrc.includes('cloudflare')) {
+            const blob = new Blob(
+              ['// Minimal PDF.js worker\nself.onmessage = function() {};'],
+              { type: 'application/javascript' }
+            );
+            pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+          }
           
           const pdf = await pdfjs.getDocument({ data: typedarray }).promise;
 
