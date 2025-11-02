@@ -466,4 +466,36 @@ All colors MUST be HSL.
   .animate-shimmer {
     animation: shimmer 2s infinite;
   }
+
+  /* Trusted Logos Scroll Animation */
+  @keyframes trusted-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .trusted-logos-scroll {
+    animation: trusted-scroll 30s linear infinite;
+  }
+
+  .trusted-logos-scroll:hover {
+    animation-play-state: paused;
+  }
+
+  /* Smooth gradient animation */
+  @keyframes gradient {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .animate-gradient {
+    animation: gradient 8s ease-in-out infinite;
+  }
 }
