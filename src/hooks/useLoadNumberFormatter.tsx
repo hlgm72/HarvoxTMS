@@ -15,32 +15,50 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
   /**
    * Parsea el patrón regex para extraer su estructura
    */
-  const parsePattern = useCallback((regexPattern: string): Array<{type: 'digit' | 'letter' | 'separator', length?: number, value?: string}> => {
-    const structure: Array<{type: 'digit' | 'letter' | 'separator', length?: number, value?: string}> = [];
+  const parsePattern = useCallback((regexPattern: string): Array<{type: 'digit' | 'letter' | 'separator', length?: number, value?: string, optional?: boolean}> => {
+    const structure: Array<{type: 'digit' | 'letter' | 'separator', length?: number, value?: string, optional?: boolean}> = [];
     
     // Remover ^ y $ del inicio y fin
     let cleanPattern = regexPattern.replace(/^\^/, '').replace(/\$$/, '');
     
-    // Expresiones regex para identificar componentes
-    const digitPattern = /\\d\{(\d+)\}/;
-    const letterPattern = /\[a-zA-Z\]\{(\d+)\}|\[A-Za-z\]\{(\d+)\}/;
-    const anyCharPattern = /\.\{(\d+)\}/;
+    // Expresiones regex para identificar componentes (mejoradas)
+    const digitPattern = /\\d\{(\d+)(?:,(\d+))?\}/; // Soporta {2} o {0,2}
+    const letterPattern = /\[a-zA-Z\]\{(\d+)(?:,(\d+))?\}|\[A-Za-z\]\{(\d+)(?:,(\d+))?\}|\[A-Z\]\{(\d+)(?:,(\d+))?\}|\[a-z\]\{(\d+)(?:,(\d+))?\}/;
+    const anyCharPattern = /\.\{(\d+)(?:,(\d+))?\}/;
     
     let i = 0;
     while (i < cleanPattern.length) {
       // Verificar si es un grupo de dígitos
       const digitMatch = cleanPattern.substring(i).match(digitPattern);
       if (digitMatch && cleanPattern.substring(i).startsWith(digitMatch[0])) {
-        structure.push({ type: 'digit', length: parseInt(digitMatch[1]) });
+        const min = parseInt(digitMatch[1]);
+        const max = digitMatch[2] ? parseInt(digitMatch[2]) : min;
+        structure.push({ 
+          type: 'digit', 
+          length: max,
+          optional: min === 0
+        });
         i += digitMatch[0].length;
         continue;
       }
       
-      // Verificar si es un grupo de letras
+      // Verificar si es un grupo de letras (mejorado para soportar [A-Z], [a-z], etc.)
       const letterMatch = cleanPattern.substring(i).match(letterPattern);
       if (letterMatch && cleanPattern.substring(i).startsWith(letterMatch[0])) {
-        const length = parseInt(letterMatch[1] || letterMatch[2]);
-        structure.push({ type: 'letter', length });
+        // Buscar el primer grupo capturado que no sea undefined
+        let min = 0, max = 0;
+        for (let j = 1; j < letterMatch.length; j += 2) {
+          if (letterMatch[j]) {
+            min = parseInt(letterMatch[j]);
+            max = letterMatch[j + 1] ? parseInt(letterMatch[j + 1]) : min;
+            break;
+          }
+        }
+        structure.push({ 
+          type: 'letter', 
+          length: max,
+          optional: min === 0
+        });
         i += letterMatch[0].length;
         continue;
       }
@@ -48,7 +66,13 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       // Verificar si es un grupo de cualquier caracter
       const anyMatch = cleanPattern.substring(i).match(anyCharPattern);
       if (anyMatch && cleanPattern.substring(i).startsWith(anyMatch[0])) {
-        structure.push({ type: 'letter', length: parseInt(anyMatch[1]) });
+        const min = parseInt(anyMatch[1]);
+        const max = anyMatch[2] ? parseInt(anyMatch[2]) : min;
+        structure.push({ 
+          type: 'letter', 
+          length: max,
+          optional: min === 0
+        });
         i += anyMatch[0].length;
         continue;
       }
@@ -94,7 +118,6 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     // Aplicar el formato según la estructura con auto-inserción de separadores
     let result = '';
     let charIndex = 0;
-    let charsProcessed = 0;
     
     for (let i = 0; i < structure.length; i++) {
       const segment = structure[i];
@@ -116,15 +139,14 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
             result += char;
             charIndex++;
             addedInSegment++;
-            charsProcessed++;
           } else {
             // Si no es un dígito, saltar
             charIndex++;
           }
         }
         
-        // Si no completamos el segmento, salir (no agregar más separadores)
-        if (addedInSegment < segmentLength) {
+        // Si el segmento no es opcional y no se completó, salir
+        if (!segment.optional && addedInSegment < segmentLength) {
           break;
         }
       } else if (segment.type === 'letter') {
@@ -138,15 +160,15 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
             result += char.toUpperCase();
             charIndex++;
             addedInSegment++;
-            charsProcessed++;
           } else {
             // Si no es una letra, saltar
             charIndex++;
           }
         }
         
-        // Si no completamos el segmento, salir (no agregar más separadores)
-        if (addedInSegment < segmentLength) {
+        // Si el segmento no es opcional y no se completó, salir
+        // (pero los segmentos opcionales pueden quedar incompletos)
+        if (!segment.optional && addedInSegment < segmentLength) {
           break;
         }
       }
