@@ -60,6 +60,33 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       return result;
     }
 
+    // Patrón: ^[A-Za-z]{3}\d{2}-\d{2}$ (Ej: ABC12-34)
+    if (pattern.match(/\^\[A-Za-z\]\{3\}\\d\{2\}-\\d\{2\}/)) {
+      const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
+      
+      let letters = '';
+      let firstDigits = '';
+      let secondDigits = '';
+      
+      for (const char of cleanValue) {
+        if (/[a-zA-Z]/.test(char) && letters.length < 3) {
+          letters += char.toUpperCase();
+        } else if (/\d/.test(char) && letters.length === 3 && firstDigits.length < 2) {
+          firstDigits += char;
+        } else if (/\d/.test(char) && letters.length === 3 && firstDigits.length === 2 && secondDigits.length < 2) {
+          secondDigits += char;
+        }
+      }
+      
+      let result = letters + firstDigits;
+      if (firstDigits.length === 2 && secondDigits.length > 0) {
+        result += '-' + secondDigits;
+      }
+      
+      console.log('✅ formatValue output (3letters-2digits-2digits):', result);
+      return result;
+    }
+
     // Patrón: ^[a-zA-Z]{2}-\d{2}$ o ^[A-Za-z]{2}-\d{2}$ (Ej: AB-12)
     console.log('🔍 Testing pattern against letters-digits:', {
       test1: pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/),
