@@ -56,7 +56,6 @@ const formSchema = z.object({
   
   // Información de pago/tarjeta
   driver_card_id: z.string().optional(),
-  card_last_five: z.string().optional(),
   invoice_number: z.string().optional(),
   
   // Desglose de costos (opcional)
@@ -113,7 +112,6 @@ export function FuelExpenseDialog({
       station_city: '',
       station_state: '',
       driver_card_id: '',
-      card_last_five: '',
       invoice_number: '',
       gross_amount: 0,
       discount_amount: 0,
@@ -214,7 +212,6 @@ export function FuelExpenseDialog({
         station_state: expense.station_state || '',
         vehicle_id: expense.vehicle_id || '',
         driver_card_id: '', // Not available in expense data
-        card_last_five: expense.card_last_five || '',
         invoice_number: expense.invoice_number || '',
         gross_amount: expense.gross_amount || 0,
         discount_amount: expense.discount_amount || 0,
@@ -250,7 +247,6 @@ export function FuelExpenseDialog({
         station_city: '',
         station_state: '',
         driver_card_id: '',
-        card_last_five: '',
         invoice_number: '',
         gross_amount: 0,
         discount_amount: 0,
@@ -279,19 +275,6 @@ export function FuelExpenseDialog({
 
   // Get equipment assigned to selected driver
   const { data: driverEquipment = [] } = useDriverEquipment(selectedDriverId || '');
-
-  // Auto-complete Card Last Five when Driver Card is selected
-  const selectedDriverCardId = form.watch('driver_card_id');
-  
-  React.useEffect(() => {
-    if (!isEditMode && selectedDriverCardId && driverCards.length > 0) {
-      const selectedCard = driverCards.find(card => card.id === selectedDriverCardId);
-      if (selectedCard && selectedCard.card_number_last_five) {
-        form.setValue('card_last_five', selectedCard.card_number_last_five);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDriverCardId, driverCards, isEditMode]);
 
   // Función para calcular las fechas del período basado en la fecha de transacción
   const calculatePeriodDates = (transactionDate: Date, company: any) => {
@@ -352,7 +335,6 @@ export function FuelExpenseDialog({
           station_name: data.station_name || undefined,
           station_city: data.station_city || undefined,
           station_state: data.station_state || undefined,
-          card_last_five: data.card_last_five || undefined,
           invoice_number: data.invoice_number || undefined,
           gross_amount: data.gross_amount,
           discount_amount: data.discount_amount,
@@ -414,7 +396,6 @@ export function FuelExpenseDialog({
           station_name: data.station_name || undefined,
           station_city: data.station_city || undefined,
           station_state: data.station_state || undefined,
-          card_last_five: data.card_last_five || undefined,
           invoice_number: data.invoice_number || undefined,
           gross_amount: data.gross_amount,
           discount_amount: data.discount_amount,
@@ -723,17 +704,27 @@ export function FuelExpenseDialog({
 
                 <FormField
                   control={form.control}
-                  name="card_last_five"
+                  name="vehicle_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('fuel:create_dialog.fields.card_last_five')}</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder={t('fuel:create_dialog.placeholders.card_example')} 
-                          maxLength={5}
-                          {...field} 
-                        />
-                      </FormControl>
+                      <FormLabel>{t('fuel:create_dialog.fields.vehicle')}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_vehicle')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {(equipment || [])
+                            .filter((eq) => eq.equipment_type === 'truck')
+                            .map((eq) => (
+                              <SelectItem key={eq.id} value={eq.id}>
+                                {eq.equipment_number} - {capitalizeWords(eq.make)} {capitalizeWords(eq.model)}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1028,33 +1019,6 @@ export function FuelExpenseDialog({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="vehicle_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('fuel:create_dialog.fields.vehicle')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('fuel:create_dialog.placeholders.select_vehicle')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {(equipment || [])
-                          .filter((eq) => eq.equipment_type === 'truck')
-                          .map((eq) => (
-                            <SelectItem key={eq.id} value={eq.id}>
-                              {eq.equipment_number} - {capitalizeWords(eq.make)} {capitalizeWords(eq.model)}
-                            </SelectItem>
-                          ))
-                        }
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
 
