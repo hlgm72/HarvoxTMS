@@ -17,9 +17,11 @@ interface StateSummaryData {
 
 interface IFTAStateSummaryProps {
   stateSummary: StateSummaryData[];
+  totalGallons: number;
+  totalTransactions: number;
 }
 
-export const IFTAStateSummary = ({ stateSummary }: IFTAStateSummaryProps) => {
+export const IFTAStateSummary = ({ stateSummary, totalGallons, totalTransactions }: IFTAStateSummaryProps) => {
   const { t } = useTranslation('fuel');
 
   const formatGallons = (gallons: number) => gallons.toFixed(2);
@@ -48,6 +50,11 @@ export const IFTAStateSummary = ({ stateSummary }: IFTAStateSummaryProps) => {
                 </TableCell>
               </TableRow>
             ))}
+            <TableRow className="bg-primary/5 font-bold">
+              <TableCell>{t("ifta.company_total")}</TableCell>
+              <TableCell className="text-right">{totalTransactions}</TableCell>
+              <TableCell className="text-right">{formatGallons(totalGallons)}</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </CardContent>

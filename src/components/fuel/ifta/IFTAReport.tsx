@@ -59,7 +59,11 @@ export const IFTAReport = () => {
             totalGallons={data.totalGallons}
             totalTransactions={data.totalTransactions}
           />
-          <IFTAStateSummary stateSummary={data.stateSummary} />
+          <IFTAStateSummary 
+            stateSummary={data.stateSummary}
+            totalGallons={data.totalGallons}
+            totalTransactions={data.totalTransactions}
+          />
         </div>
       ) : (
         <Alert>
