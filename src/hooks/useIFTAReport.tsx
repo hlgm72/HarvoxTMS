@@ -87,10 +87,12 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
         .in("driver_user_id", driverIds)
         .gte("transaction_date", startDate)
         .lte("transaction_date", endDate)
-        .filter("station_state", "not.is", null)
         .order("driver_user_id");
 
       if (error) throw error;
+
+      // Filter out expenses without state and process data
+      const filteredExpenses = expenses?.filter((exp: any) => exp.station_state !== null) || [];
 
       // Group by vehicle/driver
       const vehicleMap = new Map<string, IFTAVehicleData>();
@@ -98,7 +100,7 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
       let totalGallons = 0;
       let totalTransactions = 0;
 
-      expenses?.forEach((expense: any) => {
+      filteredExpenses.forEach((expense: any) => {
         const key = expense.vehicle_id || expense.driver_user_id;
         const gallons = parseFloat(expense.gallons_purchased) || 0;
         const state = expense.station_state;
