@@ -481,6 +481,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Sync IMask with form value when editing
   useEffect(() => {
+    console.log('🔍 Sync Effect Running - mode:', mode);
+    console.log('🔍 Sync Effect Running - activeLoadData exists:', !!activeLoadData);
+    console.log('🔍 Sync Effect Running - activeLoadData.load_number:', activeLoadData?.load_number);
+    console.log('🔍 Sync Effect Running - isFormReady:', isFormReady);
+    console.log('🔍 Sync Effect Running - maskRef.current exists:', !!maskRef.current);
+    
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady && maskRef.current) {
       const loadNumber = activeLoadData.load_number;
       console.log('🔍 Syncing IMask - Load Number:', loadNumber);
