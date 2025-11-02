@@ -13,6 +13,61 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
   /**
+   * Parsea el patrón regex para extraer su estructura
+   */
+  const parsePattern = useCallback((regexPattern: string): Array<{type: 'digit' | 'letter' | 'separator', length?: number, value?: string}> => {
+    const structure: Array<{type: 'digit' | 'letter' | 'separator', length?: number, value?: string}> = [];
+    
+    // Remover ^ y $ del inicio y fin
+    let cleanPattern = regexPattern.replace(/^\^/, '').replace(/\$$/, '');
+    
+    // Expresiones regex para identificar componentes
+    const digitPattern = /\\d\{(\d+)\}/;
+    const letterPattern = /\[a-zA-Z\]\{(\d+)\}|\[A-Za-z\]\{(\d+)\}/;
+    const anyCharPattern = /\.\{(\d+)\}/;
+    
+    let i = 0;
+    while (i < cleanPattern.length) {
+      // Verificar si es un grupo de dígitos
+      const digitMatch = cleanPattern.substring(i).match(digitPattern);
+      if (digitMatch && cleanPattern.substring(i).startsWith(digitMatch[0])) {
+        structure.push({ type: 'digit', length: parseInt(digitMatch[1]) });
+        i += digitMatch[0].length;
+        continue;
+      }
+      
+      // Verificar si es un grupo de letras
+      const letterMatch = cleanPattern.substring(i).match(letterPattern);
+      if (letterMatch && cleanPattern.substring(i).startsWith(letterMatch[0])) {
+        const length = parseInt(letterMatch[1] || letterMatch[2]);
+        structure.push({ type: 'letter', length });
+        i += letterMatch[0].length;
+        continue;
+      }
+      
+      // Verificar si es un grupo de cualquier caracter
+      const anyMatch = cleanPattern.substring(i).match(anyCharPattern);
+      if (anyMatch && cleanPattern.substring(i).startsWith(anyMatch[0])) {
+        structure.push({ type: 'letter', length: parseInt(anyMatch[1]) });
+        i += anyMatch[0].length;
+        continue;
+      }
+      
+      // Si es un carácter literal (separador)
+      if (cleanPattern[i] === '-' || cleanPattern[i] === '/' || cleanPattern[i] === '.' || cleanPattern[i] === ' ') {
+        structure.push({ type: 'separator', value: cleanPattern[i] });
+        i++;
+        continue;
+      }
+      
+      // Saltar caracteres no reconocidos
+      i++;
+    }
+    
+    return structure;
+  }, []);
+
+  /**
    * Formatea el valor según el patrón detectado
    */
   const formatValue = useCallback((value: string): string => {
@@ -23,145 +78,79 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
       return value;
     }
 
-    // Detectar patrones comunes y formatear
-    // Patrón: ^\d{2}-\d{3}[a-zA-Z]{0,2}$ (Ej: 12-345AB)
-    console.log('🔍 Testing pattern against: /\\^\\\\d\\{2\\}-\\\\d\\{3\\}/', pattern.match(/\^\\d\{2\}-\\d\{3\}/));
-    if (pattern.match(/\^\\d\{2\}-\\d\{3\}/)) {
-      // Limpiar el valor: extraer solo dígitos y letras
-      const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
-      console.log('🧹 cleanValue:', cleanValue);
-      
-      // Separar dígitos y letras
-      let digits = '';
-      let letters = '';
-      
-      for (const char of cleanValue) {
-        if (/\d/.test(char) && digits.length < 5) {
-          digits += char;
-        } else if (/[a-zA-Z]/.test(char) && digits.length === 5 && letters.length < 2) {
-          letters += char.toUpperCase();
+    // Parsear la estructura del patrón
+    const structure = parsePattern(pattern);
+    console.log('📊 Pattern structure:', structure);
+    
+    if (structure.length === 0) {
+      console.log('⚠️ Could not parse pattern, returning cleaned value');
+      return value.replace(/[^0-9a-zA-Z]/g, '');
+    }
+    
+    // Limpiar el valor: extraer solo dígitos y letras
+    const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
+    console.log('🧹 cleanValue:', cleanValue);
+    
+    // Aplicar el formato según la estructura
+    let result = '';
+    let charIndex = 0;
+    
+    for (const segment of structure) {
+      if (segment.type === 'separator') {
+        // Solo agregar el separador si ya tenemos caracteres después de él
+        const charsNeeded = structure
+          .slice(structure.indexOf(segment) + 1)
+          .reduce((sum, s) => sum + (s.length || 0), 0);
+        
+        if (cleanValue.length - charIndex > 0 && charsNeeded <= cleanValue.length - charIndex) {
+          result += segment.value;
+        }
+      } else if (segment.type === 'digit') {
+        // Extraer dígitos
+        for (let i = 0; i < (segment.length || 0) && charIndex < cleanValue.length; i++) {
+          const char = cleanValue[charIndex];
+          if (/\d/.test(char)) {
+            result += char;
+            charIndex++;
+          } else {
+            // Si no es un dígito, buscar el siguiente
+            while (charIndex < cleanValue.length && !/\d/.test(cleanValue[charIndex])) {
+              charIndex++;
+            }
+            if (charIndex < cleanValue.length && /\d/.test(cleanValue[charIndex])) {
+              result += cleanValue[charIndex];
+              charIndex++;
+            } else {
+              break;
+            }
+          }
+        }
+      } else if (segment.type === 'letter') {
+        // Extraer letras
+        for (let i = 0; i < (segment.length || 0) && charIndex < cleanValue.length; i++) {
+          const char = cleanValue[charIndex];
+          if (/[a-zA-Z]/.test(char)) {
+            result += char.toUpperCase();
+            charIndex++;
+          } else {
+            // Si no es una letra, buscar la siguiente
+            while (charIndex < cleanValue.length && !/[a-zA-Z]/.test(cleanValue[charIndex])) {
+              charIndex++;
+            }
+            if (charIndex < cleanValue.length && /[a-zA-Z]/.test(cleanValue[charIndex])) {
+              result += cleanValue[charIndex].toUpperCase();
+              charIndex++;
+            } else {
+              break;
+            }
+          }
         }
       }
-      
-      // Solo agregar el guion si hay al menos 3 dígitos (contenido después del guion)
-      let result = '';
-      if (digits.length <= 2) {
-        result = digits;
-      } else {
-        result = digits.slice(0, 2) + '-' + digits.slice(2);
-      }
-      
-      // Agregar letras si existen
-      if (letters.length > 0) {
-        result += letters;
-      }
-      
-      console.log('✅ formatValue output:', result);
-      return result;
     }
-
-    // Patrón: ^[A-Za-z]{3}\d{2}-\d{2}$ (Ej: ABC12-34)
-    if (pattern.match(/\^\[A-Za-z\]\{3\}\\d\{2\}-\\d\{2\}/)) {
-      const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
-      
-      let letters = '';
-      let firstDigits = '';
-      let secondDigits = '';
-      
-      for (const char of cleanValue) {
-        if (/[a-zA-Z]/.test(char) && letters.length < 3) {
-          letters += char.toUpperCase();
-        } else if (/\d/.test(char) && letters.length === 3 && firstDigits.length < 2) {
-          firstDigits += char;
-        } else if (/\d/.test(char) && letters.length === 3 && firstDigits.length === 2 && secondDigits.length < 2) {
-          secondDigits += char;
-        }
-      }
-      
-      let result = letters + firstDigits;
-      if (firstDigits.length === 2 && secondDigits.length > 0) {
-        result += '-' + secondDigits;
-      }
-      
-      console.log('✅ formatValue output (3letters-2digits-2digits):', result);
-      return result;
-    }
-
-    // Patrón: ^[a-zA-Z]{2}-\d{2}$ o ^[A-Za-z]{2}-\d{2}$ (Ej: AB-12)
-    console.log('🔍 Testing pattern against letters-digits:', {
-      test1: pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/),
-      test2: pattern.match(/\^\[A-Za-z\]\{2\}-\\d\{2\}/)
-    });
-    if (pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/) || pattern.match(/\^\[A-Za-z\]\{2\}-\\d\{2\}/)) {
-      console.log('✅ Pattern matched: Letters-Dash-Digits');
-      // Limpiar el valor: extraer solo letras y dígitos
-      const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
-      console.log('🧹 cleanValue (letters-digits):', cleanValue);
-      
-      let letters = '';
-      let digits = '';
-      
-      // Separar letras y dígitos del valor limpio
-      for (const char of cleanValue) {
-        if (/[a-zA-Z]/.test(char) && letters.length < 2) {
-          letters += char.toUpperCase();
-        } else if (/\d/.test(char) && letters.length === 2 && digits.length < 2) {
-          digits += char;
-        }
-      }
-      
-      // Construir resultado: solo agregar el guión si hay dígitos después de las letras
-      let result = letters;
-      if (letters.length === 2 && digits.length > 0) {
-        result += '-' + digits;
-      }
-      
-      console.log('✅ formatValue output (letters-digits):', result, '| letters:', letters, '| digits:', digits);
-      return result;
-    }
-
-    // Remover caracteres no válidos según el patrón (para otros patrones)
-    let cleaned = value.replace(/[^0-9a-zA-Z]/g, '');
-
-    // Patrón: ^\d{3}-\d{4}$ (Ej: 123-4567)
-    if (pattern.match(/\^\\d\{3\}-\\d\{4\}/)) {
-      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, 7);
-      if (digits.length <= 3) {
-        return digits;
-      } else {
-        return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-      }
-    }
-
-    // Patrón: ^\d{4}-\d{3}$ (Ej: 2024-001)
-    if (pattern.match(/\^\\d\{4\}-\\d\{3\}/)) {
-      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, 7);
-      if (digits.length <= 4) {
-        return digits;
-      } else {
-        return `${digits.slice(0, 4)}-${digits.slice(4)}`;
-      }
-    }
-
-    // Patrón genérico con guiones: detectar posición del guion
-    const dashMatch = pattern.match(/\\d\{(\d+)\}-\\d\{(\d+)\}/);
-    if (dashMatch) {
-      const firstGroup = parseInt(dashMatch[1]);
-      const secondGroup = parseInt(dashMatch[2]);
-      const totalDigits = firstGroup + secondGroup;
-      
-      const digits = cleaned.replace(/[^0-9]/g, '').slice(0, totalDigits);
-      
-      if (digits.length <= firstGroup) {
-        return digits;
-      } else {
-        return `${digits.slice(0, firstGroup)}-${digits.slice(firstGroup)}`;
-      }
-    }
-
-    // Si no coincide con ningún patrón conocido, devolver el valor limpio
-    return cleaned;
-  }, [pattern]);
+    
+    console.log('✅ formatValue output:', result);
+    return result;
+  }, [pattern, parsePattern]);
 
   /**
    * Handler para el cambio de valor del input
