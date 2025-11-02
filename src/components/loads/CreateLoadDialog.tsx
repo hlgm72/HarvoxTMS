@@ -162,20 +162,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   });
 
   // Load number formatter with IMask
-  const { ref: inputRef } = useIMask({
+  const { ref: inputRef, value: maskValue, setValue: setMaskValue } = useIMask({
     mask: loadNumberFormatter.mask || '',
-    lazy: false, // Mostrar la máscara siempre
+    lazy: false,
     placeholderChar: '_',
     definitions: {
-      '0': /[0-9]/,  // dígito requerido
-      'A': /[A-Z]/,  // letra mayúscula requerida
-      'a': /[a-zA-Z]/, // letra opcional
+      '0': /[0-9]/,
+      'A': /[A-Z]/,
+      'a': /[a-zA-Z]/,
     },
     onAccept: (value: string) => {
       const upperValue = value.toUpperCase();
       form.setValue("load_number", upperValue, { shouldValidate: true });
+      // Limpiar errores cuando el usuario escribe
+      if (form.formState.errors.load_number) {
+        form.clearErrors("load_number");
+      }
     }
   });
+
+  // Sincronizar el valor del form con IMask cuando cambie externamente
+  useEffect(() => {
+    const formValue = form.watch("load_number");
+    if (formValue !== maskValue && inputRef.current) {
+      setMaskValue(formValue || '');
+    }
+  }, [form.watch("load_number")]);
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
@@ -1027,12 +1039,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                    <Input
                                      ref={inputRef as any}
                                      placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                     value={field.value || ''}
-                                     onChange={() => {
-                                       if (form.formState.errors.load_number) {
-                                         form.clearErrors("load_number");
-                                       }
-                                     }}
                                      onBlur={field.onBlur}
                                      autoFocus
                                      className={
