@@ -202,9 +202,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const fixedPrefix = useMemo(() => {
     if (!companyData?.load_number_pattern) return '';
     const pattern = companyData.load_number_pattern.replace(/^\^/, '');
-    // Buscar literales al inicio del patrón (números seguidos de guion)
-    const match = pattern.match(/^(\d+[-\/\.:])/);
-    return match ? match[1] : '';
+    // Buscar literales al inicio del patrón (letras mayúsculas o números seguidos de separador)
+    const match = pattern.match(/^([A-Z0-9]+[-\/\.:])/);
+    const prefix = match ? match[1] : '';
+    console.log('🎭 Fixed prefix extracted:', prefix);
+    return prefix;
   }, [companyData?.load_number_pattern]);
 
   const { ref: loadNumberInputRef, maskRef } = useIMask(
