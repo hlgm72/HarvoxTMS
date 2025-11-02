@@ -352,7 +352,7 @@ export default function Landing() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-lg px-10 py-7 border-2 border-white text-white hover:bg-white hover:text-primary transition-all duration-300 font-bold"
+                className="text-lg px-10 py-7 border-2 border-white bg-white text-primary hover:bg-white/90 transition-all duration-300 font-bold"
               >
                 {t('common:actions.contact_sales')}
               </Button>
