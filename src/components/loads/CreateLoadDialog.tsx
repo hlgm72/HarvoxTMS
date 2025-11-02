@@ -164,10 +164,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     pattern = pattern.replace(/^\^/, '').replace(/\$$/, '');
     console.log('🎭 After removing anchors:', pattern);
     
-    // Paso 2: Convertir literales al inicio (letras y números) seguidos de separador en formato {literal}
-    // Usar un match al inicio sin necesitar ^
-    pattern = pattern.replace(/^([A-Z0-9]+[-\/\.:])/, '{$1}');
-    console.log('🎭 After wrapping fixed prefix:', pattern);
+    // Paso 2: Convertir literales al inicio (letras y números) seguidos de separador
+    // Escapar cada letra literal para evitar que IMask las interprete como definiciones
+    pattern = pattern.replace(/^([A-Z0-9]+)([-\/\.:])/, (match, prefix, separator) => {
+      // Escapar cada letra del prefijo
+      const escapedPrefix = prefix.split('').map(char => {
+        // Si es letra, escaparla con \
+        return /[A-Z]/.test(char) ? `\\${char}` : char;
+      }).join('');
+      return `{${escapedPrefix}${separator}}`;
+    });
+    console.log('🎭 After wrapping and escaping fixed prefix:', pattern);
     
     // Paso 3: Convertir \d{n} a n repeticiones de '0'
     pattern = pattern.replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)));
