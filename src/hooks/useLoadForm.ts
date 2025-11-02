@@ -1,30 +1,46 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { LoadData } from './useLoadData';
 
-const loadFormSchema = z.object({
-  client_id: z.string().optional(),
-  contact_id: z.string().optional(),
-  load_number: z.string().min(1, "El número de carga es requerido"),
-  po_number: z.string().optional(),
-  total_amount: z.number().positive("El monto debe ser mayor a 0").optional().or(z.literal(0)),
-  pu_number: z.string().optional(),
-  commodity: z.string().optional(),
-  weight_lbs: z.number().optional(),
-  customer_name: z.string().optional(),
-  notes: z.string().optional(),
-  factoring_percentage: z.number().optional(),
-  dispatching_percentage: z.number().optional(),
-  leasing_percentage: z.number().optional(),
-});
-
-export type LoadFormData = z.infer<typeof loadFormSchema>;
+export type LoadFormData = {
+  client_id?: string;
+  contact_id?: string;
+  load_number: string;
+  po_number?: string;
+  total_amount?: number;
+  pu_number?: string;
+  commodity?: string;
+  weight_lbs?: number;
+  customer_name?: string;
+  notes?: string;
+  factoring_percentage?: number;
+  dispatching_percentage?: number;
+  leasing_percentage?: number;
+};
 
 export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'edit' | 'duplicate') => {
+  const { t } = useTranslation('loads');
   const [isFormReady, setIsFormReady] = useState(false);
+
+  const loadFormSchema = useMemo(() => z.object({
+    client_id: z.string().optional(),
+    contact_id: z.string().optional(),
+    load_number: z.string().min(1, t('create_wizard.validation.load_number_required')),
+    po_number: z.string().optional(),
+    total_amount: z.number().positive(t('create_wizard.validation.amount_required')).optional().or(z.literal(0)),
+    pu_number: z.string().optional(),
+    commodity: z.string().optional(),
+    weight_lbs: z.number().optional(),
+    customer_name: z.string().optional(),
+    notes: z.string().optional(),
+    factoring_percentage: z.number().optional(),
+    dispatching_percentage: z.number().optional(),
+    leasing_percentage: z.number().optional(),
+  }), [t]);
 
   const form = useForm<LoadFormData>({
     resolver: zodResolver(loadFormSchema),
