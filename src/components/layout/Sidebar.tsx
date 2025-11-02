@@ -21,7 +21,7 @@ import {
   ChevronDown, Command, Users, Truck, Package, MapPin, Building2, 
   CreditCard, BarChart3, FileText, Target, Activity, Shield, 
   Heart, TrendingUp, Headphones, Settings, FileBarChart, 
-  Lock, Home, Navigation, Zap, Dot, DollarSign, Receipt, Calculator, Fuel
+  Lock, Home, Navigation, Zap, Dot, DollarSign, Receipt, Calculator, Fuel, IdCard
 } from "lucide-react";
 
 import {
@@ -60,7 +60,7 @@ const getCompanyOwnerNavigationItems = (driversCount: number, equipmentCount: nu
   { 
     title: t('company.sidebar.navigation.drivers'), 
     url: "/drivers", 
-    icon: Users, 
+    icon: IdCard, 
     badge: driversCount.toString(),
     badgeVariant: "count" as const,
     description: t('company.sidebar.descriptions.driver_management'),
@@ -202,7 +202,7 @@ const getOperationsManagerNavigationItems = (driversCount: number, equipmentCoun
   { 
     title: "Conductores", 
     url: "/drivers", 
-    icon: Users, 
+    icon: IdCard, 
     badge: driversCount.toString(),
     badgeVariant: "count" as const,
     description: "Gestión de conductores",
@@ -282,7 +282,7 @@ const getDispatcherNavigationItems = (driversCount: number, equipmentCount: numb
   { 
     title: t('company.sidebar.navigation.drivers'), 
     url: "/drivers", 
-    icon: Users, 
+    icon: IdCard, 
     badge: driversCount.toString(),
     badgeVariant: "count" as const,
     description: t('company.sidebar.descriptions.driver_management'),
