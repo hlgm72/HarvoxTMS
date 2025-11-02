@@ -207,10 +207,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Inicializar con el prefijo fijo cuando el campo esté vacío
   useEffect(() => {
     const currentValue = form.getValues("load_number");
-    if (mode === 'create' && fixedPrefix && !currentValue && isOpen) {
-      form.setValue("load_number", fixedPrefix);
+    if (mode === 'create' && fixedPrefix && !currentValue && isOpen && isFormReady) {
+      setTimeout(() => {
+        form.setValue("load_number", fixedPrefix, { shouldValidate: false });
+      }, 0);
     }
-  }, [fixedPrefix, mode, isOpen]);
+  }, [fixedPrefix, mode, isOpen, isFormReady, form]);
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
