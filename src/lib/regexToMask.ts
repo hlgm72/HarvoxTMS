@@ -11,8 +11,6 @@
 export function regexToMask(pattern: string): string {
   if (!pattern) return '';
   
-  console.log('🎭 Converting pattern:', pattern);
-  
   // Limpia los delimitadores ^ y $
   let result = pattern.replace(/^\^|\$$/g, "");
   
@@ -109,8 +107,6 @@ export function regexToMask(pattern: string): string {
     .replace(/\\\s/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-
-  console.log('🎭 Mask result:', pattern, '→', result);
   
   return result;
 }
