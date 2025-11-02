@@ -105,11 +105,14 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // Use the global pdfjsLib from index.html - already configured with worker
+          // Use the global pdfjsLib from index.html
           const pdfjsLib = (window as any).pdfjsLib;
           if (!pdfjsLib) {
             throw new Error('PDF.js library not loaded from index.html');
           }
+          
+          // Explicitly configure the worker using the same URL as index.html
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js';
           
           const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
