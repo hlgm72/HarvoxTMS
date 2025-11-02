@@ -185,11 +185,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { ref: loadNumberInputRef, maskRef } = useIMask(
     {
       mask: loadNumberMask,
-      lazy: false, // Muestra las partes fijas automáticamente
+      lazy: true, // Solo muestra lo que está escrito
       eager: true, // Inserta caracteres fijos automáticamente
-      overwrite: true, // Sobrescribe en lugar de insertar
-      autofix: true, // Inserta automáticamente caracteres fijos
-      placeholderChar: '_', // Caracter para posiciones no completadas
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
@@ -204,23 +201,41 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           form.clearErrors("load_number");
         }
       },
-      onComplete: (value) => {
-        console.log('✅ Load number completed:', value);
-      }
     }
   );
 
-  // Handler para posicionar el cursor después de partes fijas al hacer focus
+  // Inicializar el campo con el prefijo fijo
+  useEffect(() => {
+    const currentValue = form.getValues("load_number");
+    if (mode === 'create' && fixedPrefix && !currentValue && isOpen && isFormReady) {
+      form.setValue("load_number", fixedPrefix, { shouldValidate: false });
+    }
+  }, [fixedPrefix, mode, isOpen, isFormReady, form]);
+
+  // Handler para posicionar el cursor después del prefijo al hacer focus
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (mode === 'create' && maskRef.current) {
-      // Esperar un tick para que IMask procese el focus
+    const input = e.currentTarget;
+    const currentValue = input.value;
+    
+    // Si el valor es solo el prefijo fijo, posicionar el cursor al final
+    if (currentValue === fixedPrefix || currentValue === '') {
       setTimeout(() => {
-        const masked = maskRef.current;
-        if (masked && masked.value === '') {
-          // Si el campo está vacío, posicionar el cursor después de las partes fijas
-          const fixedLength = fixedPrefix.length;
-          masked.updateCursor(fixedLength);
-        }
+        const cursorPos = fixedPrefix.length;
+        input.setSelectionRange(cursorPos, cursorPos);
+      }, 0);
+    }
+  };
+  
+  // Handler para mantener el cursor en posición correcta al hacer click
+  const handleLoadNumberClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    const currentValue = input.value;
+    
+    // Si el valor es solo el prefijo o está vacío, posicionar cursor después del prefijo
+    if (currentValue === fixedPrefix || currentValue === '' || currentValue.replace(/[_-]/g, '').trim() === fixedPrefix.replace(/[_-]/g, '').trim()) {
+      setTimeout(() => {
+        const cursorPos = fixedPrefix.length;
+        input.setSelectionRange(cursorPos, cursorPos);
       }, 0);
     }
   };
@@ -1077,6 +1092,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                       onBlur={field.onBlur}
                                       onFocus={handleLoadNumberFocus}
+                                      onClick={handleLoadNumberClick}
                                       autoFocus
                                       className={
                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
