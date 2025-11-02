@@ -176,7 +176,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { ref: loadNumberInputRef } = useIMask(
     {
       mask: loadNumberMask,
-      lazy: true,
+      lazy: false, // Muestra los literales fijos automáticamente
       eager: true, // Inserta caracteres fijos automáticamente
       definitions: {
         '0': /[0-9]/,
