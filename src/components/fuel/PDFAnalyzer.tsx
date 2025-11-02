@@ -111,10 +111,16 @@ export function PDFAnalyzer() {
             throw new Error('PDF.js library not loaded from index.html');
           }
           
-          // Explicitly configure the worker using the same URL as index.html
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js';
+          // Force no worker by using a fake worker port
+          pdfjsLib.GlobalWorkerOptions.workerPort = null;
+          pdfjsLib.GlobalWorkerOptions.workerSrc = '';
           
-          const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+          const pdf = await pdfjsLib.getDocument({ 
+            data: typedarray,
+            useWorkerFetch: false,
+            isEvalSupported: false,
+            useSystemFonts: true
+          }).promise;
 
           let fullText = '';
           
