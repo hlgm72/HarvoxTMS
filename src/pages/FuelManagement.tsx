@@ -451,7 +451,8 @@ export default function FuelManagement() {
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
             >
               <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>IFTA</span>
+              <span className="hidden sm:inline">IFTA - Fuel only</span>
+              <span className="sm:hidden">IFTA</span>
             </TabsTrigger>
           </TabsList>
 
