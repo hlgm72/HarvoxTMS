@@ -13,6 +13,7 @@ import { formatPeriodLabel } from '@/utils/periodUtils';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { pdfjs } from 'react-pdf';
+import { pdfService } from '@/lib/pdfService';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 
@@ -66,8 +67,7 @@ export function PDFAnalyzer() {
   
   // Configure PDF.js worker on component mount
   useEffect(() => {
-    // Disable worker to avoid CORB issues
-    pdfjs.GlobalWorkerOptions.workerSrc = '';
+    pdfService.ensureWorker();
   }, []);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -110,6 +110,9 @@ export function PDFAnalyzer() {
       const reader = new FileReader();
       reader.onload = async () => {
         try {
+          // Ensure worker is configured before using PDF.js
+          pdfService.ensureWorker();
+          
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           const pdf = await pdfjs.getDocument({ data: typedarray }).promise;
 
