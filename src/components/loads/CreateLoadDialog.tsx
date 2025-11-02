@@ -176,14 +176,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { ref: loadNumberInputRef } = useIMask(
     {
       mask: loadNumberMask,
-      lazy: false, // Muestra los literales fijos automáticamente
-      placeholderChar: ' ', // Oculta los guiones bajos del placeholder
+      lazy: true, // Solo muestra lo que está escrito
       eager: true, // Inserta caracteres fijos automáticamente
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
       },
       prepare: (str: string) => str.toUpperCase(), // Convierte a mayúsculas automáticamente
+      overwrite: true, // Permite sobrescribir caracteres
     },
     {
       onAccept: (value) => {
