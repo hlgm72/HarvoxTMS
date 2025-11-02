@@ -1011,20 +1011,26 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                     placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                     value={field.value || ''}
                                     onChange={(e) => {
-                                      console.log('🔍 Input onChange - companyData:', companyData);
-                                      console.log('🔍 Pattern:', companyData?.load_number_pattern);
+                                      const inputValue = e.target.value;
+                                      console.log('🔍 === INPUT ONCHANGE START ===');
+                                      console.log('🔍 Raw input value:', inputValue);
+                                      console.log('🔍 CompanyData exists:', !!companyData);
+                                      console.log('🔍 Pattern value:', companyData?.load_number_pattern);
+                                      console.log('🔍 Pattern exists:', !!companyData?.load_number_pattern);
                                       
                                       if (companyData?.load_number_pattern) {
-                                        console.log('✅ Using formatter');
+                                        console.log('✅ Using formatter with pattern:', companyData.load_number_pattern);
                                         loadNumberFormatter.handleChange(e);
                                       } else {
-                                        console.log('❌ No pattern, using default');
+                                        console.log('❌ No pattern defined, using default onChange');
                                         field.onChange(e.target.value);
                                       }
+                                      
                                       // Limpiar error cuando el usuario comience a escribir
                                       if (form.formState.errors.load_number) {
                                         form.clearErrors("load_number");
                                       }
+                                      console.log('🔍 === INPUT ONCHANGE END ===');
                                     }}
                                     onBlur={field.onBlur}
                                     autoFocus
