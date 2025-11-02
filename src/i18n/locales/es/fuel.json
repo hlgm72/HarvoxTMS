@@ -69,6 +69,18 @@
       "title": "Filtros",
       "applied_filters": "Filtros Aplicados",
       "clear": "Limpiar Todo"
+    },
+    "sync": {
+      "title": "Sincronizar Transacciones",
+      "description": "Sincronizar transacciones de combustible desde WEX",
+      "date_from": "Fecha Desde",
+      "date_to": "Fecha Hasta",
+      "sync_transactions": "Sincronizar Transacciones",
+      "sync_notes": {
+        "default_period": "Período predeterminado: Últimos 7 días",
+        "duplicates_skipped": "Las transacciones duplicadas se omitirán automáticamente",
+        "only_assigned": "Solo se sincronizarán transacciones asignadas a conductores activos"
+      }
     }
   },
   "expenses_list": {

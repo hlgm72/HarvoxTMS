@@ -69,6 +69,18 @@
       "title": "Filters",
       "applied_filters": "Applied Filters",
       "clear": "Clear All"
+    },
+    "sync": {
+      "title": "Sync Transactions",
+      "description": "Sync fuel transactions from WEX",
+      "date_from": "From Date",
+      "date_to": "To Date",
+      "sync_transactions": "Sync Transactions",
+      "sync_notes": {
+        "default_period": "Default period: Last 7 days",
+        "duplicates_skipped": "Duplicate transactions will be skipped automatically",
+        "only_assigned": "Only transactions assigned to active drivers will be synced"
+      }
     }
   },
   "expenses_list": {
