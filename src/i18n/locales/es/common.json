@@ -508,7 +508,7 @@
         "driver_management": "Gestión de conductores",
         "vehicles_equipment": "Vehículos y equipos",
         "load_management": "Gestión de cargas",
-        "client_base": "Base de clientes",
+        "client_base": "Base de clientes (Shippers y Brokers)",
         "facilities_management": "Gestión de instalaciones",
         "billing_payments": "Facturación y pagos",
         "additional_income": "Ingresos adicionales para conductores y despachadores",
