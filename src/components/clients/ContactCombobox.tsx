@@ -99,8 +99,6 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
         <Command filter={filterContacts}>
           <div className="flex items-center justify-between border-b px-3 gap-2">
             <CommandInput 
-              id={id ? `${id}-search` : undefined}
-              name={id ? `${id}-search` : undefined}
               placeholder={t('actions.search_placeholder')} 
               className="flex-1 border-0"
             />

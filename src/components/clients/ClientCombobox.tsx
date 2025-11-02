@@ -94,8 +94,6 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
         <Command filter={filterClients}>
           <div className="flex items-center justify-between border-b px-3 gap-2">
             <CommandInput 
-              id={id ? `${id}-search` : undefined}
-              name={id ? `${id}-search` : undefined}
               placeholder={t('actions.search_client')} 
               className="flex-1 border-0"
               value={searchValue}

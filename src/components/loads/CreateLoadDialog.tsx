@@ -1131,11 +1131,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                  )}
                                </FormLabel>
                                <FormControl>
-                                   <div className="relative">
-                                      <Input 
-                                        id="load_number"
-                                        name="load_number"
-                                        ref={loadNumberInputRef as any}
+                                    <div className="relative">
+                                       <Input 
+                                         ref={loadNumberInputRef as any}
                                         placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                         onBlur={field.onBlur}
                                         onFocus={handleLoadNumberFocus}
@@ -1191,12 +1189,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                           return (
                              <FormItem>
                                <FormLabel className="flex items-center gap-1">{t("loads:create_wizard.form.po_number")}</FormLabel>
-                                <FormControl>
-                                 <div className="relative">
-                                   <Input 
-                                     id="po_number"
-                                     name="po_number"
-                                     placeholder={t("loads:create_wizard.form.po_number_placeholder")}
+                                 <FormControl>
+                                  <div className="relative">
+                                    <Input 
+                                      placeholder={t("loads:create_wizard.form.po_number_placeholder")}
                                      value={field.value || ''}
                                      onChange={textHandlers.onChange}
                                      onBlur={textHandlers.onBlur}
@@ -1238,12 +1234,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         name="commodity"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("loads:create_wizard.form.commodity")}</FormLabel>
-                            <FormControl>
-                              <AutocompleteInput
-                                id="commodity"
-                                name="commodity"
-                                value={field.value || ''}
+                             <FormLabel>{t("loads:create_wizard.form.commodity")}</FormLabel>
+                             <FormControl>
+                               <AutocompleteInput
+                                 value={field.value || ''}
                                 onChange={(value) => {
                                   field.onChange(value);
                                   if (form.formState.errors.commodity) {
@@ -1278,13 +1272,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                          };
 
                          return (
-                             <FormItem>
-                               <FormLabel>{t("loads:create_wizard.form.weight")}</FormLabel>
-                               <FormControl>
-                                 <Input 
-                                   id="weight_lbs"
-                                   name="weight_lbs"
-                                   type="text"
+                              <FormItem>
+                                <FormLabel>{t("loads:create_wizard.form.weight")}</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="text"
                                    placeholder={t("loads:create_wizard.form.weight_placeholder")}
                                    value={formatWeight(field.value)}
                                    onChange={(e) => {
@@ -1318,13 +1310,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                         control={form.control}
                         name="total_amount"
                         render={({ field }) => (
-                           <FormItem>
-                             <FormLabel>{t("loads:create_wizard.form.total_amount")} {t("loads:create_wizard.form.total_amount_required")}</FormLabel>
-                             <FormControl>
-                                 <Input 
-                                  id="total_amount"
-                                  name="total_amount"
-                                  type="text"
+                             <FormItem>
+                              <FormLabel>{t("loads:create_wizard.form.total_amount")} {t("loads:create_wizard.form.total_amount_required")}</FormLabel>
+                              <FormControl>
+                                  <Input 
+                                   type="text"
                                   inputMode="decimal"
                                   pattern="[0-9]*"
                                   value={atmInput.displayValue}

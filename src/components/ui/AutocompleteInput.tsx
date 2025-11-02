@@ -15,8 +15,6 @@ interface AutocompleteInputProps {
   placeholder?: string;
   searchHook: (searchTerm: string) => { commodities: AutocompleteOption[]; isLoading: boolean };
   className?: string;
-  id?: string;
-  name?: string;
 }
 
 export function AutocompleteInput({
@@ -25,9 +23,7 @@ export function AutocompleteInput({
   onBlur,
   placeholder,
   searchHook,
-  className,
-  id,
-  name
+  className
 }: AutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -94,8 +90,6 @@ export function AutocompleteInput({
     <div ref={containerRef} className="relative">
       <Input
         ref={inputRef}
-        id={id}
-        name={name}
         value={inputValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
