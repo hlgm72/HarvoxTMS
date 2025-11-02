@@ -105,11 +105,14 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // Use the global pdfjsLib instance from index.html which is already configured
+          // Use the global pdfjsLib instance from index.html
           const pdfjsLib = (window as any).pdfjsLib;
           if (!pdfjsLib) {
             throw new Error('PDF.js library not loaded');
           }
+          
+          // Disable worker to avoid CORB issues - force PDF.js to run on main thread
+          pdfjsLib.GlobalWorkerOptions.workerSrc = '';
           
           const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
