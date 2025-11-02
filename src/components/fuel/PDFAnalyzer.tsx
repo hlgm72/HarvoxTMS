@@ -112,8 +112,8 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // Use unpkg CDN worker - same version as pdfjs
-          const workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+          // Use cdnjs worker - matches version from index.html
+          const workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
           if (pdfjs.GlobalWorkerOptions.workerSrc !== workerSrc) {
             pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
           }
