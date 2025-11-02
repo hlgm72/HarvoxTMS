@@ -112,13 +112,10 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // Create a minimal inline worker to avoid CORB
-          if (!pdfjs.GlobalWorkerOptions.workerSrc || pdfjs.GlobalWorkerOptions.workerSrc.includes('cloudflare')) {
-            const blob = new Blob(
-              ['// Minimal PDF.js worker\nself.onmessage = function() {};'],
-              { type: 'application/javascript' }
-            );
-            pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+          // Use unpkg CDN worker - same version as pdfjs
+          const workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+          if (pdfjs.GlobalWorkerOptions.workerSrc !== workerSrc) {
+            pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
           }
           
           const pdf = await pdfjs.getDocument({ data: typedarray }).promise;
