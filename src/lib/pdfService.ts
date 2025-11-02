@@ -18,25 +18,12 @@ class PDFService {
 
   private initializeSync(): void {
     try {
-      // Use local worker from node_modules to avoid CORS/CORB issues
-      pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-        'pdfjs-dist/build/pdf.worker.min.mjs',
-        import.meta.url
-      ).toString();
-      
+      // Disable worker to avoid CORB issues - PDF.js will run on main thread
+      pdfjs.GlobalWorkerOptions.workerSrc = '';
       this.isInitialized = true;
-      
     } catch (error) {
-      // If worker setup fails, try alternative path
-      try {
-        pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-        this.isInitialized = true;
-      } catch (fallbackError) {
-        // If everything fails, disable worker (runs on main thread)
-        console.warn('⚠️ PDF worker setup failed, disabling worker (will run on main thread)', fallbackError);
-        pdfjs.GlobalWorkerOptions.workerSrc = '';
-        this.isInitialized = true;
-      }
+      console.warn('⚠️ PDF setup failed', error);
+      this.isInitialized = true;
     }
   }
 
