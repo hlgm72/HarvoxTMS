@@ -12,9 +12,12 @@ import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { formatPeriodLabel } from '@/utils/periodUtils';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { pdfService } from '@/lib/pdfService';
+import * as pdfjsLib from 'pdfjs-dist';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
+
+// Configure PDF.js to run without worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
 interface AnalysisResult {
   columnsFound: string[];
@@ -105,10 +108,7 @@ export function PDFAnalyzer() {
       reader.onload = async () => {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
-          const pdf = await (window as any).pdfjsLib.getDocument({ 
-            data: typedarray,
-            disableWorker: true // Disable worker to avoid CORB issues
-          }).promise;
+          const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
           let fullText = '';
           
