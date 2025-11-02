@@ -185,7 +185,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   const { ref: loadNumberInputRef } = useIMask(
     {
       mask: loadNumberMask,
-      lazy: true, // Solo muestra lo que está escrito
+      lazy: false, // Muestra las partes fijas automáticamente
       eager: true, // Inserta caracteres fijos automáticamente
       definitions: {
         '0': /[0-9]/,
@@ -203,16 +203,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       }
     }
   );
-
-  // Inicializar con el prefijo fijo cuando el campo esté vacío
-  useEffect(() => {
-    const currentValue = form.getValues("load_number");
-    if (mode === 'create' && fixedPrefix && !currentValue && isOpen && isFormReady) {
-      setTimeout(() => {
-        form.setValue("load_number", fixedPrefix, { shouldValidate: false });
-      }, 0);
-    }
-  }, [fixedPrefix, mode, isOpen, isFormReady, form]);
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
