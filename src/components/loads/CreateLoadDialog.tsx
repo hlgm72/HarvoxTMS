@@ -479,34 +479,39 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [selectedClient, clientContacts, form, showSuccess]);
 
-  // Sync IMask with form value when editing - with delay to ensure IMask is ready
+  // Sync IMask with form value when editing - use input element directly
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData?.load_number && isFormReady) {
       console.log('🔍 Scheduling IMask sync for load_number:', activeLoadData.load_number);
       
-      // Use timeout to ensure IMask is fully initialized
+      // Use timeout to ensure IMask and input are fully initialized
       const timeoutId = setTimeout(() => {
+        const loadNumber = activeLoadData.load_number;
+        
+        console.log('🔍 maskRef.current exists:', !!maskRef.current);
+        
         if (maskRef.current) {
-          const loadNumber = activeLoadData.load_number;
-          console.log('🔍 Executing IMask sync - Load Number:', loadNumber);
-          console.log('🔍 maskRef.current exists:', !!maskRef.current);
-          
-          // Set unmasked value
           try {
+            // Simply set the unmasked value - IMask should handle the rest
             maskRef.current.unmaskedValue = loadNumber;
-            console.log('🔍 After unmaskedValue sync - value:', maskRef.current.value);
-            console.log('🔍 After unmaskedValue sync - unmaskedValue:', maskRef.current.unmaskedValue);
+            console.log('🔍 Updated maskRef.unmaskedValue to:', loadNumber);
+            console.log('🔍 Final maskRef.value:', maskRef.current.value);
+            console.log('🔍 Final maskRef.unmaskedValue:', maskRef.current.unmaskedValue);
+            
+            // Force update the display
+            maskRef.current.updateValue();
+            console.log('🔍 Called updateValue()');
           } catch (e) {
-            console.error('❌ Error setting unmaskedValue:', e);
+            console.error('❌ Error updating IMask:', e);
           }
         } else {
           console.warn('⚠️ maskRef.current is not available after timeout');
         }
-      }, 100); // 100ms delay to ensure IMask is initialized
+      }, 200); // Increased delay to 200ms for better reliability
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, activeLoadData?.load_number, isFormReady]);
+  }, [mode, activeLoadData?.load_number, isFormReady, maskRef]);
 
   // Initialize form and states when load data is available
   useEffect(() => {
