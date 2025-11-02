@@ -1339,7 +1339,7 @@ export type Database = {
           total_amount: number
           transaction_date: string
           updated_at: string
-          vehicle_id: string | null
+          vehicle_id: string
           verified_at: string | null
           verified_by: string | null
         }
@@ -1368,7 +1368,7 @@ export type Database = {
           total_amount: number
           transaction_date: string
           updated_at?: string
-          vehicle_id?: string | null
+          vehicle_id: string
           verified_at?: string | null
           verified_by?: string | null
         }
@@ -1397,7 +1397,7 @@ export type Database = {
           total_amount?: number
           transaction_date?: string
           updated_at?: string
-          vehicle_id?: string | null
+          vehicle_id?: string
           verified_at?: string | null
           verified_by?: string | null
         }

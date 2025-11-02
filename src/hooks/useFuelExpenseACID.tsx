@@ -10,7 +10,7 @@ interface FuelExpenseData {
   gallons_purchased?: number;
   price_per_gallon?: number;
   total_amount?: number;
-  vehicle_id?: string; // ✅ Campo para asociar vehículo
+  vehicle_id: string; // ✅ Campo obligatorio para asociar vehículo
   station_name?: string;
   station_city?: string; // ✅ Agregar campo para ciudad de la estación
   station_state?: string;
