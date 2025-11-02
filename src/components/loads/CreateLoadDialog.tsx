@@ -479,27 +479,34 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [selectedClient, clientContacts, form, showSuccess]);
 
-  // Sync IMask with form value when editing
+  // Sync IMask with form value when editing - with delay to ensure IMask is ready
   useEffect(() => {
-    console.log('🔍 Sync Effect Running - mode:', mode);
-    console.log('🔍 Sync Effect Running - activeLoadData exists:', !!activeLoadData);
-    console.log('🔍 Sync Effect Running - activeLoadData.load_number:', activeLoadData?.load_number);
-    console.log('🔍 Sync Effect Running - isFormReady:', isFormReady);
-    console.log('🔍 Sync Effect Running - maskRef.current exists:', !!maskRef.current);
-    
-    if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady && maskRef.current) {
-      const loadNumber = activeLoadData.load_number;
-      console.log('🔍 Syncing IMask - Load Number:', loadNumber);
-      console.log('🔍 Syncing IMask - maskRef exists:', !!maskRef.current);
+    if ((mode === 'edit' || mode === 'duplicate') && activeLoadData?.load_number && isFormReady) {
+      console.log('🔍 Scheduling IMask sync for load_number:', activeLoadData.load_number);
       
-      if (loadNumber) {
-        // Set the unmasked value directly
-        maskRef.current.unmaskedValue = loadNumber;
-        console.log('🔍 After sync - maskRef.current.value:', maskRef.current.value);
-        console.log('🔍 After sync - maskRef.current.unmaskedValue:', maskRef.current.unmaskedValue);
-      }
+      // Use timeout to ensure IMask is fully initialized
+      const timeoutId = setTimeout(() => {
+        if (maskRef.current) {
+          const loadNumber = activeLoadData.load_number;
+          console.log('🔍 Executing IMask sync - Load Number:', loadNumber);
+          console.log('🔍 maskRef.current exists:', !!maskRef.current);
+          
+          // Set unmasked value
+          try {
+            maskRef.current.unmaskedValue = loadNumber;
+            console.log('🔍 After unmaskedValue sync - value:', maskRef.current.value);
+            console.log('🔍 After unmaskedValue sync - unmaskedValue:', maskRef.current.unmaskedValue);
+          } catch (e) {
+            console.error('❌ Error setting unmaskedValue:', e);
+          }
+        } else {
+          console.warn('⚠️ maskRef.current is not available after timeout');
+        }
+      }, 100); // 100ms delay to ensure IMask is initialized
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [mode, activeLoadData, isFormReady, maskRef]);
+  }, [mode, activeLoadData?.load_number, isFormReady]);
 
   // Initialize form and states when load data is available
   useEffect(() => {
