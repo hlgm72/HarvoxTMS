@@ -25,6 +25,7 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
 
     // Detectar patrones comunes y formatear
     // Patrón: ^\d{2}-\d{3}[a-zA-Z]{0,2}$ (Ej: 12-345AB)
+    console.log('🔍 Testing pattern against: /\\^\\\\d\\{2\\}-\\\\d\\{3\\}/', pattern.match(/\^\\d\{2\}-\\d\{3\}/));
     if (pattern.match(/\^\\d\{2\}-\\d\{3\}/)) {
       // Limpiar el valor: extraer solo dígitos y letras
       const cleanValue = value.replace(/[^0-9a-zA-Z]/g, '');
@@ -60,6 +61,10 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     }
 
     // Patrón: ^[a-zA-Z]{2}-\d{2}$ o ^[A-Za-z]{2}-\d{2}$ (Ej: AB-12)
+    console.log('🔍 Testing pattern against letters-digits:', {
+      test1: pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/),
+      test2: pattern.match(/\^\[A-Za-z\]\{2\}-\\d\{2\}/)
+    });
     if (pattern.match(/\^\[a-zA-Z\]\{2\}-\\d\{2\}/) || pattern.match(/\^\[A-Za-z\]\{2\}-\\d\{2\}/)) {
       console.log('✅ Pattern matched: Letters-Dash-Digits');
       // Limpiar el valor: extraer solo letras y dígitos
