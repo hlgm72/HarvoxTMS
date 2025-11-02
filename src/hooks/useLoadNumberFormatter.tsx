@@ -95,30 +95,15 @@ export const useLoadNumberFormatter = ({ pattern, onChange }: UseLoadNumberForma
     let result = '';
     let charIndex = 0;
     
-    // Calcular cuántos caracteres deberían ir antes de cada separador
-    let charsBeforeSeparator = 0;
-    const separatorPositions: Array<{position: number, value: string}> = [];
-    
-    for (let i = 0; i < structure.length; i++) {
-      const segment = structure[i];
-      if (segment.type === 'separator') {
-        separatorPositions.push({position: charsBeforeSeparator, value: segment.value!});
-      } else {
-        charsBeforeSeparator += segment.length || 0;
-      }
-    }
-    
     for (const segment of structure) {
       if (segment.type === 'separator') {
-        // Calcular cuántos caracteres hemos procesado hasta ahora
+        // Calcular cuántos caracteres (sin separadores) hemos agregado hasta ahora
         const currentLength = result.replace(/[^0-9a-zA-Z]/g, '').length;
         
-        // Encontrar en qué posición debería ir este separador
-        const sepInfo = separatorPositions.find(s => s.position === currentLength);
-        
-        // Solo agregar el separador si hemos completado la sección anterior
-        if (sepInfo && cleanValue.length > currentLength) {
-          result += sepInfo.value;
+        // Agregar el separador si hemos alcanzado la posición correcta
+        // (es decir, si hemos completado la sección anterior)
+        if (cleanValue.length >= currentLength) {
+          result += segment.value;
         }
       } else if (segment.type === 'digit') {
         // Extraer dígitos
