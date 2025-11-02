@@ -70,20 +70,10 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
 
       const driverIds = companyDrivers.map((d) => d.user_id);
 
-      // Fetch fuel expenses with driver profiles
+      // Fetch fuel expenses
       const { data: expenses, error } = await supabase
         .from("fuel_expenses")
-        .select(`
-          id,
-          vehicle_id,
-          driver_user_id,
-          gallons_purchased,
-          station_state,
-          profiles!fuel_expenses_driver_user_id_fkey (
-            first_name,
-            last_name
-          )
-        `)
+        .select("id, vehicle_id, driver_user_id, gallons_purchased, station_state")
         .in("driver_user_id", driverIds)
         .gte("transaction_date", startDate)
         .lte("transaction_date", endDate)
@@ -91,8 +81,19 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
 
       if (error) throw error;
 
-      // Filter out expenses without state and process data
+      // Filter out expenses without state
       const filteredExpenses = expenses?.filter((exp: any) => exp.station_state !== null) || [];
+
+      // Fetch driver profiles separately
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", driverIds);
+
+      // Create a map of profiles for quick lookup
+      const profileMap = new Map(
+        profiles?.map((p) => [p.user_id, `${p.first_name} ${p.last_name}`]) || []
+      );
 
       // Group by vehicle/driver
       const vehicleMap = new Map<string, IFTAVehicleData>();
@@ -110,13 +111,10 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
 
         // Vehicle/Driver summary
         if (!vehicleMap.has(key)) {
-          const profile = expense.profiles;
           vehicleMap.set(key, {
             vehicle_id: expense.vehicle_id,
             driver_user_id: expense.driver_user_id,
-            driver_name: profile
-              ? `${profile.first_name} ${profile.last_name}`
-              : "Unknown Driver",
+            driver_name: profileMap.get(expense.driver_user_id) || "Unknown Driver",
             total_gallons: 0,
             transaction_count: 0,
             states: [],
