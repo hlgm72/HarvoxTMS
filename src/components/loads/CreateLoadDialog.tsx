@@ -477,6 +477,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [selectedClient, clientContacts, form, showSuccess]);
 
+  // Sync IMask with form value when editing
+  useEffect(() => {
+    if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady && maskRef.current) {
+      const loadNumber = activeLoadData.load_number;
+      if (loadNumber) {
+        // Update IMask value directly
+        maskRef.current.value = loadNumber;
+        maskRef.current.updateValue();
+      }
+    }
+  }, [mode, activeLoadData, isFormReady, maskRef]);
+
   // Initialize form and states when load data is available
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
