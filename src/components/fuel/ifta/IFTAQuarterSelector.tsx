@@ -33,7 +33,7 @@ export const IFTAQuarterSelector = ({
           onValueChange={(v) => onYearChange(parseInt(v))}
           disabled={isLoading}
         >
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-[120px] bg-white dark:bg-gray-800">
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -56,7 +56,7 @@ export const IFTAQuarterSelector = ({
       <div className="flex items-center gap-2">
         <label className="text-sm font-medium">{t("ifta.quarter")}</label>
         <Select value={quarter.toString()} onValueChange={(v) => onQuarterChange(parseInt(v))}>
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-[120px] bg-white dark:bg-gray-800">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-gray-800 z-50">
