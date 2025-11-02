@@ -16,6 +16,7 @@ import { DriverCardsManager } from '@/components/fuel/DriverCardsManager';
 import { FleetOneSync } from '@/components/fuel/FleetOneSync';
 import { formatDateInUserTimeZone, formatCurrency, formatPaymentPeriodBadge, formatDetailedPaymentPeriod, formatMonthName } from '@/lib/dateFormatting';
 import { PDFAnalyzer } from '@/components/fuel/PDFAnalyzer';
+import { IFTAReport } from '@/components/fuel/ifta/IFTAReport';
 import { useCurrentPaymentPeriod, usePaymentPeriods } from '@/hooks/usePaymentPeriods';
 import { useConsolidatedDrivers } from '@/hooks/useConsolidatedDrivers';
 import { useGeotabVehicles } from '@/hooks/useGeotabVehicles';
@@ -412,7 +413,7 @@ export default function FuelManagement() {
       <div className="p-2 md:p-4 space-y-4 md:space-y-6">
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-auto gap-1 bg-white/90 dark:bg-gray-900/90 border border-border shadow-sm">
+          <TabsList className="grid w-full grid-cols-5 h-auto gap-1 bg-white/90 dark:bg-gray-900/90 border border-border shadow-sm">
             <TabsTrigger 
               value="expenses" 
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
@@ -445,6 +446,13 @@ export default function FuelManagement() {
               <span className="hidden sm:inline">{t('fuel:page.tabs.pdf_analyzer')}</span>
               <span className="sm:hidden">{t('fuel:page.tabs.pdf')}</span>
             </TabsTrigger>
+            <TabsTrigger 
+              value="ifta" 
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>IFTA</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="expenses" className="space-y-6 mt-6">
@@ -472,6 +480,11 @@ export default function FuelManagement() {
           <TabsContent value="analyzer" className="mt-6">
             {/* Analizador de PDF */}
             <PDFAnalyzer />
+          </TabsContent>
+
+          <TabsContent value="ifta" className="mt-6">
+            {/* Reporte IFTA de Combustible */}
+            <IFTAReport />
           </TabsContent>
         </Tabs>
       </div>

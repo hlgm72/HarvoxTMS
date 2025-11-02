@@ -408,5 +408,24 @@
       "period": "Período",
       "vehicle": "Vehículo"
     }
+  },
+  "ifta": {
+    "title": "Reporte IFTA de Combustible",
+    "description": "Reporte trimestral de consumo de combustible por vehículo y estado (IFTA - Solo galones de combustible)",
+    "year": "Año",
+    "quarter": "Trimestre",
+    "q1": "T1 (Ene-Mar)",
+    "q2": "T2 (Abr-Jun)",
+    "q3": "T3 (Jul-Sep)",
+    "q4": "T4 (Oct-Dic)",
+    "driver_vehicle": "Conductor/Vehículo",
+    "total_gallons": "Galones Totales",
+    "gallons": "Galones",
+    "transactions": "Transacciones",
+    "state": "Estado",
+    "breakdown_by_state": "Desglose por Estado",
+    "company_total": "Total de la Compañía",
+    "state_summary": "Resumen por Estado",
+    "no_data": "No hay datos de combustible disponibles para el trimestre seleccionado"
   }
 }
