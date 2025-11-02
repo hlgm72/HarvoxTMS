@@ -479,7 +479,7 @@
         "drivers": "Conductores",
         "fleet": "Flota",
         "loads": "Cargas",
-        "clients": "Shippers y Brokers",
+        "clients": "Brokers y Shippers",
         "facilities": "Instalaciones",
         "billing": "Facturación",
         "additional_payments": "Pagos Adicionales",
