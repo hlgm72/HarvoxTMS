@@ -34,6 +34,58 @@ interface UseIFTAReportParams {
   quarter: number;
 }
 
+export const useIFTAAvailableYears = () => {
+  const { user } = useAuth();
+  const { userCompany } = useCompanyCache();
+  const companyId = userCompany?.company_id;
+
+  return useQuery({
+    queryKey: ["ifta-available-years", companyId],
+    queryFn: async (): Promise<number[]> => {
+      if (!user?.id || !companyId) {
+        return [];
+      }
+
+      // Get all company drivers
+      const { data: companyDrivers } = await supabase
+        .from("user_company_roles")
+        .select("user_id")
+        .eq("company_id", companyId)
+        .eq("is_active", true);
+
+      if (!companyDrivers || companyDrivers.length === 0) {
+        return [];
+      }
+
+      const driverIds = companyDrivers.map((d) => d.user_id);
+
+      // Get distinct years from fuel_expenses
+      const { data: expenses } = await supabase
+        .from("fuel_expenses")
+        .select("transaction_date")
+        .in("driver_user_id", driverIds)
+        .not("station_state", "is", null)
+        .order("transaction_date", { ascending: false });
+
+      if (!expenses || expenses.length === 0) {
+        return [];
+      }
+
+      // Extract unique years
+      const yearsSet = new Set<number>();
+      expenses.forEach((expense: any) => {
+        const year = new Date(expense.transaction_date).getFullYear();
+        yearsSet.add(year);
+      });
+
+      // Convert to sorted array (most recent first)
+      return Array.from(yearsSet).sort((a, b) => b - a);
+    },
+    enabled: !!user?.id && !!companyId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+};
+
 export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
   const { user } = useAuth();
   const { userCompany } = useCompanyCache();

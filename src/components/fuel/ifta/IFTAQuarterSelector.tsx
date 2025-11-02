@@ -1,5 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+import { useIFTAAvailableYears } from "@/hooks/useIFTAReport";
+import { Loader2 } from "lucide-react";
 
 interface IFTAQuarterSelectorProps {
   year: number;
@@ -15,17 +17,31 @@ export const IFTAQuarterSelector = ({
   onQuarterChange,
 }: IFTAQuarterSelectorProps) => {
   const { t } = useTranslation('fuel');
+  const { data: availableYears, isLoading } = useIFTAAvailableYears();
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+  const years = availableYears && availableYears.length > 0 
+    ? availableYears 
+    : [currentYear];
 
   return (
     <div className="flex gap-4 items-center">
       <div className="flex items-center gap-2">
         <label className="text-sm font-medium">{t("ifta.year")}</label>
-        <Select value={year.toString()} onValueChange={(v) => onYearChange(parseInt(v))}>
+        <Select 
+          value={year.toString()} 
+          onValueChange={(v) => onYearChange(parseInt(v))}
+          disabled={isLoading}
+        >
           <SelectTrigger className="w-[120px]">
-            <SelectValue />
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>...</span>
+              </div>
+            ) : (
+              <SelectValue />
+            )}
           </SelectTrigger>
           <SelectContent>
             {years.map((y) => (
