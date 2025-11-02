@@ -206,11 +206,25 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Inicializar el campo con el prefijo fijo
   useEffect(() => {
-    const currentValue = form.getValues("load_number");
-    if (mode === 'create' && fixedPrefix && !currentValue && isOpen && isFormReady) {
-      form.setValue("load_number", fixedPrefix, { shouldValidate: false });
+    if (mode === 'create' && fixedPrefix && isOpen && isFormReady) {
+      const currentValue = form.getValues("load_number");
+      
+      if (!currentValue) {
+        // Establecer el valor en el formulario
+        form.setValue("load_number", fixedPrefix, { shouldValidate: false });
+        
+        // Forzar a IMask a actualizar su valor
+        if (maskRef.current) {
+          setTimeout(() => {
+            if (maskRef.current) {
+              maskRef.current.value = fixedPrefix;
+              maskRef.current.updateValue();
+            }
+          }, 50);
+        }
+      }
     }
-  }, [fixedPrefix, mode, isOpen, isFormReady, form]);
+  }, [fixedPrefix, mode, isOpen, isFormReady, form, maskRef]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
