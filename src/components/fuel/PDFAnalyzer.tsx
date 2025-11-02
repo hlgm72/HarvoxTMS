@@ -104,11 +104,11 @@ export function PDFAnalyzer() {
       const reader = new FileReader();
       reader.onload = async () => {
         try {
-          // Ensure PDF.js worker is configured
-          pdfService.ensureWorker();
-          
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
-          const pdf = await (window as any).pdfjsLib.getDocument({ data: typedarray }).promise;
+          const pdf = await (window as any).pdfjsLib.getDocument({ 
+            data: typedarray,
+            disableWorker: true // Disable worker to avoid CORB issues
+          }).promise;
 
           let fullText = '';
           
