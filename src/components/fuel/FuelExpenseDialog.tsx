@@ -47,7 +47,7 @@ const formSchema = z.object({
   gallons_purchased: z.coerce.number().positive('Los galones deben ser positivos'),
   price_per_gallon: z.coerce.number().positive('El precio por galón debe ser positivo'),
   total_amount: z.coerce.number().positive('El monto total debe ser positivo'),
-  vehicle_id: z.string().optional(),
+  vehicle_id: z.string().min(1, 'Selecciona un vehículo'),
   
   // Información de la estación
   station_name: z.string().optional(),
