@@ -88,6 +88,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false, currentLan
           <div>
             <DatePicker
               id="license_issue_date"
+              name="license_issue_date"
               selected={data.license_issue_date}
               onChange={(date: Date | null) => onUpdate('license_issue_date', date)}
               dateFormat={getDatePickerFormat(currentLanguage)}
@@ -108,6 +109,7 @@ export function LicenseInfoSection({ data, onUpdate, loading = false, currentLan
           <div>
             <DatePicker
               id="license_expiry_date"
+              name="license_expiry_date"
               selected={data.license_expiry_date}
               onChange={(date: Date | null) => onUpdate('license_expiry_date', date)}
               dateFormat={getDatePickerFormat(currentLanguage)}

@@ -623,6 +623,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                     <div>
                       <DatePicker
                         id="date_of_birth"
+                        name="date_of_birth"
                         selected={driverData.date_of_birth}
                         onChange={(date: Date | null) => updateDriverData('date_of_birth', date)}
                         dateFormat={getDatePickerFormat(i18n.language)}
@@ -706,6 +707,7 @@ export function EditDriverDialog({ isOpen, onClose, driver, onSuccess }: EditDri
                       <div>
                         <DatePicker
                           id="hire_date"
+                          name="hire_date"
                           selected={driverData.hire_date}
                           onChange={(date: Date | null) => updateDriverData('hire_date', date)}
                           dateFormat={getDatePickerFormat(i18n.language)}
