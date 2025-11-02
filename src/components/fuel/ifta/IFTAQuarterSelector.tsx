@@ -43,7 +43,7 @@ export const IFTAQuarterSelector = ({
               <SelectValue />
             )}
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white dark:bg-gray-800 z-50">
             {years.map((y) => (
               <SelectItem key={y} value={y.toString()}>
                 {y}
@@ -59,7 +59,7 @@ export const IFTAQuarterSelector = ({
           <SelectTrigger className="w-[120px]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white dark:bg-gray-800 z-50">
             <SelectItem value="1">{t("ifta.q1")}</SelectItem>
             <SelectItem value="2">{t("ifta.q2")}</SelectItem>
             <SelectItem value="3">{t("ifta.q3")}</SelectItem>
