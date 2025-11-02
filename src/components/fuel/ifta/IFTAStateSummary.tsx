@@ -34,18 +34,18 @@ export const IFTAStateSummary = ({ stateSummary }: IFTAStateSummaryProps) => {
           <TableHeader>
             <TableRow>
               <TableHead>{t("ifta.state")}</TableHead>
-              <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
               <TableHead className="text-right">{t("ifta.transactions")}</TableHead>
+              <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {stateSummary.map((state) => (
               <TableRow key={state.state}>
                 <TableCell className="font-medium">{state.state}</TableCell>
+                <TableCell className="text-right">{state.transaction_count}</TableCell>
                 <TableCell className="text-right font-semibold">
                   {formatGallons(state.total_gallons)}
                 </TableCell>
-                <TableCell className="text-right">{state.transaction_count}</TableCell>
               </TableRow>
             ))}
           </TableBody>

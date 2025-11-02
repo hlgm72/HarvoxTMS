@@ -59,8 +59,8 @@ export const IFTAReportTable = ({
           <TableRow>
             <TableHead className="w-[50px]"></TableHead>
             <TableHead>{t("ifta.driver_vehicle")}</TableHead>
-            <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
             <TableHead className="text-right">{t("ifta.transactions")}</TableHead>
+            <TableHead className="text-right">{t("ifta.total_gallons")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -82,10 +82,10 @@ export const IFTAReportTable = ({
                   )}
                 </TableCell>
                 <TableCell className="font-medium">{vehicle.driver_name}</TableCell>
+                <TableCell className="text-right">{vehicle.transaction_count}</TableCell>
                 <TableCell className="text-right font-semibold">
                   {formatGallons(vehicle.total_gallons)}
                 </TableCell>
-                <TableCell className="text-right">{vehicle.transaction_count}</TableCell>
               </TableRow>
             ];
 
@@ -102,25 +102,25 @@ export const IFTAReportTable = ({
                           <TableRow>
                             <TableHead>{t("ifta.state")}</TableHead>
                             <TableHead className="text-right">
-                              {t("ifta.gallons")}
+                              {t("ifta.transactions")}
                             </TableHead>
                             <TableHead className="text-right">
-                              {t("ifta.transactions")}
+                              {t("ifta.gallons")}
                             </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {vehicle.states.map((state) => (
-                            <TableRow key={state.state}>
-                              <TableCell className="font-medium">{state.state}</TableCell>
-                              <TableCell className="text-right">
-                                {formatGallons(state.gallons)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {state.transaction_count}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                            {vehicle.states.map((state) => (
+                              <TableRow key={state.state}>
+                                <TableCell className="font-medium">{state.state}</TableCell>
+                                <TableCell className="text-right">
+                                  {state.transaction_count}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {formatGallons(state.gallons)}
+                                </TableCell>
+                              </TableRow>
+                            ))}
                         </TableBody>
                       </Table>
                     </div>
@@ -134,8 +134,8 @@ export const IFTAReportTable = ({
           <TableRow className="bg-primary/5 font-bold">
             <TableCell></TableCell>
             <TableCell>{t("ifta.company_total")}</TableCell>
-            <TableCell className="text-right">{formatGallons(totalGallons)}</TableCell>
             <TableCell className="text-right">{totalTransactions}</TableCell>
+            <TableCell className="text-right">{formatGallons(totalGallons)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
