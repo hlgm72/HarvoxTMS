@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   Table,
@@ -69,8 +69,9 @@ export const IFTAReportTable = ({
             const isExpanded = expandedRows.has(key);
 
             return (
-              <Fragment key={key}>
+              <>
                 <TableRow
+                  key={key}
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => toggleRow(key)}
                 >
@@ -124,7 +125,7 @@ export const IFTAReportTable = ({
                     </TableCell>
                   </TableRow>
                 )}
-              </Fragment>
+              </>
             );
           })}
           <TableRow className="bg-primary/5 font-bold">
