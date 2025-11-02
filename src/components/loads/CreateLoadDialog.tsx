@@ -173,12 +173,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return mask;
   }, [companyData?.load_number_pattern]);
 
+  // Extraer el prefijo fijo del patrón (caracteres literales al inicio)
+  const fixedPrefix = useMemo(() => {
+    if (!companyData?.load_number_pattern) return '';
+    const pattern = companyData.load_number_pattern.replace(/^\^/, '');
+    // Buscar literales al inicio del patrón (números seguidos de guion)
+    const match = pattern.match(/^(\d+[-\/\.:])/);
+    return match ? match[1] : '';
+  }, [companyData?.load_number_pattern]);
+
   const { ref: loadNumberInputRef } = useIMask(
     {
       mask: loadNumberMask,
-      lazy: false, // Muestra los literales fijos automáticamente
+      lazy: true, // Solo muestra lo que está escrito
       eager: true, // Inserta caracteres fijos automáticamente
-      placeholderChar: '\u2000', // Espacio invisible para evitar guiones bajos
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
@@ -195,6 +203,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       }
     }
   );
+
+  // Inicializar con el prefijo fijo cuando el campo esté vacío
+  useEffect(() => {
+    const currentValue = form.getValues("load_number");
+    if (mode === 'create' && fixedPrefix && !currentValue && isOpen) {
+      form.setValue("load_number", fixedPrefix);
+    }
+  }, [fixedPrefix, mode, isOpen]);
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
