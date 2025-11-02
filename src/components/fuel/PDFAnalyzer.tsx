@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,12 +12,9 @@ import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { formatPeriodLabel } from '@/utils/periodUtils';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import * as pdfjsLib from 'pdfjs-dist';
+import { pdfjs } from 'react-pdf';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
-
-// Configure PDF.js to run without worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
 interface AnalysisResult {
   columnsFound: string[];
@@ -67,6 +64,12 @@ export function PDFAnalyzer() {
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
   const queryClient = useQueryClient();
   
+  // Configure PDF.js worker on component mount
+  useEffect(() => {
+    // Disable worker to avoid CORB issues
+    pdfjs.GlobalWorkerOptions.workerSrc = '';
+  }, []);
+  
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>('');
@@ -108,7 +111,7 @@ export function PDFAnalyzer() {
       reader.onload = async () => {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
-          const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+          const pdf = await pdfjs.getDocument({ data: typedarray }).promise;
 
           let fullText = '';
           
