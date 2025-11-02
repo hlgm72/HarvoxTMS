@@ -156,24 +156,45 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Load number formatter con IMask usando regexToMask
   const loadNumberMask = useMemo(() => {
     if (!companyData?.load_number_pattern) return '';
-    // Importar la función de conversión
-    const mask = companyData.load_number_pattern
-      .replace(/^\^|\$$/g, '')
-      // Convertir literales fijos al inicio en formato {literal}
-      // Captura letras mayúsculas o dígitos literales seguidos de separador
-      .replace(/^([A-Z0-9]+)([-\/\.:])/g, '{$1$2}')
-      .replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)))
-      .replace(/\\d/g, '0')
-      .replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
-        // Letras opcionales: [A-Z]{0,2} → [A][A]
-        return '[A]'.repeat(parseInt(count));
-      })
-      .replace(/\[A-Z\]\{(\d+)\}/g, (_, count) => 'A'.repeat(parseInt(count)))
-      .replace(/\[A-Z\]/g, 'A')
-      .replace(/\\-/g, '-');
     
-    console.log('🎭 Load number mask:', companyData.load_number_pattern, '→', mask);
-    return mask;
+    let pattern = companyData.load_number_pattern;
+    console.log('🎭 Original pattern:', pattern);
+    
+    // Paso 1: Remover ^ y $
+    pattern = pattern.replace(/^\^|\$$/g, '');
+    console.log('🎭 After removing anchors:', pattern);
+    
+    // Paso 2: Convertir literales al inicio (letras y números) seguidos de separador en formato {literal}
+    pattern = pattern.replace(/^([A-Z]+)([-\/\.:])/g, '{$1$2}');
+    console.log('🎭 After wrapping fixed prefix:', pattern);
+    
+    // Paso 3: Convertir \d{n} a n repeticiones de '0'
+    pattern = pattern.replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)));
+    console.log('🎭 After converting \\d{n}:', pattern);
+    
+    // Paso 4: Convertir \d a '0'
+    pattern = pattern.replace(/\\d/g, '0');
+    console.log('🎭 After converting \\d:', pattern);
+    
+    // Paso 5: Convertir letras opcionales [A-Z]{0,n}
+    pattern = pattern.replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
+      return '[A]'.repeat(parseInt(count));
+    });
+    console.log('🎭 After converting optional letters:', pattern);
+    
+    // Paso 6: Convertir letras requeridas [A-Z]{n}
+    pattern = pattern.replace(/\[A-Z\]\{(\d+)\}/g, (_, count) => 'A'.repeat(parseInt(count)));
+    console.log('🎭 After converting required letters:', pattern);
+    
+    // Paso 7: Convertir [A-Z] a 'A'
+    pattern = pattern.replace(/\[A-Z\]/g, 'A');
+    console.log('🎭 After converting single letters:', pattern);
+    
+    // Paso 8: Convertir \- a '-'
+    pattern = pattern.replace(/\\-/g, '-');
+    console.log('🎭 Final mask:', pattern);
+    
+    return pattern;
   }, [companyData?.load_number_pattern]);
 
   // Extraer el prefijo fijo del patrón (caracteres literales al inicio)
