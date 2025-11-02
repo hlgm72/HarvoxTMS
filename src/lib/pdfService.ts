@@ -18,12 +18,34 @@ class PDFService {
 
   private initializeSync(): void {
     try {
-      // Disable worker to avoid CORB issues - PDF.js will run on main thread
-      pdfjs.GlobalWorkerOptions.workerSrc = '';
+      // Clear any existing worker configuration
+      if (pdfjs.GlobalWorkerOptions.workerSrc) {
+        delete pdfjs.GlobalWorkerOptions.workerSrc;
+      }
+      
+      // Try multiple worker URLs for the correct version (5.3.93)
+      const workerUrls = [
+        // Try unpkg with .mjs extension (newer format)
+        `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`,
+        // Try unpkg with legacy .js
+        `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.js`,
+        // Try different CDN structure
+        `https://cdn.skypack.dev/pdfjs-dist@${pdfjs.version}/build/pdf.worker.js`,
+        // Try esm.sh
+        `https://esm.sh/pdfjs-dist@${pdfjs.version}/build/pdf.worker.js`
+      ];
+      
+      // For now, try the first one synchronously, but if it fails, disable worker
+      const workerUrl = workerUrls[0]; // Use .mjs format
+      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      
       this.isInitialized = true;
+      
     } catch (error) {
-      console.warn('⚠️ PDF setup failed', error);
-      this.isInitialized = true;
+      // If worker setup fails, disable worker (runs on main thread)
+      console.warn('⚠️ PDF worker setup failed, disabling worker (will run on main thread)', error);
+      pdfjs.GlobalWorkerOptions.workerSrc = '';
+      this.isInitialized = true; // Mark as initialized even if worker disabled
     }
   }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -98,6 +98,38 @@ export function PDFAnalyzer() {
     });
   };
 
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const typedarray = new Uint8Array(reader.result as ArrayBuffer);
+          const pdf = await (window as any).pdfjsLib.getDocument({ data: typedarray }).promise;
+
+          let fullText = '';
+          
+          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            
+            const pageText = textContent.items
+              .map((item: any) => item.str)
+              .join(' ');
+            
+            fullText += `\n=== PÁGINA ${pageNum} ===\n${pageText}\n`;
+          }
+
+          resolve(fullText);
+        } catch (error) {
+          console.error('Error extrayendo texto del PDF:', error);
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
   const analyzePDF = async () => {
     if (!selectedFile) return;
 
@@ -106,15 +138,12 @@ export function PDFAnalyzer() {
     setAnalysisStep(t('analyzer.upload.extracting_text'));
     
     try {
-      // Convert PDF file to base64 to send to edge function
-      const base64PDF = await convertFileToBase64(selectedFile);
+      const pdfText = await extractTextFromPDF(selectedFile);
       
       setCurrentStep('analyzing');
       setAnalysisStep(t('analyzer.upload.analyzing_with_ai'));
-      
-      // Send base64 PDF to edge function - it will extract text and analyze
       const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { pdfBase64: base64PDF }
+        body: { pdfText }
       });
 
       if (error) {

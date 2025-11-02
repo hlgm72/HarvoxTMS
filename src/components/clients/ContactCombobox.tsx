@@ -17,7 +17,6 @@ interface ContactComboboxProps {
   disabled?: boolean;
   className?: string;
   onCreateNew?: () => void;
-  id?: string;
 }
 
 export const ContactCombobox: React.FC<ContactComboboxProps> = ({
@@ -28,8 +27,7 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
   placeholder,
   disabled = false,
   className,
-  onCreateNew,
-  id
+  onCreateNew
 }) => {
   const { t } = useTranslation('clients');
   const [open, setOpen] = React.useState(false);
@@ -79,7 +77,6 @@ export const ContactCombobox: React.FC<ContactComboboxProps> = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          id={id}
           variant="outline"
           role="combobox"
           aria-expanded={open}

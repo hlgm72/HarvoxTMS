@@ -19,7 +19,6 @@ interface ClientComboboxProps {
   className?: string;
   side?: "top" | "bottom" | "left" | "right";
   onCreateNew?: (searchTerm: string) => void;
-  id?: string;
 }
 
 export const ClientCombobox: React.FC<ClientComboboxProps> = ({
@@ -31,8 +30,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
   disabled = false,
   className,
   side = "bottom",
-  onCreateNew,
-  id
+  onCreateNew
 }) => {
   const { t } = useTranslation('clients');
   const [open, setOpen] = React.useState(false);
@@ -74,7 +72,6 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          id={id}
           variant="outline"
           role="combobox"
           aria-expanded={open}

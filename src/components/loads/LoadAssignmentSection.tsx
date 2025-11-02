@@ -172,7 +172,6 @@ export function LoadAssignmentSection({
                   </FormLabel>
                   <FormControl>
                     <ClientCombobox
-                      id="client_id"
                       clients={clients}
                       value={field.value}
                       onValueChange={(value) => {
@@ -210,7 +209,6 @@ export function LoadAssignmentSection({
                   </FormLabel>
                   <FormControl>
                     <ContactCombobox
-                      id="contact_id"
                       clientId={selectedClient?.id}
                       value={field.value}
                       onValueChange={(value) => {
