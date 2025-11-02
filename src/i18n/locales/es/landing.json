@@ -89,5 +89,65 @@
       "phone": "(555) 123-4567",
       "email": "info@harvox.com"
     }
+  },
+  "typing_words": ["Transporte", "Logística", "Flota", "Negocio"],
+  "sections": {
+    "features_badge": "Funcionalidades",
+    "stats_badge": "Resultados Comprobados",
+    "stats_title": "Cifras que Hablan por Sí Mismas",
+    "benefits_badge": "Ventajas",
+    "testimonials_badge": "Testimonios",
+    "testimonials_title": "Lo Que Dicen Nuestros Clientes",
+    "testimonials_subtitle": "Empresas reales, resultados reales",
+    "cta_badge": "Comienza Gratis",
+    "cta_features": {
+      "no_credit_card": "Sin Tarjeta de Crédito",
+      "free_cancellation": "Cancelación Gratuita",
+      "support_24_7": "Soporte 24/7"
+    },
+    "newsletter_title": "Mantente Actualizado",
+    "newsletter_subtitle": "Recibe las últimas novedades, tips y actualizaciones de Harvox TMS",
+    "newsletter_placeholder": "tu@email.com",
+    "newsletter_button": "Suscribirme"
+  },
+  "stats": {
+    "active_companies": "Empresas Activas",
+    "monitored_vehicles": "Vehículos Monitoreados",
+    "average_savings": "Ahorro Promedio",
+    "uptime": "Tiempo Activo"
+  },
+  "testimonials": [
+    {
+      "name": "Carlos Rodríguez",
+      "role": "Director de Operaciones",
+      "company": "TransCargo Express",
+      "content": "Harvox TMS transformó completamente nuestra operación. Redujimos costos en un 30% y mejoramos la eficiencia de rutas significativamente.",
+      "initials": "CR"
+    },
+    {
+      "name": "María González",
+      "role": "CEO",
+      "company": "FleetMaster Logistics",
+      "content": "La mejor inversión que hemos hecho. El tracking en tiempo real y los reportes automáticos nos ahorraron horas de trabajo administrativo.",
+      "initials": "MG"
+    },
+    {
+      "name": "Juan Martínez",
+      "role": "Gerente de Flota",
+      "company": "Rutas del Norte",
+      "content": "Excelente plataforma. El soporte es increíble y la integración con Geotab fue perfecta. Altamente recomendado.",
+      "initials": "JM"
+    },
+    {
+      "name": "Ana Sánchez",
+      "role": "Directora de Logística",
+      "company": "Transporte Nacional",
+      "content": "Desde que usamos Harvox TMS, nuestro cumplimiento DOT es impecable y los conductores están más satisfechos con la gestión digital.",
+      "initials": "AS"
+    }
+  ],
+  "trusted": {
+    "badge": "Confían en Nosotros",
+    "title": "Más de 500 empresas líderes usan Harvox TMS"
   }
 }

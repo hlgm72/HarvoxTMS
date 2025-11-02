@@ -14,45 +14,12 @@ interface Testimonial {
   initials: string;
 }
 
-const testimonials: Testimonial[] = [
-  {
-    name: "Carlos Rodríguez",
-    role: "Director de Operaciones",
-    company: "TransCargo Express",
-    content: "Harvox TMS transformó completamente nuestra operación. Redujimos costos en un 30% y mejoramos la eficiencia de rutas significativamente.",
-    rating: 5,
-    initials: "CR"
-  },
-  {
-    name: "María González",
-    role: "CEO",
-    company: "FleetMaster Logistics",
-    content: "La mejor inversión que hemos hecho. El tracking en tiempo real y los reportes automáticos nos ahorraron horas de trabajo administrativo.",
-    rating: 5,
-    initials: "MG"
-  },
-  {
-    name: "Juan Martínez",
-    role: "Gerente de Flota",
-    company: "Rutas del Norte",
-    content: "Excelente plataforma. El soporte es increíble y la integración con Geotab fue perfecta. Altamente recomendado.",
-    rating: 5,
-    initials: "JM"
-  },
-  {
-    name: "Ana Sánchez",
-    role: "Directora de Logística",
-    company: "Transporte Nacional",
-    content: "Desde que usamos Harvox TMS, nuestro cumplimiento DOT es impecable y los conductores están más satisfechos con la gestión digital.",
-    rating: 5,
-    initials: "AS"
-  }
-];
-
 export function TestimonialsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const { t } = useTranslation(['landing']);
+  
+  const testimonials = t('landing:testimonials', { returnObjects: true }) as Testimonial[];
 
   useEffect(() => {
     if (!isAutoPlaying) return;

@@ -121,12 +121,7 @@ export default function Landing() {
                 {t('landing:hero.title')}{" "}
                 <br />
                 <TypingAnimation 
-                  words={[
-                    t('landing:hero.title_highlight'),
-                    "Logística",
-                    "Flota",
-                    "Negocio"
-                  ]}
+                  words={t('landing:typing_words', { returnObjects: true }) as string[]}
                   className="text-primary"
                 />
                 <br />
@@ -189,7 +184,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
             <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
-              Funcionalidades
+              {t('landing:sections.features_badge')}
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               {t('landing:features.title')}
@@ -232,10 +227,10 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
-              Resultados Comprobados
+              {t('landing:sections.stats_badge')}
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Cifras que Hablan por Sí Mismas
+              {t('landing:sections.stats_title')}
             </h2>
           </div>
           
@@ -248,7 +243,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
-              Ventajas
+              {t('landing:sections.benefits_badge')}
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
               {t('landing:benefits.title')}
@@ -310,13 +305,13 @@ export default function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
-              Testimonios
+              {t('landing:sections.testimonials_badge')}
             </Badge>
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Lo Que Dicen Nuestros Clientes
+              {t('landing:sections.testimonials_title')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Empresas reales, resultados reales
+              {t('landing:sections.testimonials_subtitle')}
             </p>
           </div>
 
@@ -334,7 +329,7 @@ export default function Landing() {
           <div className="max-w-4xl mx-auto animate-fade-in">
             <Badge variant="secondary" className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
               <Sparkles className="w-4 h-4 mr-2" />
-              Comienza Gratis
+              {t('landing:sections.cta_badge')}
             </Badge>
             
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
@@ -366,15 +361,15 @@ export default function Landing() {
             <div className="flex flex-wrap justify-center gap-8 text-white/80 text-sm">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>Sin Tarjeta de Crédito</span>
+                <span>{t('landing:sections.cta_features.no_credit_card')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>Cancelación Gratuita</span>
+                <span>{t('landing:sections.cta_features.free_cancellation')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-400" />
-                <span>Soporte 24/7</span>
+                <span>{t('landing:sections.cta_features.support_24_7')}</span>
               </div>
             </div>
           </div>
@@ -392,19 +387,19 @@ export default function Landing() {
           <div className="py-12 border-b border-border/50">
             <div className="max-w-4xl mx-auto text-center">
               <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                Mantente Actualizado
+                {t('landing:sections.newsletter_title')}
               </h3>
               <p className="text-muted-foreground mb-6">
-                Recibe las últimas novedades, tips y actualizaciones de Harvox TMS
+                {t('landing:sections.newsletter_subtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <input
                   type="email"
-                  placeholder="tu@email.com"
+                  placeholder={t('landing:sections.newsletter_placeholder')}
                   className="flex-1 px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <Button className="px-8 py-3 bg-primary hover:bg-primary-glow">
-                  Suscribirse
+                  {t('landing:sections.newsletter_button')}
                 </Button>
               </div>
             </div>

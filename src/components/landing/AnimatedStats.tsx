@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { TrendingUp, Users, Truck, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface StatItemProps {
   icon: React.ElementType;
@@ -72,31 +73,33 @@ function StatItem({ icon: Icon, value, suffix = '', label, duration = 2000 }: St
 }
 
 export function AnimatedStats() {
+  const { t } = useTranslation(['landing']);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatItem
         icon={Users}
         value={500}
         suffix="+"
-        label="Empresas Activas"
+        label={t('landing:stats.active_companies')}
       />
       <StatItem
         icon={Truck}
         value={5000}
         suffix="+"
-        label="Vehículos Monitoreados"
+        label={t('landing:stats.monitored_vehicles')}
       />
       <StatItem
         icon={TrendingUp}
         value={25}
         suffix="%"
-        label="Ahorro Promedio"
+        label={t('landing:stats.average_savings')}
       />
       <StatItem
         icon={Shield}
         value={99}
         suffix="%"
-        label="Tiempo Activo"
+        label={t('landing:stats.uptime')}
       />
     </div>
   );

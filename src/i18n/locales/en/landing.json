@@ -89,5 +89,65 @@
       "phone": "(555) 123-4567",
       "email": "info@harvox.com"
     }
+  },
+  "typing_words": ["Transportation", "Logistics", "Fleet", "Business"],
+  "sections": {
+    "features_badge": "Features",
+    "stats_badge": "Proven Results",
+    "stats_title": "Numbers That Speak for Themselves",
+    "benefits_badge": "Advantages",
+    "testimonials_badge": "Testimonials",
+    "testimonials_title": "What Our Clients Say",
+    "testimonials_subtitle": "Real companies, real results",
+    "cta_badge": "Start Free",
+    "cta_features": {
+      "no_credit_card": "No Credit Card",
+      "free_cancellation": "Free Cancellation",
+      "support_24_7": "24/7 Support"
+    },
+    "newsletter_title": "Stay Updated",
+    "newsletter_subtitle": "Receive the latest news, tips and updates from Harvox TMS",
+    "newsletter_placeholder": "your@email.com",
+    "newsletter_button": "Subscribe"
+  },
+  "stats": {
+    "active_companies": "Active Companies",
+    "monitored_vehicles": "Monitored Vehicles",
+    "average_savings": "Average Savings",
+    "uptime": "Uptime"
+  },
+  "testimonials": [
+    {
+      "name": "Carlos Rodriguez",
+      "role": "Operations Director",
+      "company": "TransCargo Express",
+      "content": "Harvox TMS completely transformed our operation. We reduced costs by 30% and significantly improved route efficiency.",
+      "initials": "CR"
+    },
+    {
+      "name": "Maria González",
+      "role": "CEO",
+      "company": "FleetMaster Logistics",
+      "content": "The best investment we've made. Real-time tracking and automated reports saved us hours of administrative work.",
+      "initials": "MG"
+    },
+    {
+      "name": "Juan Martinez",
+      "role": "Fleet Manager",
+      "company": "Rutas del Norte",
+      "content": "Excellent platform. Support is incredible and Geotab integration was perfect. Highly recommended.",
+      "initials": "JM"
+    },
+    {
+      "name": "Ana Sánchez",
+      "role": "Logistics Director",
+      "company": "Transporte Nacional",
+      "content": "Since using Harvox TMS, our DOT compliance is impeccable and drivers are more satisfied with digital management.",
+      "initials": "AS"
+    }
+  ],
+  "trusted": {
+    "badge": "They Trust Us",
+    "title": "Over 500 leading companies use Harvox TMS"
   }
 }
