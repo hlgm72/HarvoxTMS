@@ -6,6 +6,7 @@ export interface LoadData {
   id: string;
   load_number: string;
   po_number?: string;
+  pu_number?: string;
   driver_user_id: string;
   internal_dispatcher_id?: string | null;
   client_id?: string;

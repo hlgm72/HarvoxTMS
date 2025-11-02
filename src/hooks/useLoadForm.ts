@@ -69,6 +69,7 @@ export const useLoadForm = (initialData?: LoadData | null, mode?: 'create' | 'ed
         contact_id: initialData.client_contact_id || "",
         load_number: mode === 'duplicate' ? "" : (initialData.load_number || ""), // Clear for duplicate
         po_number: mode === 'duplicate' ? "" : (initialData.po_number || ""),     // Clear for duplicate
+        pu_number: mode === 'duplicate' ? "" : (initialData.pu_number || ""),     // Clear for duplicate
         total_amount: initialData.total_amount || 0,
         commodity: initialData.commodity || "",
         weight_lbs: initialData.weight_lbs || undefined,
