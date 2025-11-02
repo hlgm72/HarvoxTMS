@@ -50,39 +50,7 @@ export default function FuelManagement() {
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
   
-  // Initialize with current week
-  const getCurrentWeek = (): PeriodFilterValue => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentWeekNumber = getISOWeek(today);
-    const currentMonth = today.getMonth() + 1;
-    
-    // Find current week in availableWeeks
-    const weekData = availableWeeks
-      ?.find(w => w.year === currentYear)
-      ?.months.find(m => m.month === currentMonth)
-      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-    
-    if (weekData) {
-      return {
-        type: 'week',
-        selectedYear: currentYear,
-        selectedWeek: currentWeekNumber,
-        startDate: weekData.startDate,
-        endDate: weekData.endDate,
-        label: `W${currentWeekNumber}/${currentYear}`
-      };
-    }
-    
-    // Fallback if no week data available
-    return {
-      type: 'week',
-      selectedYear: currentYear,
-      selectedWeek: currentWeekNumber
-    };
-  };
-
-  // Estado de filtros con semana actual por defecto
+  // Estado de filtros - inicializar con tipo 'current' para usar período calculado
   const [filters, setFilters] = useState<{
     search: string;
     driverId: string;
@@ -94,38 +62,44 @@ export default function FuelManagement() {
     driverId: 'all',
     status: 'all',
     vehicleId: 'all',
-    periodFilter: getCurrentWeek()
+    periodFilter: {
+      type: 'current'  // Usar 'current' para que use calculatedPeriods automáticamente
+    }
   });
 
-  // Populate current week dates when available
+  // Update to current week when availableWeeks loads
   useEffect(() => {
-    // Only initialize if current week doesn't have dates yet
-    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentWeekNumber = getISOWeek(today);
-      const currentMonth = today.getMonth() + 1;
-      
-      // Find current week in availableWeeks
-      const weekData = availableWeeks
-        ?.find(w => w.year === currentYear)
-        ?.months.find(m => m.month === currentMonth)
-        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-      
-      if (weekData) {
-        setFilters(prev => ({
-          ...prev,
-          periodFilter: {
-            type: 'week',
-            selectedYear: currentYear,
-            selectedWeek: currentWeekNumber,
-            startDate: weekData.startDate,
-            endDate: weekData.endDate,
-            label: `W${currentWeekNumber}/${currentYear}`
-          }
-        }));
-      }
+    // Si ya tenemos fechas o si el tipo no es 'current', no hacer nada
+    if (filters.periodFilter.startDate || filters.periodFilter.type !== 'current') {
+      return;
     }
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentWeekNumber = getISOWeek(today);
+    const currentMonth = today.getMonth() + 1;
+    
+    // Intentar encontrar la semana actual en availableWeeks
+    const weekData = availableWeeks
+      ?.find(w => w.year === currentYear)
+      ?.months.find(m => m.month === currentMonth)
+      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+    
+    if (weekData) {
+      // Si encontramos la semana, actualizar a tipo 'week' con fechas
+      setFilters(prev => ({
+        ...prev,
+        periodFilter: {
+          type: 'week',
+          selectedYear: currentYear,
+          selectedWeek: currentWeekNumber,
+          startDate: weekData.startDate,
+          endDate: weekData.endDate,
+          label: `W${currentWeekNumber}/${currentYear}`
+        }
+      }));
+    }
+    // Si no se encuentra la semana, mantener tipo 'current' que usará calculatedPeriods
   }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
   
   const [activeTab, setActiveTab] = useState('expenses');
