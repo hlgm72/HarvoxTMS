@@ -160,7 +160,8 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     const mask = companyData.load_number_pattern
       .replace(/^\^|\$$/g, '')
       // Convertir literales fijos al inicio en formato {literal}
-      .replace(/^(\d+[-\/\.:])/g, '{$1}')
+      // Captura letras mayúsculas o dígitos literales seguidos de separador
+      .replace(/^([A-Z0-9]+)([-\/\.:])/g, '{$1$2}')
       .replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)))
       .replace(/\\d/g, '0')
       .replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
