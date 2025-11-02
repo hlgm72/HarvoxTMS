@@ -87,7 +87,7 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
         .in("driver_user_id", driverIds)
         .gte("transaction_date", startDate)
         .lte("transaction_date", endDate)
-        .not("station_state", "is", null)
+        .filter("station_state", "not.is", null)
         .order("driver_user_id");
 
       if (error) throw error;
