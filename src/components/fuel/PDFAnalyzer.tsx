@@ -12,8 +12,6 @@ import { usePaymentPeriodGenerator } from '@/hooks/usePaymentPeriodGenerator';
 import { formatPeriodLabel } from '@/utils/periodUtils';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { pdfjs } from 'react-pdf';
-import { pdfService } from '@/lib/pdfService';
 
 import { formatDateInUserTimeZone, formatDateSafe } from '@/lib/dateFormatting';
 
@@ -65,11 +63,6 @@ export function PDFAnalyzer() {
   const { ensurePaymentPeriodExists } = usePaymentPeriodGenerator();
   const queryClient = useQueryClient();
   
-  // Configure PDF.js worker on component mount
-  useEffect(() => {
-    pdfService.ensureWorker();
-  }, []);
-  
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>('');
@@ -112,13 +105,13 @@ export function PDFAnalyzer() {
         try {
           const typedarray = new Uint8Array(reader.result as ArrayBuffer);
           
-          // Use the same worker version as index.html (4.8.69) - confirmed to work
-          const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js';
-          if (pdfjs.GlobalWorkerOptions.workerSrc !== workerSrc) {
-            pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+          // Use the global pdfjsLib from index.html - already configured with worker
+          const pdfjsLib = (window as any).pdfjsLib;
+          if (!pdfjsLib) {
+            throw new Error('PDF.js library not loaded from index.html');
           }
           
-          const pdf = await pdfjs.getDocument({ data: typedarray }).promise;
+          const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
           let fullText = '';
           
