@@ -161,11 +161,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     console.log('🎭 Original pattern:', pattern);
     
     // Paso 1: Remover ^ y $
-    pattern = pattern.replace(/^\^|\$$/g, '');
+    pattern = pattern.replace(/^\^/, '').replace(/\$$/, '');
     console.log('🎭 After removing anchors:', pattern);
     
     // Paso 2: Convertir literales al inicio (letras y números) seguidos de separador en formato {literal}
-    pattern = pattern.replace(/^([A-Z]+)([-\/\.:])/g, '{$1$2}');
+    // Usar un match al inicio sin necesitar ^
+    pattern = pattern.replace(/^([A-Z0-9]+[-\/\.:])/, '{$1}');
     console.log('🎭 After wrapping fixed prefix:', pattern);
     
     // Paso 3: Convertir \d{n} a n repeticiones de '0'
