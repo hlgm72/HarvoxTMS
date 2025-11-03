@@ -242,10 +242,13 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
       // Sort states within each vehicle and transactions within each state
       vehicleMap.forEach((vehicle) => {
         vehicle.states.sort((a, b) => b.gallons - a.gallons);
+        // Sort transactions by date ascending (oldest first)
         vehicle.states.forEach((state) => {
-          state.transactions.sort((a, b) => 
-            new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime()
-          );
+          state.transactions.sort((a, b) => {
+            const dateA = new Date(a.transaction_date);
+            const dateB = new Date(b.transaction_date);
+            return dateA.getTime() - dateB.getTime();
+          });
         });
       });
 
