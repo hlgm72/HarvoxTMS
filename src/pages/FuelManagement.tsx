@@ -410,11 +410,13 @@ export default function FuelManagement() {
         subtitle={getSubtitle()}
         icon={Fuel}
         actions={
-          <Button onClick={() => setCreateDialogOpen(true)} size="sm">
-            <Plus className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">{t('fuel:page.actions.register_fuel')}</span>
-            <span className="sm:hidden">{t('fuel:page.actions.new')}</span>
-          </Button>
+          activeTab === 'expenses' && (
+            <Button onClick={() => setCreateDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('fuel:page.actions.register_fuel')}</span>
+              <span className="sm:hidden">{t('fuel:page.actions.new')}</span>
+            </Button>
+          )
         }
       />
 
