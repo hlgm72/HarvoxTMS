@@ -415,24 +415,6 @@ export function DriverCardsManager() {
         </Dialog>
       </div>
 
-      {/* Info Card */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardContent className="p-4">
-          <div className="flex items-start space-x-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div>
-              <h3 className="font-medium text-blue-900">{t('cards.webhook.title')}</h3>
-              <p className="text-sm text-blue-700 mt-1">
-                {t('cards.webhook.fleetone_url')}<br />
-                <code className="bg-blue-100 px-2 py-1 rounded text-xs">
-                  https://htaotttcnjxqzpsrqwll.supabase.co/functions/v1/fleetone-webhook
-                </code>
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Cards List */}
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         {driverCards?.map((card) => (
