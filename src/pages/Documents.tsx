@@ -380,38 +380,38 @@ export default function Documents() {
 
       {/* Document Categories */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto gap-1">
-          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 h-auto gap-1 p-1 bg-muted/30 rounded-lg min-h-[60px]">
+          <TabsTrigger value="all" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.all')}</span>
             <span className="sm:hidden">{t('categories.all_short')}</span>
           </TabsTrigger>
-          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="legal" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <FileCheck className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.legal')}</span>
             <span className="sm:hidden">{t('categories.legal')}</span>
           </TabsTrigger>
-          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="insurance" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.insurance')}</span>
             <span className="sm:hidden">{t('categories.insurance_short')}</span>
           </TabsTrigger>
-          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="permits" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.permits')}</span>
             <span className="sm:hidden">{t('categories.permits_short')}</span>
           </TabsTrigger>
-          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="financial" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.financial')}</span>
             <span className="sm:hidden">{t('categories.financial_short')}</span>
           </TabsTrigger>
-          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <Users className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.contracts')}</span>
             <span className="sm:hidden">{t('categories.contracts_short')}</span>
           </TabsTrigger>
-          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3">
+          <TabsTrigger value="other" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm p-2 sm:p-3 bg-white/90 text-muted-foreground hover:bg-white border border-gray-200/50 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:shadow-sm data-[state=active]:border-secondary transition-all duration-200">
             <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">{t('categories.other')}</span>
             <span className="sm:hidden">{t('categories.other')}</span>
