@@ -133,13 +133,6 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     }
 
     if (fileType === 'pdf') {
-      console.log('Attempting to render PDF preview:', { 
-        pdfError, 
-        previewUrl, 
-        workerSrc: pdfService.getWorkerSrc(),
-        serviceReady: pdfService.isReady()
-      });
-      
       // Ensure worker is configured before rendering
       pdfService.ensureWorker();
       
@@ -152,7 +145,6 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               setPdfError(true);
             }}
             onLoadSuccess={() => {
-              console.log('PDF loaded successfully');
               setPdfError(false);
             }}
             loading={
@@ -183,7 +175,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
                 setPdfError(true);
               }}
               onRenderSuccess={() => {
-                console.log('PDF page rendered successfully');
+                // PDF page rendered
               }}
               error={
                 <div className="flex flex-col items-center justify-center h-full bg-muted/20">
