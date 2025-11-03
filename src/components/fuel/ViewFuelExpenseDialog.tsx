@@ -200,6 +200,18 @@ export function ViewFuelExpenseDialog({ expenseId, open, onOpenChange }: ViewFue
                 <CardTitle className="text-lg">{t('view_dialog.additional_info')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {expense.driver_fuel_card && (
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <div className="text-sm text-muted-foreground">{t('view_dialog.fuel_card')}</div>
+                      <div className="font-medium">
+                        {expense.driver_fuel_card.card_provider.toUpperCase()} - **** {expense.driver_fuel_card.card_number_last_five}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {expense.invoice_number && (
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />

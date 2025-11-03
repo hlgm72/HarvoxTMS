@@ -301,7 +301,7 @@ export function useFuelExpense(id: string) {
   return useQuery({
     queryKey: ['fuel-expense', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: expense, error } = await supabase
         .from('fuel_expenses')
         .select(`
           *,
@@ -322,7 +322,26 @@ export function useFuelExpense(id: string) {
         throw error;
       }
 
-      return data;
+      // If expense has card_last_five, try to match it with driver's cards
+      if (expense?.card_last_five && expense?.driver_user_id) {
+        const { data: driverCard } = await supabase
+          .from('driver_fuel_cards')
+          .select('id, card_number_last_five, card_provider, card_identifier')
+          .eq('driver_user_id', expense.driver_user_id)
+          .eq('card_number_last_five', expense.card_last_five)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        return {
+          ...expense,
+          driver_fuel_card: driverCard || null
+        };
+      }
+
+      return {
+        ...expense,
+        driver_fuel_card: null
+      };
     },
     enabled: !!id,
   });
