@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { getISOWeek } from "date-fns";
 import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
 import { useUserCompanies } from "@/hooks/useUserCompanies";
+import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPeriodLabel } from "@/utils/periodUtils";
@@ -29,6 +30,7 @@ export default function AdditionalPayments() {
   const { drivers = [] } = useCompanyDrivers();
   const { data: dispatchers = [] } = useConsolidatedDispatchers();
   const { data: availableWeeks } = useAvailableWeeks(selectedCompany?.id);
+  const { data: calculatedPeriods } = useCalculatedPeriods(selectedCompany?.id);
   const [isCreateIncomeDialogOpen, setIsCreateIncomeDialogOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [createFormState, setCreateFormState] = useState<{
@@ -80,71 +82,61 @@ export default function AdditionalPayments() {
 
   const isPeriodPaid = paymentPeriods.length > 0;
 
-  // Initialize with current week
-  const getCurrentWeek = () => {
+  // Estado de filtros - inicializar con tipo 'current' para usar período calculado
+  const [filters, setFilters] = useState<AdditionalPaymentsFiltersType>({
+    userId: 'all',
+    status: 'all',
+    userType: 'all',
+    periodFilter: {
+      type: 'current'  // Usar 'current' para que use calculatedPeriods automáticamente
+    }
+  });
+
+  // Update to current week when availableWeeks loads
+  useEffect(() => {
+    // Si ya tenemos fechas o si el tipo no es 'current', no hacer nada
+    if (filters.periodFilter.startDate || filters.periodFilter.type !== 'current') {
+      return;
+    }
+
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentWeekNumber = getISOWeek(today);
     const currentMonth = today.getMonth() + 1;
     
+    // Intentar encontrar la semana actual en availableWeeks
     const weekData = availableWeeks
       ?.find(w => w.year === currentYear)
       ?.months.find(m => m.month === currentMonth)
       ?.weeks.find(w => w.weekNumber === currentWeekNumber);
     
     if (weekData) {
-      return {
-        type: 'week' as const,
-        selectedYear: currentYear,
-        selectedWeek: currentWeekNumber,
-        startDate: weekData.startDate,
-        endDate: weekData.endDate,
-        label: `W${currentWeekNumber}/${currentYear}`
-      };
+      // Si encontramos la semana, actualizar a tipo 'week' con fechas
+      setFilters(prev => ({
+        ...prev,
+        periodFilter: {
+          type: 'week',
+          selectedYear: currentYear,
+          selectedWeek: currentWeekNumber,
+          startDate: weekData.startDate,
+          endDate: weekData.endDate,
+          label: `W${currentWeekNumber}/${currentYear}`
+        }
+      }));
+    } else if (calculatedPeriods?.current) {
+      // Si no hay availableWeeks pero tenemos calculatedPeriods, usar esas fechas
+      setFilters(prev => ({
+        ...prev,
+        periodFilter: {
+          type: 'current',
+          startDate: calculatedPeriods.current.period_start_date,
+          endDate: calculatedPeriods.current.period_end_date,
+          label: 'Current'
+        }
+      }));
     }
-    
-    return {
-      type: 'week' as const,
-      selectedYear: currentYear,
-      selectedWeek: currentWeekNumber
-    };
-  };
-
-  const [filters, setFilters] = useState<AdditionalPaymentsFiltersType>({
-    userId: 'all',
-    status: 'all',
-    userType: 'all',
-    periodFilter: getCurrentWeek()
-  });
-
-  // Populate current week dates when available
-  useEffect(() => {
-    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentWeekNumber = getISOWeek(today);
-      const currentMonth = today.getMonth() + 1;
-      
-      const weekData = availableWeeks
-        ?.find(w => w.year === currentYear)
-        ?.months.find(m => m.month === currentMonth)
-        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-      
-      if (weekData) {
-        setFilters(prev => ({
-          ...prev,
-          periodFilter: {
-            type: 'week',
-            selectedYear: currentYear,
-            selectedWeek: currentWeekNumber,
-            startDate: weekData.startDate,
-            endDate: weekData.endDate,
-            label: `W${currentWeekNumber}/${currentYear}`
-          }
-        }));
-      }
-    }
-  }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
+    // Si no se encuentra la semana ni períodos calculados, mantener tipo 'current' sin fechas
+  }, [availableWeeks, calculatedPeriods, filters.periodFilter.type, filters.periodFilter.startDate]);
 
   // Fetch data with filters
   const { data: incomeData = [] } = useOtherIncome({
@@ -184,6 +176,11 @@ export default function AdditionalPayments() {
     
     const pf = filters.periodFilter;
     
+    // Si tiene label personalizado, usarlo
+    if (pf.label && pf.label !== 'Current') {
+      return `Week: ${pf.label}`;
+    }
+    
     switch (pf.type) {
       case 'week':
         const weekLabel = pf.selectedWeek && pf.selectedYear 
@@ -199,6 +196,19 @@ export default function AdditionalPayments() {
         return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
       case 'year':
         return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
+      case 'current':
+        // Si es 'current' pero tenemos fechas y calculatedPeriods, extraer el número de semana
+        if (pf.startDate && calculatedPeriods?.current) {
+          const startDate = new Date(pf.startDate);
+          const weekNumber = getISOWeek(startDate);
+          const year = startDate.getFullYear();
+          return `Week: W${weekNumber}/${year}`;
+        }
+        return t("common:periods.current");
+      case 'previous':
+        return t("common:periods.previous");
+      case 'all':
+        return t("common:periods.all");
       default:
         return '';
     }
