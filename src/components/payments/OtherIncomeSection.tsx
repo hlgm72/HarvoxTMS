@@ -159,7 +159,7 @@ export function OtherIncomeSection({ hideAddButton = false, filteredData, isLoad
       case "approved":
         return <Badge variant="default" className="gap-1"><CheckCircle className="h-3 w-3" />{t('additional_payments.status.approved')}</Badge>;
       case "applied":
-        return <Badge variant="default" className="gap-1 bg-blue-600 hover:bg-blue-700"><CheckCircle className="h-3 w-3" />Applied</Badge>;
+        return <Badge variant="default" className="gap-1 bg-primary hover:bg-primary/90"><CheckCircle className="h-3 w-3" />Applied</Badge>;
       case "pending":
         return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />{t('additional_payments.status.pending')}</Badge>;
       case "rejected":
