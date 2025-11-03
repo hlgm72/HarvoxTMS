@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
+import { formatDateAuto } from "@/lib/dateFormatting";
 
 interface Transaction {
   id: string;
@@ -181,7 +182,7 @@ export const IFTAReportTable = ({
                                           {state.transactions.map((transaction) => (
                                             <TableRow key={transaction.id}>
                                               <TableCell>
-                                                {new Date(transaction.transaction_date).toLocaleDateString()}
+                                                {formatDateAuto(transaction.transaction_date)}
                                               </TableCell>
                                               <TableCell>{transaction.station_name || '—'}</TableCell>
                                               <TableCell className="text-right">
