@@ -436,6 +436,10 @@
     "breakdown_by_state": "Desglose por Estado",
     "company_total": "Total de la Compañía",
     "state_summary": "Resumen por Estado",
-    "no_data": "No hay datos de combustible disponibles para el trimestre seleccionado"
+    "no_data": "No hay datos de combustible disponibles para el trimestre seleccionado",
+    "date": "Fecha",
+    "station": "Estación",
+    "price": "Precio/Gal",
+    "amount": "Monto"
   }
 }

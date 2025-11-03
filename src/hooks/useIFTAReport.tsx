@@ -3,6 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
 
+interface IFTATransaction {
+  id: string;
+  transaction_date: string;
+  station_name: string | null;
+  gallons: number;
+  price_per_gallon: number | null;
+  total_amount: number | null;
+}
+
 interface IFTAVehicleData {
   vehicle_id: string | null;
   vehicle_number: string | null;
@@ -14,6 +23,7 @@ interface IFTAVehicleData {
     state: string;
     gallons: number;
     transaction_count: number;
+    transactions: IFTATransaction[];
   }[];
 }
 
@@ -123,10 +133,10 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
 
       const driverIds = companyDrivers.map((d) => d.user_id);
 
-      // Fetch fuel expenses
+      // Fetch fuel expenses with additional fields
       const { data: expenses, error } = await supabase
         .from("fuel_expenses")
-        .select("id, vehicle_id, driver_user_id, gallons_purchased, station_state")
+        .select("id, vehicle_id, driver_user_id, gallons_purchased, station_state, transaction_date, station_name, price_per_gallon, total_amount")
         .in("driver_user_id", driverIds)
         .gte("transaction_date", startDate)
         .lte("transaction_date", endDate)
@@ -193,15 +203,26 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
 
         // State breakdown per vehicle
         const stateIndex = vehicleData.states.findIndex((s) => s.state === state);
+        const transaction: IFTATransaction = {
+          id: expense.id,
+          transaction_date: expense.transaction_date,
+          station_name: expense.station_name,
+          gallons,
+          price_per_gallon: expense.price_per_gallon ? parseFloat(expense.price_per_gallon) : null,
+          total_amount: expense.total_amount ? parseFloat(expense.total_amount) : null,
+        };
+        
         if (stateIndex === -1) {
           vehicleData.states.push({
             state,
             gallons,
             transaction_count: 1,
+            transactions: [transaction],
           });
         } else {
           vehicleData.states[stateIndex].gallons += gallons;
           vehicleData.states[stateIndex].transaction_count++;
+          vehicleData.states[stateIndex].transactions.push(transaction);
         }
 
         // Overall state summary

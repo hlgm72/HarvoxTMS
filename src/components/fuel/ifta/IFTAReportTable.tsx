@@ -11,10 +11,20 @@ import {
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 
+interface Transaction {
+  id: string;
+  transaction_date: string;
+  station_name: string | null;
+  gallons: number;
+  price_per_gallon: number | null;
+  total_amount: number | null;
+}
+
 interface StateData {
   state: string;
   gallons: number;
   transaction_count: number;
+  transactions: Transaction[];
 }
 
 interface VehicleData {
@@ -40,6 +50,7 @@ export const IFTAReportTable = ({
 }: IFTAReportTableProps) => {
   const { t } = useTranslation('fuel');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [expandedStates, setExpandedStates] = useState<Set<string>>(new Set());
 
   const toggleRow = (key: string) => {
     const newExpanded = new Set(expandedRows);
@@ -49,6 +60,16 @@ export const IFTAReportTable = ({
       newExpanded.add(key);
     }
     setExpandedRows(newExpanded);
+  };
+
+  const toggleState = (key: string) => {
+    const newExpanded = new Set(expandedStates);
+    if (newExpanded.has(key)) {
+      newExpanded.delete(key);
+    } else {
+      newExpanded.add(key);
+    }
+    setExpandedStates(newExpanded);
   };
 
   const formatGallons = (gallons: number) => gallons.toFixed(2);
@@ -115,17 +136,77 @@ export const IFTAReportTable = ({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {vehicle.states.map((state) => (
-                              <TableRow key={state.state}>
-                                <TableCell className="font-medium">{state.state}</TableCell>
+                          {vehicle.states.map((state) => {
+                            const stateKey = `${key}-${state.state}`;
+                            const isStateExpanded = expandedStates.has(stateKey);
+                            
+                            return [
+                              <TableRow 
+                                key={state.state}
+                                className="cursor-pointer hover:bg-muted/30"
+                                onClick={() => toggleState(stateKey)}
+                              >
+                                <TableCell className="font-medium">
+                                  <div className="flex items-center gap-2">
+                                    {isStateExpanded ? (
+                                      <ChevronDown className="h-3 w-3" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3" />
+                                    )}
+                                    {state.state}
+                                  </div>
+                                </TableCell>
                                 <TableCell className="text-right">
                                   {state.transaction_count}
                                 </TableCell>
                                 <TableCell className="text-right">
                                   {formatGallons(state.gallons)}
                                 </TableCell>
-                              </TableRow>
-                            ))}
+                              </TableRow>,
+                              ...(isStateExpanded ? [
+                                <TableRow key={`${state.state}-transactions`}>
+                                  <TableCell colSpan={3} className="p-0 bg-muted/10">
+                                    <div className="px-8 py-3">
+                                      <Table>
+                                        <TableHeader>
+                                          <TableRow>
+                                            <TableHead>{t("ifta.date")}</TableHead>
+                                            <TableHead>{t("ifta.station")}</TableHead>
+                                            <TableHead className="text-right">{t("ifta.gallons")}</TableHead>
+                                            <TableHead className="text-right">{t("ifta.price")}</TableHead>
+                                            <TableHead className="text-right">{t("ifta.amount")}</TableHead>
+                                          </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                          {state.transactions.map((transaction) => (
+                                            <TableRow key={transaction.id}>
+                                              <TableCell>
+                                                {new Date(transaction.transaction_date).toLocaleDateString()}
+                                              </TableCell>
+                                              <TableCell>{transaction.station_name || '—'}</TableCell>
+                                              <TableCell className="text-right">
+                                                {formatGallons(transaction.gallons)}
+                                              </TableCell>
+                                              <TableCell className="text-right">
+                                                {transaction.price_per_gallon 
+                                                  ? `$${transaction.price_per_gallon.toFixed(3)}` 
+                                                  : '—'}
+                                              </TableCell>
+                                              <TableCell className="text-right">
+                                                {transaction.total_amount 
+                                                  ? `$${transaction.total_amount.toFixed(2)}` 
+                                                  : '—'}
+                                              </TableCell>
+                                            </TableRow>
+                                          ))}
+                                        </TableBody>
+                                      </Table>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ] : [])
+                            ];
+                          }).flat()}
                         </TableBody>
                       </Table>
                     </div>

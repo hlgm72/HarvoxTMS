@@ -436,6 +436,10 @@
     "breakdown_by_state": "Breakdown by State",
     "company_total": "Company Total",
     "state_summary": "Summary by State",
-    "no_data": "No fuel data available for the selected quarter"
+    "no_data": "No fuel data available for the selected quarter",
+    "date": "Date",
+    "station": "Station",
+    "price": "Price/Gal",
+    "amount": "Amount"
   }
 }
