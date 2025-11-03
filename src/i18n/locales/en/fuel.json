@@ -144,6 +144,7 @@
     "name": "Name",
     "location": "Location",
     "additional_info": "Additional Information",
+    "fuel_card": "Fuel Card",
     "invoice": "Invoice Number",
     "receipt": "Receipt",
     "view_receipt": "View Receipt",
