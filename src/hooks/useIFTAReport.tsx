@@ -109,11 +109,12 @@ export const useIFTAReport = ({ year, quarter }: UseIFTAReportParams) => {
         throw new Error("User or company not found");
       }
 
-      // Calculate quarter date range
+      // Calculate quarter date range in UTC to avoid timezone issues
       const startMonth = (quarter - 1) * 3;
       const endMonth = startMonth + 3;
-      const startDate = new Date(year, startMonth, 1).toISOString();
-      const endDate = new Date(year, endMonth, 0, 23, 59, 59).toISOString();
+      // Create dates directly in UTC using Date.UTC()
+      const startDate = new Date(Date.UTC(year, startMonth, 1, 0, 0, 0)).toISOString();
+      const endDate = new Date(Date.UTC(year, endMonth, 0, 23, 59, 59, 999)).toISOString();
 
       // Get all company drivers
       const { data: companyDrivers } = await supabase
