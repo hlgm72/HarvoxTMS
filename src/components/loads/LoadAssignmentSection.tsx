@@ -257,13 +257,48 @@ export function LoadAssignmentSection({
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t("loads:create_wizard.phases.assignment.driver_section.placeholder")} />
+                  <div className="flex items-center gap-2">
+                    {selectedDriver ? (
+                      <>
+                        {selectedDriver.avatar_url ? (
+                          <img 
+                            src={selectedDriver.avatar_url} 
+                            alt={`${selectedDriver.first_name} ${selectedDriver.last_name}`}
+                            className="h-5 w-5 rounded-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center text-xs">
+                            {selectedDriver.first_name?.charAt(0)}{selectedDriver.last_name?.charAt(0)}
+                          </div>
+                        )}
+                        <span>{selectedDriver.first_name} {selectedDriver.last_name}</span>
+                      </>
+                    ) : (
+                      <SelectValue placeholder={t("loads:create_wizard.phases.assignment.driver_section.placeholder")} />
+                    )}
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   {activeDrivers.map((driver) => (
                     <SelectItem key={driver.user_id} value={driver.user_id}>
                       <div className="flex items-center gap-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
+                        {driver.avatar_url ? (
+                          <img 
+                            src={driver.avatar_url} 
+                            alt={`${driver.first_name} ${driver.last_name}`}
+                            className="h-6 w-6 rounded-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs">
+                            {driver.first_name?.charAt(0)}{driver.last_name?.charAt(0)}
+                          </div>
+                        )}
                         <div>
                           <span className="font-medium">
                             {driver.first_name} {driver.last_name}
