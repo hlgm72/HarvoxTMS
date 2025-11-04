@@ -963,14 +963,14 @@ export function PDFAnalyzer() {
                         </div>
                       </div>
 
-                       {/* Información del vehículo */}
+                      {/* Información del vehículo */}
                       <div className="flex items-center gap-2">
                         <Fuel className="h-4 w-4 text-muted-foreground" />
                         <div className="flex-1">
                           {transaction.vehicle_id ? (
                             <>
                               <div className="font-medium flex items-center gap-2">
-                                {t('analyzer.transaction.vehicle')} {transaction.vehicle_number}
+                                <span>{t('analyzer.transaction.vehicle')} {transaction.vehicle_number}</span>
                                 <Badge variant="outline" className="text-xs">
                                   {transaction.equipment_mapping_method === 'assigned_to_driver' 
                                     ? t('analyzer.mapping.assigned_equipment')
