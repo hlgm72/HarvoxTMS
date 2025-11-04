@@ -3759,6 +3759,7 @@ export type Database = {
       }
       fix_fuel_expenses_separation: { Args: never; Returns: undefined }
       fix_fuel_expenses_separation_v2: { Args: never; Returns: undefined }
+      fix_load_472_period_assignment: { Args: never; Returns: Json }
       fix_missing_percentage_deductions_retroactive: {
         Args: never
         Returns: Json
