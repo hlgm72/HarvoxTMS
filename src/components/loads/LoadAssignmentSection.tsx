@@ -171,26 +171,41 @@ export function LoadAssignmentSection({
                     {t("loads:create_wizard.form.client_broker")} {t("loads:create_wizard.form.client_broker_required")}
                   </FormLabel>
                   <FormControl>
-                    <ClientCombobox
-                      clients={clients}
-                      value={field.value}
-                      onValueChange={(value) => {
-                        console.log('🔍 CLIENT SELECTED - Value:', value);
-                        field.onChange(value);
-                        const client = clients.find(c => c.id === value);
-                        console.log('🔍 CLIENT SELECTED - Found client:', client?.name);
-                        onClientSelect?.(client || null);
-                        form.setValue("contact_id", "");
-                        console.log('🔍 CLIENT SELECTED - Cleared contact_id');
-                        if (form.formState.errors.client_id) {
-                          form.clearErrors("client_id");
-                        }
-                      }}
-                      onClientSelect={(client) => onClientSelect?.(client as Client)}
-                      placeholder={t("loads:create_wizard.form.client_placeholder")}
-                      className="w-full"
-                      onCreateNew={onShowCreateClient}
-                    />
+                    <div className="space-y-2">
+                      <ClientCombobox
+                        clients={clients}
+                        value={field.value}
+                        onValueChange={(value) => {
+                          console.log('🔍 CLIENT SELECTED - Value:', value);
+                          field.onChange(value);
+                          const client = clients.find(c => c.id === value);
+                          console.log('🔍 CLIENT SELECTED - Found client:', client?.name);
+                          onClientSelect?.(client || null);
+                          form.setValue("contact_id", "");
+                          console.log('🔍 CLIENT SELECTED - Cleared contact_id');
+                          if (form.formState.errors.client_id) {
+                            form.clearErrors("client_id");
+                          }
+                        }}
+                        onClientSelect={(client) => onClientSelect?.(client as Client)}
+                        placeholder={t("loads:create_wizard.form.client_placeholder")}
+                        className="w-full"
+                        onCreateNew={onShowCreateClient}
+                      />
+                      {selectedClient && selectedClient.logo_url && (
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50 border">
+                          <img 
+                            src={selectedClient.logo_url} 
+                            alt={selectedClient.name}
+                            className="h-10 w-10 rounded object-contain bg-white"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <span className="text-sm font-medium">{selectedClient.name}</span>
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
