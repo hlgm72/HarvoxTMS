@@ -322,20 +322,28 @@ export const useCreateLoad = () => {
       if (data.driver_user_id) {
         console.log('🔄 Driver asignado, actualizando estado a "assigned"...');
         try {
-          const { error: statusError } = await supabase.rpc('update_load_status_with_validation', {
+          const { data: statusResult, error: statusError } = await supabase.rpc('update_load_status_with_validation', {
             load_id_param: loadId,
             new_status: 'assigned'
           });
 
           if (statusError) {
-            console.error('❌ Error actualizando estado a assigned:', statusError);
-            // No fallar la operación completa por este error
-          } else {
-            console.log('✅ Estado actualizado a "assigned" exitosamente');
+            console.error('❌ Error RPC actualizando estado a assigned:', statusError);
+            throw new Error(`Error al actualizar estado: ${statusError.message}`);
           }
+          
+          // Verificar si la función SQL reportó éxito
+          const result = statusResult as { success: boolean; message?: string };
+          if (!result?.success) {
+            console.error('❌ La función SQL falló:', result);
+            throw new Error(`No se pudo actualizar el estado a "assigned": ${result?.message || 'Error desconocido'}`);
+          }
+          
+          console.log('✅ Estado actualizado a "assigned" exitosamente');
         } catch (statusUpdateError) {
-          console.error('❌ Error en actualización de estado:', statusUpdateError);
-          // No fallar la operación completa
+          console.error('❌ Error crítico en actualización de estado:', statusUpdateError);
+          // Lanzar el error para que el usuario lo vea
+          throw statusUpdateError;
         }
       }
 
