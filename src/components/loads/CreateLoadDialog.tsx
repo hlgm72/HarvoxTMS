@@ -184,9 +184,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     pattern = pattern.replace(/\\d/g, '0');
     console.log('🎭 After converting \\d:', pattern);
     
-    // Paso 5: Convertir letras opcionales [A-Z]{0,n}
+    // Paso 5: Convertir letras opcionales [A-Z]{0,n} - deben permanecer opcionales
     pattern = pattern.replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
-      return '[A]'.repeat(parseInt(count));
+      // En IMask, los corchetes [] indican opcionalidad
+      return '[' + 'A'.repeat(parseInt(count)) + ']';
     });
     console.log('🎭 After converting optional letters:', pattern);
     
@@ -241,13 +242,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
   useEffect(() => {
-    if (mode === 'edit' && isFormReady && maskRef.current && currentLoadNumber) {
-      console.log('🔄 Sincronizando máscara IMask con valor del formulario:', currentLoadNumber);
-      // Usar unmaskedValue para establecer el valor correctamente
-      maskRef.current.unmaskedValue = currentLoadNumber;
+    if (mode === 'edit' && isFormReady && currentLoadNumber && maskRef.current) {
+      console.log('🔄 Sincronizando máscara IMask. Valor formulario:', currentLoadNumber);
+      console.log('🔄 Valor actual de máscara:', maskRef.current.value);
+      
+      // Establecer el valor completo directamente
+      maskRef.current.value = currentLoadNumber;
+      
       console.log('✅ Valor de máscara después de sincronizar:', maskRef.current.value);
     }
-  }, [mode, isFormReady, maskRef, currentLoadNumber]);
+  }, [mode, isFormReady, currentLoadNumber]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
