@@ -239,6 +239,15 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
+  // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
+  useEffect(() => {
+    if (mode === 'edit' && isFormReady && maskRef.current && currentLoadNumber) {
+      // Actualizar el valor de la máscara con el valor del formulario
+      maskRef.current.value = currentLoadNumber;
+      maskRef.current.updateValue();
+    }
+  }, [mode, isFormReady, maskRef, currentLoadNumber]);
+
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     const input = e.currentTarget; // Guardar referencia antes del setTimeout
