@@ -79,7 +79,20 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
           disabled={disabled}
         >
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <Building2 className="h-4 w-4 flex-shrink-0" />
+            {selectedClient?.logo_url ? (
+              <img 
+                src={selectedClient.logo_url} 
+                alt={selectedClient.name}
+                className="h-5 w-5 rounded object-contain bg-white border border-border flex-shrink-0"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+            ) : null}
+            {!selectedClient?.logo_url && (
+              <Building2 className="h-4 w-4 flex-shrink-0" />
+            )}
             <span className="truncate">
               {selectedClient ? formatClientDisplay(selectedClient) : placeholder || t('actions.select_client')}
             </span>
