@@ -242,9 +242,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
   useEffect(() => {
     if (mode === 'edit' && isFormReady && maskRef.current && currentLoadNumber) {
-      // Actualizar el valor de la máscara con el valor del formulario
-      maskRef.current.value = currentLoadNumber;
-      maskRef.current.updateValue();
+      console.log('🔄 Sincronizando máscara IMask con valor del formulario:', currentLoadNumber);
+      // Usar unmaskedValue para establecer el valor correctamente
+      maskRef.current.unmaskedValue = currentLoadNumber;
+      console.log('✅ Valor de máscara después de sincronizar:', maskRef.current.value);
     }
   }, [mode, isFormReady, maskRef, currentLoadNumber]);
 
