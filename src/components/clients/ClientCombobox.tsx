@@ -51,9 +51,7 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
   };
 
   const formatClientDisplay = (client: CompanyClient) => {
-    const parts = [client.name];
-    if (client.mc_number) parts.push(`MC: ${client.mc_number}`);
-    return parts.join(' • ');
+    return client.name;
   };
 
   // Custom filter function for consecutive character matching
