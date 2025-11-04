@@ -4462,6 +4462,14 @@ export type Database = {
         Args: { expense_id: string; update_data: Json }
         Returns: Json
       }
+      update_load_payment_period_directly: {
+        Args: { p_load_ids: string[]; p_new_period_id: string }
+        Returns: {
+          load_number: string
+          new_period_id: string
+          old_period_id: string
+        }[]
+      }
       update_load_status: {
         Args: { load_id: string; new_status: string }
         Returns: Json
