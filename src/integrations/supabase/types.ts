@@ -3779,7 +3779,7 @@ export type Database = {
           load_number: string
           new_period_id: string
           old_period_id: string
-          pickup_date: string
+          pickup_date_value: string
         }[]
       }
       force_recalculate_period: {
