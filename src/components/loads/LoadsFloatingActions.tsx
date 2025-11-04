@@ -94,6 +94,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
       status: "all",
       driver: "all",
       broker: "all",
+      brokerName: "",
       dateRange: { from: undefined, to: undefined }
     });
     // Reset period filter to week
@@ -102,10 +103,20 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
 
   const hasActiveFilters = filters.status !== "all" || 
                           filters.driver !== "all" || 
-                          filters.broker !== "all" ||
+                          (filters.broker !== "all" && filters.broker !== "") ||
                           (periodFilter?.type && periodFilter?.type !== 'week') ||
-                          filters.dateRange.from !== undefined ||
-                          filters.dateRange.to !== undefined;
+                          filters.dateRange?.from !== undefined ||
+                          filters.dateRange?.to !== undefined;
+
+  console.log('🔍 Filter Debug:', {
+    filters,
+    periodFilter,
+    hasActiveFilters,
+    statusCheck: filters.status !== "all",
+    driverCheck: filters.driver !== "all",
+    brokerCheck: (filters.broker !== "all" && filters.broker !== ""),
+    periodCheck: (periodFilter?.type && periodFilter?.type !== 'week')
+  });
 
   const mockStats = {
     totalLoads: 156,
