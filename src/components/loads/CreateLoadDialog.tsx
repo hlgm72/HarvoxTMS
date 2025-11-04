@@ -240,22 +240,32 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
+  // Log para depuración del estado del formulario
+  useEffect(() => {
+    console.log('📊 Estado del formulario - mode:', mode, 'isFormReady:', isFormReady, 'currentLoadNumber:', currentLoadNumber);
+  }, [mode, isFormReady, currentLoadNumber]);
+
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
   useEffect(() => {
-    console.log('🔍 useEffect check - mode:', mode, 'isFormReady:', isFormReady, 'currentLoadNumber:', currentLoadNumber, 'maskRef:', !!maskRef.current);
-    
-    if (mode === 'edit' && isFormReady && currentLoadNumber && maskRef.current) {
-      console.log('🔄 Sincronizando máscara IMask. Valor formulario:', currentLoadNumber);
-      console.log('🔄 Valor actual de máscara:', maskRef.current.value);
-      
-      // Dar tiempo a que la máscara se inicialice completamente
-      setTimeout(() => {
+    // Esperar a que todo esté listo
+    const timer = setTimeout(() => {
+      if (mode === 'edit' && isFormReady && currentLoadNumber) {
+        console.log('🔄 Intentando sincronizar máscara IMask');
+        console.log('🔄 maskRef.current disponible:', !!maskRef.current);
+        
         if (maskRef.current) {
+          console.log('🔄 Valor actual de máscara antes:', maskRef.current.value);
+          console.log('🔄 Valor del formulario:', currentLoadNumber);
+          
+          // Establecer el valor en la máscara
           maskRef.current.value = currentLoadNumber;
-          console.log('✅ Valor de máscara después de sincronizar:', maskRef.current.value);
+          
+          console.log('✅ Valor de máscara después:', maskRef.current.value);
         }
-      }, 100);
-    }
+      }
+    }, 200); // Dar tiempo para que la máscara se inicialice
+
+    return () => clearTimeout(timer);
   }, [mode, isFormReady, currentLoadNumber]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
