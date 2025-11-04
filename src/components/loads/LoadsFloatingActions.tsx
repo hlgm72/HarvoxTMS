@@ -103,7 +103,9 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
   const hasActiveFilters = filters.status !== "all" || 
                           filters.driver !== "all" || 
                           filters.broker !== "all" ||
-                          periodFilter?.type !== 'week';
+                          (periodFilter?.type && periodFilter?.type !== 'week') ||
+                          filters.dateRange.from !== undefined ||
+                          filters.dateRange.to !== undefined;
 
   const mockStats = {
     totalLoads: 156,
