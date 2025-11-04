@@ -963,7 +963,7 @@ export function PDFAnalyzer() {
                         </div>
                       </div>
 
-                      {/* Información del vehículo */}
+                       {/* Información del vehículo */}
                       <div className="flex items-center gap-2">
                         <Fuel className="h-4 w-4 text-muted-foreground" />
                         <div className="flex-1">
