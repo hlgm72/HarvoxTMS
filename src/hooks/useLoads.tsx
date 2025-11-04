@@ -295,27 +295,28 @@ export const useLoads = (filters?: LoadsFilters) => {
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
         
-        if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
+        // Priorizar payment_period_id sobre fechas para cargas con período asignado
+        if (periodResult.periodIds.length > 0) {
           loads = loads.filter(load => {
-            // Usar el criterio de la empresa para determinar qué fecha filtrar
-            const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
-            if (!relevantDate) return false;
-            return relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
-          });
-        } else if (periodResult.periodIds.length > 0) {
-          loads = loads.filter(load => {
-            // Cargas con período asignado
-            if (load.payment_period_id && periodResult.periodIds.includes(load.payment_period_id)) {
-              return true;
+            // Si la carga tiene un payment_period_id asignado, usar ese criterio
+            if (load.payment_period_id) {
+              return periodResult.periodIds.includes(load.payment_period_id);
             }
             
-            // Cargas sin período pero con fechas en el rango
-            if (!load.payment_period_id && periodResult.startDate && periodResult.endDate) {
+            // Para cargas sin período asignado, filtrar por fechas
+            if (periodResult.startDate && periodResult.endDate) {
               const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
               return relevantDate && relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
             }
             
             return false;
+          });
+        } else if (periodResult.useDateFilter && periodResult.startDate && periodResult.endDate) {
+          loads = loads.filter(load => {
+            // Usar el criterio de la empresa para determinar qué fecha filtrar
+            const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
+            if (!relevantDate) return false;
+            return relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
           });
         } else if (filters?.periodFilter?.type !== 'all') {
           return [];
