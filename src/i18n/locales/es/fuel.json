@@ -380,6 +380,7 @@
       "discount": "Descuento",
       "fees": "Comisiones",
       "truck": "Camión #{{number}}",
+      "vehicle": "Equipo:",
       "vehicle_verified": "Vehículo verificado para combustible",
       "invoice": "Factura:",
       "pdf_unit": "Unidad del PDF:"
@@ -394,6 +395,10 @@
       "vehicle_assigned": "Vehículo asignado al conductor",
       "vehicle_validated": "Vehículo validado desde PDF",
       "vehicle_not_found": "Vehículo no encontrado",
+      "no_vehicle": "Sin vehículo asignado",
+      "no_vehicle_detail": "Debe estar asignado al conductor en esa fecha",
+      "assigned_equipment": "Asignado",
+      "pdf_unit_validated": "Validado del PDF",
       "already_imported": "Ya importado",
       "duplicate_detected": "Duplicado detectado",
       "period_paid": "Período pagado (no modificable)",

@@ -603,6 +603,17 @@ export function PDFAnalyzer() {
         return;
       }
 
+      // Validar que todas las transacciones seleccionadas tengan vehicle_id
+      const transactionsWithoutVehicle = transactionsToImport.filter(t => !t.vehicle_id);
+      if (transactionsWithoutVehicle.length > 0) {
+        console.error('❌ [PDF Analyzer] Transacciones sin vehículo:', transactionsWithoutVehicle);
+        showError(
+          "Error en asignación de vehículos",
+          `${transactionsWithoutVehicle.length} transacciones no tienen un vehículo asignado. El equipo debe estar asignado al conductor en la fecha de la transacción.`
+        );
+        return;
+      }
+
       // Insertar transacciones una por una usando la función RPC ACID
       console.log('📦 [PDF Analyzer] Importando', transactionsToImport.length, 'transacciones...');
       let importedCount = 0;
@@ -610,6 +621,7 @@ export function PDFAnalyzer() {
       for (const transaction of transactionsToImport) {
         const fuelExpenseData = {
           driver_user_id: transaction.driver_user_id!,
+          vehicle_id: transaction.vehicle_id!, // ✅ Incluir vehicle_id requerido
           payment_period_id: transaction.payment_period_id!,
           transaction_date: transaction.date,
           fuel_type: transaction.category?.toLowerCase() || 'diesel',
@@ -630,6 +642,7 @@ export function PDFAnalyzer() {
         console.log('📦 [PDF Analyzer] Importando transacción:', {
           date: transaction.date,
           driver: transaction.driver_name,
+          vehicle: transaction.vehicle_number,
           amount: transaction.total_amt,
           payment_period_id: transaction.payment_period_id
         });
@@ -947,6 +960,37 @@ export function PDFAnalyzer() {
                           <div className="text-sm text-muted-foreground">
                             {t('analyzer.transaction.card')} {transaction.card}
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Información del vehículo */}
+                      <div className="flex items-center gap-2">
+                        <Fuel className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex-1">
+                          {transaction.vehicle_id ? (
+                            <>
+                              <div className="font-medium flex items-center gap-2">
+                                {t('analyzer.transaction.vehicle')} {transaction.vehicle_number}
+                                <Badge variant="outline" className="text-xs">
+                                  {transaction.equipment_mapping_method === 'assigned_to_driver' 
+                                    ? t('analyzer.mapping.assigned_equipment')
+                                    : t('analyzer.mapping.pdf_unit_validated')}
+                                </Badge>
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                Unit del PDF: {transaction.unit}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="font-medium text-destructive">
+                                {t('analyzer.mapping.no_vehicle')}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                Unit del PDF: {transaction.unit} - {t('analyzer.mapping.no_vehicle_detail')}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
 
