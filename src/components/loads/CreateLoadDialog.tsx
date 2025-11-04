@@ -217,7 +217,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  const { ref: loadNumberInputRef, maskRef } = useIMask(
+  const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
       mask: loadNumberMask,
       lazy: false, // Muestra las partes fijas automáticamente
@@ -240,33 +240,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
-  // Log para depuración del estado del formulario
-  useEffect(() => {
-    console.log('📊 Estado del formulario - mode:', mode, 'isFormReady:', isFormReady, 'currentLoadNumber:', currentLoadNumber);
-  }, [mode, isFormReady, currentLoadNumber]);
-
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
   useEffect(() => {
-    // Esperar a que todo esté listo
-    const timer = setTimeout(() => {
-      if (mode === 'edit' && isFormReady && currentLoadNumber) {
-        console.log('🔄 Intentando sincronizar máscara IMask');
-        console.log('🔄 maskRef.current disponible:', !!maskRef.current);
-        
-        if (maskRef.current) {
-          console.log('🔄 Valor actual de máscara antes:', maskRef.current.value);
-          console.log('🔄 Valor del formulario:', currentLoadNumber);
-          
-          // Establecer el valor en la máscara
-          maskRef.current.value = currentLoadNumber;
-          
-          console.log('✅ Valor de máscara después:', maskRef.current.value);
-        }
-      }
-    }, 200); // Dar tiempo para que la máscara se inicialice
-
-    return () => clearTimeout(timer);
-  }, [mode, isFormReady, currentLoadNumber]);
+    if (mode === 'edit' && isFormReady && currentLoadNumber && setMaskValue) {
+      // Usar el método setValue proporcionado por IMask en lugar de acceso directo
+      setMaskValue(currentLoadNumber);
+    }
+  }, [mode, isFormReady, currentLoadNumber, setMaskValue]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
