@@ -963,37 +963,6 @@ export function PDFAnalyzer() {
                         </div>
                       </div>
 
-                      {/* Información del vehículo */}
-                      <div className="flex items-center gap-2">
-                        <Fuel className="h-4 w-4 text-muted-foreground" />
-                        <div className="flex-1">
-                          {transaction.vehicle_id ? (
-                            <>
-                              <div className="font-medium flex items-center gap-2">
-                                <span>{t('analyzer.transaction.vehicle')} {transaction.vehicle_number}</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {transaction.equipment_mapping_method === 'assigned_to_driver' 
-                                    ? t('analyzer.mapping.assigned_equipment')
-                                    : t('analyzer.mapping.pdf_unit_validated')}
-                                </Badge>
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                Unit del PDF: {transaction.unit}
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="font-medium text-destructive">
-                                {t('analyzer.mapping.no_vehicle')}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                Unit del PDF: {transaction.unit} - {t('analyzer.mapping.no_vehicle_detail')}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
                       {/* Información del período */}
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
