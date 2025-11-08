@@ -203,12 +203,46 @@ export function useDriverPaymentActions() {
     }
   };
 
+  const unmarkDriverAsPaid = async (payrollId: string) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.rpc('unmark_driver_as_paid', {
+        p_payroll_id: payrollId
+      });
+
+      if (error) {
+        console.error('❌ Error unmarking driver as paid:', error);
+        showError(t('messages.error'), error.message);
+        return { success: false, error: error.message };
+      }
+
+      const result = data as any;
+      if (result?.success) {
+        showSuccess(
+          t("payments.payment_unmarked"), 
+          t("payments.payment_unmarked_desc")
+        );
+        return { success: true, data };
+      } else {
+        showError(result?.message || t('messages.error'));
+        return { success: false, error: result?.message };
+      }
+    } catch (error: any) {
+      console.error('❌ Error in unmarkDriverAsPaid:', error);
+      showError(error.message || t('messages.error'));
+      return { success: false, error: error.message };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     markDriverAsPaid,
     calculateUserPeriod,
     markMultipleDriversAsPaid,
     checkPeriodClosureStatus,
     closePeriodWhenComplete,
+    unmarkDriverAsPaid,
     isLoading
   };
 }
