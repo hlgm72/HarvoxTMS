@@ -790,7 +790,7 @@ export default function PaymentReports() {
                             className="hover:bg-warning/10 hover:text-warning"
                           >
                             <XCircle className="h-4 w-4 mr-2" />
-                            Desmarcar
+                            {t('reports.unmark_paid')}
                           </Button>
                         )}
                         <Button

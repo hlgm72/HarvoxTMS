@@ -438,6 +438,7 @@
     "net": "Neto:",
     "payment": "Pago:",
     "mark_paid": "Marcar Pagado",
+    "unmark_paid": "Desmarcar",
     "view_detail": "Ver Detalle",
     "status": {
       "pending": "Pendiente",

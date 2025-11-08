@@ -459,6 +459,7 @@
     "net": "Net:",
     "payment": "Payment:",
     "mark_paid": "Mark Paid",
+    "unmark_paid": "Unmark",
     "view_detail": "View Detail",
     "status": {
       "pending": "Pending",
