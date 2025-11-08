@@ -38,25 +38,44 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
           driver_user_id
         `);
 
-      // ✅ Aplicar filtros - detectar períodos calculados y usar fechas en su lugar
+      // ✅ Ampliar el rango de consulta para incluir período anterior si es necesario
       const isCalculatedPeriod = queryFilters.periodId?.startsWith('calculated-');
       
-      if (queryFilters.periodId && queryFilters.periodId !== 'all' && !isCalculatedPeriod) {
+      if (queryFilters.startDate && queryFilters.endDate) {
+        // Calcular el rango extendido que incluya el período anterior
+        const startDate = new Date(queryFilters.startDate);
+        const endDate = new Date(queryFilters.endDate);
+        const frequency = queryFilters.periodFrequency || 'weekly';
+        
+        let extendedStart: Date;
+        
+        if (frequency === 'weekly') {
+          extendedStart = new Date(startDate.getTime() - 14 * 24 * 60 * 60 * 1000); // 2 semanas atrás
+        } else if (frequency === 'biweekly') {
+          extendedStart = new Date(startDate.getTime() - 28 * 24 * 60 * 60 * 1000); // 4 semanas atrás
+        } else if (frequency === 'monthly') {
+          extendedStart = new Date(startDate.getFullYear(), startDate.getMonth() - 2, startDate.getDate()); // 2 meses atrás
+        } else if (frequency === 'quarterly') {
+          extendedStart = new Date(startDate.getFullYear(), startDate.getMonth() - 6, startDate.getDate()); // 6 meses atrás
+        } else if (frequency === 'yearly') {
+          extendedStart = new Date(startDate.getFullYear() - 2, startDate.getMonth(), startDate.getDate()); // 2 años atrás
+        } else {
+          extendedStart = new Date(startDate.getTime() - 14 * 24 * 60 * 60 * 1000); // default 2 semanas
+        }
+        
+        const extendedStartUTC = convertUserDateToUTC(extendedStart);
+        const endUTC = convertUserDateToUTC(endDate);
+        
+        query = query
+          .gte('transaction_date', extendedStartUTC.split('T')[0])
+          .lte('transaction_date', endUTC.split('T')[0]);
+      } else if (queryFilters.periodId && queryFilters.periodId !== 'all' && !isCalculatedPeriod) {
         // Usar periodId real de la base de datos
         query = query.eq('payment_period_id', queryFilters.periodId);
-      } else if (isCalculatedPeriod || !queryFilters.periodId || queryFilters.startDate || queryFilters.endDate) {
-        // Si es período calculado o no hay periodId, usar fechas si están disponibles
-        if (queryFilters.startDate && queryFilters.endDate) {
-          const startUTC = convertUserDateToUTC(new Date(queryFilters.startDate));
-          const endUTC = convertUserDateToUTC(new Date(queryFilters.endDate));
-          query = query
-            .gte('transaction_date', startUTC.split('T')[0])
-            .lte('transaction_date', endUTC.split('T')[0]);
-        } else if (queryFilters.startDate) {
-          query = query.gte('transaction_date', queryFilters.startDate);
-        } else if (queryFilters.endDate) {
-          query = query.lte('transaction_date', queryFilters.endDate);
-        }
+      } else if (queryFilters.startDate) {
+        query = query.gte('transaction_date', queryFilters.startDate);
+      } else if (queryFilters.endDate) {
+        query = query.lte('transaction_date', queryFilters.endDate);
       }
 
       if (queryFilters.driverId && queryFilters.driverId !== 'all') {
@@ -73,25 +92,32 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
       if (!data) return null;
 
       // Filtrar solo datos de conductores de la empresa actual
-      // Esto es una simplificación - en producción necesitarías una consulta más robusta
       const companyData = data;
 
-      // Calcular estadísticas
-      const totalExpenses = companyData.length;
-      const totalAmount = companyData.reduce((sum, item) => sum + (item.total_amount || 0), 0);
-      const totalGallons = companyData.reduce((sum, item) => sum + (item.gallons_purchased || 0), 0);
+      // ✅ Para estadísticas principales, filtrar solo el período actual
+      const currentPeriodExpenses = queryFilters.startDate && queryFilters.endDate
+        ? companyData.filter(item => {
+            const transactionDate = item.transaction_date;
+            return transactionDate >= queryFilters.startDate && transactionDate <= queryFilters.endDate;
+          })
+        : companyData;
+
+      // Calcular estadísticas del período actual
+      const totalExpenses = currentPeriodExpenses.length;
+      const totalAmount = currentPeriodExpenses.reduce((sum, item) => sum + (item.total_amount || 0), 0);
+      const totalGallons = currentPeriodExpenses.reduce((sum, item) => sum + (item.gallons_purchased || 0), 0);
       
       const averagePricePerGallon = totalGallons > 0 ? totalAmount / totalGallons : 0;
       
       // Estadísticas por estado
-      const byStatus = companyData.reduce((acc, item) => {
+      const byStatus = currentPeriodExpenses.reduce((acc, item) => {
         const status = item.status || 'unknown';
         acc[status] = (acc[status] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
 
       // Estadísticas por tipo de combustible
-      const byFuelType = companyData.reduce((acc, item) => {
+      const byFuelType = currentPeriodExpenses.reduce((acc, item) => {
         const type = item.fuel_type || 'unknown';
         acc[type] = (acc[type] || 0) + 1;
         return acc;
@@ -159,14 +185,29 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
           previousStart = new Date(previousEnd.getTime() - periodDuration);
         }
         
-        // Convertir a formato de fecha para comparación
-        const previousStartStr = formatDateInUserTimeZone(previousStart);
-        const previousEndStr = formatDateInUserTimeZone(previousEnd);
+        // Convertir a formato de fecha para comparación (YYYY-MM-DD)
+        const previousStartStr = previousStart.toISOString().split('T')[0];
+        const previousEndStr = previousEnd.toISOString().split('T')[0];
+        
+        console.log('🔍 Fuel Stats Comparison Debug:', {
+          currentStart: queryFilters.startDate,
+          currentEnd: queryFilters.endDate,
+          previousStart: previousStartStr,
+          previousEnd: previousEndStr,
+          frequency: queryFilters.periodFrequency,
+          totalDataCount: companyData.length
+        });
         
         // Calcular datos del período anterior
         const previousExpenses = companyData.filter(item => {
           const transactionDate = item.transaction_date;
           return transactionDate >= previousStartStr && transactionDate <= previousEndStr;
+        });
+        
+        console.log('📊 Previous Period Results:', {
+          previousExpensesCount: previousExpenses.length,
+          previousAmount: previousExpenses.reduce((sum, item) => sum + (item.total_amount || 0), 0),
+          sampleDates: previousExpenses.slice(0, 3).map(e => e.transaction_date)
         });
         
         previousPeriodData = {
