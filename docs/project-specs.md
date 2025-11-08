@@ -1,4 +1,4 @@
-# FleetNest TMS - Especificaciones del Proyecto
+# Harvox TMS - Especificaciones del Proyecto
 
 ## 🎯 Visión General
 **Aplicación web profesional tipo SaaS Multi-tenant** dirigida a compañías de transporte en EE.UU. Cada empresa tiene acceso seguro y aislado a sus datos (choferes, cargas, reportes, gastos, facturación).
@@ -165,27 +165,27 @@ user: {
 ### **Estructura de URLs**
 
 #### **URLs Públicas** (Sin autenticación requerida)
-- `fleetnest.app/` → Landing page principal
-- `fleetnest.app/auth` → Login/Signup flows
-- `fleetnest.app/demo` → Demo del producto (opcional)
-- `fleetnest.app/pricing` → Planes y precios
-- `fleetnest.app/contact` → Contacto y soporte
+- `harvox.app/` → Landing page principal
+- `harvox.app/auth` → Login/Signup flows
+- `harvox.app/demo` → Demo del producto (opcional)
+- `harvox.app/pricing` → Planes y precios
+- `harvox.app/contact` → Contacto y soporte
 
 #### **URLs Protegidas** (Requieren autenticación)
-- `fleetnest.app/dashboard` → Command Center principal
-- `fleetnest.app/drivers` → Gestión de conductores
-- `fleetnest.app/fleet` → Gestión de flota y vehículos
-- `fleetnest.app/loads` → Gestión de cargas y rutas
-- `fleetnest.app/clients` → Gestión de clientes/brokers
-- `fleetnest.app/billing` → Facturación y pagos
-- `fleetnest.app/reports` → Reportes y analytics
-- `fleetnest.app/documents` → Gestión de documentos
+- `harvox.app/dashboard` → Command Center principal
+- `harvox.app/drivers` → Gestión de conductores
+- `harvox.app/fleet` → Gestión de flota y vehículos
+- `harvox.app/loads` → Gestión de cargas y rutas
+- `harvox.app/clients` → Gestión de clientes/brokers
+- `harvox.app/billing` → Facturación y pagos
+- `harvox.app/reports` → Reportes y analytics
+- `harvox.app/documents` → Gestión de documentos
 
 ### **Flujo de Autenticación**
 
 #### **Landing Page Flow**
 ```
-🌐 fleetnest.app → Landing Page
+🌐 harvox.app → Landing Page
 ├── "Comenzar Gratis" → /auth?mode=signup
 ├── "Iniciar Sesión" → /auth?mode=login  
 ├── "Ver Demo" → /demo
@@ -277,7 +277,7 @@ Driver:
 ```
 🎯 Command Center Layout
 ├── Header (Fixed Top):
-│   ├── Logo + "FleetNest Command Center"
+│   ├── Logo + "Harvox Command Center"
 │   ├── Company Switcher Dropdown
 │   ├── Quick Actions:
 │   │   ├── "Nueva Carga" (Primary)

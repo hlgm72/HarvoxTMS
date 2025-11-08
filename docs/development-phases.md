@@ -1,7 +1,7 @@
-# FleetNest TMS - Plan de Desarrollo Completo
+# Harvox TMS - Plan de Desarrollo Completo
 
 ## 🎯 **VISIÓN GENERAL**
-FleetNest será un TMS profesional que compita con los mejores del mercado, con:
+Harvox será un TMS profesional que compita con los mejores del mercado, con:
 - **Multi-tenant** para múltiples empresas de transporte
 - **Bilingüe** (inglés prioritario + español) desde día 1
 - **Command Center** responsive con 3 columnas
@@ -169,7 +169,7 @@ driver_expenses (id, driver_id, amount, category, date, receipt_url)
 
 ### **6.3 White-Label Options**
 - 🔲 **Custom Branding** - Logo/colores por empresa
-- 🔲 **Custom Domains** - company.fleetnest.com
+- 🔲 **Custom Domains** - company.harvox.com
 - 🔲 **API-First** - Para partners y resellers
 - 🔲 **Enterprise SSO** - SAML/OAuth integration
 

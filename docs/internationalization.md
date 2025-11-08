@@ -1,4 +1,4 @@
-# FleetNest TMS - Sistema de Internacionalización (i18n)
+# Harvox TMS - Sistema de Internacionalización (i18n)
 
 ## 🌍 **Estrategia i18n: Bilingüe desde el Día 1**
 
@@ -109,7 +109,7 @@ src/i18n/
 ```json
 {
   "app": {
-    "name": "FleetNest",
+    "name": "Harvox",
     "tagline": "Command Center for Transportation"
   },
   "navigation": {
@@ -152,7 +152,7 @@ src/i18n/
 ```json
 {
   "app": {
-    "name": "FleetNest",
+    "name": "Harvox",
     "tagline": "Centro de Comando para Transporte"
   },
   "navigation": {

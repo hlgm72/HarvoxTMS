@@ -576,7 +576,7 @@ export function PaymentReportDialog({
             <!-- Header -->
             <div style="background: #002652; padding: 30px; text-align: center;">
               <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png" 
+                <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/harvox/logo_64x64.png" 
                      alt="Harvox TMS Logo" 
                      style="width: 40px; height: 40px; object-fit: contain;">
                 <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">${translations.header.title}</h1>

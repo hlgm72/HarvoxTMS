@@ -80,7 +80,7 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    /* FleetNest Specific Colors */
+    /* Harvox Specific Colors */
     --fleet-orange: 21 100% 55%;    /* #FF6C1A - Primary orange */
     --fleet-orange-dark: 21 100% 45%; /* Darker orange for hover states */
     --fleet-blue: 215 100% 25%;     /* #003F7D - Primary navy */
@@ -111,7 +111,7 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
-    /* FleetNest Style Sidebar - Using new primary navy as background */
+    /* Harvox Style Sidebar - Using new primary navy as background */
     --fleet-sidebar-primary: 210 100% 20%;   /* Deep Navy blue primary - main background */
     --fleet-sidebar-darker: 210 100% 15%;    /* Darker navy for header */
     --fleet-sidebar-hover: 210 100% 25%;     /* Lighter navy for hover */
@@ -120,7 +120,7 @@ All colors MUST be HSL.
     --fleet-sidebar-text-muted: 210 20% 85%; /* Light navy-grey text */
     --fleet-sidebar-border: 210 100% 10%;    /* Darker navy for borders */
     
-    /* Sidebar mapping to FleetNest blue theme */
+    /* Sidebar mapping to Harvox blue theme */
     --sidebar-background: var(--fleet-sidebar-primary);
     --sidebar-foreground: var(--fleet-sidebar-text);
     --sidebar-primary: var(--fleet-sidebar-active);

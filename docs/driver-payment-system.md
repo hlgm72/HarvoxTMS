@@ -2,7 +2,7 @@
 
 ## Resumen de Requerimientos Analizados
 
-Este documento recoge las decisiones tomadas durante el análisis de requerimientos para el sistema de gestión de pagos y gastos de conductores en FleetNest.
+Este documento recoge las decisiones tomadas durante el análisis de requerimientos para el sistema de gestión de pagos y gastos de conductores en Harvox.
 
 ## Contexto del Negocio
 

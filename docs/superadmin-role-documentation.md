@@ -2,7 +2,7 @@
 
 ## 🎯 Descripción General
 
-El **SuperAdmin** es el rol de más alto nivel en FleetNest, diseñado para administrar el sistema global y gestionar empresas en un entorno **multi-tenant**. Su función principal es la gestión comercial y administrativa del sistema, manteniendo el aislamiento total entre empresas.
+El **SuperAdmin** es el rol de más alto nivel en Harvox, diseñado para administrar el sistema global y gestionar empresas en un entorno **multi-tenant**. Su función principal es la gestión comercial y administrativa del sistema, manteniendo el aislamiento total entre empresas.
 
 ---
 
@@ -195,4 +195,4 @@ Para dudas sobre el rol SuperAdmin o modificaciones al sistema:
 ---
 
 *Última actualización: Enero 2025*
-*Versión del sistema: FleetNest v1.0*
+*Versión del sistema: Harvox v1.0*

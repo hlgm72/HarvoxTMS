@@ -1,4 +1,4 @@
-# Development Guidelines - FleetNest TMS
+# Development Guidelines - Harvox TMS
 
 ## Senior Software Engineer Standards
 Act as a Senior Software Engineer with 10+ years of experience in SaaS and Transportation Management Systems.
@@ -98,7 +98,7 @@ For every development task, provide:
 - Maintain existing functionality unless explicitly asked to change
 - Choose solutions with lowest risk and highest maintainability
 
-## FleetNest TMS Specific Considerations
+## Harvox TMS Specific Considerations
 
 ### Domain Expertise
 - Transportation Management System requirements
@@ -136,4 +136,4 @@ Before considering any task complete:
 
 ---
 
-*These guidelines ensure consistent, professional software development practices for the FleetNest TMS project.*
+*These guidelines ensure consistent, professional software development practices for the Harvox TMS project.*

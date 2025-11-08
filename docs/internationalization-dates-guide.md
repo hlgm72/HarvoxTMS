@@ -1,8 +1,8 @@
-# Guía de Internacionalización de Fechas y Monedas - FleetNest
+# Guía de Internacionalización de Fechas y Monedas - Harvox
 
 ## 📋 Resumen
 
-Este documento detalla la implementación completa de internacionalización automática para fechas y monedas en FleetNest TMS. **TODA nueva funcionalidad debe seguir estas reglas para mantener consistencia.**
+Este documento detalla la implementación completa de internacionalización automática para fechas y monedas en Harvox TMS. **TODA nueva funcionalidad debe seguir estas reglas para mantener consistencia.**
 
 ## 🎯 Estado Actual
 

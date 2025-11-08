@@ -1,9 +1,9 @@
-# Sistema de Notificaciones FleetNest
+# Sistema de Notificaciones Harvox
 
 ## 🎨 **Características del Nuevo Sistema**
 
 ### **Diseño Atractivo y Profesional**
-- ✅ **Gradientes con colores FleetNest** (Transport Orange, Fleet Blue, Fleet Green, Fleet Red)
+- ✅ **Gradientes con colores Harvox** (Transport Orange, Fleet Blue, Fleet Green, Fleet Red)
 - ✅ **Iconos contextuales** para cada tipo de notificación
 - ✅ **Animaciones suaves** (fade-in, hover scale, backdrop blur)
 - ✅ **Sombras temáticas** que coinciden con el color de la notificación
@@ -70,7 +70,7 @@ showNotification('success', 'Título', 'Mensaje', {
 // Login exitoso
 showSuccess(
   "¡Bienvenido de vuelta!",
-  "Has iniciado sesión exitosamente en FleetNest"
+  "Has iniciado sesión exitosamente en Harvox"
 );
 
 // Error de login
@@ -85,7 +85,7 @@ showError(
 // Crear empresa
 showSuccess(
   "¡Empresa creada exitosamente!",
-  `${companyName} ha sido añadida al sistema FleetNest`
+  `${companyName} ha sido añadida al sistema Harvox`
 );
 
 // Error al crear
@@ -147,8 +147,8 @@ Cada tipo tiene su propia configuración de colores, iconos y sombras definida e
 - ❌ Sin gradientes ni efectos visuales
 - ❌ Funcionalidad limitada
 
-### **Ahora (FleetNest Notifications)**
-- ✅ **Diseño profesional** con identidad FleetNest
+### **Ahora (Harvox Notifications)**
+- ✅ **Diseño profesional** con identidad Harvox
 - ✅ **Colores corporativos** Transport Orange & Fleet Blue
 - ✅ **Efectos visuales** gradientes, sombras, animaciones
 - ✅ **Funcionalidad avanzada** acciones, persistencia, auto-dismiss
@@ -163,4 +163,4 @@ Cada tipo tiene su propia configuración de colores, iconos y sombras definida e
 4. **Verificar auto-dismiss** después de 5 segundos
 5. **Probar cerrar manualmente** con botón X
 
-¡El nuevo sistema está listo para usar en toda la aplicación FleetNest!
+¡El nuevo sistema está listo para usar en toda la aplicación Harvox!
