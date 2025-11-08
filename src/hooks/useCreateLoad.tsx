@@ -380,6 +380,13 @@ export const useCreateLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
       queryClient.invalidateQueries({ queryKey: ['available-weeks'] });
       
+      // 🔄 Invalidar queries específicas del Payment Report Dialog
+      queryClient.invalidateQueries({ queryKey: ['period-loads'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+      queryClient.invalidateQueries({ queryKey: ['period-deductions'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      
       // Refetch inmediato para sincronización rápida
       await queryClient.refetchQueries({ queryKey: ['loads'] });
     },

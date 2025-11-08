@@ -1134,17 +1134,25 @@ export function PaymentReportDialog({
 
       <CreateLoadDialog
         isOpen={showEditLoadDialog}
-        onClose={() => {
+        onClose={async () => {
           setShowEditLoadDialog(false);
           setSelectedLoadForEdit(null);
-          // Refrescar los datos después de editar
-          queryClient.invalidateQueries({ queryKey: ['period-loads'] });
-          queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
-          // Invalidar también las queries de la página principal para actualizar Available Payment Reports
-          queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
-          queryClient.invalidateQueries({ queryKey: ['loads'] });
-          queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
-          queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+          
+          // 🔄 Refrescar TODOS los datos del modal después de editar
+          // Esto asegura que los descuentos y el net_payment se actualicen correctamente
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['period-loads'] }),
+            queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] }),
+            queryClient.invalidateQueries({ queryKey: ['period-deductions'] }),
+            queryClient.invalidateQueries({ queryKey: ['user-payrolls'] }),
+            queryClient.invalidateQueries({ queryKey: ['loads'] }),
+            queryClient.invalidateQueries({ queryKey: ['payment-periods'] }),
+            queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] }),
+            queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] })
+          ]);
+          
+          // Forzar refetch inmediato de datos críticos del modal
+          await queryClient.refetchQueries({ queryKey: ['payment-calculation-detail', calculationId] });
         }}
         mode="edit"
         loadData={selectedLoadForEdit}
@@ -1152,10 +1160,21 @@ export function PaymentReportDialog({
 
       <FuelExpenseDialog
         open={showEditFuelDialog}
-        onOpenChange={(isOpen) => {
+        onOpenChange={async (isOpen) => {
           setShowEditFuelDialog(isOpen);
           if (!isOpen) {
             setSelectedFuelForEdit(null);
+            
+            // 🔄 Refrescar datos del modal después de editar fuel expense
+            await Promise.all([
+              queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] }),
+              queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] }),
+              queryClient.invalidateQueries({ queryKey: ['user-payrolls'] }),
+              queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] })
+            ]);
+            
+            // Forzar refetch inmediato
+            await queryClient.refetchQueries({ queryKey: ['payment-calculation-detail', calculationId] });
           }
         }}
         expenseId={selectedFuelForEdit}
@@ -1172,16 +1191,23 @@ export function PaymentReportDialog({
           <div className="overflow-y-auto flex-1 p-6 bg-white">
             {selectedOtherIncomeForEdit && (
               <UnifiedOtherIncomeForm 
-                onClose={() => {
+                onClose={async () => {
                   setShowEditOtherIncomeDialog(false);
                   setSelectedOtherIncomeForEdit(null);
-                  // Invalidar queries para actualizar el modal y la página principal
-                  queryClient.invalidateQueries({ queryKey: ['period-other-income'] });
-                  queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
-                  queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
-                  queryClient.invalidateQueries({ queryKey: ['other-income'] });
-                  queryClient.invalidateQueries({ queryKey: ['payment-periods'] });
-                  queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+                  
+                  // 🔄 Refrescar datos del modal después de editar other income
+                  await Promise.all([
+                    queryClient.invalidateQueries({ queryKey: ['period-other-income'] }),
+                    queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] }),
+                    queryClient.invalidateQueries({ queryKey: ['user-payrolls'] }),
+                    queryClient.invalidateQueries({ queryKey: ['other-income'] }),
+                    queryClient.invalidateQueries({ queryKey: ['payment-periods'] }),
+                    queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] }),
+                    queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] })
+                  ]);
+                  
+                  // Forzar refetch inmediato
+                  await queryClient.refetchQueries({ queryKey: ['payment-calculation-detail', calculationId] });
                 }}
                 showButtons={false}
                 onValidationChange={setIsEditOtherIncomeFormValid}

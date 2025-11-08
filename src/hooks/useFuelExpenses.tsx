@@ -193,12 +193,21 @@ export function useCreateFuelExpense() {
     },
     onSuccess: () => {
       showSuccess('Gasto de combustible creado exitosamente');
+      
+      // Invalidar queries de fuel expenses
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-stats', user?.id, selectedCompany?.id] 
       });
+      
+      // 🔄 Invalidar queries del Payment Report Dialog
+      queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
     },
     onError: (error) => {
       console.error('Error creating fuel expense:', error);
@@ -235,12 +244,21 @@ export function useUpdateFuelExpense() {
     },
     onSuccess: () => {
       showSuccess('Gasto de combustible actualizado exitosamente');
+      
+      // Invalidar queries de fuel expenses
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-stats', user?.id, selectedCompany?.id] 
       });
+      
+      // 🔄 Invalidar queries del Payment Report Dialog
+      queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
     },
     onError: (error) => {
       console.error('Error updating fuel expense:', error);
@@ -283,12 +301,21 @@ export function useDeleteFuelExpense() {
     onSuccess: (data) => {
       console.log('🎉 Success callback ejecutado:', data);
       showSuccess('Gasto de combustible eliminado exitosamente');
+      
+      // Invalidar queries de fuel expenses
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-expenses', user?.id, selectedCompany?.id] 
       });
       queryClient.invalidateQueries({ 
         queryKey: ['fuel-stats', user?.id, selectedCompany?.id] 
       });
+      
+      // 🔄 Invalidar queries del Payment Report Dialog
+      queryClient.invalidateQueries({ queryKey: ['period-fuel-expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
     },
     onError: (error) => {
       console.error('💥 Error callback ejecutado:', error);
