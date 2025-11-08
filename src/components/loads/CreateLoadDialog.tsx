@@ -241,17 +241,18 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   );
 
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
+  // También se ejecuta cuando cambias de fase para restaurar el valor al regresar al Paso 1
   useEffect(() => {
-    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue) {
+    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
       // Use a small delay to ensure the input is fully rendered
       const timeoutId = setTimeout(() => {
-        console.log('🎭 Setting IMask value for edit mode:', activeLoadData.load_number);
+        console.log('🎭 Setting IMask value for edit mode (phase:', currentPhase, '):', activeLoadData.load_number);
         setMaskValue(activeLoadData.load_number);
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
