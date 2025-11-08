@@ -38,7 +38,7 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
 
 
   const formatGallons = (gallons: number) => {
-    return `${gallons.toFixed(1)} gal`;
+    return `${gallons.toFixed(2)} gal`;
   };
 
   return (
