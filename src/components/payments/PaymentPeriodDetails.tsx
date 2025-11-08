@@ -207,7 +207,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   }
 
   const totalDrivers = driverCalculations.length;
-  const driversWithNegativeBalance = driverCalculations.filter(d => calculateNetPayment(d) < 0).length;
+  const driversWithNegativeBalance = driverCalculations.filter(d => (d.net_payment || calculateNetPayment(d)) < 0).length;
   const unpaidDrivers = driverCalculations.filter(d => d.payment_status !== 'paid');
   
   // 🚨 CRÍTICO - Agregaciones financieras fundamentales - NO MODIFICAR SIN AUTORIZACIÓN
@@ -215,7 +215,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
   const totalOtherIncome = driverCalculations.reduce((sum, d) => sum + (d.other_income || 0), 0);
   const totalFuelExpenses = driverCalculations.reduce((sum, d) => sum + (d.fuel_expenses || 0), 0);
   const totalDeductions = driverCalculations.reduce((sum, d) => sum + (d.total_deductions || 0), 0);
-  const totalNetPayment = driverCalculations.reduce((sum, d) => sum + calculateNetPayment(d), 0); // 🚨 FUNCIÓN CRÍTICA
+  const totalNetPayment = driverCalculations.reduce((sum, d) => sum + (d.net_payment || calculateNetPayment(d)), 0); // 🚨 FUNCIÓN CRÍTICA
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -447,7 +447,7 @@ export function PaymentPeriodDetails({ periodId, onClose }: PaymentPeriodDetails
 
           {/* Lista de conductores */}
           {driverCalculations.map((calc) => {
-            const netPayment = calculateNetPayment(calc);
+            const netPayment = calc.net_payment || calculateNetPayment(calc);
             const hasNegativeBalance = netPayment < 0;
             
             return (

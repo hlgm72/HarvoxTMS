@@ -365,7 +365,7 @@ export default function PaymentReports() {
           matchesStatus = calc.payment_status === 'failed';
           break;
         case 'negative':
-          matchesStatus = calculateNetPayment(calc) < 0;
+          matchesStatus = (calc.net_payment || calculateNetPayment(calc)) < 0;
           break;
       }
     }
@@ -375,7 +375,7 @@ export default function PaymentReports() {
 
   // Estadísticas del dashboard
   const totalReports = filteredCalculations.length;
-  const totalEarnings = filteredCalculations.reduce((sum, calc) => sum + calculateNetPayment(calc), 0);
+  const totalEarnings = filteredCalculations.reduce((sum, calc) => sum + (calc.net_payment || calculateNetPayment(calc)), 0);
   const totalDrivers = new Set(filteredCalculations.map(calc => calc.user_id)).size;
   const pendingReports = filteredCalculations.filter(calc => calc.payment_status === 'calculated').length;
 
@@ -395,7 +395,7 @@ export default function PaymentReports() {
           fuel_expenses: calculation.fuel_expenses,
           total_deductions: calculation.total_deductions,
           other_income: calculation.other_income,
-          net_payment: calculateNetPayment(calculation),
+          net_payment: calculation.net_payment || calculateNetPayment(calculation),
           payment_date: calculation.company_payment_periods.payment_date
         },
         company: {
@@ -727,7 +727,7 @@ export default function PaymentReports() {
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-2 font-semibold text-foreground">
                             <Banknote className="h-4 w-4 text-green-600" />
-                            {t('reports.net')} {formatCurrency(calculateNetPayment(calculation))}
+                            {t('reports.net')} {formatCurrency(calculation.net_payment || calculateNetPayment(calculation))}
                           </span>
                           <span className="flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-blue-600" />
@@ -823,7 +823,7 @@ export default function PaymentReports() {
           const driver = drivers.find(d => d.user_id === selectedForPayment.user_id);
           return `${driver?.first_name || ''} ${driver?.last_name || ''}`.trim();
         })()}
-        netPayment={selectedForPayment ? calculateNetPayment(selectedForPayment) : 0}
+        netPayment={selectedForPayment ? (selectedForPayment.net_payment || calculateNetPayment(selectedForPayment)) : 0}
         onSuccess={handlePaymentSuccess}
       />
     </>

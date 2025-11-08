@@ -387,7 +387,7 @@ export function PaymentReportDialog({
         fuel_expenses: calculation.fuel_expenses,
         total_deductions: calculation.total_deductions,
         other_income: calculation.other_income,
-        net_payment: calculateNetPayment(calculation),
+        net_payment: calculation.net_payment || calculateNetPayment(calculation),
         payment_date: calculation.payment_date
       },
       company: {
@@ -837,8 +837,8 @@ export function PaymentReportDialog({
               
               <div className="flex items-center justify-between text-base sm:text-lg font-bold">
                 <span>{t('report_dialog.net_payment')}:</span>
-                <span className={calculateNetPayment(calculation) >= 0 ? 'text-success' : 'text-destructive'}>
-                  {formatCurrency(calculateNetPayment(calculation))}
+                <span className={(calculation.net_payment || calculateNetPayment(calculation)) >= 0 ? 'text-success' : 'text-destructive'}>
+                  {formatCurrency(calculation.net_payment || calculateNetPayment(calculation))}
                 </span>
               </div>
             </CardContent>

@@ -141,7 +141,7 @@ export function usePaymentPeriodSummary(periodId?: string) {
         acc.other_income += calc.other_income || 0;
         acc.fuel_expenses += calc.fuel_expenses || 0;
         acc.deductions += calc.total_deductions || 0;
-        const netPayment = calculateNetPayment(calc); // 🚨 FUNCIÓN CRÍTICA
+        const netPayment = calc.net_payment || calculateNetPayment(calc); // 🚨 FUNCIÓN CRÍTICA
         acc.net_payment += netPayment;
         
         if (netPayment < 0) {
@@ -221,7 +221,7 @@ export function useAllPaymentPeriodsSummary(companyId?: string) {
         summary.other_income += calc.other_income || 0;
         summary.fuel_expenses += calc.fuel_expenses || 0;
         summary.deductions += calc.total_deductions || 0;
-        const netPayment = calculateNetPayment(calc);
+        const netPayment = calc.net_payment || calculateNetPayment(calc);
         summary.net_payment += netPayment;
         summary.driver_count++;
         

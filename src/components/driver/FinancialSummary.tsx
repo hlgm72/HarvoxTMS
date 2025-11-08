@@ -114,7 +114,7 @@ export function FinancialSummary({ className }: FinancialSummaryProps) {
             other_income: currentCalculation?.other_income || 0,
             fuel_expenses: currentCalculation?.fuel_expenses || 0,
             total_deductions: currentCalculation?.total_deductions || 0,
-            net_payment: currentCalculation ? calculateNetPayment(currentCalculation) : 0, // 🚨 FUNCIÓN CRÍTICA
+            net_payment: currentCalculation ? (currentCalculation.net_payment || calculateNetPayment(currentCalculation)) : 0, // 🚨 FUNCIÓN CRÍTICA
             period_start: currentCalculation?.period?.period_start_date || '',
             period_end: currentCalculation?.period?.period_end_date || '',
             status: currentCalculation?.payment_status || 'calculated'
