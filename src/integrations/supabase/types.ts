@@ -573,6 +573,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          immutable: boolean
           period_end_date: string
           period_frequency: string
           period_start_date: string
@@ -583,6 +584,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          immutable?: boolean
           period_end_date: string
           period_frequency: string
           period_start_date: string
@@ -593,6 +595,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          immutable?: boolean
           period_end_date?: string
           period_frequency?: string
           period_start_date?: string
