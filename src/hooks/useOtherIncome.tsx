@@ -122,6 +122,47 @@ export function useCreateOtherIncome() {
       
       throw new Error('Respuesta inválida del servidor');
     },
+    // 🚀 OPTIMISTIC UPDATE: Actualizar UI inmediatamente
+    onMutate: async (newIncome) => {
+      // Cancelar queries en progreso para evitar que sobrescriban nuestro optimistic update
+      await queryClient.cancelQueries({ queryKey: ['other-income'] });
+      await queryClient.cancelQueries({ queryKey: ['payment-calculations-reports'] });
+      
+      // Guardar snapshot del estado anterior por si necesitamos revertir
+      const previousOtherIncome = queryClient.getQueryData(['other-income']);
+      
+      // Crear un temporary ID para el nuevo income
+      const optimisticIncome = {
+        id: `temp-${Date.now()}`,
+        ...newIncome,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: newIncome.status || 'approved',
+        reference_number: newIncome.reference_number || '',
+        notes: newIncome.notes || ''
+      };
+      
+      // Actualizar optimísticamente el cache de other-income
+      queryClient.setQueryData(['other-income'], (old: any) => {
+        if (!old) return [optimisticIncome];
+        return [optimisticIncome, ...old];
+      });
+      
+      console.log('🚀 Optimistic update applied for new other income');
+      
+      // Retornar contexto con el snapshot para poder revertir si falla
+      return { previousOtherIncome, optimisticIncome };
+    },
+    // ❌ Si hay error, revertir al estado anterior
+    onError: (error, newIncome, context) => {
+      console.error('❌ Error creating other income, reverting optimistic update:', error);
+      
+      if (context?.previousOtherIncome) {
+        queryClient.setQueryData(['other-income'], context.previousOtherIncome);
+      }
+      
+      showError('No se pudo crear el ingreso');
+    },
     onSuccess: async (result) => {
       showSuccess('Ingreso adicional creado exitosamente');
       
@@ -149,11 +190,7 @@ export function useCreateOtherIncome() {
       queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
       // 🔧 CRÍTICO: Invalidar payment-calculations-reports para refrescar PaymentReports.tsx
       queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
-    },
-    onError: (error) => {
-      console.error('Error creating other income:', error);
-      showError('No se pudo crear el ingreso');
-    },
+    }
   });
 }
 
@@ -186,6 +223,45 @@ export function useUpdateOtherIncome() {
 
       return (result as any).income;
     },
+    // 🚀 OPTIMISTIC UPDATE: Actualizar UI inmediatamente
+    onMutate: async (updatedIncome) => {
+      // Cancelar queries en progreso
+      await queryClient.cancelQueries({ queryKey: ['other-income'] });
+      await queryClient.cancelQueries({ queryKey: ['payment-calculations-reports'] });
+      await queryClient.cancelQueries({ queryKey: ['payment-calculation-detail'] });
+      
+      // Guardar snapshot del estado anterior
+      const previousOtherIncome = queryClient.getQueryData(['other-income']);
+      const previousCalculationDetail = queryClient.getQueryData(['payment-calculation-detail', updatedIncome.id]);
+      
+      // Actualizar optimísticamente el cache de other-income
+      queryClient.setQueryData(['other-income'], (old: any) => {
+        if (!old) return old;
+        return old.map((income: any) => 
+          income.id === updatedIncome.id 
+            ? { ...income, ...updatedIncome, updated_at: new Date().toISOString() }
+            : income
+        );
+      });
+      
+      console.log('🚀 Optimistic update applied for other income:', updatedIncome.id);
+      
+      // Retornar contexto con snapshots
+      return { previousOtherIncome, previousCalculationDetail };
+    },
+    // ❌ Si hay error, revertir al estado anterior
+    onError: (error, updatedIncome, context) => {
+      console.error('❌ Error updating other income, reverting optimistic update:', error);
+      
+      if (context?.previousOtherIncome) {
+        queryClient.setQueryData(['other-income'], context.previousOtherIncome);
+      }
+      if (context?.previousCalculationDetail) {
+        queryClient.setQueryData(['payment-calculation-detail', updatedIncome.id], context.previousCalculationDetail);
+      }
+      
+      showError('No se pudo actualizar el ingreso');
+    },
     onSuccess: () => {
       showSuccess('Ingreso adicional actualizado exitosamente');
       
@@ -213,11 +289,7 @@ export function useUpdateOtherIncome() {
       queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
       // 🔧 CRÍTICO: Invalidar payment-calculations-reports para refrescar PaymentReports.tsx
       queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
-    },
-    onError: (error) => {
-      console.error('Error updating other income:', error);
-      showError('No se pudo actualizar el ingreso');
-    },
+    }
   });
 }
 
@@ -248,6 +320,36 @@ export function useDeleteOtherIncome() {
 
       return result;
     },
+    // 🚀 OPTIMISTIC UPDATE: Actualizar UI inmediatamente
+    onMutate: async (deletedId) => {
+      // Cancelar queries en progreso
+      await queryClient.cancelQueries({ queryKey: ['other-income'] });
+      await queryClient.cancelQueries({ queryKey: ['payment-calculations-reports'] });
+      
+      // Guardar snapshot del estado anterior
+      const previousOtherIncome = queryClient.getQueryData(['other-income']);
+      
+      // Remover optimísticamente del cache
+      queryClient.setQueryData(['other-income'], (old: any) => {
+        if (!old) return old;
+        return old.filter((income: any) => income.id !== deletedId);
+      });
+      
+      console.log('🚀 Optimistic delete applied for other income:', deletedId);
+      
+      // Retornar contexto con el snapshot
+      return { previousOtherIncome, deletedId };
+    },
+    // ❌ Si hay error, revertir al estado anterior
+    onError: (error, deletedId, context) => {
+      console.error('❌ Error deleting other income, reverting optimistic update:', error);
+      
+      if (context?.previousOtherIncome) {
+        queryClient.setQueryData(['other-income'], context.previousOtherIncome);
+      }
+      
+      showError('No se pudo eliminar el ingreso');
+    },
     onSuccess: async (result) => {
       showSuccess('Ingreso adicional eliminado exitosamente');
       
@@ -275,10 +377,6 @@ export function useDeleteOtherIncome() {
       queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
       // 🔧 CRÍTICO: Invalidar payment-calculations-reports para refrescar PaymentReports.tsx
       queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
-    },
-    onError: (error) => {
-      console.error('Error deleting other income:', error);
-      showError('No se pudo eliminar el ingreso');
-    },
+    }
   });
 }
