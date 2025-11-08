@@ -242,11 +242,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
   useEffect(() => {
-    if (mode === 'edit' && isFormReady && currentLoadNumber && setMaskValue) {
-      // Usar el método setValue proporcionado por IMask en lugar de acceso directo
-      setMaskValue(currentLoadNumber);
+    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue) {
+      // Use a small delay to ensure the input is fully rendered
+      const timeoutId = setTimeout(() => {
+        console.log('🎭 Setting IMask value for edit mode:', activeLoadData.load_number);
+        setMaskValue(activeLoadData.load_number);
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, currentLoadNumber, setMaskValue]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -486,25 +491,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   }, [selectedClient, clientContacts, form, showSuccess]);
 
-  // Sync IMask with form value when editing
-  useEffect(() => {
-    if ((mode === 'edit' || mode === 'duplicate') && activeLoadData?.load_number && isFormReady) {
-      // Use timeout to ensure IMask and input are fully initialized
-      const timeoutId = setTimeout(() => {
-        if (maskRef.current) {
-          try {
-            // Set unmasked value and force update
-            maskRef.current.unmaskedValue = activeLoadData.load_number;
-            maskRef.current.updateValue();
-          } catch (e) {
-            console.error('Error updating IMask:', e);
-          }
-        }
-      }, 200);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [mode, activeLoadData?.load_number, isFormReady, maskRef]);
+  // Removed duplicate useEffect - load number sync is now handled in the first useEffect above (lines 243-253)
 
   // Initialize form and states when load data is available
   useEffect(() => {
