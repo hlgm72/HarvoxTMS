@@ -147,6 +147,8 @@ export function useCreateOtherIncome() {
       queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
       // Invalidar Financial Summary
       queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
+      // 🔧 CRÍTICO: Invalidar payment-calculations-reports para refrescar PaymentReports.tsx
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
     },
     onError: (error) => {
       console.error('Error creating other income:', error);
@@ -209,6 +211,8 @@ export function useUpdateOtherIncome() {
       queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
       // Invalidar Financial Summary
       queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
+      // 🔧 CRÍTICO: Invalidar payment-calculations-reports para refrescar PaymentReports.tsx
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
     },
     onError: (error) => {
       console.error('Error updating other income:', error);
@@ -269,6 +273,8 @@ export function useDeleteOtherIncome() {
       queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
       // Invalidar Financial Summary
       queryClient.invalidateQueries({ queryKey: ['driver-financial-summary'] });
+      // 🔧 CRÍTICO: Invalidar payment-calculations-reports para refrescar PaymentReports.tsx
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
     },
     onError: (error) => {
       console.error('Error deleting other income:', error);
