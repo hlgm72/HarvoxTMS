@@ -12,6 +12,7 @@ interface FuelStatsCardsProps {
     driverId?: string;
     startDate?: string;
     endDate?: string;
+    periodFrequency?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
   };
 }
 
@@ -122,28 +123,25 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="text-lg sm:text-2xl font-bold">
-            {stats?.monthlyData && stats.monthlyData.length > 0 
-              ? formatCurrency(stats.monthlyData[stats.monthlyData.length - 1]?.amount || 0)
-              : formatCurrency(0)
-            }
+            {formatCurrency(stats?.currentPeriod?.amount || 0)}
           </div>
           <p className="text-xs text-muted-foreground">
-            {t('fuel:stats.this_month')}
+            {t('fuel:stats.this_period')}
           </p>
-          {stats?.monthlyData && stats.monthlyData.length > 1 && (
+          {stats?.previousPeriod && stats.previousPeriod.amount > 0 && (
             <p className="text-xs font-body flex items-center gap-1 mt-1">
               {(() => {
-                const current = stats.monthlyData[stats.monthlyData.length - 1]?.amount || 0;
-                const previous = stats.monthlyData[stats.monthlyData.length - 2]?.amount || 0;
+                const current = stats.currentPeriod?.amount || 0;
+                const previous = stats.previousPeriod?.amount || 0;
                 const change = previous > 0 ? ((current - previous) / previous * 100) : 0;
                 const isPositive = change >= 0;
                 return (
                   <span className={isPositive ? 'text-success' : 'text-destructive'}>
-                    <span className={isPositive ? '' : ''}>
+                    <span>
                       {isPositive ? '+' : ''}{change.toFixed(1)}%
                     </span>
                     {' '}
-                    <span className="text-muted-foreground">{t('fuel:stats.vs_previous')}</span>
+                    <span className="text-muted-foreground">{t('fuel:stats.vs_previous_period')}</span>
                   </span>
                 );
               })()}

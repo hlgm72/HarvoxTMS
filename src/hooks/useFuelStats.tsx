@@ -9,6 +9,7 @@ export interface FuelStatsFilters {
   driverId?: string;
   startDate?: string;
   endDate?: string;
+  periodFrequency?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
   enabled?: boolean;
 }
 
@@ -96,7 +97,86 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
         return acc;
       }, {} as Record<string, number>);
 
-      // Tendencia mensual (últimos 6 meses)
+      // Calcular comparación de períodos según la frecuencia
+      let currentPeriodData = {
+        amount: 0,
+        gallons: 0,
+        count: 0
+      };
+      let previousPeriodData = {
+        amount: 0,
+        gallons: 0,
+        count: 0
+      };
+      
+      // Si tenemos fechas de período, calcular current y previous
+      if (queryFilters.startDate && queryFilters.endDate) {
+        const startDate = new Date(queryFilters.startDate);
+        const endDate = new Date(queryFilters.endDate);
+        
+        // Calcular datos del período actual
+        const currentExpenses = companyData.filter(item => {
+          const transactionDate = item.transaction_date;
+          return transactionDate >= queryFilters.startDate && transactionDate <= queryFilters.endDate;
+        });
+        
+        currentPeriodData = {
+          amount: currentExpenses.reduce((sum, item) => sum + (item.total_amount || 0), 0),
+          gallons: currentExpenses.reduce((sum, item) => sum + (item.gallons_purchased || 0), 0),
+          count: currentExpenses.length
+        };
+        
+        // Calcular fechas del período anterior según la frecuencia
+        let previousStart: Date;
+        let previousEnd: Date;
+        
+        const frequency = queryFilters.periodFrequency || 'weekly';
+        const periodDuration = endDate.getTime() - startDate.getTime();
+        
+        if (frequency === 'weekly') {
+          // 7 días antes
+          previousEnd = new Date(startDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+          previousStart = new Date(previousEnd.getTime() - periodDuration);
+        } else if (frequency === 'biweekly') {
+          // 14 días antes
+          previousEnd = new Date(startDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+          previousStart = new Date(previousEnd.getTime() - periodDuration);
+        } else if (frequency === 'monthly') {
+          // Mes anterior
+          previousStart = new Date(startDate.getFullYear(), startDate.getMonth() - 1, startDate.getDate());
+          previousEnd = new Date(endDate.getFullYear(), endDate.getMonth() - 1, endDate.getDate());
+        } else if (frequency === 'quarterly') {
+          // Trimestre anterior
+          previousStart = new Date(startDate.getFullYear(), startDate.getMonth() - 3, startDate.getDate());
+          previousEnd = new Date(endDate.getFullYear(), endDate.getMonth() - 3, endDate.getDate());
+        } else if (frequency === 'yearly') {
+          // Año anterior
+          previousStart = new Date(startDate.getFullYear() - 1, startDate.getMonth(), startDate.getDate());
+          previousEnd = new Date(endDate.getFullYear() - 1, endDate.getMonth(), endDate.getDate());
+        } else {
+          // Default: usar la misma duración del período
+          previousEnd = new Date(startDate.getTime() - 1 * 24 * 60 * 60 * 1000);
+          previousStart = new Date(previousEnd.getTime() - periodDuration);
+        }
+        
+        // Convertir a formato de fecha para comparación
+        const previousStartStr = formatDateInUserTimeZone(previousStart);
+        const previousEndStr = formatDateInUserTimeZone(previousEnd);
+        
+        // Calcular datos del período anterior
+        const previousExpenses = companyData.filter(item => {
+          const transactionDate = item.transaction_date;
+          return transactionDate >= previousStartStr && transactionDate <= previousEndStr;
+        });
+        
+        previousPeriodData = {
+          amount: previousExpenses.reduce((sum, item) => sum + (item.total_amount || 0), 0),
+          gallons: previousExpenses.reduce((sum, item) => sum + (item.gallons_purchased || 0), 0),
+          count: previousExpenses.length
+        };
+      }
+
+      // Tendencia mensual (últimos 6 meses) - mantener para compatibilidad
       const now = new Date();
       const monthlyData = [];
       
@@ -132,7 +212,10 @@ export function useFuelStats(filters: FuelStatsFilters = {}) {
         monthlyData,
         pending: byStatus.pending || 0,
         approved: byStatus.approved || 0,
-        verified: byStatus.verified || 0
+        verified: byStatus.verified || 0,
+        currentPeriod: currentPeriodData,
+        previousPeriod: previousPeriodData,
+        periodFrequency: queryFilters.periodFrequency
       };
     },
     enabled: !!user?.id && !!selectedCompany?.id && enabled,

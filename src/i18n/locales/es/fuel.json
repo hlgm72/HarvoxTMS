@@ -26,7 +26,9 @@
     "verified": "Verificados",
     "trend": "Tendencia",
     "this_month": "Este mes",
-    "vs_previous": "vs anterior"
+    "this_period": "Este período",
+    "vs_previous": "vs anterior",
+    "vs_previous_period": "vs período anterior"
   },
   "filters": {
     "title": "Filtros",

@@ -166,7 +166,8 @@ export default function FuelManagement() {
       if (pf?.startDate && pf?.endDate) {
         return {
           startDate: pf.startDate,
-          endDate: pf.endDate
+          endDate: pf.endDate,
+          periodFrequency: calculatedPeriods?.current?.period_frequency as any || 'weekly'
         };
       }
       
@@ -179,7 +180,8 @@ export default function FuelManagement() {
       if (pf?.type === 'current' && calculatedPeriods?.current) {
         return {
           startDate: calculatedPeriods.current.period_start_date,
-          endDate: calculatedPeriods.current.period_end_date
+          endDate: calculatedPeriods.current.period_end_date,
+          periodFrequency: calculatedPeriods.current.period_frequency as any
         };
       }
       
@@ -187,20 +189,25 @@ export default function FuelManagement() {
       if (pf?.type === 'previous' && calculatedPeriods?.previous) {
         return {
           startDate: calculatedPeriods.previous.period_start_date,
-          endDate: calculatedPeriods.previous.period_end_date
+          endDate: calculatedPeriods.previous.period_end_date,
+          periodFrequency: calculatedPeriods.previous.period_frequency as any
         };
       }
       
       // 5. Si hay un periodId específico de BD (no calculado), usarlo
       if (pf?.periodId && !pf.periodId.startsWith('calculated-')) {
-        return { periodId: pf.periodId };
+        return { 
+          periodId: pf.periodId,
+          periodFrequency: calculatedPeriods?.current?.period_frequency as any || 'weekly'
+        };
       }
       
       // 6. Por defecto, usar período actual calculado si está disponible
       if (calculatedPeriods?.current) {
         return {
           startDate: calculatedPeriods.current.period_start_date,
-          endDate: calculatedPeriods.current.period_end_date
+          endDate: calculatedPeriods.current.period_end_date,
+          periodFrequency: calculatedPeriods.current.period_frequency as any
         };
       }
       
