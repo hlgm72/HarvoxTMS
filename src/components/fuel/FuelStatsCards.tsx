@@ -134,11 +134,12 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
                 const current = stats.currentPeriod?.amount || 0;
                 const previous = stats.previousPeriod?.amount || 0;
                 const change = previous > 0 ? ((current - previous) / previous * 100) : 0;
-                const isPositive = change >= 0;
+                // ⚠️ INVERTIR LÓGICA: Para gastos, aumento es malo (rojo), disminución es bueno (verde)
+                const isPositive = change < 0; // Cambio negativo (menos gasto) es positivo
                 return (
                   <span className={isPositive ? 'text-success' : 'text-destructive'}>
                     <span>
-                      {isPositive ? '+' : ''}{change.toFixed(1)}%
+                      {change >= 0 ? '+' : ''}{change.toFixed(1)}%
                     </span>
                     {' '}
                     <span className="text-muted-foreground">{t('fuel:stats.vs_previous_period')}</span>
