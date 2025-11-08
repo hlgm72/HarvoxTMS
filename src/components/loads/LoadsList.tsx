@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -433,7 +434,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filteredLoads.map((load) => (
-          <Card key={load.id} className="hover:shadow-md transition-shadow">
+          <Card 
+            key={load.id} 
+            className={cn(
+              "hover:shadow-md transition-shadow",
+              load.status === 'cancelled' && "border-destructive bg-destructive/10"
+            )}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
