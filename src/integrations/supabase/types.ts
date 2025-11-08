@@ -4442,6 +4442,7 @@ export type Database = {
         Args: { assignment_id: string; unassignment_reason?: string }
         Returns: Json
       }
+      unmark_driver_as_paid: { Args: { p_payroll_id: string }; Returns: Json }
       update_client_with_logo_download: {
         Args: {
           client_data: Json
