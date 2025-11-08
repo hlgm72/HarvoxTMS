@@ -120,6 +120,11 @@
       "coming_soon": "Funcionalidad del historial próximamente..."
     }
   },
+  "active_filters": {
+    "title": "Filtros aplicados",
+    "clear": "Limpiar filtros",
+    "clear_short": "Limpiar"
+  },
   "stats": {
     "total_loads": "Total de Cargas", 
     "total_revenue": "Ingresos Totales",
