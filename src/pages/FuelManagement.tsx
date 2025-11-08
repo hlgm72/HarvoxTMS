@@ -279,13 +279,13 @@ export default function FuelManagement() {
     // Filtro de conductor
     if (filters.driverId && filters.driverId !== 'all') {
       const driver = drivers.find(d => d.user_id === filters.driverId);
-      parts.push(`${t("common:filters.driver")}: ${driver ? `${driver.first_name} ${driver.last_name}` : t("fuel:filters.selected")}`);
+      parts.push(`${t("fuel:filters.driver")}: ${driver ? `${driver.first_name} ${driver.last_name}` : t("fuel:filters.selected")}`);
     }
     
     // Filtro de vehículo
     if (filters.vehicleId && filters.vehicleId !== 'all') {
       const vehicle = vehicles.find(v => v.id === filters.vehicleId);
-      parts.push(`${t("common:filters.vehicle")}: ${vehicle ? vehicle.plate_number : t("fuel:filters.selected")}`);
+      parts.push(`${t("fuel:filters.vehicle")}: ${vehicle ? vehicle.plate_number : t("fuel:filters.selected")}`);
     }
     
     // Filtro de estado
@@ -357,7 +357,7 @@ export default function FuelManagement() {
             )}
             {filters.driverId !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {t("common:filters.driver")}: {(() => {
+                {t("fuel:filters.driver")}: {(() => {
                   const driver = drivers.find(d => d.user_id === filters.driverId);
                   return driver ? `${driver.first_name} ${driver.last_name}` : t("fuel:filters.selected");
                 })()}
@@ -365,7 +365,7 @@ export default function FuelManagement() {
             )}
             {filters.vehicleId !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {t("common:filters.vehicle")}: {(() => {
+                {t("fuel:filters.vehicle")}: {(() => {
                   const vehicle = vehicles.find(v => v.id === filters.vehicleId);
                   return vehicle ? vehicle.plate_number : t("fuel:filters.selected");
                 })()}
@@ -373,7 +373,7 @@ export default function FuelManagement() {
             )}
             {filters.status !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {t("common:filters.status")}: {filters.status}
+                {t("fuel:filters.status")}: {filters.status}
               </Badge>
             )}
           </div>
