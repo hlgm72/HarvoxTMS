@@ -131,18 +131,23 @@ export function FuelStatsCards({ filters = {} }: FuelStatsCardsProps) {
             {t('fuel:stats.this_month')}
           </p>
           {stats?.monthlyData && stats.monthlyData.length > 1 && (
-            <div className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs font-body flex items-center gap-1 mt-1">
               {(() => {
                 const current = stats.monthlyData[stats.monthlyData.length - 1]?.amount || 0;
                 const previous = stats.monthlyData[stats.monthlyData.length - 2]?.amount || 0;
                 const change = previous > 0 ? ((current - previous) / previous * 100) : 0;
+                const isPositive = change >= 0;
                 return (
-                  <span className={change >= 0 ? 'text-green-600' : 'text-red-600'}>
-                    {change >= 0 ? '+' : ''}{change.toFixed(1)}% {t('fuel:stats.vs_previous')}
+                  <span className={isPositive ? 'text-success' : 'text-destructive'}>
+                    <span className={isPositive ? '' : ''}>
+                      {isPositive ? '+' : ''}{change.toFixed(1)}%
+                    </span>
+                    {' '}
+                    <span className="text-muted-foreground">{t('fuel:stats.vs_previous')}</span>
                   </span>
                 );
               })()}
-            </div>
+            </p>
           )}
         </CardContent>
       </Card>
