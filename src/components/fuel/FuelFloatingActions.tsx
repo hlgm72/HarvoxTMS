@@ -4,6 +4,9 @@ import { FloatingActionsSheet, FloatingActionTab } from '@/components/ui/Floatin
 import { Filter, X, Download, Settings, BarChart3 } from 'lucide-react';
 import { FuelFilters, FuelFiltersType } from './FuelFilters';
 import { useTranslation } from 'react-i18next';
+import { useAvailableWeeks } from '@/hooks/useAvailableWeeks';
+import { useCompanyCache } from '@/hooks/useCompanyCache';
+import { getISOWeek } from 'date-fns';
 
 interface FuelFloatingActionsProps {
   filters: FuelFiltersType;
@@ -12,6 +15,8 @@ interface FuelFloatingActionsProps {
 
 export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingActionsProps) {
   const { t } = useTranslation(['common', 'fuel']);
+  const { userCompany } = useCompanyCache();
+  const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -25,8 +30,51 @@ export function FuelFloatingActions({ filters, onFiltersChange }: FuelFloatingAc
   const hasActiveFilters = getActiveFiltersCount() > 0;
 
   const clearAllFilters = () => {
+    // Reset period filter to most recent week
+    let periodFilter: any = { type: 'week' };
+    
+    if (availableWeeks && availableWeeks.length > 0) {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentWeekNumber = getISOWeek(today);
+      const currentMonth = today.getMonth() + 1;
+      
+      // Try to find current week
+      const weekData = availableWeeks
+        .find(w => w.year === currentYear)
+        ?.months.find(m => m.month === currentMonth)
+        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+      
+      if (weekData) {
+        periodFilter = {
+          type: 'week',
+          selectedYear: currentYear,
+          selectedWeek: currentWeekNumber,
+          startDate: weekData.startDate,
+          endDate: weekData.endDate,
+          label: `W${currentWeekNumber}/${currentYear}`
+        };
+      } else {
+        // Use most recent available week
+        const mostRecentYear = availableWeeks[0];
+        const mostRecentMonth = mostRecentYear?.months[0];
+        const mostRecentWeek = mostRecentMonth?.weeks[0];
+        
+        if (mostRecentWeek) {
+          periodFilter = {
+            type: 'week',
+            selectedYear: mostRecentYear.year,
+            selectedWeek: mostRecentWeek.weekNumber,
+            startDate: mostRecentWeek.startDate,
+            endDate: mostRecentWeek.endDate,
+            label: `W${mostRecentWeek.weekNumber}/${mostRecentYear.year}`
+          };
+        }
+      }
+    }
+    
     onFiltersChange({
-      periodFilter: { type: 'week' },
+      periodFilter,
       driverId: 'all',
       status: 'all',
       vehicleId: 'all'
