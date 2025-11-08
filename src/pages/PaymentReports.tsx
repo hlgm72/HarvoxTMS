@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageToolbar } from "@/components/layout/PageToolbar";
-import { FileText, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays } from "lucide-react";
+import { FileText, DollarSign, Timer, BarChart3, Users, Wallet, ClockIcon, Banknote, CalendarDays, XCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCompanyCache } from "@/hooks/useCompanyCache";
 import { formatPaymentPeriod, formatDateAuto, formatCurrency, formatDateSafe, formatDetailedPaymentPeriod, formatPaymentPeriodBadge, formatMonthName } from "@/lib/dateFormatting";
@@ -178,7 +178,7 @@ export default function PaymentReports() {
   } = useFinancialDataValidation(currentPeriodId);
 
   
-  const { markDriverAsPaid, calculateUserPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
+  const { markDriverAsPaid, unmarkDriverAsPaid, calculateUserPeriod, checkPeriodClosureStatus, isLoading: paymentLoading } = useDriverPaymentActions();
 
 
   // ✅ SOLUCIÓN: Usar períodos calculados para filtrar en cliente, no en BD
@@ -445,6 +445,13 @@ export default function PaymentReports() {
 
   const handleCalculatePeriod = async (calculation: any) => {
     const result = await calculateUserPeriod(calculation.id);
+    if (result.success) {
+      refetch();
+    }
+  };
+
+  const handleUnmarkAsPaid = async (calculation: any) => {
+    const result = await unmarkDriverAsPaid(calculation.id);
     if (result.success) {
       refetch();
     }
@@ -758,7 +765,7 @@ export default function PaymentReports() {
                           className="mr-2"
                         />
                         
-                        {calculation.payment_status !== 'paid' && (
+                        {calculation.payment_status !== 'paid' ? (
                           <Button
                             variant="default"
                             size="sm"
@@ -773,6 +780,17 @@ export default function PaymentReports() {
                           >
                             <DollarSign className="h-4 w-4 mr-2" />
                             {t('reports.mark_paid')}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUnmarkAsPaid(calculation)}
+                            disabled={paymentLoading}
+                            className="hover:bg-warning/10 hover:text-warning"
+                          >
+                            <XCircle className="h-4 w-4 mr-2" />
+                            Desmarcar
                           </Button>
                         )}
                         <Button
