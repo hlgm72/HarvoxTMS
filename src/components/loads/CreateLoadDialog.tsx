@@ -492,14 +492,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       // En modo duplicate, limpiar el Load Number y sincronizar con IMask
       if (mode === 'duplicate') {
         form.setValue("load_number", "", { shouldValidate: false });
-        // Limpiar el valor de IMask y reposicionar cursor
+        // Limpiar el valor de IMask y hacer focus manual con cursor correcto
         if (maskRef.current) {
+          const inputElement = maskRef.current.el as unknown as HTMLInputElement;
           maskRef.current.value = "";
           maskRef.current.updateValue();
-          // Forzar reposicionamiento del cursor después de limpiar
+          // Hacer focus manual después de limpiar
           requestAnimationFrame(() => {
-            if (maskRef.current) {
+            if (maskRef.current && inputElement) {
+              inputElement.focus();
               maskRef.current.updateCursor(fixedPrefix.length);
+              inputElement.setSelectionRange(fixedPrefix.length, fixedPrefix.length);
             }
           });
         }
@@ -1145,7 +1148,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                         onBlur={field.onBlur}
                                         onFocus={mode !== 'edit' ? handleLoadNumberFocus : undefined}
                                         onClick={mode !== 'edit' ? (handleLoadNumberFocus as any) : undefined}
-                                        autoFocus
+                                        autoFocus={mode === 'create'}
                                         className={
                                           loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
                                             ? "border-destructive focus-visible:ring-destructive" 
