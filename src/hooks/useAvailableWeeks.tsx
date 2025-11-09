@@ -7,6 +7,7 @@ interface WeekData {
   weekNumber: number;
   startDate: string;
   endDate: string;
+  periodId: string; // UUID del período en company_payment_periods
 }
 
 interface MonthWeeks {
@@ -33,7 +34,7 @@ export function useAvailableWeeks(companyId?: string) {
 
       const { data, error } = await supabase
         .from('company_payment_periods')
-        .select('period_start_date, period_end_date')
+        .select('id, period_start_date, period_end_date')
         .eq('company_id', companyId)
         .order('period_start_date', { ascending: false });
 
@@ -81,7 +82,8 @@ export function useAvailableWeeks(companyId?: string) {
               monthMap.set(weekNumber, {
                 weekNumber,
                 startDate: period.period_start_date,
-                endDate: period.period_end_date
+                endDate: period.period_end_date,
+                periodId: period.id
               });
             }
           }

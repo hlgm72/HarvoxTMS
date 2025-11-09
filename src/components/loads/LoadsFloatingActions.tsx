@@ -123,6 +123,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
           selectedWeek: currentWeekNumber,
           startDate: weekData.startDate,
           endDate: weekData.endDate,
+          periodId: weekData.periodId, // ✅ Incluir periodId
           label: `W${currentWeekNumber}/${currentYear}`
         });
       } else {
@@ -138,6 +139,7 @@ export function LoadsFloatingActions({ filters, periodFilter, onFiltersChange, o
             selectedWeek: mostRecentWeek.weekNumber,
             startDate: mostRecentWeek.startDate,
             endDate: mostRecentWeek.endDate,
+            periodId: mostRecentWeek.periodId, // ✅ Incluir periodId
             label: `W${mostRecentWeek.weekNumber}/${mostRecentYear.year}`
           });
         }

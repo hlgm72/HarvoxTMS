@@ -391,7 +391,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                             {availableWeeks
                               .find(w => w.year === selectedWeekYear)
                               ?.months.find(m => m.month === selectedWeekMonth)
-                              ?.weeks.map(({ weekNumber, startDate, endDate }) => {
+                              ?.weeks.map(({ weekNumber, startDate, endDate, periodId }) => {
                                 // Calcular el año ISO correcto para esta semana
                                 const startDateObj = new Date(startDate + 'T12:00:00Z');
                                 const isoYear = startDateObj.getUTCFullYear();
@@ -428,6 +428,7 @@ export function PeriodFilter({ value, onChange, isLoading = false }: PeriodFilte
                                         selectedWeek: weekNumber,
                                         startDate,
                                         endDate,
+                                        periodId, // ✅ Incluir periodId
                                         label: `W${weekNumber}/${displayYear} (${dateRange})`
                                       });
                                       setShowWeekYearSelector(false);
