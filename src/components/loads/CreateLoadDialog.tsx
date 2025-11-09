@@ -489,9 +489,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       // En modo duplicate, limpiar el Load Number y sincronizar con IMask
       if (mode === 'duplicate') {
         form.setValue("load_number", "", { shouldValidate: false });
-        if (maskRef.current) {
-          maskRef.current.value = "";
-        }
+        // Resetear IMask después de un pequeño delay para asegurar que se renderice
+        setTimeout(() => {
+          if (maskRef.current) {
+            maskRef.current.value = "";
+            maskRef.current.updateValue();
+            // Posicionar cursor después del prefijo fijo
+            if (fixedPrefix) {
+              maskRef.current.updateCursor(fixedPrefix.length);
+            }
+          }
+        }, 100);
       }
 
       // Find and set client
