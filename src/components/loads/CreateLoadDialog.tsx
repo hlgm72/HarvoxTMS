@@ -158,11 +158,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     if (!companyData?.load_number_pattern) return '';
     
     let pattern = companyData.load_number_pattern;
-    console.log('🎭 Original pattern:', pattern);
     
     // Paso 1: Remover ^ y $
     pattern = pattern.replace(/^\^/, '').replace(/\$$/, '');
-    console.log('🎭 After removing anchors:', pattern);
     
     // Paso 2: Convertir literales al inicio (letras y números) seguidos de separador
     // Escapar cada letra literal para evitar que IMask las interprete como definiciones
@@ -174,34 +172,27 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       }).join('');
       return `{${escapedPrefix}${separator}}`;
     });
-    console.log('🎭 After wrapping and escaping fixed prefix:', pattern);
     
     // Paso 3: Convertir \d{n} a n repeticiones de '0'
     pattern = pattern.replace(/\\d\{(\d+)\}/g, (_, count) => '0'.repeat(parseInt(count)));
-    console.log('🎭 After converting \\d{n}:', pattern);
     
     // Paso 4: Convertir \d a '0'
     pattern = pattern.replace(/\\d/g, '0');
-    console.log('🎭 After converting \\d:', pattern);
     
     // Paso 5: Convertir letras opcionales [A-Z]{0,n} - deben permanecer opcionales
     pattern = pattern.replace(/\[A-Z\]\{0,(\d+)\}/g, (_, count) => {
       // En IMask, los corchetes [] indican opcionalidad
       return '[' + 'A'.repeat(parseInt(count)) + ']';
     });
-    console.log('🎭 After converting optional letters:', pattern);
     
     // Paso 6: Convertir letras requeridas [A-Z]{n}
     pattern = pattern.replace(/\[A-Z\]\{(\d+)\}/g, (_, count) => 'A'.repeat(parseInt(count)));
-    console.log('🎭 After converting required letters:', pattern);
     
     // Paso 7: Convertir [A-Z] a 'A'
     pattern = pattern.replace(/\[A-Z\]/g, 'A');
-    console.log('🎭 After converting single letters:', pattern);
     
     // Paso 8: Convertir \- a '-'
     pattern = pattern.replace(/\\-/g, '-');
-    console.log('🎭 Final mask:', pattern);
     
     return pattern;
   }, [companyData?.load_number_pattern]);
@@ -213,7 +204,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Buscar literales al inicio del patrón (letras mayúsculas o números seguidos de separador)
     const match = pattern.match(/^([A-Z0-9]+[-\/\.:])/);
     const prefix = match ? match[1] : '';
-    console.log('🎭 Fixed prefix extracted:', prefix);
     return prefix;
   }, [companyData?.load_number_pattern]);
 
@@ -246,7 +236,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
       // Use a small delay to ensure the input is fully rendered
       const timeoutId = setTimeout(() => {
-        console.log('🎭 Setting IMask value for edit mode (phase:', currentPhase, '):', activeLoadData.load_number);
         setMaskValue(activeLoadData.load_number);
       }, 100);
       
