@@ -207,24 +207,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Crear máscara flexible para edición (permite cualquier valor existente)
-  const editModeMask = useMemo(() => {
-    // En modo edición, usar una máscara que acepte cualquier texto alfanumérico con separadores
-    return /^[A-Z0-9\-\/\.:]*$/;
-  }, []);
-
-  const activeMask = useMemo(() => {
-    if (mode === 'edit') {
-      return editModeMask; // Máscara flexible que acepta cualquier patrón
-    }
-    return loadNumberMask; // Máscara estricta del patrón de la compañía
-  }, [mode, loadNumberMask, editModeMask]);
+  // Solo usar IMask en modo create/duplicate, en edit usar input normal
+  const shouldUseIMask = mode !== 'edit';
 
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: activeMask,
+      mask: shouldUseIMask ? loadNumberMask : '',
       lazy: false,
-      eager: mode !== 'edit', // Solo eager en create/duplicate
+      eager: true,
       placeholderChar: '\u2000',
       definitions: {
         '0': /[0-9]/,
@@ -243,16 +233,22 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
-  // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
+  // Sincronizar el valor en modo edición o duplicate
   useEffect(() => {
-    if (mode === 'edit' && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
+    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && currentPhase === 1) {
       const timeoutId = setTimeout(() => {
-        setMaskValue(activeLoadData.load_number);
+        if (mode === 'edit') {
+          // En modo edición, solo actualizar el valor del form
+          form.setValue('load_number', activeLoadData.load_number);
+        } else if (setMaskValue) {
+          // En modo duplicate, actualizar IMask
+          setMaskValue(activeLoadData.load_number);
+        }
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase, form]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -1130,11 +1126,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                <FormControl>
                                   <div className="relative">
                                      <Input
-                                       ref={loadNumberInputRef as any}
+                                       ref={shouldUseIMask ? (loadNumberInputRef as any) : undefined}
+                                       value={mode === 'edit' ? field.value : undefined}
+                                       onChange={mode === 'edit' ? (e) => {
+                                         const upperValue = e.target.value.toUpperCase();
+                                         field.onChange(upperValue);
+                                         form.clearErrors("load_number");
+                                       } : undefined}
                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                        onBlur={field.onBlur}
-                                       onFocus={handleLoadNumberFocus}
-                                       onClick={handleLoadNumberFocus as any}
+                                       onFocus={shouldUseIMask ? handleLoadNumberFocus : undefined}
+                                       onClick={shouldUseIMask ? (handleLoadNumberFocus as any) : undefined}
                                        autoFocus
                                        className={
                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
