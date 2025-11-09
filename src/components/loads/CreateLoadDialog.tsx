@@ -158,6 +158,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     if (!companyData?.load_number_pattern) return '';
     
     let pattern = companyData.load_number_pattern;
+    console.log('🎯 Original pattern:', pattern);
     
     // Paso 1: Remover ^ y $
     pattern = pattern.replace(/^\^/, '').replace(/\$$/, '');
@@ -194,6 +195,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Paso 8: Convertir \- a '-'
     pattern = pattern.replace(/\\-/g, '-');
     
+    console.log('🎯 Converted mask:', pattern);
     return pattern;
   }, [companyData?.load_number_pattern]);
 
@@ -224,6 +226,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     },
     {
       onAccept: (value, maskRef) => {
+        console.log('🎯 IMask onAccept:', value);
         const upperValue = value.toUpperCase();
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
