@@ -223,7 +223,7 @@ export function DeductionsFloatingActions({
                   {hasActiveFilters && (
                     <div className="space-y-2">
                       <Separator />
-                      <h4 className="text-sm font-medium">{t('filters.active_filters')}</h4>
+                      <h4 className="text-sm font-medium">{t('payments:filters.active_filters')}</h4>
                       <div className="flex flex-wrap gap-2">
                         {filters.driverId !== 'all' && (
                           <Badge variant="secondary">
