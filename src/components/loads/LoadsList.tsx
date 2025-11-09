@@ -456,7 +456,7 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                       </span>
                     </CardTitle>
                     
-                    {/* Monto con porcentajes - Ahora primero */}
+                    {/* Monto con porcentajes */}
                     <span className="flex items-center gap-1">
                       <span className="font-bold">
                         {formatCurrency(load.total_amount)}
@@ -478,8 +478,15 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                           ) : null;
                         })()}
                     </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 flex-wrap text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {load.pickup_city} → {load.delivery_city}
+                    </span>
                     
-                    {/* Documentos Subidos - Ahora después del monto */}
+                    {/* Documentos en la misma línea que la ruta */}
                     <div className="flex items-center gap-2">
                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                          {t('list.documents')}
@@ -500,13 +507,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                         showDetails={false}
                       />
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {load.pickup_city} → {load.delivery_city}
-                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
