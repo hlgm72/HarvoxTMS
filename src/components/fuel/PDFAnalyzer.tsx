@@ -68,6 +68,7 @@ export function PDFAnalyzer() {
   const [analysisStep, setAnalysisStep] = useState<string>('');
   const [currentStep, setCurrentStep] = useState<'extracting' | 'analyzing' | 'enriching' | ''>('');
   const [isEnriching, setIsEnriching] = useState(false);
+  const [transactionsProcessed, setTransactionsProcessed] = useState<number>(0);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [enrichedTransactions, setEnrichedTransactions] = useState<EnrichedTransaction[]>([]);
   const [isImporting, setIsImporting] = useState(false);
@@ -136,35 +137,87 @@ export function PDFAnalyzer() {
     setIsAnalyzing(true);
     setCurrentStep('extracting');
     setAnalysisStep(t('analyzer.upload.extracting_text'));
+    setTransactionsProcessed(0);
     
     try {
       const pdfText = await extractTextFromPDF(selectedFile);
       
       setCurrentStep('analyzing');
       setAnalysisStep(t('analyzer.upload.analyzing_with_ai'));
-      const { data, error } = await supabase.functions.invoke('analyze-pdf', {
-        body: { pdfText }
+
+      // Usar streaming para obtener progreso en tiempo real
+      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+      const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/analyze-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ pdfText, streaming: true })
       });
 
-      if (error) {
-        throw error;
+      if (!response.ok || !response.body) {
+        throw new Error('Failed to start analysis stream');
       }
 
-      if (data.success) {
-        const transactionCount = data.analysis.sampleData?.length || 0;
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let finalResult: AnalysisResult | null = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
         
-        setAnalysisResult(data.analysis);
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.trim() || line.startsWith(':')) continue;
+          
+          if (line.startsWith('event: ')) {
+            const eventType = line.substring(7).trim();
+            continue;
+          }
+
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.substring(6));
+              
+              if (data.step === 'analyzing') {
+                setAnalysisStep(data.message);
+              } else if (data.step === 'complete') {
+                setAnalysisStep(data.message);
+                setTransactionsProcessed(data.transactionCount || 0);
+              } else if (data.success !== undefined) {
+                // Resultado final
+                finalResult = data.analysis;
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        }
+      }
+
+      if (finalResult) {
+        const transactionCount = finalResult.sampleData?.length || 0;
+        
+        setAnalysisResult(finalResult);
         setCurrentStep('enriching');
         setAnalysisStep(t('analyzer.upload.enriching_count', { count: transactionCount }));
-        await enrichTransactions(data.analysis.sampleData);
-        setSelectedTransactions(new Set()); // Reset selection
+        await enrichTransactions(finalResult.sampleData);
+        setSelectedTransactions(new Set());
         
         showSuccess(
           t('analyzer.results.analysis_complete'),
           `${t('analyzer.results.analysis_success')} (${transactionCount} ${t('analyzer.results.transactions_unit')})`
         );
         
-        // Advertir si se acerca al límite de procesamiento
         if (transactionCount >= 90) {
           showWarning(
             t('analyzer.upload.limit_reached_title'),
@@ -172,7 +225,7 @@ export function PDFAnalyzer() {
           );
         }
       } else {
-        throw new Error(data.error || 'Error analyzing PDF');
+        throw new Error('No result received from analysis');
       }
     } catch (error) {
       console.error('Error analyzing PDF:', error);
@@ -184,6 +237,7 @@ export function PDFAnalyzer() {
       setIsAnalyzing(false);
       setAnalysisStep('');
       setCurrentStep('');
+      setTransactionsProcessed(0);
     }
   };
 
@@ -790,7 +844,14 @@ export function PDFAnalyzer() {
           <CardContent className="flex flex-col items-center justify-center p-12 space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div className="text-center space-y-2">
-              <h3 className="text-lg font-semibold">{analysisStep || t('analyzer.upload.analyzing')}</h3>
+              <h3 className="text-lg font-semibold">
+                {analysisStep || t('analyzer.upload.analyzing')}
+              </h3>
+              {transactionsProcessed > 0 && (
+                <div className="text-2xl font-bold text-primary">
+                  {transactionsProcessed} transacciones encontradas
+                </div>
+              )}
               <p className="text-sm text-muted-foreground">
                 {currentStep === 'extracting' && t('analyzer.upload.reading_pdf')}
                 {currentStep === 'analyzing' && t('analyzer.upload.ai_identifying')}
