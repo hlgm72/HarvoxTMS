@@ -31,7 +31,7 @@ export const EmailHeader = ({ title, subtitle }: EmailHeaderProps) => (
       <Container style={headerContainer}>
         <div style={logoSection}>
           <Img
-            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/fleetnest/logo_64x64.png"
+            src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/harvox/logo_64x64.png"
             alt="Harvox TMS Logo"
             width="40"
             height="40"
