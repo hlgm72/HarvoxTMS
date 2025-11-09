@@ -50,7 +50,7 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: `Extract fuel transactions from this text. Keep response under 7000 tokens:
+            content: `Extract ALL fuel transactions from this text. Extract EVERY transaction you find:
 
 ${pdfText}
 
@@ -59,10 +59,10 @@ Required fields: date (YYYY-MM-DD), card, unit, invoice, location_name, city, st
 JSON format (use numbers for amounts):
 {"columnsFound":["date","card"...],"hasAuthorizationCode":false,"authorizationCodeField":null,"sampleData":[{"date":"2025-01-15","card":"12345"...}],"analysis":"Found X transactions"}
 
-IMPORTANT: If text has many transactions, prioritize extracting complete transaction objects over partial ones. It's better to have fewer complete records than truncated data.`
+CRITICAL: Extract EVERY transaction in the PDF. Do not skip any transactions. Extract ALL of them, even if the response is large. Prioritize completeness over brevity.`
           }
         ],
-        max_completion_tokens: 8000,
+        max_completion_tokens: 32000,
         response_format: { type: "json_object" },
         temperature: 0.1
       }),
