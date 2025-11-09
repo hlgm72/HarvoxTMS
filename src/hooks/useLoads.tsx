@@ -247,9 +247,23 @@ export const useLoads = (filters?: LoadsFilters) => {
   //   enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0
   // });
 
+  // 🔍 DEBUG: Verificar condiciones del enabled
+  const enabledConditions = {
+    hasUser: !!user,
+    notCacheLoading: !cacheLoading,
+    hasUserCompany: !!userCompany,
+    noCacheError: !cacheError,
+    hasCompanyUsers: companyUsers.length > 0,
+    periodId: filters?.periodFilter?.periodId
+  };
+  console.log('🔍 useLoads enabled conditions:', enabledConditions);
+  
+  const isEnabled = !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0;
+  console.log('🔍 useLoads isEnabled:', isEnabled);
+
   return useQuery({
     queryKey,
-    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0,
+    enabled: isEnabled,
     retry: 1,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 0, // ✅ FORZAR: No usar caché para debugging
