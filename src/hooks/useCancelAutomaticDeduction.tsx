@@ -105,10 +105,13 @@ export function useCancelAutomaticDeduction() {
       queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
       queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
       queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
+      queryClient.invalidateQueries({ queryKey: ['period-deductions'] });
       
       // Refetch inmediato para actualización rápida de UI
       queryClient.refetchQueries({ queryKey: ['user-period-calculations'] });
       queryClient.refetchQueries({ queryKey: ['consolidated-drivers'] });
+      queryClient.refetchQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.refetchQueries({ queryKey: ['period-deductions'] });
     },
     onError: (error: any) => {
       console.error('Error canceling automatic deduction:', error);
