@@ -166,7 +166,8 @@
       "applied": "Aplicado",
       "deferred": "Diferido", 
       "critical": "Crítico",
-      "automatic": "Automática"
+      "automatic": "Automática",
+      "cancelled": "Cancelada"
     },
     "cancel_automatic": {
       "cancel_title": "Cancelar Deducción Automática",

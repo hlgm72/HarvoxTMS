@@ -357,7 +357,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       planned: { variant: "outline" as const, label: t("deductions.status_labels.planned") },
       applied: { variant: "default" as const, label: t("deductions.status_labels.applied") },
       deferred: { variant: "secondary" as const, label: t("deductions.status_labels.deferred") },
-      cancelled: { variant: "destructive" as const, label: "Cancelada" }
+      cancelled: { variant: "destructive" as const, label: t("deductions.status_labels.cancelled") }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || 
