@@ -249,15 +249,14 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   return useQuery({
     queryKey,
-    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0, // Solo ejecutar cuando el cache esté listo
-    retry: 1, // Reducir reintentos para evitar ERR_INSUFFICIENT_RESOURCES
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Backoff exponencial
-    staleTime: 60000, // Reducir cache - 1 minuto para permitir actualizaciones más rápidas
-    gcTime: 300000, // 5 minutos en cache
-    refetchOnWindowFocus: false, // Evitar refetch innecesario
-    refetchOnReconnect: false, // Evitar múltiples queries al reconectar
-    refetchInterval: false, // Desactivar polling
-    // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
+    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0,
+    retry: 1,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 0, // ✅ FORZAR: No usar caché para debugging
+    gcTime: 0, // ✅ FORZAR: No guardar en caché
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchInterval: false,
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
       console.log('🚀 queryFn EXECUTING for periodId:', filters?.periodFilter?.periodId);
