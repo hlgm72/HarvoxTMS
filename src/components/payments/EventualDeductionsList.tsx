@@ -17,6 +17,7 @@ import { useCalculatedPeriods } from '@/hooks/useCalculatedPeriods';
 import { useCancelAutomaticDeduction } from '@/hooks/useCancelAutomaticDeduction';
 import { useReactivateAutomaticDeduction } from '@/hooks/useReactivateAutomaticDeduction';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -436,7 +437,13 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
       {/* Lista de deducciones */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {eventualDeductions.map((deduction) => (
-          <Card key={deduction.id}>
+          <Card 
+            key={deduction.id}
+            className={cn(
+              "hover:shadow-md transition-shadow",
+              deduction.status === 'cancelled' && "border-destructive bg-destructive/10"
+            )}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
