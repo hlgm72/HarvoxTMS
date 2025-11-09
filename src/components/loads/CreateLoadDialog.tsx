@@ -235,16 +235,23 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    const input = e.currentTarget; // Guardar referencia antes del setTimeout
+    const input = e.currentTarget;
     
     setTimeout(() => {
       if (maskRef.current && input) {
-        // Encontrar la primera posición editable (después de partes fijas)
         const masked = maskRef.current;
-        let cursorPos = 0;
-        
-        // Buscar el primer placeholder o posición vacía
         const value = masked.value;
+        
+        // Si el campo está vacío o solo tiene el prefijo, posicionar después del prefijo
+        if (!value || value.trim() === '' || value === fixedPrefix) {
+          const cursorPos = fixedPrefix.length;
+          masked.updateCursor(cursorPos);
+          input.setSelectionRange(cursorPos, cursorPos);
+          return;
+        }
+        
+        // Si ya hay contenido, buscar la primera posición editable
+        let cursorPos = 0;
         for (let i = 0; i < value.length; i++) {
           if (value[i] === '\u2000' || value[i] === ' ' || value[i] === '_') {
             cursorPos = i;
@@ -252,9 +259,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
           }
         }
         
-        // Si no encontramos placeholder, poner después del último carácter fijo
-        if (cursorPos === 0 && fixedPrefix) {
-          cursorPos = fixedPrefix.length;
+        // Si no encontramos placeholder, poner al final del contenido existente
+        if (cursorPos === 0) {
+          cursorPos = value.length;
         }
         
         masked.updateCursor(cursorPos);
