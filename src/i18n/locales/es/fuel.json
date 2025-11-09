@@ -357,10 +357,12 @@
               "enrichment": "Enriquecimiento de datos",
       "enriching_transactions": "Enriqueciendo transacciones...",
       "transactions_enriched": "{{count}} transacciones enriquecidas",
+      "transactions_imported": "{{count}} transacciones importadas",
       "import_transactions": "Importar Transacciones",
       "importing": "Importando...",
       "import_success": "Transacciones importadas exitosamente",
       "import_error": "Error al importar transacciones",
+      "import_error_message": "No se pudieron importar las transacciones",
       "no_transactions_selected": "No hay transacciones seleccionadas",
       "select_transactions_to_import": "Selecciona al menos una transacción para importar"
     },
@@ -401,8 +403,11 @@
       "no_vehicle_detail": "Debe estar asignado al conductor en esa fecha",
       "already_imported": "Ya importado",
       "duplicate_detected": "Duplicado detectado",
+      "duplicate_detected_system": "Duplicado detectado en el sistema",
       "period_paid": "Período pagado (no modificable)",
-      "not_imported": "No importado"
+      "not_imported": "No importado",
+      "period_not_generated": "Período no generado",
+      "driver_card": "Conductor Tarjeta {{cardNumber}}"
     },
     "duplicate_reasons": {
       "already_exists": "Transacción ya existe en el sistema"

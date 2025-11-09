@@ -450,7 +450,7 @@ export function PDFAnalyzer() {
 
         if (existingTransaction) {
           enrichedTransaction.import_status = 'already_imported';
-          enrichedTransaction.attention_reason = 'Duplicado detectado en el sistema';
+          enrichedTransaction.attention_reason = t('analyzer.mapping.duplicate_detected_system');
         }
 
         // Mapear conductor por tarjeta (flexible con 4 o 5 dígitos)
@@ -479,7 +479,7 @@ export function PDFAnalyzer() {
             const lastName = driverProfile.last_name || '';
             enrichedTransaction.driver_name = `${firstName} ${lastName}`.trim();
           } else {
-            enrichedTransaction.driver_name = `Conductor Tarjeta ${card.card_number_last_five}`;
+            enrichedTransaction.driver_name = t('analyzer.mapping.driver_card', { cardNumber: card.card_number_last_five });
           }
         } else if (matchingCards.length > 1) {
           enrichedTransaction.card_mapping_status = 'multiple';
@@ -745,8 +745,8 @@ export function PDFAnalyzer() {
     } catch (error) {
       console.error('Error importing transactions:', error);
       showError(
-        "Error en la importación",
-        "No se pudieron importar las transacciones"
+        t('analyzer.results.import_error'),
+        t('analyzer.results.import_error_message')
       );
     } finally {
       setIsImporting(false);
@@ -1030,7 +1030,7 @@ export function PDFAnalyzer() {
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium">
-                            {transaction.payment_period_dates || 'Período no generado'}
+                            {transaction.payment_period_dates || t('analyzer.mapping.period_not_generated')}
                           </div>
                           <div className="text-sm text-muted-foreground flex items-center gap-2">
                             {t('analyzer.transaction.transaction_date')} {transaction.date}

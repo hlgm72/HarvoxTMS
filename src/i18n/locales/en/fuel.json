@@ -357,10 +357,12 @@
               "enrichment": "Data enrichment",
       "enriching_transactions": "Enriching transactions...",
       "transactions_enriched": "{{count}} transactions enriched",
+      "transactions_imported": "{{count}} transactions imported",
       "import_transactions": "Import Transactions",
       "importing": "Importing...",
       "import_success": "Transactions imported successfully",
       "import_error": "Error importing transactions",
+      "import_error_message": "Could not import transactions",
       "no_transactions_selected": "No transactions selected",
       "select_transactions_to_import": "Select at least one transaction to import"
     },
@@ -399,8 +401,11 @@
       "vehicle_not_found": "Vehicle not found",
       "already_imported": "Already imported",
       "duplicate_detected": "Duplicate detected",
+      "duplicate_detected_system": "Duplicate detected in the system",
       "period_paid": "Period paid (cannot modify)",
-      "not_imported": "Not imported"
+      "not_imported": "Not imported",
+      "period_not_generated": "Period not generated",
+      "driver_card": "Driver Card {{cardNumber}}"
     },
     "duplicate_reasons": {
       "already_exists": "Transaction already exists in system"
