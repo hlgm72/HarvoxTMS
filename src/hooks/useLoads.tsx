@@ -318,8 +318,16 @@ export const useLoads = (filters?: LoadsFilters) => {
             if (!relevantDate) return false;
             return relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
           });
-        } else if (filters?.periodFilter?.type !== 'all') {
-          return [];
+        } else if (filters?.periodFilter?.type === 'all') {
+          // Mostrar todas las cargas sin filtro
+          loads = allLoads || [];
+        } else if (periodResult.startDate && periodResult.endDate) {
+          // Si hay fechas disponibles aunque no haya periodIds, filtrar por fechas
+          loads = loads.filter(load => {
+            const relevantDate = loadAssignmentCriteria === 'pickup_date' ? load.pickup_date : load.delivery_date;
+            if (!relevantDate) return false;
+            return relevantDate >= periodResult.startDate && relevantDate <= periodResult.endDate;
+          });
         }
 
         if (loadsError) {
