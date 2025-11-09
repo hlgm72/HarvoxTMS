@@ -37,15 +37,31 @@ export const cleanupAuthState = () => {
 
 // Global auth error handler
 export const handleAuthError = (error: any, context: string = '') => {
+  // Solo procesar si parece ser un error de autenticación
+  const errorMessage = error?.message || '';
+  const isAuthError = 
+    errorMessage.includes('refresh token') ||
+    errorMessage.includes('Invalid Refresh Token') ||
+    errorMessage.includes('Refresh Token Not Found') ||
+    errorMessage.includes('JWT') ||
+    errorMessage.includes('auth') ||
+    errorMessage.includes('session') ||
+    error?.code === 'PGRST301' ||
+    error?.code === 'PGRST116';
+  
+  // Si no es un error de auth, ignorar
+  if (!isAuthError) {
+    return false;
+  }
+  
   console.error(`🚨 Auth error in ${context}:`, error);
   
   // Check if this is a refresh token error
   if (
-    error?.message?.includes('refresh token') ||
-    error?.message?.includes('Invalid Refresh Token') ||
-    error?.message?.includes('Refresh Token Not Found') ||
-    error?.message?.includes('JWT') ||
-    error?.message?.includes('Invalid') ||
+    errorMessage.includes('refresh token') ||
+    errorMessage.includes('Invalid Refresh Token') ||
+    errorMessage.includes('Refresh Token Not Found') ||
+    errorMessage.includes('JWT') ||
     error?.code === 'PGRST301'
   ) {
     console.log('🔧 Detected auth token error, initiating cleanup...');
