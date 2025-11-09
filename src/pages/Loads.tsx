@@ -101,18 +101,6 @@ export default function Loads() {
     }
   }, [availableWeeks, periodFilter]);
 
-  // 🔍 DEBUG: Monitorear cambios en periodFilter
-  useEffect(() => {
-    console.log('🎯 Loads page - periodFilter changed:', {
-      periodFilter,
-      type: periodFilter?.type,
-      periodId: periodFilter?.periodId,
-      startDate: periodFilter?.startDate,
-      endDate: periodFilter?.endDate,
-      label: periodFilter?.label
-    });
-  }, [periodFilter]);
-
   // Hook para obtener conductores para los filtros
   const { data: drivers } = useDriversList();
   
