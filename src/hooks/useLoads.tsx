@@ -92,6 +92,14 @@ const getRelevantPeriodIds = (
   nextPeriod: any,
   allPeriods: any[]
 ): { periodIds: string[], useDateFilter: boolean, startDate?: string, endDate?: string } => {
+  console.log('🔍 getRelevantPeriodIds called with:', {
+    periodFilter,
+    type: periodFilter?.type,
+    periodId: periodFilter?.periodId,
+    startDate: periodFilter?.startDate,
+    endDate: periodFilter?.endDate
+  });
+  
   if (!periodFilter) {
     return { periodIds: [], useDateFilter: false };
   }
@@ -183,6 +191,7 @@ const getRelevantPeriodIds = (
     case 'custom':
       // ✅ PRIORIZAR periodId si está disponible (período existe en BD)
       if (periodFilter.periodId && !periodFilter.periodId.startsWith('calculated-')) {
+        console.log('✅ Using periodId for week filter:', periodFilter.periodId);
         return {
           periodIds: [periodFilter.periodId],
           useDateFilter: false,
@@ -193,6 +202,10 @@ const getRelevantPeriodIds = (
       
       // Para filtros basados en fechas sin periodId, usar las fechas directamente
       if (periodFilter.startDate && periodFilter.endDate) {
+        console.log('⚠️ Using date filter (no periodId):', {
+          startDate: periodFilter.startDate,
+          endDate: periodFilter.endDate
+        });
         return {
           periodIds: [],
           useDateFilter: true,
@@ -200,6 +213,7 @@ const getRelevantPeriodIds = (
           endDate: periodFilter.endDate
         };
       }
+      console.log('❌ No periodId or dates available');
       return { periodIds: [], useDateFilter: false };
     
     default:
@@ -305,8 +319,11 @@ export const useLoads = (filters?: LoadsFilters) => {
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
         
+        console.log('🔄 Filtering loads. Total:', allLoads?.length, 'Period result:', periodResult);
+        
         // Priorizar payment_period_id sobre fechas para cargas con período asignado
         if (periodResult.periodIds.length > 0) {
+          console.log('🎯 Filtering by periodIds:', periodResult.periodIds);
           loads = loads.filter(load => {
             // Si la carga tiene un payment_period_id asignado, usar ese criterio
             if (load.payment_period_id) {
