@@ -207,17 +207,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
+  // Solo usar máscara en modo creación o duplicación (donde load_number está vacío)
+  const shouldUseMask = mode === 'create' || (mode === 'duplicate' && !activeLoadData?.load_number);
+  
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: loadNumberMask,
-      lazy: false, // Muestra las partes fijas automáticamente
-      eager: true, // Inserta caracteres fijos automáticamente
-      placeholderChar: '\u2000', // Espacio invisible en lugar de guión bajo
+      mask: shouldUseMask ? loadNumberMask : '', // Sin máscara en edición
+      lazy: false,
+      eager: true,
+      placeholderChar: '\u2000',
       definitions: {
         '0': /[0-9]/,
-        'A': /[a-zA-Z]/, // Acepta mayúsculas y minúsculas
+        'A': /[a-zA-Z]/,
       },
-      prepare: (str: string) => str.toUpperCase(), // Convierte a mayúsculas automáticamente
+      prepare: (str: string) => str.toUpperCase(),
     },
     {
       onAccept: (value, maskRef) => {
