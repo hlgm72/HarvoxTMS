@@ -1122,11 +1122,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                <FormControl>
                                   <div className="relative">
                                      <Input
-                                       ref={loadNumberInputRef as any}
+                                       ref={shouldUseMask ? (loadNumberInputRef as any) : undefined}
+                                       value={shouldUseMask ? undefined : field.value}
+                                       onChange={shouldUseMask ? undefined : (e) => {
+                                         const upperValue = e.target.value.toUpperCase();
+                                         field.onChange(upperValue);
+                                       }}
                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                        onBlur={field.onBlur}
-                                       onFocus={handleLoadNumberFocus}
-                                       onClick={handleLoadNumberFocus as any}
+                                       onFocus={shouldUseMask ? handleLoadNumberFocus : undefined}
+                                       onClick={shouldUseMask ? (handleLoadNumberFocus as any) : undefined}
                                        autoFocus
                                        className={
                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
