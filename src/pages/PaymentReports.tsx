@@ -27,6 +27,8 @@ import { useCalculatedPeriods } from "@/hooks/useCalculatedPeriods";
 import { useCompanyFinancialData } from "@/hooks/useSecureCompanyData";
 import { useAvailableWeeks } from "@/hooks/useAvailableWeeks";
 import { getISOWeek } from "date-fns";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 export default function PaymentReports() {
   const { t, i18n } = useTranslation(['payments', 'common']);
@@ -337,7 +339,7 @@ export default function PaymentReports() {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, first_name, last_name')
+        .select('user_id, first_name, last_name, avatar_url')
         .in('user_id', driverIds);
 
       if (error) throw error;
@@ -716,6 +718,21 @@ export default function PaymentReports() {
                       <div className="space-y-2 min-w-0">
                         <div className="flex items-center gap-3 flex-wrap">
                           <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage 
+                                src={(() => {
+                                  const driver = drivers.find(d => d.user_id === calculation.user_id);
+                                  return driver?.avatar_url || '';
+                                })()}
+                                alt={(() => {
+                                  const driver = drivers.find(d => d.user_id === calculation.user_id);
+                                  return `${driver?.first_name || ''} ${driver?.last_name || ''}`;
+                                })()} 
+                              />
+                              <AvatarFallback>
+                                <User className="h-4 w-4" />
+                              </AvatarFallback>
+                            </Avatar>
                             <h4 className="font-semibold truncate">
                               {(() => {
                                 const driver = drivers.find(d => d.user_id === calculation.user_id);
