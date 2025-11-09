@@ -90,11 +90,25 @@ export function useCancelAutomaticDeduction() {
         "Deducción cancelada y payroll recalculado. Puedes marcar el período como pagado para hacer esta instancia inmutable."
       );
 
-      // Invalidar todas las queries relevantes
+      // Invalidar todas las queries relevantes para refrescar la UI
       queryClient.invalidateQueries({ queryKey: ['eventual-deductions'] });
       queryClient.invalidateQueries({ queryKey: ['user-payrolls'] });
       queryClient.invalidateQueries({ queryKey: ['company-payment-periods'] });
       queryClient.invalidateQueries({ queryKey: ['deductions-stats'] });
+      
+      // 🚨 CRÍTICO - Invalidar queries de cálculos y resúmenes de períodos
+      queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations'] });
+      queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-period-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['all-payment-periods-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-instances'] });
+      
+      // Refetch inmediato para actualización rápida de UI
+      queryClient.refetchQueries({ queryKey: ['user-period-calculations'] });
+      queryClient.refetchQueries({ queryKey: ['consolidated-drivers'] });
     },
     onError: (error: any) => {
       console.error('Error canceling automatic deduction:', error);
