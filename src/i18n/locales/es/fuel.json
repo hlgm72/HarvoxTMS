@@ -412,6 +412,10 @@
     "duplicate_reasons": {
       "already_exists": "Transacción ya existe en el sistema"
     },
+    "validation": {
+      "vehicle_assignment_error": "Error en asignación de vehículos",
+      "transactions_without_vehicle": "{{count}} transacciones no tienen un vehículo asignado. El equipo debe estar asignado al conductor en la fecha de la transacción."
+    },
     "table": {
       "date": "Fecha",
       "driver": "Conductor",

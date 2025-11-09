@@ -410,6 +410,10 @@
     "duplicate_reasons": {
       "already_exists": "Transaction already exists in system"
     },
+    "validation": {
+      "vehicle_assignment_error": "Vehicle assignment error",
+      "transactions_without_vehicle": "{{count}} transactions do not have an assigned vehicle. The vehicle must be assigned to the driver on the transaction date."
+    },
     "table": {
       "date": "Date",
       "driver": "Driver",

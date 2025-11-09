@@ -663,8 +663,8 @@ export function PDFAnalyzer() {
       if (transactionsWithoutVehicle.length > 0) {
         console.error('❌ [PDF Analyzer] Transacciones sin vehículo:', transactionsWithoutVehicle);
         showError(
-          "Error en asignación de vehículos",
-          `${transactionsWithoutVehicle.length} transacciones no tienen un vehículo asignado. El equipo debe estar asignado al conductor en la fecha de la transacción.`
+          t('analyzer.validation.vehicle_assignment_error'),
+          t('analyzer.validation.transactions_without_vehicle', { count: transactionsWithoutVehicle.length })
         );
         return;
       }
