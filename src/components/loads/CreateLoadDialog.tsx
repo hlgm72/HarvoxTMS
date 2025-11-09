@@ -207,14 +207,24 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Solo usar IMask en modo create/duplicate, en edit usar input normal
-  const shouldUseIMask = mode !== 'edit';
+  // Crear máscara flexible para edición que acepta cualquier formato
+  const flexibleMask = useMemo(() => {
+    // Máscara que acepta alfanuméricos y separadores comunes, sin restricciones
+    return [
+      {
+        mask: /^[A-Z0-9\-\/\.:]*$/,
+      }
+    ];
+  }, []);
+
+  // Usar máscara flexible en edición, máscara estricta en create/duplicate
+  const activeMask = mode === 'edit' ? flexibleMask : loadNumberMask;
 
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: shouldUseIMask ? loadNumberMask : '',
+      mask: activeMask,
       lazy: false,
-      eager: true,
+      eager: mode !== 'edit',
       placeholderChar: '\u2000',
       definitions: {
         '0': /[0-9]/,
@@ -233,22 +243,16 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
-  // Sincronizar el valor en modo edición o duplicate
+  // Sincronizar el valor en todos los modos
   useEffect(() => {
-    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && currentPhase === 1) {
+    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
       const timeoutId = setTimeout(() => {
-        if (mode === 'edit') {
-          // En modo edición, solo actualizar el valor del form
-          form.setValue('load_number', activeLoadData.load_number);
-        } else if (setMaskValue) {
-          // En modo duplicate, actualizar IMask
-          setMaskValue(activeLoadData.load_number);
-        }
+        setMaskValue(activeLoadData.load_number);
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase, form]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -1126,17 +1130,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                <FormControl>
                                   <div className="relative">
                                      <Input
-                                       ref={shouldUseIMask ? (loadNumberInputRef as any) : undefined}
-                                       value={mode === 'edit' ? field.value : undefined}
-                                       onChange={mode === 'edit' ? (e) => {
-                                         const upperValue = e.target.value.toUpperCase();
-                                         field.onChange(upperValue);
-                                         form.clearErrors("load_number");
-                                       } : undefined}
+                                       ref={loadNumberInputRef as any}
                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                        onBlur={field.onBlur}
-                                       onFocus={shouldUseIMask ? handleLoadNumberFocus : undefined}
-                                       onClick={shouldUseIMask ? (handleLoadNumberFocus as any) : undefined}
+                                       onFocus={mode !== 'edit' ? handleLoadNumberFocus : undefined}
+                                       onClick={mode !== 'edit' ? (handleLoadNumberFocus as any) : undefined}
                                        autoFocus
                                        className={
                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
