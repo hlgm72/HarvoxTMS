@@ -79,6 +79,7 @@ export default function Deductions() {
     activeTab,
     driverId: filters.driverId,
     expenseTypeId: filters.expenseTypeId,
+    status: filters.status,
     periodFilter: filters.periodFilter
   });
   
@@ -304,7 +305,7 @@ export default function Deductions() {
             )}
             {activeTab === 'period' && filters.status !== 'all' && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {t('filters.status')}: {filters.status}
+                {t('deductions.filters.status')}: {filters.status}
               </Badge>
             )}
           </div>

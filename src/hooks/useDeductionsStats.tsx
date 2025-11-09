@@ -14,6 +14,7 @@ interface DeductionsStatsFilters {
   activeTab: string;
   driverId?: string;
   expenseTypeId?: string;
+  status?: string;
   periodFilter?: {
     type: string;
     startDate?: string;
@@ -81,6 +82,11 @@ async function calculatePeriodDeductionsStats(
     // Aplicar filtro de tipo de gasto
     if (filters.expenseTypeId && filters.expenseTypeId !== 'all') {
       query = query.eq('expense_type_id', filters.expenseTypeId);
+    }
+
+    // Aplicar filtro de status
+    if (filters.status && filters.status !== 'all') {
+      query = query.eq('status', filters.status);
     }
 
     // Aplicar filtro de período
