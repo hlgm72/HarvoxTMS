@@ -246,10 +246,17 @@ export default function Loads() {
         title={t("title")}
         subtitle={subtitle}
         actions={
-          <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            {t("create.button")}
-          </Button>
+          <div className="flex items-center gap-2">
+            {periodFilter?.periodId && (
+              <Badge variant="outline" className="text-xs font-mono">
+                ID: {periodFilter.periodId.slice(0, 8)}...
+              </Badge>
+            )}
+            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t("create.button")}
+            </Button>
+          </div>
         }
       />
 

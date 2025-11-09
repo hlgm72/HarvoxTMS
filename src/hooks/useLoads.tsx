@@ -181,7 +181,7 @@ const getRelevantPeriodIds = (
     case 'week':
     case 'year':
     case 'custom':
-      // ✅ PRIORIZAR periodId si está disponible
+      // Si hay periodId, usarlo directamente (tiene prioridad)
       if (periodFilter.periodId) {
         return {
           periodIds: [periodFilter.periodId],
@@ -191,7 +191,7 @@ const getRelevantPeriodIds = (
         };
       }
       
-      // Fallback a fechas si no hay periodId
+      // Si solo hay fechas, usar filtro por fechas
       if (periodFilter.startDate && periodFilter.endDate) {
         return {
           periodIds: [],
@@ -200,6 +200,7 @@ const getRelevantPeriodIds = (
           endDate: periodFilter.endDate
         };
       }
+      
       return { periodIds: [], useDateFilter: false };
     
     default:
@@ -224,7 +225,8 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   // Memoizar el queryKey para evitar re-renders innecesarios y deduplicar queries
   const queryKey = useMemo(() => {
-    return ['loads', user?.id, JSON.stringify(filters?.periodFilter)];
+    const key = ['loads', user?.id, filters?.periodFilter?.periodId, filters?.periodFilter?.type, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
+    return key;
   }, [user?.id, filters?.periodFilter]);
 
   // console.log('🎯 useLoads hook - Estado antes del query:', {
