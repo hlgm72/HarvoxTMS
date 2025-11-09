@@ -380,8 +380,13 @@ export const useCreateLoad = () => {
         }
       }
       
-      // Standard cache invalidations
-      queryClient.invalidateQueries({ queryKey: ['loads'] });
+      // Standard cache invalidations - usar predicate para invalidar todas las variantes del query
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey;
+          return Array.isArray(key) && (key[0] === 'loads' || key[0] === 'loads-v2');
+        }
+      });
       queryClient.invalidateQueries({ queryKey: ['load-stops'] });
       queryClient.invalidateQueries({ queryKey: ['user-period-calculations'] });
       queryClient.invalidateQueries({ queryKey: ['consolidated-drivers'] });
@@ -403,7 +408,12 @@ export const useCreateLoad = () => {
       queryClient.invalidateQueries({ queryKey: ['payment-calculations-reports'] });
       
       // Refetch inmediato para sincronización rápida
-      await queryClient.refetchQueries({ queryKey: ['loads'] });
+      await queryClient.refetchQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey;
+          return Array.isArray(key) && (key[0] === 'loads' || key[0] === 'loads-v2');
+        }
+      });
     },
     onError: (error: Error, variables) => {
       // Traducir errores técnicos a mensajes amigables
