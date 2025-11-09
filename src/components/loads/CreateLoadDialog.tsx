@@ -242,25 +242,28 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         const masked = maskRef.current;
         const value = masked.value;
         
-        // Si el campo está vacío o solo tiene el prefijo, posicionar después del prefijo
-        if (!value || value.trim() === '' || value === fixedPrefix) {
+        // Verificar si solo hay prefijo + placeholders (sin contenido real del usuario)
+        const contentAfterPrefix = value.slice(fixedPrefix.length).trim();
+        
+        if (!contentAfterPrefix) {
+          // Campo vacío o solo tiene prefijo - posicionar justo después del prefijo
           const cursorPos = fixedPrefix.length;
           masked.updateCursor(cursorPos);
           input.setSelectionRange(cursorPos, cursorPos);
           return;
         }
         
-        // Si ya hay contenido, buscar la primera posición editable
-        let cursorPos = 0;
-        for (let i = 0; i < value.length; i++) {
+        // Si hay contenido, buscar el primer placeholder DESPUÉS del prefijo
+        let cursorPos = fixedPrefix.length;
+        for (let i = fixedPrefix.length; i < value.length; i++) {
           if (value[i] === '\u2000' || value[i] === ' ' || value[i] === '_') {
             cursorPos = i;
             break;
           }
         }
         
-        // Si no encontramos placeholder, poner al final del contenido existente
-        if (cursorPos === 0) {
+        // Si no encontramos placeholder, poner al final del contenido
+        if (cursorPos === fixedPrefix.length && value.length > fixedPrefix.length) {
           cursorPos = value.length;
         }
         
