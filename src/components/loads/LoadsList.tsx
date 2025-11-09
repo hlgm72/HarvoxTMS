@@ -491,11 +491,20 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                          {t('list.documents')}
                        </span>
+                      <LoadDocumentValidationIndicator 
+                        loadId={load.id} 
+                        loadStatus={load.status}
+                        compact={true}
+                      />
                       <LoadDocumentsList 
                         loadId={load.id} 
                         maxItems={3}
                         showActions={false}
                         refreshTrigger={refreshTrigger}
+                      />
+                      <LoadDocumentStatusIndicator 
+                        loadId={load.id}
+                        showDetails={false}
                       />
                     </div>
                   </div>
