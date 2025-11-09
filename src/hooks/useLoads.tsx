@@ -181,7 +181,17 @@ const getRelevantPeriodIds = (
     case 'week':
     case 'year':
     case 'custom':
-      // Para filtros basados en fechas, usar las fechas directamente
+      // ✅ PRIORIZAR periodId si está disponible (período existe en BD)
+      if (periodFilter.periodId && !periodFilter.periodId.startsWith('calculated-')) {
+        return {
+          periodIds: [periodFilter.periodId],
+          useDateFilter: false,
+          startDate: periodFilter.startDate,
+          endDate: periodFilter.endDate
+        };
+      }
+      
+      // Para filtros basados en fechas sin periodId, usar las fechas directamente
       if (periodFilter.startDate && periodFilter.endDate) {
         return {
           periodIds: [],
