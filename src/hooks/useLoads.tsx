@@ -230,6 +230,13 @@ export const useLoads = (filters?: LoadsFilters) => {
   const { user } = useAuth();
   const { userCompany, companyUsers, isLoading: cacheLoading, error: cacheError } = useCompanyCache();
 
+  console.log('🚀 useLoads called with filters:', {
+    filters,
+    periodFilter: filters?.periodFilter,
+    periodId: filters?.periodFilter?.periodId,
+    type: filters?.periodFilter?.type
+  });
+
   // Obtener períodos como en PaymentReports para consistencia
   const { data: currentPeriod } = useCurrentPaymentPeriod(userCompany?.company_id);
   const { data: previousPeriod } = usePreviousPaymentPeriod(userCompany?.company_id);

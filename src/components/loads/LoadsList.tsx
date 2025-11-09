@@ -183,6 +183,12 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
     }
   } : undefined;
   
+  console.log('📋 LoadsList - loadsFilters:', {
+    loadsFilters,
+    periodFilter,
+    periodId: periodFilter?.periodId
+  });
+  
   const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
   const deleteLoadMutation = useDeleteLoad();
   const updateStatusMutation = useUpdateLoadStatusWithValidation();
