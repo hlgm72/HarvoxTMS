@@ -175,9 +175,10 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
   
   // Convertir el filtro de períodos al formato que espera el hook useLoads
   const loadsFilters = useMemo(() => {
+    console.log('🟢 LoadsList - Building loadsFilters, periodFilter:', periodFilter);
     if (!periodFilter) return undefined;
     
-    return {
+    const filters = {
       periodFilter: {
         type: periodFilter.type,
         periodId: periodFilter.periodId,
@@ -185,9 +186,13 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
         endDate: periodFilter.endDate
       }
     };
+    console.log('🟢 LoadsList - loadsFilters created:', filters);
+    return filters;
   }, [periodFilter]);
   
+  console.log('🟢 LoadsList - About to call useLoads with:', loadsFilters);
   const { data: loads = [], isLoading, error } = useLoads(loadsFilters);
+  console.log('🟢 LoadsList - useLoads returned. loads count:', loads?.length, 'isLoading:', isLoading);
   const deleteLoadMutation = useDeleteLoad();
   const updateStatusMutation = useUpdateLoadStatusWithValidation();
   
