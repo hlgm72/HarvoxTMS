@@ -212,9 +212,13 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     if (mode === 'edit' && activeLoadData?.load_number) {
       // Crear una máscara basada en el valor existente que permita editar cualquier carácter
       const currentValue = activeLoadData.load_number;
+      console.log('🎭 Edit mask - currentValue:', currentValue, 'length:', currentValue.length);
       // Usar 'X' para cualquier carácter (letra, número o separador)
-      return 'X'.repeat(Math.max(currentValue.length, 20)); // Mínimo 20 chars para permitir expansión
+      const mask = 'X'.repeat(Math.max(currentValue.length, 20)); // Mínimo 20 chars para permitir expansión
+      console.log('🎭 Edit mask generated:', mask);
+      return mask;
     }
+    console.log('🎭 Using company pattern mask:', loadNumberMask);
     return loadNumberMask;
   }, [mode, activeLoadData?.load_number, loadNumberMask]);
 
@@ -233,6 +237,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     },
     {
       onAccept: (value, maskRef) => {
+        console.log('🎭 IMask onAccept - value:', value);
         const upperValue = value.toUpperCase();
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
@@ -245,8 +250,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   // Sincronizar valor en todos los modos usando IMask
   useEffect(() => {
     if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
+      console.log('🔄 Syncing load_number:', activeLoadData.load_number, 'mode:', mode);
       const timeoutId = setTimeout(() => {
         setMaskValue(activeLoadData.load_number);
+        console.log('✅ setMaskValue called with:', activeLoadData.load_number);
       }, 100);
       
       return () => clearTimeout(timeoutId);
