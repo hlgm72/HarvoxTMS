@@ -164,9 +164,9 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     pattern = pattern.replace(/^\^/, '').replace(/\$$/, '');
     
     // Paso 2: Convertir literales al inicio (letras y números) seguidos de separador
-    // En IMask, los literales se envuelven en comillas simples
+    // En IMask, los literales fijos se envuelven en llaves {}
     pattern = pattern.replace(/^([A-Z0-9]+)([-\/\.:])/, (match, prefix, separator) => {
-      return `'${prefix}${separator}'`;
+      return `{${prefix}${separator}}`;
     });
     
     // Paso 3: Convertir \d{n} a n repeticiones de '0'
