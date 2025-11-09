@@ -502,10 +502,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                         showActions={false}
                         refreshTrigger={refreshTrigger}
                       />
-                      <LoadDocumentStatusIndicator 
-                        loadId={load.id}
-                        showDetails={false}
-                      />
                     </div>
                   </div>
                 </div>
