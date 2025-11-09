@@ -32,7 +32,9 @@ import {
   Package,
   FileText,
   Eye,
-  Edit
+  Edit,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import { formatPaymentPeriod, formatDateAuto, formatDateSafe, formatCurrency } from "@/lib/dateFormatting";
 import { format } from "date-fns";
@@ -45,6 +47,8 @@ import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
 import { CreateLoadDialog } from "@/components/loads/CreateLoadDialog";
 import { FuelExpenseDialog } from "@/components/fuel/FuelExpenseDialog";
 import { UnifiedOtherIncomeForm } from "./UnifiedOtherIncomeForm";
+import { MarkDriverPaidDialog } from "./MarkDriverPaidDialog";
+import { useDriverPaymentActions } from "@/hooks/useDriverPaymentActions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from 'react-i18next';
 
@@ -62,6 +66,7 @@ export function PaymentReportDialog({
   const { t, i18n } = useTranslation('payments');
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
+  const { unmarkDriverAsPaid, isLoading: paymentLoading } = useDriverPaymentActions();
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [showEmailConfirm, setShowEmailConfirm] = useState(false);
@@ -73,6 +78,7 @@ export function PaymentReportDialog({
   const [showEditOtherIncomeDialog, setShowEditOtherIncomeDialog] = useState(false);
   const [selectedOtherIncomeForEdit, setSelectedOtherIncomeForEdit] = useState<any>(null);
   const [isEditOtherIncomeFormValid, setIsEditOtherIncomeFormValid] = useState(false);
+  const [showMarkPaidDialog, setShowMarkPaidDialog] = useState(false);
 
   // Obtener datos completos del cálculo
   const { data: calculation, isLoading } = useQuery({
@@ -750,12 +756,25 @@ export function PaymentReportDialog({
         {/* Header fijo */}
         <div className="p-4 sm:p-6 border-b shrink-0">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 min-w-0 text-base sm:text-lg">
-              <FileText className="h-5 w-5 shrink-0" />
-              <span className="truncate">
-                {t('report_dialog.title')} - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
-              </span>
-            </DialogTitle>
+            <div className="flex items-start justify-between gap-2">
+              <DialogTitle className="flex items-center gap-2 min-w-0 text-base sm:text-lg">
+                <FileText className="h-5 w-5 shrink-0" />
+                <span className="truncate">
+                  {t('report_dialog.title')} - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
+                </span>
+              </DialogTitle>
+              {/* Badge de estado del payroll */}
+              {calculation.payment_status === 'paid' ? (
+                <Badge variant="default" className="bg-green-100 text-green-800 shrink-0">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  {t('reports.status.paid')}
+                </Badge>
+              ) : (
+                <Badge variant="default" className="bg-amber-100 text-amber-800 shrink-0">
+                  {t('reports.status.ready_payment')}
+                </Badge>
+              )}
+            </div>
             <DialogDescription className="text-xs sm:text-sm break-words mt-1">
               {t('period.period_label')}: {(() => {
                 const startDate = (calculation as any).period?.period_start_date;
@@ -1075,49 +1094,85 @@ export function PaymentReportDialog({
 
         {/* Footer fijo con acciones */}
         <div className="p-4 sm:p-6 border-t shrink-0 bg-background">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-            <Button 
-              onClick={handlePreviewPDF}
-              disabled={isGeneratingPDF}
-              variant="outline"
-              size="sm"
-              className="w-full sm:flex-1"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              <span className="truncate">{isGeneratingPDF ? t('report_dialog.actions.generating') : t('report_dialog.actions.preview')}</span>
-            </Button>
-            <Button 
-              onClick={handleGeneratePDF}
-              disabled={isGeneratingPDF}
-              size="sm"
-              className="w-full sm:flex-1"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              <span className="truncate">{isGeneratingPDF ? t('report_dialog.actions.generating') : t('report_dialog.actions.download')}</span>
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={handleEmailButtonClick}
-              disabled={isSendingEmail}
-              size="sm"
-              className={`w-full sm:flex-1 transition-all duration-200 ${
-                isSendingEmail 
-                  ? 'bg-blue-50 border-blue-200 text-blue-700 cursor-not-allowed' 
-                  : 'hover:bg-blue-50 hover:border-blue-200'
-              }`}
-            >
-              {isSendingEmail ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-blue-600 mr-2"></div>
-                  <span className="truncate">{t('report_dialog.actions.sending')}</span>
-                </>
+          <div className="flex flex-col gap-3">
+            {/* Primera fila: Botones de PDF y Email */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+              <Button 
+                onClick={handlePreviewPDF}
+                disabled={isGeneratingPDF}
+                variant="outline"
+                size="sm"
+                className="w-full sm:flex-1"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                <span className="truncate">{isGeneratingPDF ? t('report_dialog.actions.generating') : t('report_dialog.actions.preview')}</span>
+              </Button>
+              <Button 
+                onClick={handleGeneratePDF}
+                disabled={isGeneratingPDF}
+                size="sm"
+                className="w-full sm:flex-1"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                <span className="truncate">{isGeneratingPDF ? t('report_dialog.actions.generating') : t('report_dialog.actions.download')}</span>
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={handleEmailButtonClick}
+                disabled={isSendingEmail}
+                size="sm"
+                className={`w-full sm:flex-1 transition-all duration-200 ${
+                  isSendingEmail 
+                    ? 'bg-blue-50 border-blue-200 text-blue-700 cursor-not-allowed' 
+                    : 'hover:bg-blue-50 hover:border-blue-200'
+                }`}
+              >
+                {isSendingEmail ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-blue-600 mr-2"></div>
+                    <span className="truncate">{t('report_dialog.actions.sending')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span className="truncate">{t('report_dialog.actions.email')}</span>
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {/* Segunda fila: Botones de Mark Paid / Unmark */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              {calculation.payment_status !== 'paid' ? (
+                <Button
+                  onClick={() => setShowMarkPaidDialog(true)}
+                  disabled={paymentLoading}
+                  size="sm"
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  {t('reports.mark_paid')}
+                </Button>
               ) : (
-                <>
-                  <Mail className="h-4 w-4 mr-2" />
-                  <span className="truncate">{t('report_dialog.actions.email')}</span>
-                </>
+                <Button
+                  onClick={async () => {
+                    const result = await unmarkDriverAsPaid(calculation.id);
+                    if (result.success) {
+                      // Refrescar datos del modal
+                      await queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail', calculationId] });
+                      await queryClient.refetchQueries({ queryKey: ['payment-calculation-detail', calculationId] });
+                    }
+                  }}
+                  disabled={paymentLoading}
+                  variant="outline"
+                  size="sm"
+                  className="w-full hover:bg-warning/10 hover:text-warning"
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  {t('reports.unmark_paid')}
+                </Button>
               )}
-            </Button>
+            </div>
           </div>
         </div>
         </DialogContent>
@@ -1243,6 +1298,20 @@ export function PaymentReportDialog({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Mark Driver Paid */}
+      <MarkDriverPaidDialog
+        open={showMarkPaidDialog}
+        onOpenChange={setShowMarkPaidDialog}
+        calculationId={calculation?.id || ""}
+        driverName={driver?.display_name || `${driver?.first_name} ${driver?.last_name}`}
+        netPayment={calculation?.net_payment || 0}
+        onSuccess={async () => {
+          // Refrescar datos del modal después de marcar como pagado
+          await queryClient.invalidateQueries({ queryKey: ['payment-calculation-detail', calculationId] });
+          await queryClient.refetchQueries({ queryKey: ['payment-calculation-detail', calculationId] });
+        }}
+      />
     </>
   );
 }
