@@ -38,6 +38,7 @@ import { formatPaymentPeriod, formatDateAuto, formatDateSafe, formatCurrency } f
 import { format } from "date-fns";
 import { generatePaymentReportPDF } from "@/lib/paymentReportPDF";
 import { calculateWeekNumberFromString, calculateWeekYearFromString } from "@/utils/weekCalculation";
+import { formatPeriodLabel } from "@/utils/periodUtils";
 import { useFleetNotifications } from "@/components/notifications";
 import { calculateNetPayment } from "@/lib/paymentCalculations";
 import { EmailConfirmationDialog } from "./EmailConfirmationDialog";
@@ -559,7 +560,7 @@ export function PaymentReportDialog({
         driverName: reportData.driver.name,
         startDate: formatDateSafe(reportData.period.start_date),
         endDate: formatDateSafe(reportData.period.end_date),
-        period: formatDateSafe(reportData.period.end_date, "yyyy/'W'ww")
+        period: formatPeriodLabel(reportData.period.start_date, reportData.period.end_date)
       };
 
       // Crear HTML profesional con traducciones dinámicas
@@ -645,7 +646,7 @@ export function PaymentReportDialog({
           subject: interpolateText(translations.subject, variables),
           html: emailHTML,
           pdf_data: pdfArray,
-          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${formatDateSafe(reportData.period.end_date, "yyyy/'W'ww").replace(/\//g, '-')}.pdf`
+          pdf_filename: `PaymentReport_${reportData.driver.name.replace(/\s+/g, '_')}_${formatPeriodLabel(reportData.period.start_date, reportData.period.end_date).replace(/\//g, '-')}.pdf`
         }
       });
 
