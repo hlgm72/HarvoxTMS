@@ -341,6 +341,7 @@
       "reading_pdf": "Reading PDF content...",
       "ai_identifying": "AI is identifying transactions...",
       "validating_data": "Validating drivers, vehicles, and periods...",
+      "transactions_found_progress": "{{count}} transactions found",
       "limit_reached_title": "Transaction limit reached",
       "limit_reached_message": "The PDF is approaching the processing limit (~100). Some transactions may not have been detected. Consider splitting the PDF into smaller ranges."
     },

@@ -849,7 +849,7 @@ export function PDFAnalyzer() {
               </h3>
               {transactionsProcessed > 0 && (
                 <div className="text-2xl font-bold text-primary">
-                  {transactionsProcessed} transacciones encontradas
+                  {t('analyzer.upload.transactions_found_progress', { count: transactionsProcessed })}
                 </div>
               )}
               <p className="text-sm text-muted-foreground">
