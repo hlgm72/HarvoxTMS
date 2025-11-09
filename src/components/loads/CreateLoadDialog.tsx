@@ -207,28 +207,25 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Crear máscara flexible para edición que acepta cualquier formato
-  const flexibleMask = useMemo(() => {
-    // Máscara que acepta alfanuméricos y separadores comunes, sin restricciones
-    return [
-      {
-        mask: /^[A-Z0-9\-\/\.:]*$/,
-      }
-    ];
-  }, []);
-
-  // Usar máscara flexible en edición, máscara estricta en create/duplicate
-  const activeMask = mode === 'edit' ? flexibleMask : loadNumberMask;
+  // Máscara dinámica para edición - permite cualquier texto alfanumérico
+  const dynamicMask = useMemo(() => {
+    if (mode === 'edit') {
+      // En edición: máscara que acepta hasta 20 caracteres alfanuméricos y separadores
+      return 'SSSSSSSSSSSSSSSSSSSS'; // 20 caracteres
+    }
+    return loadNumberMask;
+  }, [mode, loadNumberMask]);
 
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: activeMask,
+      mask: dynamicMask,
       lazy: false,
       eager: mode !== 'edit',
-      placeholderChar: '\u2000',
+      placeholderChar: mode === 'edit' ? '' : '\u2000', // Sin placeholder en edición
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/,
+        'S': /[A-Z0-9\-\/\.:]/,  // Definición para edición: acepta alfanuméricos y separadores
       },
       prepare: (str: string) => str.toUpperCase(),
     },
