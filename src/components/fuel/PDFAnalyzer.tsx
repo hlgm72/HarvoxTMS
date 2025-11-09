@@ -443,7 +443,8 @@ export function PDFAnalyzer() {
         });
 
         if (matchingPeriod && matchingPeriod.period) {
-          enrichedTransaction.payment_period_id = matchingPeriod.id;
+          // 🚨 FIX: Usar company_payment_period_id (ID real del período) en lugar de matchingPeriod.id (que puede ser virtual)
+          enrichedTransaction.payment_period_id = matchingPeriod.company_payment_period_id;
           const startDate = matchingPeriod.period.period_start_date;
           const endDate = matchingPeriod.period.period_end_date;
           const formattedLabel = formatPeriodLabel(startDate, endDate);
