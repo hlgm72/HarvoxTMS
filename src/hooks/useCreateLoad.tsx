@@ -306,7 +306,16 @@ export const useCreateLoad = () => {
         throw new Error(`La operación de carga no fue exitosa. Detalle: ${JSON.stringify(loadResult)}`);
       }
 
-      const loadId = (loadResult as any).load?.id || data.id;
+      // ✅ CORREGIDO: La función RPC retorna { success, load_id, payment_period_id }
+      const loadId = (loadResult as any).load_id || data.id;
+
+      // Validar que tenemos un loadId válido
+      if (!loadId) {
+        console.error('❌ useCreateLoad - No se pudo obtener loadId del resultado:', loadResult);
+        throw new Error('No se pudo obtener el ID de la carga creada');
+      }
+
+      console.log('✅ Load ID obtenido:', loadId);
 
       // Handle temporary documents upload (outside ACID transaction for performance)
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
@@ -321,6 +330,12 @@ export const useCreateLoad = () => {
       // 🚨 CRÍTICO: Si se asignó un conductor, cambiar estado a 'assigned'
       if (data.driver_user_id) {
         console.log('🔄 Driver asignado, actualizando estado a "assigned"...');
+        console.log('🔍 Parámetros para RPC:', {
+          load_id_param: loadId,
+          new_status: 'assigned',
+          load_id_type: typeof loadId
+        });
+        
         try {
           const { data: statusResult, error: statusError } = await supabase.rpc('update_load_status_with_validation', {
             load_id_param: loadId,
