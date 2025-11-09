@@ -576,13 +576,13 @@ export function PaymentReportDialog({
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
             <!-- Header -->
             <div style="background: #002652; padding: 30px; text-align: center;">
-              <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+              <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 10px;">
                 <img src="https://htaotttcnjxqzpsrqwll.supabase.co/storage/v1/object/public/harvox/logo_64x64.png" 
                      alt="Harvox TMS Logo" 
                      style="width: 40px; height: 40px; object-fit: contain;">
-                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: bold;">${translations.header.title}</h1>
+                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: normal;">${translations.header.title}</h1>
               </div>
-              <p style="color: #e5e7eb; margin: 10px 0 0 0; font-size: 16px;">${translations.header.subtitle}</p>
+              <p style="color: #e5e7eb; margin: 0; font-size: 16px;">${translations.header.subtitle}</p>
             </div>
             
             <!-- Content -->
