@@ -158,7 +158,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     if (!companyData?.load_number_pattern) return '';
     
     let pattern = companyData.load_number_pattern;
-    console.log('🎯 Original pattern:', pattern);
     
     // Paso 1: Remover ^ y $
     pattern = pattern.replace(/^\^/, '').replace(/\$$/, '');
@@ -195,7 +194,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // Paso 8: Convertir \- a '-'
     pattern = pattern.replace(/\\-/g, '-');
     
-    console.log('🎯 Converted mask:', pattern);
     return pattern;
   }, [companyData?.load_number_pattern]);
 
@@ -214,7 +212,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
 
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: shouldUseMask ? loadNumberMask : '',
+      mask: loadNumberMask,
       lazy: false,
       eager: true,
       placeholderChar: '\u2000',
@@ -226,7 +224,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     },
     {
       onAccept: (value, maskRef) => {
-        console.log('🎯 IMask onAccept:', value);
         const upperValue = value.toUpperCase();
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
@@ -235,6 +232,43 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       },
     }
   );
+
+  // Handler para posicionar el cursor después del prefijo al hacer focus o click
+  const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    
+    setTimeout(() => {
+      if (maskRef.current && input) {
+        const masked = maskRef.current;
+        const value = masked.value;
+        
+        // Si el campo está vacío o solo tiene el prefijo, posicionar después del prefijo
+        if (!value || value.trim() === '' || value === fixedPrefix) {
+          const cursorPos = fixedPrefix.length;
+          masked.updateCursor(cursorPos);
+          input.setSelectionRange(cursorPos, cursorPos);
+          return;
+        }
+        
+        // Si ya hay contenido, buscar la primera posición editable
+        let cursorPos = 0;
+        for (let i = 0; i < value.length; i++) {
+          if (value[i] === '\u2000' || value[i] === ' ' || value[i] === '_') {
+            cursorPos = i;
+            break;
+          }
+        }
+        
+        // Si no encontramos placeholder, poner al final del contenido existente
+        if (cursorPos === 0) {
+          cursorPos = value.length;
+        }
+        
+        masked.updateCursor(cursorPos);
+        input.setSelectionRange(cursorPos, cursorPos);
+      }
+    }, 10);
+  };
 
   // PO number validation
   const currentPONumber = form.watch("po_number");
@@ -1079,26 +1113,28 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                    </TooltipProvider>
                                  )}
                                </FormLabel>
-                                 <FormControl>
-                                    <div className="relative">
-                                       <Input
-                                         ref={mode !== 'edit' ? loadNumberInputRef as any : undefined}
-                                         placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                         value={mode === 'edit' ? field.value || '' : undefined}
-                                         onChange={mode === 'edit' ? (e) => {
-                                           const upperValue = e.target.value.toUpperCase();
-                                           form.setValue("load_number", upperValue, { shouldValidate: true });
-                                         } : undefined}
-                                         onBlur={field.onBlur}
-                                         autoFocus
-                                         className={
-                                           loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                             ? "border-destructive focus-visible:ring-destructive" 
-                                             : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                             ? "border-green-500 focus-visible:ring-green-500" 
-                                             : ""
-                                         }
-                                       />
+                                <FormControl>
+                                   <div className="relative">
+                                      <Input
+                                        ref={mode !== 'edit' ? loadNumberInputRef as any : undefined}
+                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                        value={mode === 'edit' ? field.value || '' : undefined}
+                                        onChange={mode === 'edit' ? (e) => {
+                                          const upperValue = e.target.value.toUpperCase();
+                                          form.setValue("load_number", upperValue, { shouldValidate: true });
+                                        } : undefined}
+                                        onBlur={field.onBlur}
+                                        onFocus={mode !== 'edit' ? handleLoadNumberFocus : undefined}
+                                        onClick={mode !== 'edit' ? (handleLoadNumberFocus as any) : undefined}
+                                        autoFocus
+                                        className={
+                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                            ? "border-destructive focus-visible:ring-destructive" 
+                                            : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                            ? "border-green-500 focus-visible:ring-green-500" 
+                                            : ""
+                                        }
+                                      />
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
