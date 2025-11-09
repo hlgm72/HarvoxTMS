@@ -247,23 +247,9 @@ export const useLoads = (filters?: LoadsFilters) => {
   //   enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0
   // });
 
-  // 🔍 DEBUG: Verificar condiciones del enabled
-  const enabledConditions = {
-    hasUser: !!user,
-    notCacheLoading: !cacheLoading,
-    hasUserCompany: !!userCompany,
-    noCacheError: !cacheError,
-    hasCompanyUsers: companyUsers.length > 0,
-    periodId: filters?.periodFilter?.periodId
-  };
-  console.log('🔍 useLoads enabled conditions:', enabledConditions);
-  
-  const isEnabled = !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0;
-  console.log('🔍 useLoads isEnabled:', isEnabled);
-
   return useQuery({
     queryKey,
-    enabled: isEnabled,
+    enabled: !!user && !cacheLoading && !!userCompany && !cacheError && companyUsers.length > 0,
     retry: 1,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 0, // ✅ FORZAR: No usar caché para debugging
@@ -273,8 +259,6 @@ export const useLoads = (filters?: LoadsFilters) => {
     refetchInterval: false,
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
-      console.log('🚀 queryFn EXECUTING for periodId:', filters?.periodFilter?.periodId);
-      
       if (!user?.id || cacheLoading || !userCompany) {
         return [];
       }
@@ -318,7 +302,7 @@ export const useLoads = (filters?: LoadsFilters) => {
           .in('created_by', companyUsers)
           .order('payment_period_id', { ascending: true, nullsFirst: false })
           .order('load_number', { ascending: true})
-          .limit(200); // Reducido de 500 a 200 para mejorar performance inicial
+          .limit(500); // Aumentado para incluir todas las cargas
 
         const { data: allLoads, error: loadsError } = await loadsQuery;
 
@@ -327,33 +311,16 @@ export const useLoads = (filters?: LoadsFilters) => {
           throw new Error('Error de conexión obteniendo cargas');
         }
 
-        console.log('🔍 DEBUG W41:', {
-          totalLoadsFromDB: allLoads?.length,
-          periodIds: periodResult.periodIds,
-          periodIdW41: 'f555d0df-b0d3-48c7-8412-a9ce4655f1fc',
-          loadsForW41: allLoads?.filter(l => l.payment_period_id === 'f555d0df-b0d3-48c7-8412-a9ce4655f1fc').length,
-          companyUsers
-        });
 
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
         
         // Priorizar payment_period_id sobre fechas para cargas con período asignado
         if (periodResult.periodIds.length > 0) {
-          console.log('🎯 Filtering by periodIds:', periodResult.periodIds);
           loads = loads.filter(load => {
             // Si la carga tiene un payment_period_id asignado, usar ese criterio
             if (load.payment_period_id) {
-              const matches = periodResult.periodIds.includes(load.payment_period_id);
-              if (load.payment_period_id === 'f555d0df-b0d3-48c7-8412-a9ce4655f1fc') {
-                console.log('🔍 W41 load check:', {
-                  loadNumber: load.load_number,
-                  paymentPeriodId: load.payment_period_id,
-                  matches,
-                  periodIds: periodResult.periodIds
-                });
-              }
-              return matches;
+              return periodResult.periodIds.includes(load.payment_period_id);
             }
             
             // Para cargas sin período asignado, filtrar por fechas
