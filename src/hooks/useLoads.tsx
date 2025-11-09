@@ -304,15 +304,33 @@ export const useLoads = (filters?: LoadsFilters) => {
           throw new Error('Error de conexión obteniendo cargas');
         }
 
+        console.log('🔍 DEBUG W41:', {
+          totalLoadsFromDB: allLoads?.length,
+          periodIds: periodResult.periodIds,
+          periodIdW41: 'f555d0df-b0d3-48c7-8412-a9ce4655f1fc',
+          loadsForW41: allLoads?.filter(l => l.payment_period_id === 'f555d0df-b0d3-48c7-8412-a9ce4655f1fc').length,
+          companyUsers
+        });
+
         // PASO 4: Filtrar cargas por período en el cliente
         let loads = allLoads || [];
         
         // Priorizar payment_period_id sobre fechas para cargas con período asignado
         if (periodResult.periodIds.length > 0) {
+          console.log('🎯 Filtering by periodIds:', periodResult.periodIds);
           loads = loads.filter(load => {
             // Si la carga tiene un payment_period_id asignado, usar ese criterio
             if (load.payment_period_id) {
-              return periodResult.periodIds.includes(load.payment_period_id);
+              const matches = periodResult.periodIds.includes(load.payment_period_id);
+              if (load.payment_period_id === 'f555d0df-b0d3-48c7-8412-a9ce4655f1fc') {
+                console.log('🔍 W41 load check:', {
+                  loadNumber: load.load_number,
+                  paymentPeriodId: load.payment_period_id,
+                  matches,
+                  periodIds: periodResult.periodIds
+                });
+              }
+              return matches;
             }
             
             // Para cargas sin período asignado, filtrar por fechas
