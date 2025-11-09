@@ -456,7 +456,30 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                       </span>
                     </CardTitle>
                     
-                    {/* Documentos Subidos al lado del PO# */}
+                    {/* Monto con porcentajes - Ahora primero */}
+                    <span className="flex items-center gap-1">
+                      <span className="font-bold">
+                        {formatCurrency(load.total_amount)}
+                      </span>
+                       {(() => {
+                          const percentages = [
+                            load.leasing_percentage && load.leasing_percentage > 0 ? 
+                              `${t('percentages.leasing_short')}${load.leasing_percentage}%-${formatCurrency((load.total_amount || 0) * (load.leasing_percentage || 0) / 100)}` : null,
+                            load.factoring_percentage && load.factoring_percentage > 0 ? 
+                              `${t('percentages.factoring_short')}${load.factoring_percentage}%-${formatCurrency((load.total_amount || 0) * (load.factoring_percentage || 0) / 100)}` : null,
+                            load.dispatching_percentage && load.dispatching_percentage > 0 ? 
+                              `${t('percentages.dispatching_short')}${load.dispatching_percentage}%-${formatCurrency((load.total_amount || 0) * (load.dispatching_percentage || 0) / 100)}` : null
+                          ].filter(Boolean);
+                          
+                          return percentages.length > 0 ? (
+                            <span className="text-xs text-muted-foreground ml-1">
+                              ({percentages.join(', ')})
+                            </span>
+                          ) : null;
+                        })()}
+                    </span>
+                    
+                    {/* Documentos Subidos - Ahora después del monto */}
                     <div className="flex items-center gap-2">
                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                          {t('list.documents')}
@@ -483,27 +506,6 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
                       {load.pickup_city} → {load.delivery_city}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="font-bold">
-                        {formatCurrency(load.total_amount)}
-                      </span>
-                       {(() => {
-                          const percentages = [
-                            load.leasing_percentage && load.leasing_percentage > 0 ? 
-                              `${t('percentages.leasing_short')}${load.leasing_percentage}%-${formatCurrency((load.total_amount || 0) * (load.leasing_percentage || 0) / 100)}` : null,
-                            load.factoring_percentage && load.factoring_percentage > 0 ? 
-                              `${t('percentages.factoring_short')}${load.factoring_percentage}%-${formatCurrency((load.total_amount || 0) * (load.factoring_percentage || 0) / 100)}` : null,
-                            load.dispatching_percentage && load.dispatching_percentage > 0 ? 
-                              `${t('percentages.dispatching_short')}${load.dispatching_percentage}%-${formatCurrency((load.total_amount || 0) * (load.dispatching_percentage || 0) / 100)}` : null
-                          ].filter(Boolean);
-                          
-                          return percentages.length > 0 ? (
-                            <span className="text-xs text-muted-foreground ml-1">
-                              ({percentages.join(', ')})
-                            </span>
-                          ) : null;
-                        })()}
                     </span>
                   </div>
                 </div>
