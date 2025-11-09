@@ -94,12 +94,6 @@ const PaymentPeriodInfo = ({
           )}
         </div>
         
-        {periodFrequency && (
-          <Badge variant="outline" className="text-xs">
-            {getFrequencyText(periodFrequency)}
-          </Badge>
-        )}
-        
         {periodStatus && (
           <Badge variant="outline" className={`text-xs border-transparent ${getStatusColor(periodStatus)}`}>
             {getStatusText(periodStatus)}
