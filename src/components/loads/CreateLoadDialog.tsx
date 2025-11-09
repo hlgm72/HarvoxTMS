@@ -207,37 +207,23 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Máscara dinámica que se adapta al contenido en modo edición
-  const editMask = useMemo(() => {
-    if (mode === 'edit' && activeLoadData?.load_number) {
-      // Crear una máscara basada en el valor existente que permita editar cualquier carácter
-      const currentValue = activeLoadData.load_number;
-      console.log('🎭 Edit mask - currentValue:', currentValue, 'length:', currentValue.length);
-      // Usar 'X' para cualquier carácter (letra, número o separador)
-      const mask = 'X'.repeat(Math.max(currentValue.length, 20)); // Mínimo 20 chars para permitir expansión
-      console.log('🎭 Edit mask generated:', mask);
-      return mask;
-    }
-    console.log('🎭 Using company pattern mask:', loadNumberMask);
-    return loadNumberMask;
-  }, [mode, activeLoadData?.load_number, loadNumberMask]);
+  // En modo edit, no usamos máscara - permitimos edición libre
+  const shouldUseMask = mode !== 'edit';
 
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: editMask,
+      mask: loadNumberMask,
       lazy: false,
-      eager: mode !== 'edit',
-      placeholderChar: mode === 'edit' ? '' : '\u2000',
+      eager: true,
+      placeholderChar: '\u2000',
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/,
-        'X': /[A-Za-z0-9\-\/\.:]/,  // Acepta cualquier alfanumérico o separador
       },
       prepare: (str: string) => str.toUpperCase(),
     },
     {
       onAccept: (value, maskRef) => {
-        console.log('🎭 IMask onAccept - value:', value);
         const upperValue = value.toUpperCase();
         form.setValue("load_number", upperValue, { shouldValidate: true });
         if (form.formState.errors.load_number) {
@@ -247,13 +233,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
-  // Sincronizar valor en todos los modos usando IMask
+  // Sincronizar valor solo en modo duplicate usando IMask
   useEffect(() => {
-    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
-      console.log('🔄 Syncing load_number:', activeLoadData.load_number, 'mode:', mode);
+    if (mode === 'duplicate' && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
       const timeoutId = setTimeout(() => {
         setMaskValue(activeLoadData.load_number);
-        console.log('✅ setMaskValue called with:', activeLoadData.load_number);
       }, 100);
       
       return () => clearTimeout(timeoutId);
@@ -1133,23 +1117,28 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                    </TooltipProvider>
                                  )}
                                </FormLabel>
-                               <FormControl>
-                                  <div className="relative">
-                                     <Input
-                                       ref={loadNumberInputRef as any}
-                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                       onBlur={field.onBlur}
-                                       onFocus={mode !== 'edit' ? handleLoadNumberFocus : undefined}
-                                       onClick={mode !== 'edit' ? (handleLoadNumberFocus as any) : undefined}
-                                       autoFocus
-                                       className={
-                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                           ? "border-destructive focus-visible:ring-destructive" 
-                                           : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                           ? "border-green-500 focus-visible:ring-green-500" 
-                                           : ""
-                                       }
-                                     />
+                                <FormControl>
+                                   <div className="relative">
+                                      <Input
+                                        ref={mode !== 'edit' ? loadNumberInputRef as any : undefined}
+                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                        value={mode === 'edit' ? field.value || '' : undefined}
+                                        onChange={mode === 'edit' ? (e) => {
+                                          const upperValue = e.target.value.toUpperCase();
+                                          form.setValue("load_number", upperValue, { shouldValidate: true });
+                                        } : undefined}
+                                        onBlur={field.onBlur}
+                                        onFocus={mode !== 'edit' ? handleLoadNumberFocus : undefined}
+                                        onClick={mode !== 'edit' ? (handleLoadNumberFocus as any) : undefined}
+                                        autoFocus
+                                        className={
+                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                            ? "border-destructive focus-visible:ring-destructive" 
+                                            : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                            ? "border-green-500 focus-visible:ring-green-500" 
+                                            : ""
+                                        }
+                                      />
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
