@@ -189,9 +189,9 @@ export function PDFAnalyzer() {
               const data = JSON.parse(line.substring(6));
               
               if (data.step === 'analyzing') {
-                setAnalysisStep(data.message);
+                // No usar data.message del servidor, mantener la traducción local
               } else if (data.step === 'complete') {
-                setAnalysisStep(data.message);
+                // No usar data.message del servidor, mantener la traducción local
                 setTransactionsProcessed(data.transactionCount || 0);
               } else if (data.success !== undefined) {
                 // Resultado final
