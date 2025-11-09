@@ -207,12 +207,24 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Máscara siempre activa (tanto en create, duplicate como edit)
+  // Crear máscara flexible para edición (permite cualquier valor existente)
+  const editModeMask = useMemo(() => {
+    // En modo edición, usar una máscara que acepte cualquier texto alfanumérico con separadores
+    return /^[A-Z0-9\-\/\.:]*$/;
+  }, []);
+
+  const activeMask = useMemo(() => {
+    if (mode === 'edit') {
+      return editModeMask; // Máscara flexible que acepta cualquier patrón
+    }
+    return loadNumberMask; // Máscara estricta del patrón de la compañía
+  }, [mode, loadNumberMask, editModeMask]);
+
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: loadNumberMask,
+      mask: activeMask,
       lazy: false,
-      eager: true,
+      eager: mode !== 'edit', // Solo eager en create/duplicate
       placeholderChar: '\u2000',
       definitions: {
         '0': /[0-9]/,
@@ -235,17 +247,12 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   useEffect(() => {
     if (mode === 'edit' && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
       const timeoutId = setTimeout(() => {
-        // Forzar la actualización del valor sin validación de la máscara
-        if (maskRef.current) {
-          maskRef.current.unmaskedValue = activeLoadData.load_number;
-          maskRef.current.updateValue();
-        }
         setMaskValue(activeLoadData.load_number);
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase, maskRef]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
