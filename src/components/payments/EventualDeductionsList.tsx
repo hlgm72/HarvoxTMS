@@ -18,6 +18,7 @@ import { useCancelAutomaticDeduction } from '@/hooks/useCancelAutomaticDeduction
 import { useReactivateAutomaticDeduction } from '@/hooks/useReactivateAutomaticDeduction';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface EventualDeductionsListProps {
   onRefresh: () => void;
@@ -220,7 +221,7 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
           userIds.length > 0
             ? supabase
                 .from('profiles')
-                .select('user_id, first_name, last_name')
+                .select('user_id, first_name, last_name, avatar_url')
                 .in('user_id', userIds)
                 .then(res => res.data || [])
             : Promise.resolve([]),
@@ -448,7 +449,15 @@ export function EventualDeductionsList({ onRefresh, filters, viewConfig }: Event
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="h-4 w-4" />
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage 
+                        src={deduction.profiles?.avatar_url || ''} 
+                        alt={`${deduction.profiles?.first_name} ${deduction.profiles?.last_name}`} 
+                      />
+                      <AvatarFallback>
+                        <User className="h-3 w-3" />
+                      </AvatarFallback>
+                    </Avatar>
                     {deduction.profiles?.first_name} {' '}
                     {deduction.profiles?.last_name}
                   </CardTitle>
