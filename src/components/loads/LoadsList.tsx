@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Eye, Edit, MapPin, Calendar, MoreHorizontal, ArrowRightLeft, Loader2, FileText, Trash2, Copy, Play, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatCurrency, formatDateTimeAuto, formatNumber, getPeriodNumber } from '@/lib/dateFormatting';
+import { formatCurrency, formatDateTimeAuto, formatNumber, getPeriodNumber, formatPaymentPeriod } from '@/lib/dateFormatting';
 import { useLoads } from "@/hooks/useLoads";
 import { useDeleteLoad } from "@/hooks/useDeleteLoad";
 import { useUpdateLoadStatusWithValidation } from "@/hooks/useUpdateLoadStatusWithValidation";
@@ -604,22 +604,38 @@ export function LoadsList({ filters, periodFilter, onCreateLoad, onStatsChange }
                   {/* Payment Period - Columna izquierda */}
                   <div>
                     <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         {t('list.payment_period')}
                       </label>
-                      {load.period_start_date && load.period_end_date && (
+                    </div>
+                    {load.period_start_date && load.period_end_date && (
+                      <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
                           {getPeriodNumber(load.period_start_date, load.period_end_date, load.period_frequency)}
                         </span>
-                      )}
-                    </div>
-                    <PaymentPeriodInfo
-                      periodStartDate={load.period_start_date}
-                      periodEndDate={load.period_end_date}
-                      periodFrequency={load.period_frequency}
-                      periodStatus={load.period_status}
-                      showPeriodNumber={false}
-                    />
+                        <span className="text-sm text-muted-foreground">
+                          ({formatPaymentPeriod(load.period_start_date, load.period_end_date)})
+                        </span>
+                        {load.period_status && (
+                          <Badge variant="outline" className={`text-xs border-transparent ${
+                            load.period_status === 'open' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
+                            load.period_status === 'processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' :
+                            load.period_status === 'closed' ? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300' :
+                            load.period_status === 'paid' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
+                            load.period_status === 'locked' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' :
+                            'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                          }`}>
+                            {load.period_status === 'open' ? t('period.status.open') :
+                             load.period_status === 'processing' ? t('period.status.processing') :
+                             load.period_status === 'closed' ? t('period.status.closed') :
+                             load.period_status === 'paid' ? t('period.status.paid') :
+                             load.period_status === 'locked' ? t('period.status.locked') :
+                             load.period_status}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Cancellation Note - Columna derecha, solo si está cancelado */}
