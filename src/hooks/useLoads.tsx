@@ -225,7 +225,15 @@ export const useLoads = (filters?: LoadsFilters) => {
 
   // Memoizar el queryKey para evitar re-renders innecesarios y deduplicar queries
   const queryKey = useMemo(() => {
-    const key = ['loads', user?.id, filters?.periodFilter?.periodId, filters?.periodFilter?.type, filters?.periodFilter?.startDate, filters?.periodFilter?.endDate];
+    // Agregar timestamp para forzar recarga y evitar caché corrupto
+    const key = [
+      'loads-v2', // Cambiar versión para invalidar caché viejo
+      user?.id, 
+      filters?.periodFilter?.periodId, 
+      filters?.periodFilter?.type, 
+      filters?.periodFilter?.startDate, 
+      filters?.periodFilter?.endDate
+    ];
     return key;
   }, [user?.id, filters?.periodFilter]);
 
@@ -252,6 +260,8 @@ export const useLoads = (filters?: LoadsFilters) => {
     // Deduplicar queries - crucial para ERR_INSUFFICIENT_RESOURCES
     networkMode: 'online',
     queryFn: async (): Promise<Load[]> => {
+      console.log('🚀 queryFn EXECUTING for periodId:', filters?.periodFilter?.periodId);
+      
       if (!user?.id || cacheLoading || !userCompany) {
         return [];
       }
