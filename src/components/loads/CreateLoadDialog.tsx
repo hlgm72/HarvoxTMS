@@ -207,12 +207,10 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Solo usar máscara en modo creación o duplicación (donde load_number está vacío)
-  const shouldUseMask = mode === 'create' || (mode === 'duplicate' && !activeLoadData?.load_number);
-  
+  // Máscara siempre activa (tanto en create, duplicate como edit)
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: shouldUseMask ? loadNumberMask : '', // Sin máscara en edición
+      mask: loadNumberMask,
       lazy: false,
       eager: true,
       placeholderChar: '\u2000',
@@ -234,17 +232,20 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
   );
 
   // Sincronizar la máscara IMask con el valor del formulario al cargar en modo edición
-  // También se ejecuta cuando cambias de fase para restaurar el valor al regresar al Paso 1
   useEffect(() => {
-    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
-      // Use a small delay to ensure the input is fully rendered
+    if (mode === 'edit' && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
       const timeoutId = setTimeout(() => {
+        // Forzar la actualización del valor sin validación de la máscara
+        if (maskRef.current) {
+          maskRef.current.unmaskedValue = activeLoadData.load_number;
+          maskRef.current.updateValue();
+        }
         setMaskValue(activeLoadData.load_number);
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase, maskRef]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -1122,16 +1123,11 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                <FormControl>
                                   <div className="relative">
                                      <Input
-                                       ref={shouldUseMask ? (loadNumberInputRef as any) : undefined}
-                                       value={shouldUseMask ? undefined : field.value}
-                                       onChange={shouldUseMask ? undefined : (e) => {
-                                         const upperValue = e.target.value.toUpperCase();
-                                         field.onChange(upperValue);
-                                       }}
+                                       ref={loadNumberInputRef as any}
                                        placeholder={t("loads:create_wizard.form.load_number_placeholder")}
                                        onBlur={field.onBlur}
-                                       onFocus={shouldUseMask ? handleLoadNumberFocus : undefined}
-                                       onClick={shouldUseMask ? (handleLoadNumberFocus as any) : undefined}
+                                       onFocus={handleLoadNumberFocus}
+                                       onClick={handleLoadNumberFocus as any}
                                        autoFocus
                                        className={
                                          loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
