@@ -207,49 +207,50 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     return prefix;
   }, [companyData?.load_number_pattern]);
 
-  // Máscara dinámica para edición - permite cualquier texto alfanumérico
-  const dynamicMask = useMemo(() => {
-    if (mode === 'edit') {
-      // En edición: máscara que acepta hasta 20 caracteres alfanuméricos y separadores
-      return 'SSSSSSSSSSSSSSSSSSSS'; // 20 caracteres
-    }
-    return loadNumberMask;
-  }, [mode, loadNumberMask]);
+  // Solo usar IMask en create/duplicate, no en edit
+  const shouldUseIMask = mode !== 'edit';
 
   const { ref: loadNumberInputRef, maskRef, setValue: setMaskValue } = useIMask(
     {
-      mask: dynamicMask,
+      mask: shouldUseIMask ? loadNumberMask : '',
       lazy: false,
-      eager: mode !== 'edit',
-      placeholderChar: mode === 'edit' ? '' : '\u2000', // Sin placeholder en edición
+      eager: true,
+      placeholderChar: '\u2000',
       definitions: {
         '0': /[0-9]/,
         'A': /[a-zA-Z]/,
-        'S': /[A-Z0-9\-\/\.:]/,  // Definición para edición: acepta alfanuméricos y separadores
       },
       prepare: (str: string) => str.toUpperCase(),
     },
     {
       onAccept: (value, maskRef) => {
-        const upperValue = value.toUpperCase();
-        form.setValue("load_number", upperValue, { shouldValidate: true });
-        if (form.formState.errors.load_number) {
-          form.clearErrors("load_number");
+        if (shouldUseIMask) {
+          const upperValue = value.toUpperCase();
+          form.setValue("load_number", upperValue, { shouldValidate: true });
+          if (form.formState.errors.load_number) {
+            form.clearErrors("load_number");
+          }
         }
       },
     }
   );
 
-  // Sincronizar el valor en todos los modos
+  // Sincronizar valor según el modo
   useEffect(() => {
-    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
+    if ((mode === 'edit' || mode === 'duplicate') && isFormReady && activeLoadData?.load_number && currentPhase === 1) {
       const timeoutId = setTimeout(() => {
-        setMaskValue(activeLoadData.load_number);
+        if (mode === 'edit') {
+          // En edición, usar form.setValue directamente
+          form.setValue('load_number', activeLoadData.load_number);
+        } else if (setMaskValue) {
+          // En duplicate, usar setMaskValue de IMask
+          setMaskValue(activeLoadData.load_number);
+        }
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
+  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase, form]);
 
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -1126,21 +1127,41 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                                </FormLabel>
                                <FormControl>
                                   <div className="relative">
-                                     <Input
-                                       ref={loadNumberInputRef as any}
-                                       placeholder={t("loads:create_wizard.form.load_number_placeholder")}
-                                       onBlur={field.onBlur}
-                                       onFocus={mode !== 'edit' ? handleLoadNumberFocus : undefined}
-                                       onClick={mode !== 'edit' ? (handleLoadNumberFocus as any) : undefined}
-                                       autoFocus
-                                       className={
-                                         loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
-                                           ? "border-destructive focus-visible:ring-destructive" 
-                                           : loadNumberValidation.isValid && patternValidation.isValidFormat
-                                           ? "border-green-500 focus-visible:ring-green-500" 
-                                           : ""
-                                       }
-                                     />
+                                     {mode === 'edit' ? (
+                                       <Input
+                                         value={field.value}
+                                         onChange={(e) => {
+                                           const upperValue = e.target.value.toUpperCase();
+                                           field.onChange(upperValue);
+                                         }}
+                                         placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                         onBlur={field.onBlur}
+                                         autoFocus
+                                         className={
+                                           loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                             ? "border-destructive focus-visible:ring-destructive" 
+                                             : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                             ? "border-green-500 focus-visible:ring-green-500" 
+                                             : ""
+                                         }
+                                       />
+                                     ) : (
+                                       <Input
+                                         ref={loadNumberInputRef as any}
+                                         placeholder={t("loads:create_wizard.form.load_number_placeholder")}
+                                         onBlur={field.onBlur}
+                                         onFocus={handleLoadNumberFocus}
+                                         onClick={handleLoadNumberFocus as any}
+                                         autoFocus
+                                         className={
+                                           loadNumberValidation.isDuplicate || !patternValidation.isValidFormat
+                                             ? "border-destructive focus-visible:ring-destructive" 
+                                             : loadNumberValidation.isValid && patternValidation.isValidFormat
+                                             ? "border-green-500 focus-visible:ring-green-500" 
+                                             : ""
+                                         }
+                                       />
+                                     )}
                                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                     {loadNumberValidation.isValidating && (
                                       <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
