@@ -485,6 +485,14 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     if ((mode === 'edit' || mode === 'duplicate') && activeLoadData && isFormReady) {
       // Update ATM input
       atmInput.setValue(activeLoadData.total_amount || 0);
+      
+      // En modo duplicate, limpiar el Load Number y sincronizar con IMask
+      if (mode === 'duplicate') {
+        form.setValue("load_number", "", { shouldValidate: false });
+        if (maskRef.current) {
+          maskRef.current.value = "";
+        }
+      }
 
       // Find and set client
       if (activeLoadData.client_id && clients.length > 0) {
