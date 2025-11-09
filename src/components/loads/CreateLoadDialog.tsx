@@ -233,17 +233,6 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     }
   );
 
-  // Sincronizar valor solo en modo duplicate usando IMask
-  useEffect(() => {
-    if (mode === 'duplicate' && isFormReady && activeLoadData?.load_number && setMaskValue && currentPhase === 1) {
-      const timeoutId = setTimeout(() => {
-        setMaskValue(activeLoadData.load_number);
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [mode, isFormReady, activeLoadData?.load_number, setMaskValue, currentPhase]);
-
   // Handler para posicionar el cursor después del prefijo al hacer focus o click
   const handleLoadNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     const input = e.currentTarget; // Guardar referencia antes del setTimeout
