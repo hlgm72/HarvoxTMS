@@ -68,7 +68,7 @@ serve(async (req) => {
               'Authorization': `Basic ${authString}`,
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'User-Agent': 'FleetNest-Integration/1.0'
+              'User-Agent': 'Harvox-Integration/1.0'
             }
           });
 

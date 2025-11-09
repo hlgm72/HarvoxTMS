@@ -1,7 +1,7 @@
-# FleetNest TMS - Security Guidelines
+# Harvox TMS - Security Guidelines
 
 ## Overview
-Este documento describe las medidas de seguridad implementadas en FleetNest TMS y las mejores prácticas para mantener la aplicación segura.
+Este documento describe las medidas de seguridad implementadas en Harvox TMS y las mejores prácticas para mantener la aplicación segura.
 
 ## Medidas de Seguridad Implementadas
 

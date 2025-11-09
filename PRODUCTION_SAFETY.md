@@ -104,7 +104,7 @@ SELECT COUNT(*) FROM loads;
 
 ### Planned Maintenance:
 ```
-🔧 FleetNest Maintenance Notice
+🔧 Harvox Maintenance Notice
 
 We'll be performing system updates on [DATE] from [TIME] to [TIME].
 
@@ -118,7 +118,7 @@ We appreciate your patience as we improve your experience.
 
 ### Emergency Communication:
 ```
-🚨 FleetNest Service Alert
+🚨 Harvox Service Alert
 
 We're experiencing technical difficulties and are working to resolve them.
 

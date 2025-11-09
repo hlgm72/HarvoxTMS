@@ -32,7 +32,7 @@ Email Enviado → Usuario crea contraseña → Login automático
 
 ### 6. Beneficios del Sistema
 - **Seguro**: No se almacenan contraseñas temporales
-- **Profesional**: Emails con marca FleetNest
+- **Profesional**: Emails con marca Harvox
 - **Automático**: Asignación de roles sin intervención
 - **Escalable**: Funciona para cualquier número de empresas
 - **Auditable**: Tracking completo de invitaciones

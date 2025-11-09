@@ -1,7 +1,7 @@
 # Company Data Security Implementation
 
 ## Overview
-This document describes the security implementation for protecting sensitive company financial data in FleetNest TMS.
+This document describes the security implementation for protecting sensitive company financial data in Harvox TMS.
 
 ## Security Issue Fixed
 **Problem**: The original `companies` table exposed sensitive business information (EIN numbers, owner personal details, financial percentages) to all company users, creating a risk of data theft.

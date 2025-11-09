@@ -104,7 +104,7 @@ export default {
 					'hover': 'hsl(var(--limitless-hover))',
 					'background': 'hsl(var(--limitless-background))'
 				},
-				// FleetNest specific colors
+				// Harvox specific colors
 				'fleet-orange': 'hsl(var(--fleet-orange))',
 				'fleet-orange-dark': 'hsl(var(--fleet-orange-dark))',
 				'fleet-blue': 'hsl(var(--fleet-blue))',
