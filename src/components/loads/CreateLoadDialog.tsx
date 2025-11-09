@@ -492,13 +492,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       // En modo duplicate, limpiar el Load Number y sincronizar con IMask
       if (mode === 'duplicate') {
         form.setValue("load_number", "", { shouldValidate: false });
-        // Limpiar el valor de IMask inmediatamente
+        // Limpiar el valor de IMask y reposicionar cursor
         if (maskRef.current) {
           maskRef.current.value = "";
           maskRef.current.updateValue();
+          // Forzar reposicionamiento del cursor después de limpiar
+          requestAnimationFrame(() => {
+            if (maskRef.current) {
+              maskRef.current.updateCursor(fixedPrefix.length);
+            }
+          });
         }
-        // El cursor se posicionará correctamente cuando el usuario haga focus
-        // gracias al handleLoadNumberFocus
       }
 
       // Find and set client
