@@ -16,6 +16,8 @@
     "select_drivers": "Select drivers",
     "select_drivers_error": "You must select at least one driver to mark as paid"
   },
+  "payment_unmarked": "Payment Unmarked",
+  "payment_unmarked_desc": "The driver's payment has been successfully unmarked",
   "period": {
     "title": "Payment Periods",
     "subtitle": "Manage payment periods and deductions",

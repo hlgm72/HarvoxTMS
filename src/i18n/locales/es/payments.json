@@ -16,6 +16,8 @@
     "select_drivers": "Selecciona conductores",
     "select_drivers_error": "Debes seleccionar al menos un conductor para marcar como pagado"
   },
+  "payment_unmarked": "Pago Desmarcado",
+  "payment_unmarked_desc": "El pago del conductor ha sido desmarcado exitosamente",
   "period": {
     "title": "Períodos de Pago",
     "subtitle": "Gestiona los períodos de pago y deducciones",
