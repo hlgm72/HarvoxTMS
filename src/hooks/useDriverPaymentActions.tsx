@@ -22,7 +22,7 @@ export interface DriverCalculation {
 export function useDriverPaymentActions() {
   const { showSuccess, showError } = useFleetNotifications();
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['payments', 'common']);
 
   const markDriverAsPaid = async (
     calculationId: string,
@@ -54,7 +54,7 @@ export function useDriverPaymentActions() {
         } else if (errorMessage.includes('no permite el pago')) {
           showError(t('payments.invalid_state'), t('payments.invalid_state_desc'));
         } else {
-          showError(t('messages.error'), errorMessage);
+          showError(t('common:messages.error'), errorMessage);
         }
         return { success: false, error: errorMessage };
       }
@@ -67,7 +67,7 @@ export function useDriverPaymentActions() {
         );
         return { success: true, data };
       } else {
-        showError(result?.message || t('messages.error'));
+        showError(result?.message || t('common:messages.error'));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
@@ -97,7 +97,7 @@ export function useDriverPaymentActions() {
         );
         return { success: true, data };
       } else {
-        showError(result?.message || t('messages.error'));
+        showError(result?.message || t('common:messages.error'));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
@@ -212,7 +212,7 @@ export function useDriverPaymentActions() {
 
       if (error) {
         console.error('❌ Error unmarking driver as paid:', error);
-        showError(t('messages.error'), error.message);
+        showError(t('common:messages.error'), error.message);
         return { success: false, error: error.message };
       }
 
@@ -224,12 +224,12 @@ export function useDriverPaymentActions() {
         );
         return { success: true, data };
       } else {
-        showError(result?.message || t('messages.error'));
+        showError(result?.message || t('common:messages.error'));
         return { success: false, error: result?.message };
       }
     } catch (error: any) {
       console.error('❌ Error in unmarkDriverAsPaid:', error);
-      showError(error.message || t('messages.error'));
+      showError(error.message || t('common:messages.error'));
       return { success: false, error: error.message };
     } finally {
       setIsLoading(false);
