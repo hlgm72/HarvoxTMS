@@ -630,9 +630,9 @@ export default function PaymentReports() {
     return (
       <div className="space-y-1">
         {statsDisplay}
-        {periodDesc && (
+        {(periodDesc || dateRange) && (
           <div className="text-xs text-muted-foreground">
-            {periodDesc}
+            {periodDesc} {dateRange && `• ${dateRange}`}
           </div>
         )}
       </div>
