@@ -600,7 +600,7 @@ export default function PaymentReports() {
             <span className="text-xs text-muted-foreground">{t("active_filters.title", { ns: 'common' })}:</span>
             {periodDesc && (
               <Badge variant="secondary" className="text-xs font-normal">
-                {periodDesc}{dateRange && `: ${dateRange}`}
+                {periodDesc}
               </Badge>
             )}
             {filters.driverId !== 'all' && (() => {
@@ -630,9 +630,9 @@ export default function PaymentReports() {
     return (
       <div className="space-y-1">
         {statsDisplay}
-        {(periodDesc || dateRange) && (
+        {periodDesc && (
           <div className="text-xs text-muted-foreground">
-            {periodDesc} {dateRange && `• ${dateRange}`}
+            {periodDesc}
           </div>
         )}
       </div>
