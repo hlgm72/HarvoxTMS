@@ -764,12 +764,12 @@ export function PaymentReportDialog({
                 </span>
                 {/* Badge de estado del payroll */}
                 {calculation.payment_status === 'paid' ? (
-                  <Badge variant="default" className="bg-green-100 text-green-800 shrink-0">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                  <Badge variant="default" className="bg-green-100 text-green-800 shrink-0 px-3 py-1 text-sm font-semibold shadow-sm">
+                    <CheckCircle2 className="h-4 w-4 mr-1.5" />
                     {t('reports.status.paid')}
                   </Badge>
                 ) : (
-                  <Badge variant="default" className="bg-amber-100 text-amber-800 shrink-0">
+                  <Badge variant="default" className="bg-amber-100 text-amber-800 shrink-0 px-3 py-1 text-sm font-semibold shadow-sm">
                     {t('reports.status.ready_payment')}
                   </Badge>
                 )}
