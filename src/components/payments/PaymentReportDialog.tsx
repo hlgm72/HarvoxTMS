@@ -757,23 +757,23 @@ export function PaymentReportDialog({
         <div className="p-4 sm:p-6 border-b shrink-0">
           <DialogHeader>
             <div className="flex items-start justify-between gap-2">
-              <DialogTitle className="flex items-center gap-2 min-w-0 text-base sm:text-lg">
+              <DialogTitle className="flex items-center gap-2 min-w-0 text-base sm:text-lg flex-wrap">
                 <FileText className="h-5 w-5 shrink-0" />
                 <span className="truncate">
                   {t('report_dialog.title')} - {driver.display_name || `${driver.first_name} ${driver.last_name}`}
                 </span>
+                {/* Badge de estado del payroll */}
+                {calculation.payment_status === 'paid' ? (
+                  <Badge variant="default" className="bg-green-100 text-green-800 shrink-0">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    {t('reports.status.paid')}
+                  </Badge>
+                ) : (
+                  <Badge variant="default" className="bg-amber-100 text-amber-800 shrink-0">
+                    {t('reports.status.ready_payment')}
+                  </Badge>
+                )}
               </DialogTitle>
-              {/* Badge de estado del payroll */}
-              {calculation.payment_status === 'paid' ? (
-                <Badge variant="default" className="bg-green-100 text-green-800 shrink-0">
-                  <CheckCircle2 className="h-3 w-3 mr-1" />
-                  {t('reports.status.paid')}
-                </Badge>
-              ) : (
-                <Badge variant="default" className="bg-amber-100 text-amber-800 shrink-0">
-                  {t('reports.status.ready_payment')}
-                </Badge>
-              )}
             </div>
             <DialogDescription className="text-xs sm:text-sm break-words mt-1">
               {t('period.period_label')}: {(() => {
