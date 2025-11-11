@@ -398,38 +398,76 @@ const [uploading, setUploading] = useState<string | null>(null);
       const fileExt = file.name.split('.').pop();
       const photoCount = getPhotoCount(category) + 1;
       const fileName = `${loadData.load_number}_foto_${category}_${photoCount}.${fileExt}`;
-      const filePath = `${loadData.id}/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('load-documents')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        console.error('Error uploading photo:', error);
-        showError("Error", t("loads:create_wizard.phases.documents.error_messages.upload_photo"));
-        return;
-      }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('load-documents')
-        .getPublicUrl(filePath);
-
-      const documentData = {
-        load_id: loadData.id,
-        document_type: 'load_photos',
-        file_name: fileName,
-        file_url: publicUrl,
-      };
-
-      createLoadDocument({
-        documentData
-      });
       
-      await loadDocuments();
-      showSuccess(t("loads:create_wizard.phases.documents.success_messages.photo_uploaded"), t("loads:create_wizard.phases.documents.success_messages.photo_uploaded_category", { category }));
+      // In wizard mode OR when creating/editing a load, keep file in memory
+      if (wizardMode || !loadId || loadId === 'temp') {
+        // Create blob URL for preview
+        const blobUrl = URL.createObjectURL(file);
+        
+        const tempDocument: LoadDocument = {
+          id: `temp_${Date.now()}_${Math.random()}`,
+          type: 'load_photos',
+          name: `Foto ${category} ${photoCount}`,
+          fileName: fileName,
+          fileSize: file.size,
+          uploadedAt: new Date(),
+          url: blobUrl,
+          category
+        };
+        
+        // Store original file for later upload
+        const docWithFile = {
+          ...tempDocument,
+          file,
+          type: 'load_photos' as const
+        };
+        
+        // Update temporary documents
+        const updatedTempDocs = [...temporaryDocuments, docWithFile as any];
+        onTemporaryDocumentsChange?.(updatedTempDocs as any);
+        
+        showSuccess(
+          t("loads:create_wizard.phases.documents.success_messages.photo_added"),
+          t("loads:create_wizard.phases.documents.success_messages.photo_added_category", { category })
+        );
+      } else {
+        // For existing loads (dialog mode with real loadId), upload immediately
+        const filePath = `${loadData.id}/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('load-documents')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) {
+          console.error('Error uploading photo:', error);
+          showError("Error", t("loads:create_wizard.phases.documents.error_messages.upload_photo"));
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('load-documents')
+          .getPublicUrl(filePath);
+
+        const documentData = {
+          load_id: loadData.id,
+          document_type: 'load_photos',
+          file_name: fileName,
+          file_url: publicUrl,
+        };
+
+        createLoadDocument({
+          documentData
+        });
+        
+        await loadDocuments();
+        showSuccess(
+          t("loads:create_wizard.phases.documents.success_messages.photo_uploaded"),
+          t("loads:create_wizard.phases.documents.success_messages.photo_uploaded_category", { category })
+        );
+      }
     } catch (error) {
       console.error('Error uploading photo:', error);
       showError("Error", t("loads:create_wizard.phases.documents.error_messages.unexpected_photo"));
@@ -474,53 +512,90 @@ const [uploading, setUploading] = useState<string | null>(null);
       }
       
       const fileName = `${loadData.load_number}_${docTypeName}.${fileExt}`;
-      const filePath = `${loadData.id}/${fileName}`;
+      
+      // In wizard mode OR when creating/editing a load, keep file in memory
+      if (wizardMode || !loadId || loadId === 'temp') {
+        // Create blob URL for preview
+        const blobUrl = URL.createObjectURL(file);
+        
+        const tempDocument: LoadDocument = {
+          id: `temp_${Date.now()}_${Math.random()}`,
+          type: documentType as LoadDocument['type'],
+          name: getDocumentTypes().find(dt => dt.type === documentType)?.label || documentType,
+          fileName: fileName,
+          fileSize: file.size,
+          uploadedAt: new Date(),
+          url: blobUrl
+        };
+        
+        // Store original file for later upload
+        const docWithFile = {
+          ...tempDocument,
+          file,
+          type: documentType as LoadDocument['type']
+        };
+        
+        // Update temporary documents
+        const updatedTempDocs = [...temporaryDocuments, docWithFile as any];
+        onTemporaryDocumentsChange?.(updatedTempDocs as any);
+        
+        showSuccess(
+          t("loads:create_wizard.phases.documents.success_messages.document_added"),
+          t("loads:create_wizard.phases.documents.success_messages.document_added_filename", { fileName: file.name })
+        );
+      } else {
+        // For existing loads (dialog mode with real loadId), upload immediately
+        const filePath = `${loadData.id}/${fileName}`;
 
-      const { data, error } = await supabase.storage
-        .from('load-documents')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
+        const { data, error } = await supabase.storage
+          .from('load-documents')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) {
+          console.error('Error uploading file:', error);
+          showError("Error", t("loads:create_wizard.phases.documents.error_messages.upload_document"));
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('load-documents')
+          .getPublicUrl(filePath);
+
+        const documentData = {
+          load_id: loadData.id,
+          document_type: documentType,
+          file_name: fileName,
+          file_url: publicUrl,
+        };
+
+        createLoadDocument({
+          documentData
         });
 
-      if (error) {
-        console.error('Error uploading file:', error);
-        showError("Error", t("loads:create_wizard.phases.documents.error_messages.upload_document"));
-        return;
+        // Reload documents and force refresh
+        await loadDocuments();
+        
+        // Notify context about document change for global refresh
+        notifyDocumentChange();
+        
+        // Invalidar la query de validación de documentos para actualizar el indicador
+        if (loadData?.id) {
+          queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
+          queryClient.refetchQueries({ queryKey: ['load-document-validation', loadData.id] });
+        }
+        
+        // Force invalidation of main document queries
+        queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+        queryClient.refetchQueries({ queryKey: ['load-documents'] });
+        
+        showSuccess(
+          t("loads:create_wizard.phases.documents.success_messages.document_uploaded"),
+          t("loads:create_wizard.phases.documents.success_messages.document_uploaded_filename", { fileName: file.name })
+        );
       }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('load-documents')
-        .getPublicUrl(filePath);
-
-      const documentData = {
-        load_id: loadData.id,
-        document_type: documentType,
-        file_name: fileName,
-        file_url: publicUrl,
-      };
-
-      createLoadDocument({
-        documentData
-      });
-
-      // Reload documents and force refresh
-      await loadDocuments();
-      
-      // Notify context about document change for global refresh
-      notifyDocumentChange();
-      
-      // Invalidar la query de validación de documentos para actualizar el indicador
-      if (loadData?.id) {
-        queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
-        queryClient.refetchQueries({ queryKey: ['load-document-validation', loadData.id] });
-      }
-      
-      // Force invalidation of main document queries
-      queryClient.invalidateQueries({ queryKey: ['load-documents'] });
-      queryClient.refetchQueries({ queryKey: ['load-documents'] });
-      
-      showSuccess(t("loads:create_wizard.phases.documents.success_messages.document_uploaded"), t("loads:create_wizard.phases.documents.success_messages.document_uploaded_filename", { fileName: file.name }));
     } catch (error) {
       console.error('Error uploading document:', error);
       showError("Error", t("loads:create_wizard.phases.documents.error_messages.unexpected_upload"));

@@ -875,7 +875,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
       factoring_percentage: values.factoring_percentage,
       dispatching_percentage: values.dispatching_percentage,
       leasing_percentage: values.leasing_percentage,
-      temporaryDocuments: (mode === 'create' || mode === 'duplicate') ? loadDocuments : undefined, // Pass temporary documents only for new loads
+      temporaryDocuments: loadDocuments, // Pass temporary documents for all modes (create, edit, duplicate)
     };
 
     

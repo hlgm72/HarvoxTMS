@@ -318,9 +318,12 @@ export const useCreateLoad = () => {
       console.log('✅ Load ID obtenido:', loadId);
 
       // Handle temporary documents upload (outside ACID transaction for performance)
+      // Works for both create and edit modes
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
+        console.log(`📄 useCreateLoad - Uploading ${data.temporaryDocuments.length} temporary documents for ${isEdit ? 'edited' : 'new'} load`);
         try {
           await uploadTemporaryDocuments(data.temporaryDocuments, loadId, data.load_number);
+          console.log('✅ useCreateLoad - All temporary documents uploaded successfully');
         } catch (uploadError) {
           console.error('❌ useCreateLoad - Error uploading documents:', uploadError);
           // Don't fail the whole operation for document errors

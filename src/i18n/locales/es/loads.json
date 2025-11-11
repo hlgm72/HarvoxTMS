@@ -220,6 +220,25 @@
             "description": "Fotografías en la entrega"
           }
         },
+        "success_messages": {
+          "document_uploaded": "Documento subido exitosamente",
+          "document_uploaded_filename": "{{fileName}} subido exitosamente",
+          "document_added": "Documento agregado a la lista",
+          "document_added_filename": "{{fileName}} agregado (se subirá al guardar)",
+          "document_deleted": "Documento eliminado",
+          "document_deleted_filename": "{{fileName}} eliminado exitosamente",
+          "load_order_generated": "Orden de carga generada",
+          "load_order_success": "La orden de carga se generó exitosamente"
+        },
+        "error_messages": {
+          "upload_document": "Error al subir documento",
+          "unexpected_upload": "Error inesperado al subir documento",
+          "upload_photo": "Error al subir foto",
+          "unexpected_photo": "Error inesperado al subir foto",
+          "load_documents": "Error al cargar documentos",
+          "delete_document": "Error al eliminar documento",
+          "generate_load_order": "Error al generar orden de carga"
+        },
         "photos": {
           "title": "Fotos",
           "description": "Fotos e imágenes de la carga",
@@ -241,7 +260,9 @@
           },
           "success_messages": {
             "uploaded": "Foto subida exitosamente",
-            "uploaded_category": "Foto de {{category}} subida exitosamente"
+            "uploaded_category": "Foto de {{category}} subida exitosamente",
+            "photo_added": "Foto agregada a la lista",
+            "photo_added_category": "Foto de {{category}} agregada (se subirá al guardar)"
           },
           "empty_state": {
             "title": "No se han subido fotos",

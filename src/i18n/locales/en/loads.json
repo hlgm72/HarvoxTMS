@@ -221,6 +221,25 @@
             "description": "Photographs at delivery"
           }
         },
+        "success_messages": {
+          "document_uploaded": "Document uploaded successfully",
+          "document_uploaded_filename": "{{fileName}} uploaded successfully",
+          "document_added": "Document added to list",
+          "document_added_filename": "{{fileName}} added (will upload when saving)",
+          "document_deleted": "Document deleted",
+          "document_deleted_filename": "{{fileName}} deleted successfully",
+          "load_order_generated": "Load order generated",
+          "load_order_success": "Load order generated successfully"
+        },
+        "error_messages": {
+          "upload_document": "Error uploading document",
+          "unexpected_upload": "Unexpected error uploading document",
+          "upload_photo": "Error uploading photo",
+          "unexpected_photo": "Unexpected error uploading photo",
+          "load_documents": "Error loading documents",
+          "delete_document": "Error deleting document",
+          "generate_load_order": "Error generating load order"
+        },
         "photos": {
           "title": "Photos",
           "description": "Load photos and images",
@@ -242,7 +261,9 @@
           },
           "success_messages": {
             "uploaded": "Photo uploaded successfully",
-            "uploaded_category": "{{category}} photo uploaded successfully"
+            "uploaded_category": "{{category}} photo uploaded successfully",
+            "photo_added": "Photo added to list",
+            "photo_added_category": "{{category}} photo added (will upload when saving)"
           },
           "empty_state": {
             "title": "No photos uploaded",
