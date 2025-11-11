@@ -92,18 +92,17 @@ export default function AdditionalPayments() {
     }
   });
 
-  // ✅ CORRECCIÓN: Solo inicializar en la primera carga, no sobrescribir selección del usuario
+  // ✅ INICIALIZACIÓN: Solo la primera vez cuando se carga la página
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    // Solo inicializar una vez al cargar la página
+    // Solo inicializar una vez, sin importar otros cambios
     if (hasInitialized) return;
     
-    // Si ya tenemos fechas o si el tipo no es 'current', marcar como inicializado y salir
-    if (filters.periodFilter.startDate || filters.periodFilter.type !== 'current') {
-      setHasInitialized(true);
-      return;
-    }
+    // Marcar como inicializado para no volver a ejecutar
+    if (!availableWeeks && !calculatedPeriods) return; // Esperar datos
+    
+    setHasInitialized(true);
 
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -130,7 +129,6 @@ export default function AdditionalPayments() {
           label: `W${currentWeekNumber}/${currentYear}`
         }
       }));
-      setHasInitialized(true);
     } else if (calculatedPeriods?.current) {
       // Si no hay availableWeeks pero tenemos calculatedPeriods, usar esas fechas
       setFilters(prev => ({
@@ -142,9 +140,8 @@ export default function AdditionalPayments() {
           label: 'Current'
         }
       }));
-      setHasInitialized(true);
     }
-  }, [availableWeeks, calculatedPeriods, hasInitialized, filters.periodFilter.startDate, filters.periodFilter.type]);
+  }, [availableWeeks, calculatedPeriods, hasInitialized]);
 
   // Fetch data with filters
   const { data: incomeData = [] } = useOtherIncome({

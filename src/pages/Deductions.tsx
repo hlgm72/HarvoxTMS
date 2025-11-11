@@ -97,46 +97,44 @@ export default function Deductions() {
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   
-  // ✅ CORRECCIÓN: Solo inicializar en la primera carga, no sobrescribir selección del usuario
+  // ✅ INICIALIZACIÓN: Solo la primera vez cuando se carga la página
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    // Solo inicializar una vez al cargar la página
+    // Solo inicializar una vez, sin importar otros cambios
     if (hasInitialized) return;
     
-    // Solo inicializar si el tipo es 'week' y no tenemos fechas
-    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentWeekNumber = getISOWeek(today);
-      const currentMonth = today.getMonth() + 1;
-      
-      // Find current week in availableWeeks
-      const weekData = availableWeeks
-        ?.find(w => w.year === currentYear)
-        ?.months.find(m => m.month === currentMonth)
-        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-      
-      if (weekData) {
-        setFilters(prev => ({
-          ...prev,
-          periodFilter: {
-            type: 'week',
-            selectedYear: currentYear,
-            selectedWeek: currentWeekNumber,
-            startDate: weekData.startDate,
-            endDate: weekData.endDate,
-            periodId: weekData.periodId,
-            label: `W${currentWeekNumber}/${currentYear}`
-          }
-        }));
-        setHasInitialized(true);
-      }
-    } else if (filters.periodFilter.startDate || filters.periodFilter.type !== 'week') {
-      // Si ya tenemos fechas o el tipo cambió, marcar como inicializado
-      setHasInitialized(true);
+    // Marcar como inicializado para no volver a ejecutar
+    if (!availableWeeks) return; // Esperar datos
+    
+    setHasInitialized(true);
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentWeekNumber = getISOWeek(today);
+    const currentMonth = today.getMonth() + 1;
+    
+    // Find current week in availableWeeks
+    const weekData = availableWeeks
+      ?.find(w => w.year === currentYear)
+      ?.months.find(m => m.month === currentMonth)
+      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
+    
+    if (weekData) {
+      setFilters(prev => ({
+        ...prev,
+        periodFilter: {
+          type: 'week',
+          selectedYear: currentYear,
+          selectedWeek: currentWeekNumber,
+          startDate: weekData.startDate,
+          endDate: weekData.endDate,
+          periodId: weekData.periodId,
+          label: `W${currentWeekNumber}/${currentYear}`
+        }
+      }));
     }
-  }, [availableWeeks, hasInitialized, filters.periodFilter.type, filters.periodFilter.startDate]);
+  }, [availableWeeks, hasInitialized]);
 
   // Estado de configuración de vista
   const [viewConfig, setViewConfig] = useState({
