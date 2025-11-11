@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useTranslation } from 'react-i18next';
+import { getSignedDocumentUrl, downloadDocument, extractStoragePath } from '@/utils/documentUrlHelper';
 
 interface LoadDocument {
   id: string;
@@ -752,18 +753,8 @@ const [uploading, setUploading] = useState<string | null>(null);
       console.log('🗂️ handleRemoveDocument - Checking storage deletion. Document URL:', document.url);
       if (document.url && !document.url.startsWith('blob:')) {
         console.log('📦 handleRemoveDocument - Attempting storage deletion...');
-        let storageFilePath = document.url;
-        
-        // Extract the file path from the public URL
-        if (document.url.includes('/storage/v1/object/public/load-documents/')) {
-          storageFilePath = document.url.split('/storage/v1/object/public/load-documents/')[1];
-          console.log('🔗 handleRemoveDocument - Extracted path from public URL:', storageFilePath);
-        } else if (document.url.includes('/load-documents/')) {
-          storageFilePath = document.url.split('/load-documents/')[1];
-          console.log('🔗 handleRemoveDocument - Extracted path from load-documents URL:', storageFilePath);
-        } else {
-          console.log('🔗 handleRemoveDocument - Using original URL as path:', storageFilePath);
-        }
+        const storageFilePath = extractStoragePath(document.url);
+        console.log('🔗 handleRemoveDocument - Extracted storage path:', storageFilePath);
         
         const { error: storageError } = await supabase.storage
           .from('load-documents')
@@ -872,26 +863,11 @@ const [uploading, setUploading] = useState<string | null>(null);
                       window.open(document.url, '_blank');
                       return;
                     }
-                    if (document.url.includes('supabase.co/storage/v1/object/public/')) {
-                      window.open(document.url, '_blank');
-                      return;
-                    }
-                    let storageFilePath = document.url;
-                    if (document.url.includes('supabase.co/storage/v1/object/')) {
-                      const parts = document.url.split('/load-documents/');
-                      if (parts.length > 1) {
-                        storageFilePath = parts[1];
-                      }
-                    }
-                    const { data: signedUrlData, error: urlError } = await supabase.storage
-                      .from('load-documents')
-                      .createSignedUrl(storageFilePath, 3600);
-                    if (urlError) {
+                    const signedUrl = await getSignedDocumentUrl(document.url);
+                    if (signedUrl) {
+                      window.open(signedUrl, '_blank');
+                    } else {
                       showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_view_link"));
-                      return;
-                    }
-                    if (signedUrlData?.signedUrl) {
-                      window.open(signedUrlData.signedUrl, '_blank');
                     }
                   } catch (error) {
                     showError("Error", t("loads:create_wizard.phases.documents.error_messages.open_document"));
@@ -917,32 +893,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                     showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
                     return;
                   }
-                  let downloadStoragePath = document.url;
-                  if (document.url.includes('/load-documents/')) {
-                    downloadStoragePath = document.url.split('/load-documents/')[1];
-                  }
-                  const { data: signedUrlData, error: urlError } = await supabase.storage
-                    .from('load-documents')
-                    .createSignedUrl(downloadStoragePath, 3600);
-                  if (urlError) {
-                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_download_link"));
-                    return;
-                  }
-                  if (!signedUrlData?.signedUrl) {
-                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.signed_url"));
-                    return;
-                  }
-                  const response = await fetch(signedUrlData.signedUrl);
-                  if (!response.ok) throw new Error('Network response was not ok');
-                  const blob = await response.blob();
-                  const blobUrl = window.URL.createObjectURL(blob);
-                  const link = window.document.createElement('a');
-                  link.href = blobUrl;
-                  link.download = document.fileName;
-                  window.document.body.appendChild(link);
-                  link.click();
-                  window.document.body.removeChild(link);
-                  window.URL.revokeObjectURL(blobUrl);
+                  await downloadDocument(document.url, document.fileName);
                   showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
                 } catch (error) {
                   showError("Error", t("loads:create_wizard.phases.documents.error_messages.download_document"));
