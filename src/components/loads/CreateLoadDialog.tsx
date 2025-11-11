@@ -1420,6 +1420,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
                 <LoadDocumentsSection
                   loadId={mode === 'edit' ? activeLoadData?.id : null}
                   loadData={{
+                    id: mode === 'edit' ? activeLoadData?.id : null,
                     load_number: form.getValues("load_number") || '',
                     total_amount: mode === 'edit' && activeLoadData ? activeLoadData.total_amount : (form.getValues("total_amount") || 0),
                     commodity: form.getValues("commodity") || '',
