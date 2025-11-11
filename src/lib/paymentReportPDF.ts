@@ -1097,7 +1097,7 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   try {
     if (isPreview) {
-      console.log('👁️ Modo preview activado - abriendo PDF directamente');
+      console.log('👁️ Modo preview activado');
       
       // Generar PDF como Blob
       const pdfBlob = doc.output('blob');
@@ -1105,18 +1105,107 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
       
       console.log('🔗 PDF Blob URL creado');
       
-      // Abrir PDF directamente en nueva ventana
+      // Crear HTML wrapper con botón de descarga
+      const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${fileName.replace('.pdf', '')}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .download-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .download-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    .pdf-container {
+      width: 100%;
+      height: calc(100vh - 48px);
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">
+      <span>📄</span>
+      <span>${fileName.replace('.pdf', '')}</span>
+    </div>
+    <button class="download-btn" onclick="downloadPDF()">
+      <span>⬇</span>
+      <span>Descargar</span>
+    </button>
+  </div>
+  <div class="pdf-container">
+    <iframe src="${pdfUrl}"></iframe>
+  </div>
+  <script>
+    function downloadPDF() {
+      const link = document.createElement('a');
+      link.href = '${pdfUrl}';
+      link.download = '${fileName}';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>`;
+      
+      // Crear Blob del HTML
+      const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+      const htmlUrl = URL.createObjectURL(htmlBlob);
+      
+      // Abrir en nueva ventana
       try {
         if (targetWindow && !targetWindow.closed) {
-          targetWindow.location.href = pdfUrl;
+          targetWindow.location.href = htmlUrl;
           console.log('✅ PDF abierto en ventana existente');
         } else {
-          const newWindow = window.open(pdfUrl, '_blank');
+          const newWindow = window.open(htmlUrl, '_blank');
           if (newWindow) {
             console.log('✅ PDF abierto en nueva ventana');
           } else {
             console.log('⚠️ Popup bloqueado, descargando...');
-            // Si el popup está bloqueado, descargar directamente
             const link = document.createElement('a');
             link.href = pdfUrl;
             link.download = fileName;
@@ -1126,20 +1215,21 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
           }
         }
         
-        // Limpiar el Blob URL después de un tiempo
+        // Limpiar URLs después de un tiempo
         setTimeout(() => {
+          URL.revokeObjectURL(htmlUrl);
           URL.revokeObjectURL(pdfUrl);
-        }, 60000); // 60 segundos
+        }, 120000); // 2 minutos
         
       } catch (error) {
         console.error('❌ Error abriendo PDF:', error);
-        // Fallback: descargar directamente
         const link = document.createElement('a');
         link.href = pdfUrl;
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(htmlUrl);
         URL.revokeObjectURL(pdfUrl);
       }
     } else if (isPreview === false) {
