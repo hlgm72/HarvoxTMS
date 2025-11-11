@@ -1099,84 +1099,48 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
     if (isPreview) {
       console.log('👁️ Modo preview activado - abriendo PDF directamente');
       
-      // Generar PDF como Data URL con el nombre embebido
-      // Esto permite que el navegador muestre el nombre del archivo en la pestaña
-      const pdfDataUri = doc.output('datauristring');
+      // Generar PDF como Blob
+      const pdfBlob = doc.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
       
-      console.log('🔗 PDF Data URL creado con nombre:', fileName);
+      console.log('🔗 PDF Blob URL creado');
       
       // Abrir PDF directamente en nueva ventana
       try {
         if (targetWindow && !targetWindow.closed) {
-          // Para ventana existente, crear un HTML con el título correcto
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <title>${fileName}</title>
-                <style>
-                  body { margin: 0; }
-                  iframe { border: none; width: 100%; height: 100vh; }
-                </style>
-              </head>
-              <body>
-                <iframe src="${pdfDataUri}" type="application/pdf"></iframe>
-              </body>
-            </html>
-          `;
-          targetWindow.document.open();
-          targetWindow.document.write(htmlContent);
-          targetWindow.document.close();
-          console.log('✅ PDF abierto en ventana existente con nombre:', fileName);
+          targetWindow.location.href = pdfUrl;
+          console.log('✅ PDF abierto en ventana existente');
         } else {
-          // Para nueva ventana, crear un blob HTML con el PDF embebido y título
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <title>${fileName}</title>
-                <style>
-                  body { margin: 0; }
-                  iframe { border: none; width: 100%; height: 100vh; }
-                </style>
-              </head>
-              <body>
-                <iframe src="${pdfDataUri}" type="application/pdf"></iframe>
-              </body>
-            </html>
-          `;
-          const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
-          const htmlUrl = URL.createObjectURL(htmlBlob);
-          
-          const newWindow = window.open(htmlUrl, '_blank');
+          const newWindow = window.open(pdfUrl, '_blank');
           if (newWindow) {
-            console.log('✅ PDF abierto en nueva ventana con nombre:', fileName);
-            // Limpiar el Blob URL después de que la ventana se haya cargado
-            setTimeout(() => {
-              URL.revokeObjectURL(htmlUrl);
-            }, 1000);
+            console.log('✅ PDF abierto en nueva ventana');
           } else {
             console.log('⚠️ Popup bloqueado, descargando...');
             // Si el popup está bloqueado, descargar directamente
             const link = document.createElement('a');
-            link.href = pdfDataUri;
+            link.href = pdfUrl;
             link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(htmlUrl);
           }
         }
+        
+        // Limpiar el Blob URL después de un tiempo
+        setTimeout(() => {
+          URL.revokeObjectURL(pdfUrl);
+        }, 60000); // 60 segundos
         
       } catch (error) {
         console.error('❌ Error abriendo PDF:', error);
         // Fallback: descargar directamente
         const link = document.createElement('a');
-        link.href = pdfDataUri;
+        link.href = pdfUrl;
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(pdfUrl);
       }
     } else if (isPreview === false) {
       console.log('📄 Modo retorno de documento activado');
