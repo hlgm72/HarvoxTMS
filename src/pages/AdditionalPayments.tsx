@@ -92,10 +92,16 @@ export default function AdditionalPayments() {
     }
   });
 
-  // Update to current week when availableWeeks loads
+  // ✅ CORRECCIÓN: Solo inicializar en la primera carga, no sobrescribir selección del usuario
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
   useEffect(() => {
-    // Si ya tenemos fechas o si el tipo no es 'current', no hacer nada
+    // Solo inicializar una vez al cargar la página
+    if (hasInitialized) return;
+    
+    // Si ya tenemos fechas o si el tipo no es 'current', marcar como inicializado y salir
     if (filters.periodFilter.startDate || filters.periodFilter.type !== 'current') {
+      setHasInitialized(true);
       return;
     }
 
@@ -120,9 +126,11 @@ export default function AdditionalPayments() {
           selectedWeek: currentWeekNumber,
           startDate: weekData.startDate,
           endDate: weekData.endDate,
+          periodId: weekData.periodId,
           label: `W${currentWeekNumber}/${currentYear}`
         }
       }));
+      setHasInitialized(true);
     } else if (calculatedPeriods?.current) {
       // Si no hay availableWeeks pero tenemos calculatedPeriods, usar esas fechas
       setFilters(prev => ({
@@ -134,9 +142,9 @@ export default function AdditionalPayments() {
           label: 'Current'
         }
       }));
+      setHasInitialized(true);
     }
-    // Si no se encuentra la semana ni períodos calculados, mantener tipo 'current' sin fechas
-  }, [availableWeeks, calculatedPeriods, filters.periodFilter.type, filters.periodFilter.startDate]);
+  }, [availableWeeks, calculatedPeriods, hasInitialized, filters.periodFilter.startDate, filters.periodFilter.type]);
 
   // Fetch data with filters
   const { data: incomeData = [] } = useOtherIncome({

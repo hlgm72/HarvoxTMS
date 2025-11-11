@@ -97,9 +97,14 @@ export default function Deductions() {
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   
-  // Populate current week dates when available
+  // ✅ CORRECCIÓN: Solo inicializar en la primera carga, no sobrescribir selección del usuario
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
   useEffect(() => {
-    // Only initialize if current week doesn't have dates yet
+    // Solo inicializar una vez al cargar la página
+    if (hasInitialized) return;
+    
+    // Solo inicializar si el tipo es 'week' y no tenemos fechas
     if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -121,12 +126,17 @@ export default function Deductions() {
             selectedWeek: currentWeekNumber,
             startDate: weekData.startDate,
             endDate: weekData.endDate,
+            periodId: weekData.periodId,
             label: `W${currentWeekNumber}/${currentYear}`
           }
         }));
+        setHasInitialized(true);
       }
+    } else if (filters.periodFilter.startDate || filters.periodFilter.type !== 'week') {
+      // Si ya tenemos fechas o el tipo cambió, marcar como inicializado
+      setHasInitialized(true);
     }
-  }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
+  }, [availableWeeks, hasInitialized, filters.periodFilter.type, filters.periodFilter.startDate]);
 
   // Estado de configuración de vista
   const [viewConfig, setViewConfig] = useState({

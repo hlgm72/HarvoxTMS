@@ -65,10 +65,16 @@ export default function PaymentReports() {
     }
   });
 
-  // Update to current week when availableWeeks loads
+  // ✅ CORRECCIÓN: Solo inicializar en la primera carga, no sobrescribir selección del usuario
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
   useEffect(() => {
-    // Si ya tenemos fechas o si el tipo no es 'current', no hacer nada
+    // Solo inicializar una vez al cargar la página
+    if (hasInitialized) return;
+    
+    // Si ya tenemos fechas o si el tipo no es 'current', marcar como inicializado y salir
     if (filters.periodFilter.startDate || filters.periodFilter.type !== 'current') {
+      setHasInitialized(true);
       return;
     }
 
@@ -93,9 +99,11 @@ export default function PaymentReports() {
           selectedWeek: currentWeekNumber,
           startDate: weekData.startDate,
           endDate: weekData.endDate,
+          periodId: weekData.periodId,
           label: `W${currentWeekNumber}/${currentYear}`
         }
       }));
+      setHasInitialized(true);
     } else if (calculatedPeriods?.current) {
       // Si no hay availableWeeks pero tenemos calculatedPeriods, usar esas fechas
       setFilters(prev => ({
@@ -107,9 +115,9 @@ export default function PaymentReports() {
           label: 'Current'
         }
       }));
+      setHasInitialized(true);
     }
-    // Si no se encuentra la semana ni períodos calculados, mantener tipo 'current' sin fechas
-  }, [availableWeeks, calculatedPeriods, filters.periodFilter.type, filters.periodFilter.startDate]);
+  }, [availableWeeks, calculatedPeriods, hasInitialized, filters.periodFilter.startDate, filters.periodFilter.type]);
   // Hook de estadísticas con filtros aplicados
   const { data: stats, isLoading: statsLoading } = usePaymentReportsStats({
     driverId: filters.driverId,
@@ -136,36 +144,6 @@ export default function PaymentReports() {
     }
   };
   
-  // Populate current week dates when available
-  useEffect(() => {
-    // Only initialize if current week doesn't have dates yet
-    if (filters.periodFilter.type === 'week' && !filters.periodFilter.startDate && availableWeeks) {
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentWeekNumber = getISOWeek(today);
-      const currentMonth = today.getMonth() + 1;
-      
-      // Find current week in availableWeeks
-      const weekData = availableWeeks
-        ?.find(w => w.year === currentYear)
-        ?.months.find(m => m.month === currentMonth)
-        ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-      
-      if (weekData) {
-        setFilters(prev => ({
-          ...prev,
-          periodFilter: {
-            type: 'week',
-            selectedYear: currentYear,
-            selectedWeek: currentWeekNumber,
-            startDate: weekData.startDate,
-            endDate: weekData.endDate,
-            label: `W${currentWeekNumber}/${currentYear}`
-          }
-        }));
-      }
-    }
-  }, [availableWeeks, filters.periodFilter.type, filters.periodFilter.startDate]);
 
   // Validación de integridad financiera para el período actual
   const currentPeriodId = useMemo(() => {
