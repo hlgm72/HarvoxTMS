@@ -809,13 +809,22 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     // ⭐ VALIDACIÓN CRÍTICA: Verificar si las fechas caen en períodos ya pagados (Paso 2)
     const driverIdForValidation = selectedDriver?.user_id || (mode === 'edit' ? activeLoadData?.driver_user_id : null);
     if (driverIdForValidation) {
-      // Extraer todas las fechas programadas de las paradas
-      const scheduledDates = loadStops
-        .filter(stop => stop.scheduled_date)
-        .map(stop => stop.scheduled_date);
+      // ✅ CRÍTICO: Validar solo la fecha relevante según load_assignment_criteria
+      let relevantDate: string | null = null;
+      
+      if (companyData?.load_assignment_criteria === 'pickup_date') {
+        const firstPickup = loadStops.find(stop => stop.stop_type === 'pickup' && stop.scheduled_date);
+        relevantDate = firstPickup?.scheduled_date || null;
+      } else {
+        const lastDelivery = [...loadStops]
+          .reverse()
+          .find(stop => stop.stop_type === 'delivery' && stop.scheduled_date);
+        const firstPickup = loadStops.find(stop => stop.stop_type === 'pickup' && stop.scheduled_date);
+        relevantDate = lastDelivery?.scheduled_date || firstPickup?.scheduled_date || null;
+      }
 
-      if (scheduledDates.length > 0) {
-        const paidPeriodValidation = await validateDatesAgainstPaidPeriods(driverIdForValidation, scheduledDates);
+      if (relevantDate) {
+        const paidPeriodValidation = await validateDatesAgainstPaidPeriods(driverIdForValidation, [relevantDate]);
         
         if (!paidPeriodValidation.isValid) {
           showError(
