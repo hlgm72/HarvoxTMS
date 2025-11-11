@@ -291,7 +291,7 @@ const [uploading, setUploading] = useState<string | null>(null);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
-  const { mutate: createLoadDocument } = useLoadDocumentManagementACID();
+  const { mutateAsync: createLoadDocument } = useLoadDocumentManagementACID();
   
   // Get current user
   const { data: user } = useQuery({
@@ -633,7 +633,8 @@ const [uploading, setUploading] = useState<string | null>(null);
           file_url: filePath, // Store path, not the signed URL
         };
 
-        createLoadDocument({
+        // Wait for document to be created in DB before reloading
+        await createLoadDocument({
           documentData
         });
 
