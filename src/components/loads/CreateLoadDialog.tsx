@@ -325,20 +325,33 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
     [financialValidation]
   );
 
-  // ⭐ VALIDACIÓN DE PERÍODOS PAGADOS EN TIEMPO REAL
+  // ⭐ VALIDACIÓN DE PERÍODOS PAGADOS EN TIEMPO REAL (usando load_assignment_criteria)
   const validationData = useMemo(() => {
     const driverId = selectedDriver?.user_id || activeLoadData?.driver_user_id;
-    const dates = loadStops
-      .filter(stop => stop.scheduled_date)
-      .map(stop => stop.scheduled_date);
     
-    return { driverId, dates };
-  }, [selectedDriver, activeLoadData, loadStops]);
+    // ✅ CRÍTICO: Determinar la fecha relevante según load_assignment_criteria
+    let relevantDate: string | null = null;
+    
+    if (companyData?.load_assignment_criteria === 'pickup_date') {
+      // Usar la fecha del primer pickup
+      const firstPickup = loadStops.find(stop => stop.stop_type === 'pickup' && stop.scheduled_date);
+      relevantDate = firstPickup?.scheduled_date || null;
+    } else {
+      // Usar la fecha del último delivery (o pickup si no hay delivery)
+      const lastDelivery = [...loadStops]
+        .reverse()
+        .find(stop => stop.stop_type === 'delivery' && stop.scheduled_date);
+      const firstPickup = loadStops.find(stop => stop.stop_type === 'pickup' && stop.scheduled_date);
+      relevantDate = lastDelivery?.scheduled_date || firstPickup?.scheduled_date || null;
+    }
+    
+    return { driverId, relevantDate };
+  }, [selectedDriver, activeLoadData, loadStops, companyData?.load_assignment_criteria]);
 
   const { data: paymentPeriods = [], isLoading: isLoadingPeriods } = useQuery({
-    queryKey: ['load-wizard-payment-periods', validationData.driverId, validationData.dates],
+    queryKey: ['load-wizard-payment-periods', validationData.driverId, validationData.relevantDate, companyData?.load_assignment_criteria],
     queryFn: async () => {
-      if (!validationData.driverId || validationData.dates.length === 0 || !selectedCompany?.id) {
+      if (!validationData.driverId || !validationData.relevantDate || !selectedCompany?.id) {
         return [];
       }
 
@@ -362,19 +375,17 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
         return [];
       }
 
-      // Verificar si alguna fecha cae en un período pagado
-      const paidPeriodsForDates = allPeriods?.filter(period => {
+      // ✅ Verificar solo la fecha relevante según load_assignment_criteria
+      const dateStr = formatDateInUserTimeZone(new Date(validationData.relevantDate));
+      const paidPeriodsForDate = allPeriods?.filter(period => {
         if (!period.period) return false;
-        return validationData.dates.some(date => {
-          const dateStr = formatDateInUserTimeZone(new Date(date));
-          return dateStr >= period.period.period_start_date && 
-                 dateStr <= period.period.period_end_date;
-        });
+        return dateStr >= period.period.period_start_date && 
+               dateStr <= period.period.period_end_date;
       }) || [];
       
-      return paidPeriodsForDates;
+      return paidPeriodsForDate;
     },
-    enabled: !!validationData.driverId && validationData.dates.length > 0 && !!selectedCompany?.id && isOpen
+    enabled: !!validationData.driverId && !!validationData.relevantDate && !!selectedCompany?.id && isOpen
   });
 
   const isPeriodPaid = paymentPeriods.length > 0;
@@ -967,7 +978,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             )}
 
             {/* ⭐ ADVERTENCIA DE VERIFICACIÓN DE PERÍODO */}
-            {validationData.driverId && validationData.dates.length > 0 && isLoadingPeriods && (
+            {validationData.driverId && validationData.relevantDate && isLoadingPeriods && (
               <div className="mt-4 p-3 border border-blue-200 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-800">
                   {t('loads:create_wizard.validation.checking_period')}
@@ -976,7 +987,7 @@ export function CreateLoadDialog({ isOpen, onClose, mode = 'create', loadData: e
             )}
             
             {/* ⭐ ADVERTENCIA DE PERÍODO PAGADO */}
-            {validationData.driverId && validationData.dates.length > 0 && !isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
+            {validationData.driverId && validationData.relevantDate && !isLoadingPeriods && isPeriodPaid && paymentPeriods[0]?.period && (
               <div className="mt-4 p-3 border border-red-200 bg-red-50 rounded-md">
                 <p className="text-sm text-red-800 font-medium">
                   ⚠️ {t('loads:create_wizard.validation.payroll_paid_title')}
