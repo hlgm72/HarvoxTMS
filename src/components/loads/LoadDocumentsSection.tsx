@@ -398,7 +398,7 @@ const [uploading, setUploading] = useState<string | null>(null);
       const fileExt = file.name.split('.').pop();
       const photoCount = getPhotoCount(category) + 1;
       const fileName = `${loadData.load_number}_foto_${category}_${photoCount}.${fileExt}`;
-      const filePath = `${user?.id}/${loadData.id}/${fileName}`;
+      const filePath = `${loadData.id}/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('load-documents')
@@ -413,11 +413,15 @@ const [uploading, setUploading] = useState<string | null>(null);
         return;
       }
 
+      const { data: { publicUrl } } = supabase.storage
+        .from('load-documents')
+        .getPublicUrl(filePath);
+
       const documentData = {
         load_id: loadData.id,
         document_type: 'load_photos',
         file_name: fileName,
-        file_url: filePath,
+        file_url: publicUrl,
       };
 
       createLoadDocument({
@@ -470,7 +474,7 @@ const [uploading, setUploading] = useState<string | null>(null);
       }
       
       const fileName = `${loadData.load_number}_${docTypeName}.${fileExt}`;
-      const filePath = `${user?.id}/${loadData.id}/${fileName}`;
+      const filePath = `${loadData.id}/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('load-documents')
@@ -493,7 +497,7 @@ const [uploading, setUploading] = useState<string | null>(null);
         load_id: loadData.id,
         document_type: documentType,
         file_name: fileName,
-        file_url: filePath, // Save the file path, not the public URL
+        file_url: publicUrl,
       };
 
       createLoadDocument({
