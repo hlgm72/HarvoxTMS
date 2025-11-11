@@ -395,6 +395,25 @@ const [uploading, setUploading] = useState<string | null>(null);
     setUploadingPhoto(category);
     
     try {
+      // Get company_id from user
+      if (!user) {
+        showError("Error", "Usuario no autenticado");
+        return;
+      }
+
+      const { data: userData } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!userData?.company_id) {
+        showError("Error", "No se pudo determinar la compañía del usuario");
+        return;
+      }
+
+      const companyId = userData.company_id;
       const fileExt = file.name.split('.').pop();
       const photoCount = getPhotoCount(category) + 1;
       const fileName = `${loadData.load_number}_foto_${category}_${photoCount}.${fileExt}`;
@@ -432,7 +451,7 @@ const [uploading, setUploading] = useState<string | null>(null);
         );
       } else {
         // For existing loads (dialog mode with real loadId), upload immediately
-        const filePath = `${loadData.id}/${fileName}`;
+        const filePath = `${companyId}/${loadData.id}/${fileName}`;
 
         const { data, error } = await supabase.storage
           .from('load-documents')
@@ -447,15 +466,22 @@ const [uploading, setUploading] = useState<string | null>(null);
           return;
         }
 
-        const { data: { publicUrl } } = supabase.storage
+        // Use signed URL instead of public URL (valid for 1 hour)
+        const { data: signedUrlData, error: urlError } = await supabase.storage
           .from('load-documents')
-          .getPublicUrl(filePath);
+          .createSignedUrl(filePath, 3600);
+
+        if (urlError || !signedUrlData) {
+          console.error('Error creating signed URL:', urlError);
+          showError("Error", "Error al generar URL del documento");
+          return;
+        }
 
         const documentData = {
           load_id: loadData.id,
           document_type: 'load_photos',
           file_name: fileName,
-          file_url: publicUrl,
+          file_url: filePath, // Store path, not the signed URL
         };
 
         createLoadDocument({
@@ -481,6 +507,25 @@ const [uploading, setUploading] = useState<string | null>(null);
     setUploadingDocuments(prev => new Set([...prev, documentType]));
     
     try {
+      // Get company_id from user
+      if (!user) {
+        showError("Error", "Usuario no autenticado");
+        return;
+      }
+
+      const { data: userData } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single();
+
+      if (!userData?.company_id) {
+        showError("Error", "No se pudo determinar la compañía del usuario");
+        return;
+      }
+
+      const companyId = userData.company_id;
       const fileExt = file.name.split('.').pop();
       
       // Generate proper filename based on document type
@@ -545,7 +590,7 @@ const [uploading, setUploading] = useState<string | null>(null);
         );
       } else {
         // For existing loads (dialog mode with real loadId), upload immediately
-        const filePath = `${loadData.id}/${fileName}`;
+        const filePath = `${companyId}/${loadData.id}/${fileName}`;
 
         const { data, error } = await supabase.storage
           .from('load-documents')
@@ -560,15 +605,22 @@ const [uploading, setUploading] = useState<string | null>(null);
           return;
         }
 
-        const { data: { publicUrl } } = supabase.storage
+        // Use signed URL instead of public URL
+        const { data: signedUrlData, error: urlError } = await supabase.storage
           .from('load-documents')
-          .getPublicUrl(filePath);
+          .createSignedUrl(filePath, 3600);
+
+        if (urlError || !signedUrlData) {
+          console.error('Error creating signed URL:', urlError);
+          showError("Error", "Error al generar URL del documento");
+          return;
+        }
 
         const documentData = {
           load_id: loadData.id,
           document_type: documentType,
           file_name: fileName,
-          file_url: publicUrl,
+          file_url: filePath, // Store path, not the signed URL
         };
 
         createLoadDocument({

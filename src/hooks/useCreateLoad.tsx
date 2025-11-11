@@ -36,7 +36,8 @@ export interface CreateLoadData {
 const uploadTemporaryDocuments = async (
   documents: any[], 
   loadId: string, 
-  loadNumber: string
+  loadNumber: string,
+  companyId: string // Add companyId parameter
 ): Promise<void> => {
   console.log('📄 uploadTemporaryDocuments - Starting upload process');
   
@@ -79,8 +80,8 @@ const uploadTemporaryDocuments = async (
         continue;
       }
 
-      // Create storage path
-      const filePath = `${loadId}/${customFileName}`;
+      // Create storage path with company_id
+      const filePath = `${companyId}/${loadId}/${customFileName}`;
       
       console.log('⬆️ Uploading to storage:', filePath, 'for load ID:', loadId);
       
@@ -97,14 +98,10 @@ const uploadTemporaryDocuments = async (
         throw uploadError;
       }
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('load-documents')
-        .getPublicUrl(filePath);
-
-      console.log('🔗 Generated public URL:', urlData.publicUrl);
+      console.log('✅ File uploaded successfully to:', filePath);
 
       // Save document record in database using RPC
+      // Store the file path, not a signed URL
       const { data: docResult, error: dbError } = await supabase.rpc(
         'create_or_update_load_document_with_validation',
         {
@@ -112,7 +109,7 @@ const uploadTemporaryDocuments = async (
             load_id: loadId,
             document_type: doc.type,
             file_name: customFileName,
-            file_url: urlData.publicUrl,
+            file_url: filePath, // Store path instead of URL
             file_size: file.size,
             content_type: file.type,
           }
@@ -155,6 +152,13 @@ export const useCreateLoad = () => {
         throw new Error('Usuario no autenticado');
       }
 
+      // Get company_id from userRole
+      if (!userRole?.company_id) {
+        throw new Error('No se pudo determinar la empresa del usuario');
+      }
+
+      const companyId = userRole.company_id;
+
       const isEdit = data.mode === 'edit' && data.id;
       const mode = isEdit ? 'edit' : 'create';
 
@@ -170,11 +174,6 @@ export const useCreateLoad = () => {
         if (value === '' || value === null || value === undefined) return null;
         return value;
       };
-
-      // Get company_id from user's current role
-      if (!userRole?.company_id) {
-        throw new Error('No se pudo determinar la empresa del usuario');
-      }
 
       // Prepare load data for ACID function
       const loadData = {
@@ -322,7 +321,7 @@ export const useCreateLoad = () => {
       if (data.temporaryDocuments && data.temporaryDocuments.length > 0) {
         console.log(`📄 useCreateLoad - Uploading ${data.temporaryDocuments.length} temporary documents for ${isEdit ? 'edited' : 'new'} load`);
         try {
-          await uploadTemporaryDocuments(data.temporaryDocuments, loadId, data.load_number);
+          await uploadTemporaryDocuments(data.temporaryDocuments, loadId, data.load_number, companyId);
           console.log('✅ useCreateLoad - All temporary documents uploaded successfully');
         } catch (uploadError) {
           console.error('❌ useCreateLoad - Error uploading documents:', uploadError);
