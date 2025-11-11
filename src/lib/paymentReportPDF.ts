@@ -1097,292 +1097,56 @@ export async function generatePaymentReportPDF(data: PaymentReportData, isPrevie
   
   try {
     if (isPreview) {
-      console.log('👁️ Modo preview activado');
+      console.log('👁️ Modo preview activado - abriendo PDF directamente');
       
-      // Generar PDF como ArrayBuffer para enviarlo eficientemente
-      const pdfArrayBuffer = doc.output('arraybuffer');
-      const pdfBlob = new Blob([pdfArrayBuffer], { type: 'application/pdf' });
-      const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+      // Generar PDF como Blob
+      const pdfBlob = doc.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
       
-      console.log('🔗 PDF Blob URL creado:', pdfBlobUrl);
+      console.log('🔗 PDF Blob URL creado');
       
-      // Crear documento HTML wrapper que recibirá el PDF via postMessage
-      const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>${fileName.replace('.pdf', '')}</title>
-          <style>
-            body, html { 
-              margin: 0; 
-              padding: 0; 
-              height: 100%; 
-              overflow: hidden; 
-              font-family: system-ui, -apple-system, sans-serif;
-              background: #2a2a2a;
-            }
-            .header {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              padding: 16px 24px;
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-              position: relative;
-              z-index: 10;
-            }
-            .header-title {
-              font-size: 18px;
-              font-weight: 600;
-              margin: 0;
-              display: flex;
-              align-items: center;
-              gap: 12px;
-            }
-            .file-icon {
-              width: 24px;
-              height: 24px;
-            }
-            .download-btn {
-              background: rgba(255, 255, 255, 0.2);
-              color: white;
-              border: 1px solid rgba(255, 255, 255, 0.3);
-              padding: 10px 20px;
-              border-radius: 8px;
-              cursor: pointer;
-              font-size: 14px;
-              font-weight: 500;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              transition: all 0.2s ease;
-              backdrop-filter: blur(10px);
-            }
-            .download-btn:hover {
-              background: rgba(255, 255, 255, 0.3);
-              transform: translateY(-1px);
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            }
-            .download-btn:active {
-              transform: translateY(0);
-            }
-            .download-icon {
-              width: 18px;
-              height: 18px;
-              stroke-width: 2.5;
-            }
-            .pdf-container {
-              width: 100%;
-              height: calc(100% - 64px);
-              position: relative;
-            }
-            iframe { 
-              width: 100%; 
-              height: 100%; 
-              border: none; 
-            }
-            .loading {
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              color: white;
-              font-size: 16px;
-              text-align: center;
-            }
-            .fallback {
-              display: none;
-              padding: 20px;
-              text-align: center;
-              color: white;
-            }
-          </style>
-          <script>
-            let pdfBlobUrl = null;
-            const pdfFileName = '${fileName}';
-            
-            // Esperar a recibir el PDF desde la ventana padre
-            window.addEventListener('message', function(event) {
-              // Verificar origen si es necesario (por seguridad)
-              if (event.data && event.data.type === 'PDF_DATA') {
-                console.log('📩 PDF recibido via postMessage');
-                const arrayBuffer = event.data.arrayBuffer;
-                const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-                pdfBlobUrl = URL.createObjectURL(blob);
-                
-                const iframe = document.querySelector('iframe');
-                const loading = document.querySelector('.loading');
-                if (iframe && loading) {
-                  iframe.src = pdfBlobUrl;
-                  loading.style.display = 'none';
-                  console.log('✅ PDF cargado en iframe');
-                }
-              }
-            });
-            
-            // Solicitar el PDF al cargar la página
-            window.addEventListener('DOMContentLoaded', function() {
-              console.log('📤 Solicitando PDF a ventana padre...');
-              if (window.opener) {
-                window.opener.postMessage({ type: 'REQUEST_PDF' }, '*');
-              }
-            });
-            
-            function downloadPDF() {
-              console.log('💾 Iniciando descarga...');
-              
-              if (!pdfBlobUrl) {
-                console.error('❌ PDF no disponible para descarga');
-                alert('El PDF aún no está listo. Por favor, espera un momento.');
-                return;
-              }
-              
-              try {
-                const link = document.createElement('a');
-                link.href = pdfBlobUrl;
-                link.download = pdfFileName;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                
-                setTimeout(() => {
-                  if (document.body.contains(link)) {
-                    document.body.removeChild(link);
-                  }
-                }, 100);
-                
-                console.log('✅ Descarga iniciada');
-              } catch (error) {
-                console.error('❌ Error en descarga:', error);
-                alert('Error al descargar el PDF. Por favor, intenta de nuevo.');
-              }
-            }
-                  
-                  console.log('✅ Descarga iniciada con fallback');
-                  
-                } catch (fallbackError) {
-                  console.error('❌ Error en fallback:', fallbackError);
-                  alert('Error descargando el PDF. Haz click derecho en el PDF y selecciona "Guardar como".');
-                }
-              }
-            }
-            
-            // Mantener el título
-            setInterval(() => {
-              if (document.title !== '${fileName.replace('.pdf', '')}') {
-                document.title = '${fileName.replace('.pdf', '')}';
-              }
-            }, 1000);
-            
-            // Limpiar Blob URL al cerrar la ventana
-            window.addEventListener('beforeunload', function() {
-              if (pdfBlobUrl) {
-                URL.revokeObjectURL(pdfBlobUrl);
-              }
-            });
-          </script>
-        </head>
-        <body>
-          <div class="header">
-            <div class="document-name">
-              <span>📄</span>
-              <span>${fileName.replace('.pdf', '')}</span>
-            </div>
-            <button class="download-btn" onclick="downloadPDF()" title="Descargar PDF">
-              <svg class="download-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-              <span>Descargar PDF</span>
-            </button>
-          </div>
-          <div class="pdf-container">
-            <iframe type="application/pdf" title="${fileName}"></iframe>
-          </div>
-          <div class="fallback">
-            <p>Si no puedes ver el PDF, intenta descargar usando el botón de arriba.</p>
-          </div>
-        </body>
-        </html>
-      `;
-      
-      // ✅ SECURITY: Use Blob URLs instead of deprecated document.write()
-      // This is CSP-compatible and avoids injection risks
-      const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
-      const htmlUrl = URL.createObjectURL(htmlBlob);
-      
-      // Abrir la nueva ventana
-      let previewWindow: Window | null = null;
-      
+      // Abrir PDF directamente en nueva ventana
       try {
         if (targetWindow && !targetWindow.closed) {
-          targetWindow.location.href = htmlUrl;
-          previewWindow = targetWindow;
-          console.log('✅ PDF wrapper abierto en ventana existente');
+          targetWindow.location.href = pdfUrl;
+          console.log('✅ PDF abierto en ventana existente');
         } else {
-          previewWindow = window.open(htmlUrl, '_blank');
-          if (previewWindow) {
-            console.log('✅ PDF wrapper abierto en nueva ventana');
+          const newWindow = window.open(pdfUrl, '_blank');
+          if (newWindow) {
+            console.log('✅ PDF abierto en nueva ventana');
           } else {
-            console.log('⚠️ Popup bloqueado, descargando directamente...');
-            // Fallback: descargar directamente
+            console.log('⚠️ Popup bloqueado, descargando...');
+            // Si el popup está bloqueado, descargar directamente
             const link = document.createElement('a');
-            link.href = pdfBlobUrl;
+            link.href = pdfUrl;
             link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(pdfBlobUrl);
-            return;
           }
         }
+        
+        // Limpiar el Blob URL después de un tiempo
+        setTimeout(() => {
+          URL.revokeObjectURL(pdfUrl);
+        }, 60000); // 60 segundos
+        
       } catch (error) {
-        console.error('❌ Error abriendo ventana:', error);
-        // Último fallback: descargar directamente
+        console.error('❌ Error abriendo PDF:', error);
+        // Fallback: descargar directamente
         const link = document.createElement('a');
-        link.href = pdfBlobUrl;
+        link.href = pdfUrl;
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(pdfBlobUrl);
-        return;
+        URL.revokeObjectURL(pdfUrl);
       }
-      
-      // Escuchar solicitudes de PDF desde la ventana de preview
-      const messageHandler = (event: MessageEvent) => {
-        if (event.data && event.data.type === 'REQUEST_PDF') {
-          console.log('📨 Enviando PDF a ventana de preview...');
-          if (previewWindow && !previewWindow.closed) {
-            previewWindow.postMessage({
-              type: 'PDF_DATA',
-              arrayBuffer: pdfArrayBuffer
-            }, '*');
-            console.log('✅ PDF enviado via postMessage');
-          }
-        }
-      };
-      
-      window.addEventListener('message', messageHandler);
-      
-      // Limpiar después de un tiempo
-      setTimeout(() => {
-        window.removeEventListener('message', messageHandler);
-        URL.revokeObjectURL(htmlUrl);
-        URL.revokeObjectURL(pdfBlobUrl);
-      }, 30000); // 30 segundos para dar tiempo a la descarga
-      
-      // Limpiar HTML URL después de un tiempo
-      setTimeout(() => {
-        URL.revokeObjectURL(htmlUrl);
-      }, 5000);
     } else if (isPreview === false) {
       console.log('📄 Modo retorno de documento activado');
       // Si isPreview es explícitamente false, retornar el documento
       return doc;
-  } else {
+    } else {
       console.log('💾 Modo descarga activado');
       
       // Sanitizar el nombre del archivo
