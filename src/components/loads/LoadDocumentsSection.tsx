@@ -593,6 +593,13 @@ const [uploading, setUploading] = useState<string | null>(null);
         );
       } else {
         // For existing loads (dialog mode with real loadId), upload immediately
+        // Validate that loadData and loadData.id exist
+        if (!loadData?.id) {
+          console.error('Load ID is missing:', loadData);
+          showError("Error", "ID de carga no válido. Por favor recarga la página.");
+          return;
+        }
+
         const filePath = `${companyId}/${loadData.id}/${fileName}`;
 
         const { data, error } = await supabase.storage
