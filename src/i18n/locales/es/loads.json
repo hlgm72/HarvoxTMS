@@ -210,6 +210,12 @@
           "no_documents": "Aún no se han subido documentos",
           "use_selector": "Usa los botones de arriba para agregar documentos"
         },
+        "delete_dialog": {
+          "title": "¿Eliminar documento?",
+          "description": "Esta acción eliminará permanentemente este documento. Esto no se puede deshacer.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar"
+        },
         "photo_categories": {
           "pickup": {
             "label": "Recogida ({{count}}/4)",
@@ -237,7 +243,22 @@
           "unexpected_photo": "Error inesperado al subir foto",
           "load_documents": "Error al cargar documentos",
           "delete_document": "Error al eliminar documento",
-          "generate_load_order": "Error al generar orden de carga"
+          "generate_load_order": "Error al generar orden de carga",
+          "generate_view_link": "Error al generar enlace de visualización del documento",
+          "open_document": "Error al abrir documento",
+          "download_document": "Error al descargar documento"
+        },
+        "tooltips": {
+          "view_document": "Ver documento",
+          "download_document": "Descargar documento",
+          "replace_document": "Reemplazar documento",
+          "delete_document": "Eliminar documento"
+        },
+        "upload": {
+          "all_documents_uploaded": "Todos los documentos subidos",
+          "no_documents_available": "No hay documentos disponibles para subir",
+          "uploading_photo": "Subiendo foto...",
+          "uploading": "Subiendo..."
         },
         "photos": {
           "title": "Fotos",

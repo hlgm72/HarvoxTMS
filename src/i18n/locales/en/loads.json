@@ -211,6 +211,12 @@
           "no_documents": "No documents uploaded yet",
           "use_selector": "Use the buttons above to add documents"
         },
+        "delete_dialog": {
+          "title": "Delete document?",
+          "description": "This action will permanently delete this document. This cannot be undone.",
+          "cancel": "Cancel",
+          "delete": "Delete"
+        },
         "photo_categories": {
           "pickup": {
             "label": "Pickup ({{count}}/4)",
@@ -238,7 +244,22 @@
           "unexpected_photo": "Unexpected error uploading photo",
           "load_documents": "Error loading documents",
           "delete_document": "Error deleting document",
-          "generate_load_order": "Error generating load order"
+          "generate_load_order": "Error generating load order",
+          "generate_view_link": "Error generating document view link",
+          "open_document": "Error opening document",
+          "download_document": "Error downloading document"
+        },
+        "tooltips": {
+          "view_document": "View document",
+          "download_document": "Download document",
+          "replace_document": "Replace document",
+          "delete_document": "Delete document"
+        },
+        "upload": {
+          "all_documents_uploaded": "All documents uploaded",
+          "no_documents_available": "No documents available to upload",
+          "uploading_photo": "Uploading photo...",
+          "uploading": "Uploading..."
         },
         "photos": {
           "title": "Photos",
