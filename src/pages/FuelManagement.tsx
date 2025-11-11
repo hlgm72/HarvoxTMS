@@ -63,7 +63,7 @@ export default function FuelManagement() {
     status: 'all',
     vehicleId: 'all',
     periodFilter: {
-      type: 'current'  // Usar 'current' para que use calculatedPeriods automáticamente
+      type: 'week'
     }
   });
 
@@ -71,11 +71,7 @@ export default function FuelManagement() {
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    // Solo inicializar una vez, sin importar otros cambios
-    if (hasInitialized) return;
-    
-    // Marcar como inicializado para no volver a ejecutar
-    if (!availableWeeks && !calculatedPeriods) return; // Esperar datos
+    if (hasInitialized || !availableWeeks || availableWeeks.length === 0) return;
     
     setHasInitialized(true);
 
@@ -91,7 +87,6 @@ export default function FuelManagement() {
       ?.weeks.find(w => w.weekNumber === currentWeekNumber);
     
     if (weekData) {
-      // Si encontramos la semana, actualizar a tipo 'week' con fechas
       setFilters(prev => ({
         ...prev,
         periodFilter: {
@@ -101,22 +96,11 @@ export default function FuelManagement() {
           startDate: weekData.startDate,
           endDate: weekData.endDate,
           periodId: weekData.periodId,
-          label: `W${currentWeekNumber}/${currentYear}`
-        }
-      }));
-    } else if (calculatedPeriods?.current) {
-      // Si no hay availableWeeks pero tenemos calculatedPeriods, usar esas fechas
-      setFilters(prev => ({
-        ...prev,
-        periodFilter: {
-          type: 'current',
-          startDate: calculatedPeriods.current.period_start_date,
-          endDate: calculatedPeriods.current.period_end_date,
-          label: 'Current'
+          label: `W${String(currentWeekNumber).padStart(2, '0')}/${currentYear}`
         }
       }));
     }
-  }, [availableWeeks, calculatedPeriods, hasInitialized]);
+  }, [availableWeeks, hasInitialized]);
   
   const [activeTab, setActiveTab] = useState('expenses');
 
@@ -232,42 +216,12 @@ export default function FuelManagement() {
     
     const pf = filters.periodFilter;
     
-    // Si tiene label personalizado, usarlo
-    if (pf.label && pf.label !== 'Current') {
+    // Si tiene label personalizado, usarlo directamente
+    if (pf.label) {
       return `Week: ${pf.label}`;
     }
     
-    switch (pf.type) {
-      case 'week':
-        const weekLabel = pf.selectedWeek && pf.selectedYear 
-          ? `W${pf.selectedWeek}/${pf.selectedYear}`
-          : 'Week';
-        return `Week: ${weekLabel}`;
-      case 'month':
-        const monthLabel = pf.selectedMonth && pf.selectedYear 
-          ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
-          : 'Month';
-        return `Month: ${monthLabel}`;
-      case 'quarter':
-        return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
-      case 'year':
-        return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
-      case 'current':
-        // Si es 'current' pero tenemos fechas y calculatedPeriods, extraer el número de semana
-        if (pf.startDate && calculatedPeriods?.current) {
-          const startDate = new Date(pf.startDate);
-          const weekNumber = getISOWeek(startDate);
-          const year = startDate.getFullYear();
-          return `Week: W${weekNumber}/${year}`;
-        }
-        return t("common:periods.current");
-      case 'previous':
-        return t("common:periods.previous");
-      case 'all':
-        return t("common:periods.all");
-      default:
-        return '';
-    }
+    return '';
   };
 
   const getPeriodDateRange = () => {
