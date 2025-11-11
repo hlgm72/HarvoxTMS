@@ -127,10 +127,30 @@ export function LoadPhotosSection({
     setUploading(uploadKey);
 
     try {
+      // Get company_id from user
+      if (!user) {
+        showError("Error", "Usuario no autenticado");
+        return;
+      }
+
+      const { data: userData } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (!userData?.company_id) {
+        showError("Error", "No se pudo determinar la compañía del usuario");
+        return;
+      }
+
+      const companyId = userData.company_id;
       const fileExt = file.name.split('.').pop();
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const fileName = `${loadData.load_number}_Photo_${category}_${timestamp}.${fileExt}`;
-      const filePath = `${user?.id}/${loadData.id}/photos/${fileName}`;
+      const filePath = `${companyId}/${loadData.id}/photos/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('load-documents')

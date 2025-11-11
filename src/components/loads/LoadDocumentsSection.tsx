@@ -407,7 +407,8 @@ const [uploading, setUploading] = useState<string | null>(null);
         .select('company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (!userData?.company_id) {
         showError("Error", "No se pudo determinar la compañía del usuario");
@@ -519,7 +520,8 @@ const [uploading, setUploading] = useState<string | null>(null);
         .select('company_id')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (!userData?.company_id) {
         showError("Error", "No se pudo determinar la compañía del usuario");
