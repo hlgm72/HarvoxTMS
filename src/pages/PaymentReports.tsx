@@ -56,24 +56,22 @@ export default function PaymentReports() {
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
   
-  // Estado de filtros - inicializar con tipo 'current' para usar período calculado
+  // ✅ Estado de filtros - inicializar como null, se establecerá con availableWeeks
   const [filters, setFilters] = useState<PaymentFiltersType>({
     driverId: 'all',
     status: 'all',
     periodFilter: {
-      type: 'current'  // Usar 'current' para que use calculatedPeriods automáticamente
+      type: 'week'  // Inicializar como week, se actualizará con datos reales
     }
   });
 
-  // ✅ INICIALIZACIÓN: Solo la primera vez cuando se carga la página
+  // ✅ INICIALIZACIÓN AUTOMÁTICA: Establecer semana actual cuando availableWeeks esté disponible
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    // Solo inicializar una vez, sin importar otros cambios
+    // Solo inicializar si aún no se ha hecho
     if (hasInitialized) return;
-    
-    // Marcar como inicializado para no volver a ejecutar
-    if (!availableWeeks && !calculatedPeriods) return; // Esperar datos
+    if (!availableWeeks) return; // Esperar datos de availableWeeks
     
     setHasInitialized(true);
 
@@ -82,14 +80,14 @@ export default function PaymentReports() {
     const currentWeekNumber = getISOWeek(today);
     const currentMonth = today.getMonth() + 1;
     
-    // Intentar encontrar la semana actual en availableWeeks
+    // Buscar la semana actual en availableWeeks
     const weekData = availableWeeks
-      ?.find(w => w.year === currentYear)
+      .find(w => w.year === currentYear)
       ?.months.find(m => m.month === currentMonth)
       ?.weeks.find(w => w.weekNumber === currentWeekNumber);
     
     if (weekData) {
-      // Si encontramos la semana, actualizar a tipo 'week' con fechas
+      // ✅ CORRECCIÓN: Usar fechas de availableWeeks, no calculatedPeriods
       setFilters(prev => ({
         ...prev,
         periodFilter: {
@@ -102,19 +100,39 @@ export default function PaymentReports() {
           label: `W${currentWeekNumber}/${currentYear}`
         }
       }));
-    } else if (calculatedPeriods?.current) {
-      // Si no hay availableWeeks pero tenemos calculatedPeriods, usar esas fechas
-      setFilters(prev => ({
-        ...prev,
-        periodFilter: {
-          type: 'current',
-          startDate: calculatedPeriods.current.period_start_date,
-          endDate: calculatedPeriods.current.period_end_date,
-          label: 'Current'
-        }
-      }));
+    } else {
+      // Si no se encuentra la semana actual, usar la semana más reciente disponible
+      const mostRecentYear = availableWeeks[0];
+      const mostRecentMonth = mostRecentYear?.months[0];
+      const mostRecentWeek = mostRecentMonth?.weeks[0];
+      
+      if (mostRecentWeek) {
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            type: 'week',
+            selectedYear: mostRecentYear.year,
+            selectedWeek: mostRecentWeek.weekNumber,
+            startDate: mostRecentWeek.startDate,
+            endDate: mostRecentWeek.endDate,
+            periodId: mostRecentWeek.periodId,
+            label: `W${mostRecentWeek.weekNumber}/${mostRecentYear.year}`
+          }
+        }));
+      } else if (availableWeeks.length === 0) {
+        // Si availableWeeks está vacío, usar la semana actual sin fechas de BD
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            type: 'week',
+            selectedYear: currentYear,
+            selectedWeek: currentWeekNumber,
+            label: `W${currentWeekNumber}/${currentYear}`
+          }
+        }));
+      }
     }
-  }, [availableWeeks, calculatedPeriods, hasInitialized]);
+  }, [availableWeeks, hasInitialized]);
   // Hook de estadísticas con filtros aplicados
   const { data: stats, isLoading: statsLoading } = usePaymentReportsStats({
     driverId: filters.driverId,
@@ -438,47 +456,39 @@ export default function PaymentReports() {
     // El modal ya maneja la invalidación de queries, no necesitamos refetch adicional
   };
 
-  // Get period description (similar to Load Management)
+  // ✅ Get period description (igual que Load Management)
   const getPeriodDescription = () => {
-    if (!filters.periodFilter) return '';
+    if (!filters.periodFilter) return t('common:periods.current');
     
-    const pf = filters.periodFilter;
-    
-    // Si tiene label personalizado, usarlo
-    if (pf.label && pf.label !== 'Current') {
-      return `Week: ${pf.label}`;
-    }
-    
-    switch (pf.type) {
+    switch (filters.periodFilter.type) {
+      case 'current':
+        return t('common:periods.current');
+      case 'previous':
+        return t('common:periods.previous');
+      case 'next':
+        return t('common:periods.next');
+      case 'all':
+        return t('common:periods.all');
       case 'week':
-        const weekLabel = pf.selectedWeek && pf.selectedYear 
-          ? `W${pf.selectedWeek}/${pf.selectedYear}`
+        const weekLabel = filters.periodFilter.selectedWeek && filters.periodFilter.selectedYear 
+          ? `W${filters.periodFilter.selectedWeek}/${filters.periodFilter.selectedYear}`
           : 'Week';
         return `Week: ${weekLabel}`;
       case 'month':
-        const monthLabel = pf.selectedMonth && pf.selectedYear 
-          ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
+        const monthLabel = filters.periodFilter.selectedMonth && filters.periodFilter.selectedYear 
+          ? `${formatMonthName(new Date(filters.periodFilter.selectedYear, filters.periodFilter.selectedMonth - 1))} ${filters.periodFilter.selectedYear}`
           : 'Month';
         return `Month: ${monthLabel}`;
       case 'quarter':
-        return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
+        return `Quarter: Q${filters.periodFilter.selectedQuarter || '?'} ${filters.periodFilter.selectedYear || '?'}`;
       case 'year':
-        return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
-      case 'current':
-        // Si es 'current' pero tenemos fechas y calculatedPeriods, extraer el número de semana
-        if (pf.startDate && calculatedPeriods?.current) {
-          const startDate = new Date(pf.startDate);
-          const weekNumber = getISOWeek(startDate);
-          const year = startDate.getFullYear();
-          return `Week: W${weekNumber}/${year}`;
-        }
-        return t("common:periods.current");
-      case 'previous':
-        return t("common:periods.previous");
-      case 'all':
-        return t("common:periods.all");
+        return `Year: ${filters.periodFilter.selectedYear || new Date().getFullYear()}`;
+      case 'specific':
+        return t('common:periods.specific');
+      case 'custom':
+        return t('common:periods.custom');
       default:
-        return '';
+        return t('common:periods.selected');
     }
   };
 
