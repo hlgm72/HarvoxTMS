@@ -288,6 +288,7 @@ const [uploading, setUploading] = useState<string | null>(null);
   const [showUploadDropdown, setShowUploadDropdown] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState<string | null>(null);
   const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
+  const [isSavingDocuments, setIsSavingDocuments] = useState(false);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
@@ -420,8 +421,8 @@ const [uploading, setUploading] = useState<string | null>(null);
       const photoCount = getPhotoCount(category) + 1;
       const fileName = `${loadData.load_number}_foto_${category}_${photoCount}.${fileExt}`;
       
-      // In wizard mode OR when creating/editing a load, keep file in memory
-      if (wizardMode || !loadId || loadId === 'temp') {
+      // In wizard mode, dialog mode, OR when creating/editing a load, keep file in memory
+      if (wizardMode || isDialogMode || !loadId || loadId === 'temp') {
         // Create blob URL for preview
         const blobUrl = URL.createObjectURL(file);
         
@@ -561,8 +562,8 @@ const [uploading, setUploading] = useState<string | null>(null);
       
       const fileName = `${loadData.load_number}_${docTypeName}.${fileExt}`;
       
-      // In wizard mode OR when creating/editing a load, keep file in memory
-      if (wizardMode || !loadId || loadId === 'temp') {
+      // In wizard mode, dialog mode, OR when creating/editing a load, keep file in memory
+      if (wizardMode || isDialogMode || !loadId || loadId === 'temp') {
         // Create blob URL for preview
         const blobUrl = URL.createObjectURL(file);
         
@@ -744,6 +745,30 @@ const [uploading, setUploading] = useState<string | null>(null);
     setRemovingDocuments(prev => new Set([...prev, documentId]));
     
     try {
+      // Check if it's a temporary document first
+      const tempDocument = temporaryDocuments.find(doc => doc.id === documentId);
+      
+      if (tempDocument) {
+        // It's a temporary document, just remove from memory
+        console.log('🗑️ Removing temporary document:', tempDocument.fileName);
+        
+        // Revoke blob URL if it exists
+        if (tempDocument.url.startsWith('blob:')) {
+          URL.revokeObjectURL(tempDocument.url);
+        }
+        
+        // Remove from temporary documents
+        const updatedTempDocs = temporaryDocuments.filter(doc => doc.id !== documentId);
+        onTemporaryDocumentsChange?.(updatedTempDocs);
+        
+        showSuccess(
+          t("loads:create_wizard.phases.documents.success_messages.document_deleted"), 
+          t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: tempDocument.fileName })
+        );
+        return;
+      }
+      
+      // It's a saved document, proceed with DB and storage deletion
       const document = documents.find(doc => doc.id === documentId);
       if (!document) return;
 
@@ -826,6 +851,118 @@ const [uploading, setUploading] = useState<string | null>(null);
     } catch (error) {
       console.error('❌ handleLoadOrderGenerated - Error:', error);
       showError("Error", t("loads:create_wizard.phases.documents.error_messages.generate_load_order"));
+    }
+  };
+
+  const handleSaveAllDocuments = async () => {
+    if (!loadId || loadId === 'temp') {
+      showError("Error", "No se puede guardar sin un ID de carga válido");
+      return;
+    }
+
+    setIsSavingDocuments(true);
+    
+    try {
+      // Get company_id from user
+      if (!user) {
+        showError("Error", "Usuario no autenticado");
+        return;
+      }
+
+      const { data: userData } = await supabase
+        .from('user_company_roles')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (!userData?.company_id) {
+        showError("Error", "No se pudo determinar la compañía del usuario");
+        return;
+      }
+
+      const companyId = userData.company_id;
+      
+      // Filter temporary documents that have files
+      const documentsToUpload = temporaryDocuments.filter((doc: any) => doc.file);
+      
+      if (documentsToUpload.length === 0) {
+        showSuccess("Sin cambios", "No hay documentos pendientes por guardar");
+        return;
+      }
+
+      console.log(`🔄 Subiendo ${documentsToUpload.length} documentos...`);
+      
+      let successCount = 0;
+      let errorCount = 0;
+
+      // Upload each document
+      for (const tempDoc of documentsToUpload) {
+        try {
+          const file = (tempDoc as any).file;
+          const fileExt = file.name.split('.').pop();
+          const filePath = `${companyId}/${loadId}/${tempDoc.fileName}`;
+
+          // Upload to Storage
+          const { error: storageError } = await supabase.storage
+            .from('load-documents')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (storageError) {
+            console.error('❌ Error uploading file:', storageError);
+            errorCount++;
+            continue;
+          }
+
+          // Save to database
+          const documentData = {
+            load_id: loadId,
+            document_type: tempDoc.type,
+            file_name: tempDoc.fileName,
+            file_url: filePath,
+            file_size: file.size,
+            content_type: file.type,
+          };
+
+          await createLoadDocument({ documentData });
+          successCount++;
+          
+        } catch (error) {
+          console.error('❌ Error processing document:', error);
+          errorCount++;
+        }
+      }
+
+      // Clear temporary documents
+      onTemporaryDocumentsChange?.([]);
+      
+      // Reload documents
+      await loadDocuments();
+      
+      // Notify context about document changes
+      notifyDocumentChange();
+      
+      if (errorCount === 0) {
+        showSuccess(
+          "Documentos guardados", 
+          `Se guardaron ${successCount} documento${successCount !== 1 ? 's' : ''} exitosamente`
+        );
+      } else {
+        showError(
+          "Guardado parcial", 
+          `Se guardaron ${successCount} documentos. ${errorCount} fallaron.`
+        );
+      }
+      
+    } catch (error) {
+      console.error('❌ Error saving documents:', error);
+      showError("Error", "Error al guardar los documentos");
+    } finally {
+      setIsSavingDocuments(false);
     }
   };
 
@@ -1235,6 +1372,8 @@ const [uploading, setUploading] = useState<string | null>(null);
   };
 
   if (isDialogMode) {
+    const hasPendingDocuments = temporaryDocuments.some((doc: any) => doc.file);
+    
     return (
       <>
         <Dialog open={isOpen} onOpenChange={(open) => {
@@ -1259,6 +1398,40 @@ const [uploading, setUploading] = useState<string | null>(null);
               </DialogTitle>
             </DialogHeader>
             {renderDocumentManagement()}
+            
+            {/* Footer with Save button */}
+            {hasPendingDocuments && (
+              <DialogFooter className="mt-4 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-auto">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      onTemporaryDocumentsChange?.([]);
+                      onClose?.();
+                    }}
+                    disabled={isSavingDocuments}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleSaveAllDocuments}
+                    disabled={isSavingDocuments}
+                  >
+                    {isSavingDocuments ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Guardando...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        Guardar cambios ({temporaryDocuments.filter((doc: any) => doc.file).length})
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </DialogFooter>
+            )}
           </DialogContent>
         </Dialog>
 
