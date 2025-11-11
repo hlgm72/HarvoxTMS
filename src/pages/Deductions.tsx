@@ -34,44 +34,14 @@ export default function Deductions() {
   const { userCompany } = useCompanyCache();
   const { data: availableWeeks } = useAvailableWeeks(userCompany?.company_id);
   
-  // Initialize with current week
-  const getCurrentWeek = (): PeriodFilterValue => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentWeekNumber = getISOWeek(today);
-    const currentMonth = today.getMonth() + 1;
-    
-    // Find current week in availableWeeks
-    const weekData = availableWeeks
-      ?.find(w => w.year === currentYear)
-      ?.months.find(m => m.month === currentMonth)
-      ?.weeks.find(w => w.weekNumber === currentWeekNumber);
-    
-    if (weekData) {
-      return {
-        type: 'week',
-        selectedYear: currentYear,
-        selectedWeek: currentWeekNumber,
-        startDate: weekData.startDate,
-        endDate: weekData.endDate,
-        label: `W${currentWeekNumber}/${currentYear}`
-      };
-    }
-    
-    // Fallback if no week data available
-    return {
-      type: 'week',
-      selectedYear: currentYear,
-      selectedWeek: currentWeekNumber
-    };
-  };
-  
   // Estado de filtros
   const [filters, setFilters] = useState<DeductionsFiltersType>({
     status: "all",
     driverId: "all",
     expenseTypeId: "all",
-    periodFilter: getCurrentWeek()
+    periodFilter: {
+      type: 'week'
+    }
   });
 
   // ✅ Pasar tab activo y filtros al hook de estadísticas
@@ -97,15 +67,13 @@ export default function Deductions() {
   const { data: calculatedPeriods } = useCalculatedPeriods(userCompany?.company_id);
   const { data: companyData } = useCompanyFinancialData(userCompany?.company_id);
   
-  // ✅ INICIALIZACIÓN: Solo la primera vez cuando se carga la página
+  // ✅ INICIALIZACIÓN AUTOMÁTICA: Establecer semana actual cuando availableWeeks esté disponible
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    // Solo inicializar una vez, sin importar otros cambios
+    // Solo inicializar si aún no se ha hecho
     if (hasInitialized) return;
-    
-    // Marcar como inicializado para no volver a ejecutar
-    if (!availableWeeks) return; // Esperar datos
+    if (!availableWeeks) return; // Esperar datos de availableWeeks
     
     setHasInitialized(true);
 
@@ -114,13 +82,14 @@ export default function Deductions() {
     const currentWeekNumber = getISOWeek(today);
     const currentMonth = today.getMonth() + 1;
     
-    // Find current week in availableWeeks
+    // Buscar la semana actual en availableWeeks
     const weekData = availableWeeks
-      ?.find(w => w.year === currentYear)
+      .find(w => w.year === currentYear)
       ?.months.find(m => m.month === currentMonth)
       ?.weeks.find(w => w.weekNumber === currentWeekNumber);
     
     if (weekData) {
+      // ✅ CORRECCIÓN: Usar fechas de availableWeeks
       setFilters(prev => ({
         ...prev,
         periodFilter: {
@@ -133,6 +102,26 @@ export default function Deductions() {
           label: `W${currentWeekNumber}/${currentYear}`
         }
       }));
+    } else {
+      // Si no se encuentra la semana actual, usar la semana más reciente disponible
+      const mostRecentYear = availableWeeks[0];
+      const mostRecentMonth = mostRecentYear?.months[0];
+      const mostRecentWeek = mostRecentMonth?.weeks[0];
+      
+      if (mostRecentWeek) {
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            type: 'week',
+            selectedYear: mostRecentYear.year,
+            selectedWeek: mostRecentWeek.weekNumber,
+            startDate: mostRecentWeek.startDate,
+            endDate: mostRecentWeek.endDate,
+            periodId: mostRecentWeek.periodId,
+            label: `W${mostRecentWeek.weekNumber}/${mostRecentYear.year}`
+          }
+        }));
+      }
     }
   }, [availableWeeks, hasInitialized]);
 
@@ -169,30 +158,12 @@ export default function Deductions() {
     
     const pf = filters.periodFilter;
     
-    switch (pf.type) {
-      case 'week':
-        const weekLabel = pf.selectedWeek && pf.selectedYear 
-          ? `W${pf.selectedWeek}/${pf.selectedYear}`
-          : 'Week';
-        return `Week: ${weekLabel}`;
-      case 'month':
-        const monthLabel = pf.selectedMonth && pf.selectedYear 
-          ? `${formatMonthName(new Date(pf.selectedYear, pf.selectedMonth - 1))} ${pf.selectedYear}`
-          : 'Month';
-        return `Month: ${monthLabel}`;
-      case 'quarter':
-        return `Quarter: Q${pf.selectedQuarter || '?'} ${pf.selectedYear || '?'}`;
-      case 'year':
-        return `Year: ${pf.selectedYear || new Date().getFullYear()}`;
-      case 'current':
-        return t("deductions.filters.currentPeriod");
-      case 'previous':
-        return t("deductions.filters.previousPeriod");
-      case 'all':
-        return t("deductions.filters.allPeriods");
-      default:
-        return '';
+    // Si tiene label personalizado, usarlo directamente
+    if (pf.label) {
+      return `Week: ${pf.label}`;
     }
+    
+    return '';
   };
 
   const getPeriodDateRange = () => {
