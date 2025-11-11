@@ -67,11 +67,13 @@ export default function FuelManagement() {
     }
   });
 
-  // ✅ INICIALIZACIÓN: Solo la primera vez cuando se carga la página
+  // ✅ INICIALIZACIÓN AUTOMÁTICA: Establecer semana actual cuando availableWeeks esté disponible
   const [hasInitialized, setHasInitialized] = useState(false);
   
   useEffect(() => {
-    if (hasInitialized || !availableWeeks || availableWeeks.length === 0) return;
+    // Solo inicializar si aún no se ha hecho
+    if (hasInitialized) return;
+    if (!availableWeeks) return; // Esperar datos de availableWeeks
     
     setHasInitialized(true);
 
@@ -80,13 +82,14 @@ export default function FuelManagement() {
     const currentWeekNumber = getISOWeek(today);
     const currentMonth = today.getMonth() + 1;
     
-    // Intentar encontrar la semana actual en availableWeeks
+    // Buscar la semana actual en availableWeeks
     const weekData = availableWeeks
-      ?.find(w => w.year === currentYear)
+      .find(w => w.year === currentYear)
       ?.months.find(m => m.month === currentMonth)
       ?.weeks.find(w => w.weekNumber === currentWeekNumber);
     
     if (weekData) {
+      // ✅ CORRECCIÓN: Usar fechas de availableWeeks
       setFilters(prev => ({
         ...prev,
         periodFilter: {
@@ -96,9 +99,29 @@ export default function FuelManagement() {
           startDate: weekData.startDate,
           endDate: weekData.endDate,
           periodId: weekData.periodId,
-          label: `W${String(currentWeekNumber).padStart(2, '0')}/${currentYear}`
+          label: `W${currentWeekNumber}/${currentYear}`
         }
       }));
+    } else {
+      // Si no se encuentra la semana actual, usar la semana más reciente disponible
+      const mostRecentYear = availableWeeks[0];
+      const mostRecentMonth = mostRecentYear?.months[0];
+      const mostRecentWeek = mostRecentMonth?.weeks[0];
+      
+      if (mostRecentWeek) {
+        setFilters(prev => ({
+          ...prev,
+          periodFilter: {
+            type: 'week',
+            selectedYear: mostRecentYear.year,
+            selectedWeek: mostRecentWeek.weekNumber,
+            startDate: mostRecentWeek.startDate,
+            endDate: mostRecentWeek.endDate,
+            periodId: mostRecentWeek.periodId,
+            label: `W${mostRecentWeek.weekNumber}/${mostRecentYear.year}`
+          }
+        }));
+      }
     }
   }, [availableWeeks, hasInitialized]);
   
