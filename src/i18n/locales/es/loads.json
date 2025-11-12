@@ -277,18 +277,34 @@
             "limit_reached": "Límite de fotos alcanzado",
             "limit_category": "No se pueden subir más fotos de {{category}} (4/4)",
             "invalid_file_type": "Tipo de archivo inválido",
-            "accepted_formats": "Solo se aceptan imágenes JPG, PNG y WEBP"
+            "accepted_formats": "Solo se aceptan imágenes JPG, PNG y WEBP",
+            "file_too_large": "El archivo es demasiado grande",
+            "max_size": "El tamaño máximo es de 10MB",
+            "upload_failed": "Error al subir la foto",
+            "save_failed": "Error al guardar la información de la foto",
+            "delete_failed": "Error al eliminar la foto",
+            "unexpected_upload": "Error inesperado al subir la foto",
+            "unexpected_delete": "Error inesperado al eliminar la foto",
+            "view_failed": "No se pudo cargar la foto para visualizar",
+            "open_failed": "No se pudo abrir la foto"
           },
           "success_messages": {
             "uploaded": "Foto subida exitosamente",
             "uploaded_category": "Foto de {{category}} subida exitosamente",
             "photo_added": "Foto agregada a la lista",
-            "photo_added_category": "Foto de {{category}} agregada (se subirá al guardar)"
+            "photo_added_category": "Foto de {{category}} agregada (se subirá al guardar)",
+            "deleted": "Foto eliminada",
+            "deleted_success": "Foto eliminada exitosamente"
           },
           "empty_state": {
             "title": "No se han subido fotos",
             "description": "Sube fotos relacionadas con esta carga"
-          }
+          },
+          "delete_photo_title": "¿Eliminar foto?",
+          "delete_photo_description": "Esta acción eliminará permanentemente la foto seleccionada. Esta acción no se puede deshacer.",
+          "cancel": "Cancelar",
+          "delete_confirm": "Eliminar",
+          "upload_photo": "Subir foto"
         }
       }
     },

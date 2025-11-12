@@ -278,18 +278,34 @@
             "limit_reached": "Photo limit reached",
             "limit_category": "Cannot upload more {{category}} photos (4/4)",
             "invalid_file_type": "Invalid file type",
-            "accepted_formats": "Only JPG, PNG, and WEBP images are accepted"
+            "accepted_formats": "Only JPG, PNG, and WEBP images are accepted",
+            "file_too_large": "File is too large",
+            "max_size": "Maximum size is 10MB",
+            "upload_failed": "Failed to upload photo",
+            "save_failed": "Failed to save photo information",
+            "delete_failed": "Failed to delete photo",
+            "unexpected_upload": "Unexpected error while uploading photo",
+            "unexpected_delete": "Unexpected error while deleting photo",
+            "view_failed": "Could not load photo for viewing",
+            "open_failed": "Could not open photo"
           },
           "success_messages": {
             "uploaded": "Photo uploaded successfully",
             "uploaded_category": "{{category}} photo uploaded successfully",
             "photo_added": "Photo added to list",
-            "photo_added_category": "{{category}} photo added (will upload when saving)"
+            "photo_added_category": "{{category}} photo added (will upload when saving)",
+            "deleted": "Photo deleted",
+            "deleted_success": "Photo deleted successfully"
           },
           "empty_state": {
             "title": "No photos uploaded",
             "description": "Upload photos related to this load"
-          }
+          },
+          "delete_photo_title": "Delete photo?",
+          "delete_photo_description": "This action will permanently delete the selected photo. This cannot be undone.",
+          "cancel": "Cancel",
+          "delete_confirm": "Delete",
+          "upload_photo": "Upload photo"
         }
       }
     },
