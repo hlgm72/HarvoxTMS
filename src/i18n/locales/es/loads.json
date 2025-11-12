@@ -234,6 +234,12 @@
           "document_added_filename": "{{fileName}} agregado (se subirá al guardar)",
           "document_deleted": "Documento eliminado",
           "document_deleted_filename": "{{fileName}} eliminado exitosamente",
+          "photo_uploaded": "Foto subida exitosamente",
+          "photo_uploaded_category": "Foto de {{category}} subida exitosamente",
+          "photo_added": "Foto agregada a la lista",
+          "photo_added_category": "Foto de {{category}} agregada (se subirá al guardar)",
+          "download_started": "Descarga iniciada",
+          "download_filename": "Descargando {{fileName}}",
           "load_order_generated": "Orden de carga generada",
           "load_order_success": "La orden de carga se generó exitosamente"
         },

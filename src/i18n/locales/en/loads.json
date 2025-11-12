@@ -235,6 +235,12 @@
           "document_added_filename": "{{fileName}} added (will upload when saving)",
           "document_deleted": "Document deleted",
           "document_deleted_filename": "{{fileName}} deleted successfully",
+          "photo_uploaded": "Photo uploaded successfully",
+          "photo_uploaded_category": "{{category}} photo uploaded successfully",
+          "photo_added": "Photo added to list",
+          "photo_added_category": "{{category}} photo added (will upload when saving)",
+          "download_started": "Download started",
+          "download_filename": "Downloading {{fileName}}",
           "load_order_generated": "Load order generated",
           "load_order_success": "Load order generated successfully"
         },
