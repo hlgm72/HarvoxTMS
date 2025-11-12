@@ -156,14 +156,16 @@ export function ClientCombobox({
               />
               <div className="flex flex-col">
                 <span className="font-medium">{client.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {[
-                    client.dot_number && `DOT: ${client.dot_number}`,
-                    client.mc_number && `MC: ${client.mc_number}`,
-                  ]
-                    .filter(Boolean)
-                    .join(" • ") || "No DOT/MC"}
-                </span>
+                {client.alias && (
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {client.alias}
+                  </span>
+                )}
+                {client.address && (
+                  <span className="text-xs text-muted-foreground">
+                    {client.address}
+                  </span>
+                )}
               </div>
             </div>
           ))}

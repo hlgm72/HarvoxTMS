@@ -8,6 +8,8 @@ export interface ClientSearchResult {
   name: string;
   dot_number: string | null;
   mc_number: string | null;
+  alias: string | null;
+  address: string | null;
 }
 
 export function useClientSearch(searchTerm: string, enabled: boolean = true) {
@@ -24,7 +26,7 @@ export function useClientSearch(searchTerm: string, enabled: boolean = true) {
       // Buscar por nombre, DOT o MC (case insensitive)
       const { data, error } = await supabase
         .from('company_clients')
-        .select('id, name, dot_number, mc_number')
+        .select('id, name, dot_number, mc_number, alias, address')
         .eq('company_id', companyId)
         .eq('is_active', true)
         .or(`name.ilike.%${searchTerm}%,dot_number.ilike.%${searchTerm}%,mc_number.ilike.%${searchTerm}%`)
