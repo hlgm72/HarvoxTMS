@@ -120,15 +120,16 @@ export const useLoadDocumentUploadFlowACID = () => {
 
       try {
         // Validate file type before upload
-        if (!file.type || file.type === 'text/plain') {
-          throw new Error('ERROR_INVALID_FILE_TYPE: El archivo debe ser un PDF, imagen u otro tipo de documento válido');
+        if (!file.type || file.type === 'text/plain' || file.type === 'text/html') {
+          console.error('❌ Invalid file type detected:', file.type);
+          throw new Error(`El archivo "${file.name}" tiene un tipo inválido (${file.type || 'desconocido'}). Por favor, asegúrate de subir un archivo PDF o imagen válido.`);
         }
 
         // 2. Upload to Supabase Storage
         console.log('📁 Uploading file to storage...', filePath);
         console.log('📁 File type:', file.type, 'File size:', file.size);
         
-        const { data: storageData, error: storageError} = await supabase.storage
+        const { data: storageData, error: storageError } = await supabase.storage
           .from(bucketName)
           .upload(filePath, file, {
             cacheControl: '3600',

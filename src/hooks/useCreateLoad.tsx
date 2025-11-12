@@ -40,8 +40,29 @@ const uploadTemporaryDocuments = async (
   companyId: string // Add companyId parameter
 ): Promise<void> => {
   console.log('📄 uploadTemporaryDocuments - Starting upload process');
+  console.log('📄 Total documents received:', documents.length);
   
-  for (const doc of documents) {
+  // Filter out documents that don't have files (these are existing documents from storage)
+  const newDocuments = documents.filter(doc => {
+    const hasFile = !!doc.file;
+    const hasBlobUrl = doc.url && doc.url.startsWith('blob:');
+    const isNew = hasFile || hasBlobUrl;
+    
+    if (!isNew) {
+      console.log('⏭️ Skipping existing document (no file/blob URL):', doc.fileName || doc.type);
+    }
+    
+    return isNew;
+  });
+  
+  console.log('📄 New documents to upload:', newDocuments.length);
+  
+  if (newDocuments.length === 0) {
+    console.log('✅ No new documents to upload, skipping upload process');
+    return;
+  }
+  
+  for (const doc of newDocuments) {
     try {
       console.log('📄 Processing document:', doc);
       
@@ -68,52 +89,32 @@ const uploadTemporaryDocuments = async (
       let file: File;
       if (doc.file) {
         // If we have the original File object
+        console.log('✅ Using original File object for:', customFileName);
         file = new File([doc.file], customFileName, { type: doc.file.type });
       } else if (doc.url) {
         // Check if it's a blob URL or a storage path
         if (doc.url.startsWith('blob:')) {
           // If we have a blob URL, fetch it directly
+          console.log('📥 Fetching from blob URL:', customFileName);
           const response = await fetch(doc.url);
           const blob = await response.blob();
           
           // Validate MIME type
           if (!blob.type || blob.type === 'text/plain' || blob.type === 'text/html') {
-            console.error('❌ Invalid MIME type for document:', blob.type);
-            throw new Error(`Document ${customFileName} has invalid type: ${blob.type}`);
+            console.error('❌ Invalid MIME type for document:', blob.type, 'Document:', customFileName);
+            throw new Error(`El documento "${customFileName}" tiene un tipo inválido (${blob.type || 'desconocido'}). Solo se permiten PDFs e imágenes.`);
           }
           
+          console.log('✅ Valid blob type:', blob.type);
           const mimeType = blob.type || 'application/octet-stream';
           file = new File([blob], customFileName, { type: mimeType });
         } else {
-          // If it's a storage path, generate signed URL first
-          console.log('🔐 Generating signed URL for storage path:', doc.url);
-          const { data: signedUrlData, error: urlError } = await supabase.storage
-            .from('load-documents')
-            .createSignedUrl(doc.url, 3600);
-          
-          if (urlError || !signedUrlData) {
-            console.error('❌ Error creating signed URL:', urlError);
-            throw new Error(`Cannot create signed URL for ${customFileName}`);
-          }
-          
-          const response = await fetch(signedUrlData.signedUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch document from storage: ${response.status}`);
-          }
-          
-          const blob = await response.blob();
-          
-          // Validate MIME type
-          if (!blob.type || blob.type === 'text/plain' || blob.type === 'text/html') {
-            console.error('❌ Invalid MIME type for document:', blob.type);
-            throw new Error(`Document ${customFileName} has invalid type: ${blob.type}`);
-          }
-          
-          const mimeType = blob.type || 'application/octet-stream';
-          file = new File([blob], customFileName, { type: mimeType });
+          console.warn('⚠️ Document has storage path instead of blob URL, skipping:', customFileName);
+          console.warn('⚠️ This should not happen - document should have been filtered out');
+          continue;
         }
       } else {
-        console.warn('⚠️ Document has no file or URL, skipping:', doc);
+        console.warn('⚠️ Document has no file or URL, skipping:', customFileName);
         continue;
       }
 
