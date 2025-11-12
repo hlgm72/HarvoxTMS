@@ -124,7 +124,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
         <img
           src={previewUrl}
           alt={fileName}
-          className="w-full h-full object-cover rounded"
+          className="w-full h-full object-contain rounded"
           onError={() => {
             setError('Error loading image');
           }}
@@ -137,7 +137,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
       pdfService.ensureWorker();
       
       return (
-        <div className="w-full h-full bg-white rounded overflow-hidden">
+        <div className="w-full h-full bg-white rounded overflow-hidden flex items-center justify-center">
           <Document
             file={previewUrl}
             onLoadError={(error) => {
@@ -161,15 +161,14 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
                 </div>
               </div>
             }
-            className="w-full h-full"
+            className="flex items-center justify-center"
             options={pdfOptions}
           >
             <Page
               pageNumber={1}
-              scale={0.5}
+              width={200}
               renderTextLayer={false}
               renderAnnotationLayer={false}
-              className="w-full h-full"
               onRenderError={(error) => {
                 console.error('PDF render error:', error);
                 setPdfError(true);
