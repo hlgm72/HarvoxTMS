@@ -419,7 +419,7 @@ const [uploading, setUploading] = useState<string | null>(null);
       const companyId = userData.company_id;
       const fileExt = file.name.split('.').pop();
       const photoCount = getPhotoCount(category) + 1;
-      const fileName = `${loadData.load_number}_foto_${category}_${photoCount}.${fileExt}`;
+      const fileName = `${loadData.load_number}_photo_${category}_${photoCount}.${fileExt}`;
       
       // In wizard mode, dialog mode, OR when creating/editing a load, keep file in memory
       if (wizardMode || isDialogMode || !loadId || loadId === 'temp') {
