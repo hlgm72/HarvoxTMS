@@ -454,7 +454,7 @@ const [uploading, setUploading] = useState<string | null>(null);
         );
       } else {
         // For existing loads (dialog mode with real loadId), upload immediately
-        const filePath = `${companyId}/${loadData.id}/${fileName}`;
+        const filePath = `${companyId}/${loadData.id}/photos/${fileName}`;
 
         const { data, error } = await supabase.storage
           .from('load-documents')
