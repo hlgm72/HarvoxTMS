@@ -487,7 +487,7 @@ const [uploading, setUploading] = useState<string | null>(null);
           file_url: filePath, // Store path, not the signed URL
         };
 
-        createLoadDocument({
+        await createLoadDocument({
           documentData
         });
         
