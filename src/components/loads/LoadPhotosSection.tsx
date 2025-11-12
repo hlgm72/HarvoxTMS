@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Camera, Upload, Eye, Trash2, ImageIcon, Loader2 } from 'lucide-react';
 import { useFleetNotifications } from "@/components/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
 import { useLoadDocumentManagementACID } from '@/hooks/useLoadDocumentManagementACID';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,7 @@ export function LoadPhotosSection({
   onReloadDocuments
 }: LoadPhotosSectionProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [uploading, setUploading] = useState<string | null>(null);
   const [removing, setRemoving] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState<'pickup' | 'delivery'>('pickup');
@@ -258,6 +260,11 @@ export function LoadPhotosSection({
       }
 
       await onReloadDocuments?.();
+      
+      // Invalidar queries de loads para actualizar tarjetas en Load Management
+      queryClient.invalidateQueries({ queryKey: ['loads-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['loads-count'] });
+      
       showSuccess(
         t("loads:create_wizard.phases.documents.photos.success_messages.deleted"), 
         t("loads:create_wizard.phases.documents.photos.success_messages.deleted_success")

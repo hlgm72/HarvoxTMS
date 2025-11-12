@@ -827,6 +827,10 @@ const [uploading, setUploading] = useState<string | null>(null);
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
       queryClient.refetchQueries({ queryKey: ['load-documents'] });
       
+      // Invalidar queries de loads para actualizar tarjetas en Load Management
+      queryClient.invalidateQueries({ queryKey: ['loads-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['loads-count'] });
+      
       console.log('🎉 handleRemoveDocument - Process completed');
       showSuccess(t("loads:create_wizard.phases.documents.success_messages.document_deleted"), t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: document.fileName }));
     } catch (error) {
