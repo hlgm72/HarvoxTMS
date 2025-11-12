@@ -4047,7 +4047,6 @@ export type Database = {
           load_id: string
           metadata: Json
           updated_at: string
-          uploaded_at: string
           uploaded_by: string
         }[]
       }
