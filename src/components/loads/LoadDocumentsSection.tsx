@@ -1119,7 +1119,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             <DocumentPreview
               documentUrl={document.url}
               fileName={document.fileName}
-              className="w-16 h-20 sm:w-24 sm:h-31 md:w-32 md:h-41"
+              className="w-16 h-[83px] sm:w-24 sm:h-[124px] md:w-32 md:h-[165px]"
               onClick={async () => {
                   try {
                     if (document.url.startsWith('blob:')) {
