@@ -149,10 +149,13 @@ export const ClientCombobox: React.FC<ClientComboboxProps> = ({
                         <Building2 className="h-4 w-4" />
                       </AvatarFallback>
                     </Avatar>
-                    <div>
+                    <div className="flex flex-col">
                       <div className="font-medium">{formatClientDisplay(client)}</div>
+                      {client.alias && (
+                        <div className="text-xs text-muted-foreground font-medium">{client.alias}</div>
+                      )}
                       {client.address && (
-                        <div className="text-sm text-muted-foreground">{client.address}</div>
+                        <div className="text-xs text-muted-foreground">{client.address}</div>
                       )}
                     </div>
                   </div>
