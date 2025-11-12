@@ -219,8 +219,8 @@ export function useDriverPaymentActions() {
       const result = data as any;
       if (result?.success) {
         showSuccess(
-          t("payments.payment_unmarked"), 
-          t("payments.payment_unmarked_desc")
+          t("payment_unmarked"), 
+          t("payment_unmarked_desc")
         );
         return { success: true, data };
       } else {
