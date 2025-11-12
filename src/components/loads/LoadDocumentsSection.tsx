@@ -685,9 +685,16 @@ const [uploading, setUploading] = useState<string | null>(null);
 
   // Get photo counts by category
   const getPhotoCount = (category: 'pickup' | 'delivery') => {
-    return [...documents, ...temporaryDocuments].filter(doc => 
-      doc.type === 'load_photos' && doc.category === category
-    ).length;
+    // Combine documents and remove duplicates by ID
+    const uniqueDocs = new Map<string, LoadDocument>();
+    
+    [...documents, ...temporaryDocuments].forEach(doc => {
+      if (doc.type === 'load_photos' && doc.category === category) {
+        uniqueDocs.set(doc.id, doc);
+      }
+    });
+    
+    return uniqueDocs.size;
   };
 
   // Check if photo category is available (less than 4 photos)
