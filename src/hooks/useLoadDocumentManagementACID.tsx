@@ -111,7 +111,16 @@ export const useLoadDocumentUploadFlowACID = () => {
       // 1. Generate consistent file path for document type (allows replacement)
       const fileExt = file.name.split('.').pop();
       const fileName = `${documentData.document_type}.${fileExt}`;
-      const filePath = `${documentData.load_id}/${fileName}`;
+      
+      // Get user's company_id for proper file organization
+      const { data: { user } } = await supabase.auth.getUser();
+      const companyId = user?.user_metadata?.company_id;
+      
+      if (!companyId) {
+        throw new Error('No se pudo obtener el company_id del usuario');
+      }
+      
+      const filePath = `${companyId}/${documentData.load_id}/${fileName}`;
 
       try {
         // Validate file type before upload
