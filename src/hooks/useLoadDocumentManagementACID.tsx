@@ -69,13 +69,8 @@ export const useLoadDocumentManagementACID = () => {
     onSuccess: (data: LoadDocumentACIDResponse) => {
       const operation = data.operation;
       
-      // No mostrar mensaje de éxito para PODs ya que tienen su propia celebración
-      if (data.document?.document_type !== 'pod') {
-        const message = operation === 'CREATE' 
-          ? 'Load document created successfully' 
-          : 'Load document updated successfully';
-        showSuccess(message);
-      }
+      // No mostrar mensaje de éxito automático aquí
+      // Los componentes que usen este hook mostrarán sus propios mensajes contextuales
       
       // Invalidate relevant cache with more specific queries
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
