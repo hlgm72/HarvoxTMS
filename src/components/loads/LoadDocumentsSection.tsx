@@ -1360,6 +1360,7 @@ const [uploading, setUploading] = useState<string | null>(null);
 
         {/* Load Photos Section */}
         <LoadPhotosSection
+          key={`photos-${loadPhotos.length}-${loadPhotos.map(p => p.id).join('-')}`}
           loadId={loadId}
           loadData={loadData}
           loadPhotos={loadPhotos}
