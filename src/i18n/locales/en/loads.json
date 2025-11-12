@@ -228,6 +228,7 @@
           }
         },
         "success_messages": {
+          "success_message": "Load document created successfully",
           "document_uploaded": "Document uploaded successfully",
           "document_uploaded_filename": "{{fileName}} uploaded successfully",
           "document_added": "Document added to list",
