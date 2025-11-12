@@ -292,6 +292,8 @@
           "success_messages": {
             "uploaded": "Foto subida exitosamente",
             "uploaded_category": "Foto de {{category}} subida exitosamente",
+            "photo_uploaded": "Foto subida exitosamente",
+            "photo_uploaded_category": "Foto de {{category}} subida exitosamente",
             "photo_added": "Foto agregada a la lista",
             "photo_added_category": "Foto de {{category}} agregada (se subirá al guardar)",
             "deleted": "Foto eliminada",

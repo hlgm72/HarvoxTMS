@@ -293,6 +293,8 @@
           "success_messages": {
             "uploaded": "Photo uploaded successfully",
             "uploaded_category": "{{category}} photo uploaded successfully",
+            "photo_uploaded": "Photo uploaded successfully",
+            "photo_uploaded_category": "{{category}} photo uploaded successfully",
             "photo_added": "Photo added to list",
             "photo_added_category": "{{category}} photo added (will upload when saving)",
             "deleted": "Photo deleted",
