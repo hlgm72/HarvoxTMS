@@ -1003,7 +1003,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                 size="sm" 
                 disabled={isRemoving} 
                 title={t("loads:create_wizard.phases.documents.tooltips.view_document")}
-                className="h-10 min-w-10 px-2 text-xs touch-manipulation"
+                className="h-8 min-w-8 px-1.5 text-xs touch-manipulation"
                 onClick={async () => {
                   try {
                     if (document.url.startsWith('blob:')) {
@@ -1021,10 +1021,10 @@ const [uploading, setUploading] = useState<string | null>(null);
                   }
                 }}
               >
-                <Eye className="h-4 w-4" />
+                <Eye className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline ml-1">{t("loads:create_wizard.phases.documents.buttons.view")}</span>
               </Button>
-              <Button variant="outline" size="sm" className="h-10 min-w-10 px-2 touch-manipulation" onClick={async () => {
+              <Button variant="outline" size="sm" className="h-8 min-w-8 px-1.5 touch-manipulation" onClick={async () => {
                 try {
                   if (document.url.startsWith('blob:')) {
                     const response = await fetch(document.url);
@@ -1046,7 +1046,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                   showError("Error", t("loads:create_wizard.phases.documents.error_messages.download_document"));
                 }
                 }} disabled={isRemoving} title={t("loads:create_wizard.phases.documents.tooltips.download_document")}>
-                <Download className="h-4 w-4" />
+                <Download className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline ml-1">{t("loads:create_wizard.phases.documents.buttons.download")}</span>
               </Button>
               <input
@@ -1063,10 +1063,10 @@ const [uploading, setUploading] = useState<string | null>(null);
               />
               {/* Botón de reemplazar - oculto para conductores en documentos restringidos */}
               {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
-                <Button variant="outline" size="sm" className="h-10 min-w-10 px-2 touch-manipulation" onClick={() => {
+                <Button variant="outline" size="sm" className="h-8 min-w-8 px-1.5 touch-manipulation" onClick={() => {
                   window.document.getElementById(`replace-${document.id}`)?.click();
                 }} disabled={isUploading || isRemoving} title={t("loads:create_wizard.phases.documents.tooltips.replace_document")}>
-                  <RotateCcw className="h-4 w-4" />
+                  <RotateCcw className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline ml-1">Replace</span>
                 </Button>
               )}
@@ -1079,13 +1079,13 @@ const [uploading, setUploading] = useState<string | null>(null);
                     variant="outline" 
                     size="sm"
                     disabled={isRemoving}
-                    className="text-destructive hover:text-destructive h-10 min-w-10 px-2 touch-manipulation"
+                    className="text-destructive hover:text-destructive h-8 min-w-8 px-1.5 touch-manipulation"
                     title={t("loads:create_wizard.phases.documents.tooltips.delete_document")}
                   >
                     {isRemoving ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     )}
                     <span className="hidden sm:inline ml-1">Delete</span>
                   </Button>
