@@ -9,13 +9,15 @@ interface DocumentPreviewProps {
   fileName: string;
   className?: string;
   onClick?: () => void;
+  containerWidth?: number; // New prop to pass container width
 }
 
 const DocumentPreview: React.FC<DocumentPreviewProps> = ({ 
   documentUrl, 
   fileName, 
   className = "w-full h-32",
-  onClick 
+  onClick,
+  containerWidth = 128 // Default to medium size (md:w-32)
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<'image' | 'pdf' | 'other'>('other');
@@ -166,7 +168,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
           >
             <Page
               pageNumber={1}
-              width={200}
+              width={containerWidth}
               renderTextLayer={false}
               renderAnnotationLayer={false}
               onRenderError={(error) => {

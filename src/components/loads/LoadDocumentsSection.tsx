@@ -1120,6 +1120,7 @@ const [uploading, setUploading] = useState<string | null>(null);
               documentUrl={document.url}
               fileName={document.fileName}
               className="w-16 h-[83px] sm:w-24 sm:h-[124px] md:w-32 md:h-[165px]"
+              containerWidth={64} // Use smallest width to ensure it fits on all screen sizes
               onClick={async () => {
                   try {
                     if (document.url.startsWith('blob:')) {
