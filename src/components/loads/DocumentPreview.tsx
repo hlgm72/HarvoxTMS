@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,21 +9,41 @@ interface DocumentPreviewProps {
   fileName: string;
   className?: string;
   onClick?: () => void;
-  containerWidth?: number; // New prop to pass container width
 }
 
 const DocumentPreview: React.FC<DocumentPreviewProps> = ({ 
   documentUrl, 
   fileName, 
   className = "w-full h-32",
-  onClick,
-  containerWidth = 128 // Default to medium size (md:w-32)
+  onClick
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(128);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<'image' | 'pdf' | 'other'>('other');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState(false);
+  
+  // Measure container width
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    
+    updateWidth();
+    
+    const resizeObserver = new ResizeObserver(updateWidth);
+    resizeObserver.observe(containerRef.current);
+    
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
   
   // Ensure PDF worker is configured before rendering
   useEffect(() => {
@@ -202,6 +222,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
   return (
     <div 
+      ref={containerRef}
       className={`${className} border border-border/40 rounded overflow-hidden bg-background ${
         onClick ? 'cursor-pointer hover:border-primary/50 hover:shadow-md transition-all duration-200' : ''
       }`}
