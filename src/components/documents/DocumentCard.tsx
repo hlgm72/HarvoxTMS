@@ -53,6 +53,7 @@ interface DocumentCardProps {
   onArchive?: (id: string) => void;
   onRestore?: (id: string) => void;
   onEdit?: (document: CompanyDocument) => void;
+  onOrphanRemoved?: (id: string) => void;
   getExpiryStatus: (expiresAt?: string) => string;
   isArchived?: boolean;
 }
@@ -63,6 +64,7 @@ export function DocumentCard({
   onArchive, 
   onRestore,
   onEdit,
+  onOrphanRemoved,
   getExpiryStatus,
   isArchived = false
 }: DocumentCardProps) {
@@ -414,6 +416,11 @@ export function DocumentCard({
               documentUrl={document.file_url}
               fileName={document.file_name}
               className="w-full h-full rounded border"
+              documentId={document.id}
+              onOrphanDetected={() => {
+                showSuccess(t('card.orphan_removed'));
+                onOrphanRemoved?.(document.id);
+              }}
             />
           </div>
         </div>

@@ -1120,6 +1120,15 @@ const [uploading, setUploading] = useState<string | null>(null);
               documentUrl={document.url}
               fileName={document.fileName}
               className="w-16 h-[83px] sm:w-24 sm:h-[124px] md:w-32 md:h-[165px]"
+              documentId={document.id}
+              onOrphanDetected={() => {
+                // Reload documents after orphan cleanup
+                if (onDocumentsChange && documents) {
+                  const updatedDocs = documents.filter(d => d.id !== document.id);
+                  onDocumentsChange(updatedDocs);
+                }
+                loadDocuments();
+              }}
               onClick={async () => {
                   try {
                     if (document.url.startsWith('blob:')) {

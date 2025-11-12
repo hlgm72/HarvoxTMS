@@ -127,7 +127,8 @@
     "open_error": "Error al abrir el documento",
     "delete_error": "Hubo un error al eliminar el documento",
     "delete_success": "Documento eliminado permanentemente",
-    "email_success": "Email enviado exitosamente"
+    "email_success": "Email enviado exitosamente",
+    "orphan_removed": "Referencia de documento inválida eliminada"
   },
   "upload_modal": {
     "document_type_label": "Tipo de Documento *",

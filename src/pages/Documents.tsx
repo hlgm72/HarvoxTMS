@@ -460,6 +460,9 @@ export default function Documents() {
                       onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                       onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                       onEdit={handleEditDocument}
+                      onOrphanRemoved={(id) => {
+                        queryClient.invalidateQueries({ queryKey: ['company-documents'] });
+                      }}
                       getExpiryStatus={getExpiryStatus}
                       isArchived={showArchived}
                     />
@@ -532,6 +535,9 @@ export default function Documents() {
                         onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                         onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                         onEdit={handleEditDocument}
+                        onOrphanRemoved={(id) => {
+                          queryClient.invalidateQueries({ queryKey: ['company-documents'] });
+                        }}
                         getExpiryStatus={getExpiryStatus}
                         isArchived={showArchived}
                       />
@@ -613,6 +619,9 @@ export default function Documents() {
                         onArchive={showArchived ? undefined : (id) => archiveMutation.mutate(id)}
                         onRestore={showArchived ? (id) => restoreMutation.mutate(id) : undefined}
                         onEdit={handleEditDocument}
+                        onOrphanRemoved={(id) => {
+                          queryClient.invalidateQueries({ queryKey: ['company-documents'] });
+                        }}
                         getExpiryStatus={getExpiryStatus}
                         isArchived={showArchived}
                       />

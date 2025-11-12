@@ -3,19 +3,24 @@ import { FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '@/integrations/supabase/client';
 import { pdfService } from '@/lib/pdfService';
+import { validateAndCleanDocument } from '@/utils/orphanDocumentCleaner';
 
 interface DocumentPreviewProps {
   documentUrl: string;
   fileName: string;
   className?: string;
   onClick?: () => void;
+  documentId?: string; // Optional: for orphan cleanup
+  onOrphanDetected?: () => void; // Optional: callback when orphan is removed
 }
 
 const DocumentPreview: React.FC<DocumentPreviewProps> = ({ 
   documentUrl, 
   fileName, 
   className = "w-full h-32",
-  onClick
+  onClick,
+  documentId,
+  onOrphanDetected
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(128);
@@ -107,6 +112,17 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
         if (urlError) {
           console.error('Error generating preview URL:', urlError);
+          
+          // Check if error is "Object not found" - indicates orphaned reference
+          if (urlError.message?.includes('not found') && documentId) {
+            console.warn('🧹 Orphaned document detected, cleaning up...');
+            const wasRemoved = await validateAndCleanDocument(documentId, storageFilePath, bucketName);
+            if (wasRemoved) {
+              onOrphanDetected?.();
+              return;
+            }
+          }
+          
           setError('Error loading preview');
           return;
         }
