@@ -153,7 +153,7 @@ export function LoadPhotosSection({
       const currentCount = category === 'pickup' ? pickupPhotos.length : deliveryPhotos.length;
       const photoNumber = currentCount + 1;
       
-      const fileName = `${loadData.load_number}_Photo_${category}_${photoNumber}.${fileExt}`;
+      const fileName = `${loadData.load_number}_photo_${category}_${photoNumber}.${fileExt}`;
       const filePath = `${companyId}/${loadData.id}/photos/${fileName}`;
 
       const { data, error } = await supabase.storage
