@@ -4045,7 +4045,9 @@ export type Database = {
           file_url: string
           id: string
           load_id: string
+          metadata: Json
           updated_at: string
+          uploaded_at: string
           uploaded_by: string
         }[]
       }
