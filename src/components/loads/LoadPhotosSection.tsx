@@ -165,6 +165,11 @@ export function LoadPhotosSection({
         return;
       }
 
+      console.log('📸 Photo upload - Company ID:', companyId);
+      console.log('📸 Photo upload - Load ID:', loadData.id);
+      console.log('📸 Photo upload - File path:', filePath);
+      console.log('📸 Photo upload - Category:', category);
+
       const documentData = {
         load_id: loadData.id,
         document_type: 'load_photos',
@@ -176,17 +181,27 @@ export function LoadPhotosSection({
         metadata: JSON.stringify({ category })
       };
 
-      try {
-        createLoadDocument({
-          documentData
-        });
-      } catch (error) {
-        console.error('Error saving photo to database:', error);
-        await supabase.storage.from('load-documents').remove([filePath]);
-        showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.save_failed"));
-        return;
-      }
+      // Wait for document to be saved before reloading
+      await new Promise<void>((resolve, reject) => {
+        createLoadDocument(
+          { documentData },
+          {
+            onSuccess: () => {
+              console.log('✅ Photo document saved successfully');
+              resolve();
+            },
+            onError: async (error: any) => {
+              console.error('❌ Error saving photo to database:', error);
+              // Clean up uploaded file if database save fails
+              await supabase.storage.from('load-documents').remove([filePath]);
+              showError("Error", t("loads:create_wizard.phases.documents.photos.error_messages.save_failed"));
+              reject(error);
+            }
+          }
+        );
+      });
 
+      // Reload documents after successful save
       await onReloadDocuments?.();
       const categoryLabel = category === 'pickup' 
         ? t("loads:create_wizard.phases.documents.photos.categories.pickup_spanish")
