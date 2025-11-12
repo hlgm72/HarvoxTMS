@@ -35,12 +35,14 @@ export async function getSignedDocumentUrl(
 /**
  * Extracts the storage path from a full URL or returns the path as-is
  * @param urlOrPath - Full URL or storage path
- * @returns Clean storage path
+ * @returns Clean storage path without company_id prefix
  */
 export function extractStoragePath(urlOrPath: string): string {
-  // If it's already a clean path without protocol, return as-is
+  // If it's already a clean path without protocol, handle it
   if (!urlOrPath.includes('http://') && !urlOrPath.includes('https://')) {
-    return urlOrPath.replace(/^\/+/, '');
+    const cleanPath = urlOrPath.replace(/^\/+/, '');
+    // Remove company_id if present (UUID pattern at start)
+    return cleanPath.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\//, '');
   }
 
   // Extract path from full URL
@@ -49,24 +51,29 @@ export function extractStoragePath(urlOrPath: string): string {
   // 2. /storage/v1/object/sign/load-documents/...
   // 3. /load-documents/...
   
+  let extractedPath = '';
+  
   if (urlOrPath.includes('/storage/v1/object/')) {
     const parts = urlOrPath.split('/load-documents/');
     if (parts.length > 1) {
-      return parts[1].split('?')[0]; // Remove any query params
+      extractedPath = parts[1].split('?')[0]; // Remove any query params
     }
-  }
-  
-  if (urlOrPath.includes('/load-documents/')) {
+  } else if (urlOrPath.includes('/load-documents/')) {
     const parts = urlOrPath.split('/load-documents/');
     if (parts.length > 1) {
-      return parts[1].split('?')[0];
+      extractedPath = parts[1].split('?')[0];
+    }
+  } else {
+    // If no pattern matched, try to extract everything after the last /load-documents/
+    const match = urlOrPath.match(/load-documents\/(.+?)(\?|$)/);
+    if (match && match[1]) {
+      extractedPath = match[1];
     }
   }
 
-  // If no pattern matched, try to extract everything after the last /load-documents/
-  const match = urlOrPath.match(/load-documents\/(.+?)(\?|$)/);
-  if (match && match[1]) {
-    return match[1];
+  // Remove company_id if present at the beginning (UUID pattern)
+  if (extractedPath) {
+    return extractedPath.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\//, '');
   }
 
   // Return original if no pattern matched
