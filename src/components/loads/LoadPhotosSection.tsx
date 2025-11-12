@@ -148,8 +148,12 @@ export function LoadPhotosSection({
 
       const companyId = userData.company_id;
       const fileExt = file.name.split('.').pop();
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const fileName = `${loadData.load_number}_Photo_${category}_${timestamp}.${fileExt}`;
+      
+      // Calculate the photo number based on existing photos in this category
+      const currentCount = category === 'pickup' ? pickupPhotos.length : deliveryPhotos.length;
+      const photoNumber = currentCount + 1;
+      
+      const fileName = `${loadData.load_number}_Photo_${category}_${photoNumber}.${fileExt}`;
       const filePath = `${companyId}/${loadData.id}/photos/${fileName}`;
 
       const { data, error } = await supabase.storage
