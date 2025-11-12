@@ -637,6 +637,10 @@
   "deleting": "Deleting...",
   "view_details": "View Details",
   "locale": "en",
+  "common": {
+    "view": "View",
+    "delete": "Delete"
+  },
   "additional_payments": {
     "title": "Additional Payments",
     "subtitle": "Unified management of additional income for all personnel",

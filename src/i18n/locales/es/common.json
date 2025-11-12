@@ -637,6 +637,10 @@
   "deleting": "Eliminando...",
   "view_details": "Ver Detalles",
   "locale": "es",
+  "common": {
+    "view": "Ver",
+    "delete": "Eliminar"
+  },
   "additional_payments": {
     "title": "Pagos Adicionales",
     "subtitle": "Gestión unificada de ingresos adicionales para todo el personal",
