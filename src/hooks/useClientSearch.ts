@@ -38,9 +38,10 @@ export function useClientSearch(searchTerm: string, enabled: boolean = true) {
         throw error;
       }
 
+      console.log('Client search results:', data);
       return (data || []) as ClientSearchResult[];
     },
     enabled: enabled && !!companyId && searchTerm.length >= 3,
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 0, // No cache to see fresh data
   });
 }
