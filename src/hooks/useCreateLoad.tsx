@@ -70,11 +70,48 @@ const uploadTemporaryDocuments = async (
         // If we have the original File object
         file = new File([doc.file], customFileName, { type: doc.file.type });
       } else if (doc.url) {
-        // If we have a blob URL, fetch it
-        const response = await fetch(doc.url);
-        const blob = await response.blob();
-        const mimeType = blob.type || 'application/octet-stream';
-        file = new File([blob], customFileName, { type: mimeType });
+        // Check if it's a blob URL or a storage path
+        if (doc.url.startsWith('blob:')) {
+          // If we have a blob URL, fetch it directly
+          const response = await fetch(doc.url);
+          const blob = await response.blob();
+          
+          // Validate MIME type
+          if (!blob.type || blob.type === 'text/plain' || blob.type === 'text/html') {
+            console.error('❌ Invalid MIME type for document:', blob.type);
+            throw new Error(`Document ${customFileName} has invalid type: ${blob.type}`);
+          }
+          
+          const mimeType = blob.type || 'application/octet-stream';
+          file = new File([blob], customFileName, { type: mimeType });
+        } else {
+          // If it's a storage path, generate signed URL first
+          console.log('🔐 Generating signed URL for storage path:', doc.url);
+          const { data: signedUrlData, error: urlError } = await supabase.storage
+            .from('load-documents')
+            .createSignedUrl(doc.url, 3600);
+          
+          if (urlError || !signedUrlData) {
+            console.error('❌ Error creating signed URL:', urlError);
+            throw new Error(`Cannot create signed URL for ${customFileName}`);
+          }
+          
+          const response = await fetch(signedUrlData.signedUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch document from storage: ${response.status}`);
+          }
+          
+          const blob = await response.blob();
+          
+          // Validate MIME type
+          if (!blob.type || blob.type === 'text/plain' || blob.type === 'text/html') {
+            console.error('❌ Invalid MIME type for document:', blob.type);
+            throw new Error(`Document ${customFileName} has invalid type: ${blob.type}`);
+          }
+          
+          const mimeType = blob.type || 'application/octet-stream';
+          file = new File([blob], customFileName, { type: mimeType });
+        }
       } else {
         console.warn('⚠️ Document has no file or URL, skipping:', doc);
         continue;
