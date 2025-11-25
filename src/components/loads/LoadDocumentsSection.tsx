@@ -1010,12 +1010,15 @@ const [uploading, setUploading] = useState<string | null>(null);
             {/* Action buttons */}
             <div className="flex items-center gap-2 pt-1 flex-wrap">
               <Button 
+                type="button"
                 variant="outline" 
                 size="sm" 
                 disabled={isRemoving} 
                 title={t("loads:create_wizard.phases.documents.tooltips.view_document")}
                 className="h-8 min-w-8 px-1.5 text-xs touch-manipulation"
-                onClick={async () => {
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   try {
                     if (document.url.startsWith('blob:')) {
                       window.open(document.url, '_blank');
@@ -1035,36 +1038,56 @@ const [uploading, setUploading] = useState<string | null>(null);
                 <Eye className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline ml-1">{t("loads:create_wizard.phases.documents.buttons.view")}</span>
               </Button>
-              <Button variant="outline" size="sm" className="h-8 min-w-8 px-1.5 touch-manipulation" onClick={async () => {
-                try {
-                  if (document.url.startsWith('blob:')) {
-                    const response = await fetch(document.url);
-                    const blob = await response.blob();
-                    const blobUrl = window.URL.createObjectURL(blob);
-                    const link = window.document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = document.fileName;
-                    window.document.body.appendChild(link);
-                    link.click();
-                    window.document.body.removeChild(link);
-                    window.URL.revokeObjectURL(blobUrl);
+              <Button 
+                type="button"
+                variant="outline" 
+                size="sm" 
+                className="h-8 min-w-8 px-1.5 touch-manipulation" 
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  try {
+                    if (document.url.startsWith('blob:')) {
+                      const response = await fetch(document.url);
+                      const blob = await response.blob();
+                      const blobUrl = window.URL.createObjectURL(blob);
+                      const link = window.document.createElement('a');
+                      link.href = blobUrl;
+                      link.download = document.fileName;
+                      window.document.body.appendChild(link);
+                      link.click();
+                      window.document.body.removeChild(link);
+                      window.URL.revokeObjectURL(blobUrl);
+                      showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
+                      return;
+                    }
+                    await downloadDocument(document.url, document.fileName);
                     showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
-                    return;
+                  } catch (error) {
+                    showError("Error", t("loads:create_wizard.phases.documents.error_messages.download_document"));
                   }
-                  await downloadDocument(document.url, document.fileName);
-                  showSuccess(t("loads:create_wizard.phases.documents.success_messages.download_started"), t("loads:create_wizard.phases.documents.success_messages.download_filename", { fileName: document.fileName }));
-                } catch (error) {
-                  showError("Error", t("loads:create_wizard.phases.documents.error_messages.download_document"));
-                }
-                }} disabled={isRemoving} title={t("loads:create_wizard.phases.documents.tooltips.download_document")}>
+                }} 
+                disabled={isRemoving} 
+                title={t("loads:create_wizard.phases.documents.tooltips.download_document")}
+              >
                 <Download className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline ml-1">{t("loads:create_wizard.phases.documents.buttons.download")}</span>
               </Button>
               <input
                 type="file"
                 onChange={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   if (e.target.files?.[0]) {
-                    handleFileSelect(e.target.files[0], docType.type);
+                    // Primero eliminar el documento actual
+                    handleRemoveDocument(document.id).then(() => {
+                      // Luego subir el nuevo
+                      handleFileSelect(e.target.files[0], docType.type);
+                    }).catch((error) => {
+                      console.error('Error replacing document:', error);
+                      // Intentar subir de todas formas
+                      handleFileSelect(e.target.files[0], docType.type);
+                    });
                   }
                   e.target.value = '';
                 }}
@@ -1074,9 +1097,19 @@ const [uploading, setUploading] = useState<string | null>(null);
               />
               {/* Botón de reemplazar - oculto para conductores en documentos restringidos */}
               {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
-                <Button variant="outline" size="sm" className="h-8 min-w-8 px-1.5 touch-manipulation" onClick={() => {
-                  window.document.getElementById(`replace-${document.id}`)?.click();
-                }} disabled={isUploading || isRemoving} title={t("loads:create_wizard.phases.documents.tooltips.replace_document")}>
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 min-w-8 px-1.5 touch-manipulation" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    window.document.getElementById(`replace-${document.id}`)?.click();
+                  }} 
+                  disabled={isUploading || isRemoving} 
+                  title={t("loads:create_wizard.phases.documents.tooltips.replace_document")}
+                >
                   <RotateCcw className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline ml-1">Replace</span>
                 </Button>
@@ -1084,14 +1117,19 @@ const [uploading, setUploading] = useState<string | null>(null);
               
               {/* Botón de eliminar - oculto para conductores en documentos restringidos */}
               {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
-                <AlertDialog>
+                 <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button 
+                    type="button"
                     variant="outline" 
                     size="sm"
                     disabled={isRemoving}
                     className="text-destructive hover:text-destructive h-8 min-w-8 px-1.5 touch-manipulation"
                     title={t("loads:create_wizard.phases.documents.tooltips.delete_document")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
                   >
                     {isRemoving ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -1111,7 +1149,9 @@ const [uploading, setUploading] = useState<string | null>(null);
                   <AlertDialogFooter>
                     <AlertDialogCancel>{t("loads:create_wizard.phases.documents.delete_dialog.cancel")}</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
                         handleRemoveDocument(document.id);
                       }}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -1231,6 +1271,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             <DropdownMenu open={showUploadDropdown} onOpenChange={setShowUploadDropdown}>
               <DropdownMenuTrigger asChild>
                 <Button 
+                  type="button"
                   variant="default" 
                   className="w-full justify-between text-sm"
                   disabled={getAvailableDocumentTypes().length === 0}
@@ -1291,6 +1332,7 @@ const [uploading, setUploading] = useState<string | null>(null);
             <DropdownMenu open={showPhotoDropdown} onOpenChange={setShowPhotoDropdown}>
               <DropdownMenuTrigger asChild>
                 <Button
+                  type="button"
                   variant="outline"
                   disabled={uploadingPhoto !== null || getAvailablePhotoCategories().length === 0}
                   className="w-full gap-2 text-sm"
@@ -1341,7 +1383,10 @@ const [uploading, setUploading] = useState<string | null>(null);
           {userRole !== 'driver' && (
             <div className="w-full sm:w-1/4">
               <Button
-                onClick={() => {
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   setShowGenerateLoadOrder(true);
                 }}
                 disabled={uploading !== null || !canGenerateLoadOrder(loadData)}
