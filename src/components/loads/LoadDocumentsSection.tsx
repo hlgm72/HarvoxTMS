@@ -1078,15 +1078,17 @@ const [uploading, setUploading] = useState<string | null>(null);
                 onChange={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (e.target.files?.[0]) {
-                    // Primero eliminar el documento actual
+                  const selectedFile = e.target.files?.[0];
+                  if (selectedFile) {
+                    // Capturar el archivo inmediatamente antes de cualquier operación async
+                    const file = selectedFile;
+                    // Eliminar el documento actual y luego subir el nuevo
                     handleRemoveDocument(document.id).then(() => {
-                      // Luego subir el nuevo
-                      handleFileSelect(e.target.files[0], docType.type);
+                      handleFileSelect(file, docType.type);
                     }).catch((error) => {
-                      console.error('Error replacing document:', error);
-                      // Intentar subir de todas formas
-                      handleFileSelect(e.target.files[0], docType.type);
+                      console.error('Error removing document during replace:', error);
+                      // Intentar subir el nuevo de todas formas
+                      handleFileSelect(file, docType.type);
                     });
                   }
                   e.target.value = '';
