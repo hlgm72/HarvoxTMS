@@ -1147,10 +1147,6 @@ const [uploading, setUploading] = useState<string | null>(null);
                     disabled={isRemoving}
                     className="text-destructive hover:text-destructive h-8 min-w-8 px-1.5 touch-manipulation"
                     title={t("loads:create_wizard.phases.documents.tooltips.delete_document")}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                    }}
                   >
                     {isRemoving ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
