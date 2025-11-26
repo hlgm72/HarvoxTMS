@@ -17,56 +17,84 @@ interface PODUploadModalProps {
 }
 
 function PODUploadModal({ loadId, loadNumber, isOpen, onClose, onSuccess }: PODUploadModalProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploadingCount, setUploadingCount] = useState(0);
   const { showSuccess, showError } = useFleetNotifications();
   const { mutate: uploadDocument, isPending: isUploading } = useLoadDocumentUploadFlowACID();
   const { t } = useTranslation('loads');
   const queryClient = useQueryClient();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
+    const files = Array.from(event.target.files || []);
+    if (files.length > 0) {
+      setSelectedFiles(files);
     }
   };
 
-  const handleUpload = () => {
-    if (!selectedFile) {
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpload = async () => {
+    if (selectedFiles.length === 0) {
       showError(t('pod_upload.select_file_error'));
       return;
     }
 
-    uploadDocument({
-      file: selectedFile,
-      documentData: {
-        document_type: 'pod',
-        load_id: loadId
+    setUploadingCount(selectedFiles.length);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const file of selectedFiles) {
+      try {
+        await new Promise<void>((resolve, reject) => {
+          uploadDocument({
+            file: file,
+            documentData: {
+              document_type: 'pod',
+              load_id: loadId
+            }
+          }, {
+            onSuccess: () => {
+              successCount++;
+              resolve();
+            },
+            onError: (error) => {
+              console.error('Error uploading POD:', error);
+              errorCount++;
+              reject(error);
+            }
+          });
+        });
+      } catch (error) {
+        // Error already counted
       }
-    }, {
-      onSuccess: () => {
-        // No mostrar mensaje aquí para POD, ya que se maneja en useLoadCompletion con celebración
-        setSelectedFile(null);
-        
-        // Retrasar la invalidación de queries para no interrumpir la celebración
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
-          queryClient.invalidateQueries({ queryKey: ['loads'] });
-          queryClient.invalidateQueries({ queryKey: ['load-documents'] });
-        }, 6000); // Aumentar delay a 6 segundos para permitir la celebración completa
-        
-        onSuccess();
-        onClose();
-      },
-      onError: (error) => {
-        console.error('Error uploading POD:', error);
-        showError(t('pod_upload.upload_error'));
-      }
-    });
+    }
+
+    if (successCount > 0) {
+      setSelectedFiles([]);
+      
+      // Retrasar la invalidación de queries para no interrumpir la celebración
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
+        queryClient.invalidateQueries({ queryKey: ['loads'] });
+        queryClient.invalidateQueries({ queryKey: ['load-documents'] });
+      }, 6000);
+      
+      onSuccess();
+      onClose();
+    }
+
+    if (errorCount > 0) {
+      showError(t('pod_upload.upload_error'));
+    }
+
+    setUploadingCount(0);
   };
 
 
   const handleClose = () => {
-    setSelectedFile(null);
+    setSelectedFiles([]);
     onClose();
   };
 
@@ -93,12 +121,26 @@ function PODUploadModal({ loadId, loadNumber, isOpen, onClose, onSuccess }: PODU
               id="pod-file"
               type="file"
               accept=".pdf"
+              multiple
               onChange={handleFileChange}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
-            {selectedFile && (
-              <div className="text-xs text-muted-foreground">
-                {t('pod_upload.selected_file')}: {selectedFile.name}
+            {selectedFiles.length > 0 && (
+              <div className="space-y-1 mt-2">
+                {selectedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                    <span className="truncate flex-1">{file.name}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 ml-2"
+                      onClick={() => handleRemoveFile(index)}
+                    >
+                      ×
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -109,11 +151,13 @@ function PODUploadModal({ loadId, loadNumber, isOpen, onClose, onSuccess }: PODU
             </Button>
             <Button 
               onClick={handleUpload} 
-              disabled={!selectedFile || isUploading}
+              disabled={selectedFiles.length === 0 || isUploading || uploadingCount > 0}
               className="flex-1 text-sm"
             >
               <Upload className="h-4 w-4 mr-2" />
-              {isUploading ? t('pod_upload.uploading') : t('pod_upload.upload_button')}
+              {isUploading || uploadingCount > 0 
+                ? `${t('pod_upload.uploading')} (${uploadingCount})` 
+                : t('pod_upload.upload_button')}
             </Button>
           </div>
         </div>
