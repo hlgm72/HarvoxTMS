@@ -195,8 +195,9 @@ export function LoadDocumentsList({
       showSuccess(t("documents.deleted_successfully"));
 
       // Invalidate cache to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['load-documents'] });
-      queryClient.invalidateQueries({ queryKey: ['load-document-validation'] });
+      queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
+      queryClient.refetchQueries({ queryKey: ['load-documents', loadId] });
+      queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
     } catch (error) {
       console.error('Error deleting document:', error);
       showError(t("documents.delete_error"), t("documents.delete_error_desc"));
