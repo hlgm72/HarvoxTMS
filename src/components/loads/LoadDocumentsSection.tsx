@@ -681,7 +681,11 @@ export function LoadDocumentsSection({
   // Get available document types (not uploaded yet)
   const getAvailableDocumentTypes = () => {
     const uploadedTypes = [...documents, ...temporaryDocuments].map(doc => doc.type);
-    return getUploadableDocumentTypes(userRole).filter(docType => !uploadedTypes.includes(docType.type));
+    return getUploadableDocumentTypes(userRole).filter(docType => {
+      // Permitir múltiples POD aunque ya exista uno
+      if (docType.type === 'pod') return true;
+      return !uploadedTypes.includes(docType.type);
+    });
   };
 
   // Get photo counts by category
@@ -834,10 +838,12 @@ export function LoadDocumentsSection({
       if (loadData?.id) {
         queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
         queryClient.refetchQueries({ queryKey: ['load-document-validation', loadData.id] });
+        queryClient.invalidateQueries({ queryKey: ['load-documents', loadData.id] });
+        queryClient.refetchQueries({ queryKey: ['load-documents', loadData.id] });
       }
       
+      // Invalidar vistas agregadas de loads
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
-      queryClient.refetchQueries({ queryKey: ['load-documents'] });
       queryClient.invalidateQueries({ queryKey: ['loads-v2'] });
       queryClient.invalidateQueries({ queryKey: ['loads-count'] });
       
