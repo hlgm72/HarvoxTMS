@@ -163,13 +163,37 @@ export function LoadDocumentsList({
     }
     
     try {
-      const { error } = await supabase.rpc('delete_load_document_with_validation', {
-        document_id_param: document.id
-      });
-      
-      if (error) throw error;
-      
+      console.log('🗑️ LoadDocumentsList - Starting deletion for:', document.file_name);
+
+      // First, delete file from storage if possible
+      if (document.file_url && !document.file_url.startsWith('blob:')) {
+        console.log('📦 LoadDocumentsList - Deleting from storage:', document.file_url);
+        const { error: storageError } = await supabase.storage
+          .from('load-documents')
+          .remove([document.file_url]);
+
+        if (storageError) {
+          console.error('⚠️ LoadDocumentsList - Storage delete error:', storageError);
+        } else {
+          console.log('✅ LoadDocumentsList - Storage delete success');
+        }
+      }
+
+      // Then, delete record from database
+      console.log('📝 LoadDocumentsList - Deleting from database, id:', document.id);
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .delete()
+        .eq('id', document.id);
+
+      if (dbError) {
+        console.error('❌ LoadDocumentsList - Database delete error:', dbError);
+        throw dbError;
+      }
+
+      console.log('✅ LoadDocumentsList - Deletion completed');
       showSuccess(t("documents.deleted_successfully"));
+
       // Invalidate cache to refresh the list
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
       queryClient.invalidateQueries({ queryKey: ['load-document-validation'] });
