@@ -283,12 +283,13 @@ export function LoadDocumentsSection({
   const [removingDocuments, setRemovingDocuments] = useState<Set<string>>(new Set());
   const [showGenerateLoadOrder, setShowGenerateLoadOrder] = useState(false);
   const [hasLoadOrder, setHasLoadOrder] = useState(false);
-const [uploading, setUploading] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string>('');
   const [showUploadDropdown, setShowUploadDropdown] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState<string | null>(null);
   const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
   const [isSavingDocuments, setIsSavingDocuments] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null);
   const { showSuccess, showError } = useFleetNotifications();
   const queryClient = useQueryClient();
   const { notifyDocumentChange } = useLoadDocuments();
@@ -772,6 +773,9 @@ const [uploading, setUploading] = useState<string | null>(null);
           t("loads:create_wizard.phases.documents.success_messages.document_deleted"), 
           t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: tempDocument.fileName })
         );
+        
+        // Close dialog
+        setDeleteDialogOpen(null);
         return;
       }
       
@@ -780,6 +784,7 @@ const [uploading, setUploading] = useState<string | null>(null);
       if (!document) {
         console.error('Document not found:', documentId);
         showError("Error", "Documento no encontrado");
+        setDeleteDialogOpen(null);
         return;
       }
 
@@ -812,6 +817,7 @@ const [uploading, setUploading] = useState<string | null>(null);
       if (dbError) {
         console.error('❌ Database error:', dbError);
         showError("Error", "No se pudo eliminar el documento de la base de datos");
+        setDeleteDialogOpen(null);
         return;
       }
 
@@ -840,9 +846,13 @@ const [uploading, setUploading] = useState<string | null>(null);
         t("loads:create_wizard.phases.documents.success_messages.document_deleted"), 
         t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: document.fileName })
       );
+      
+      // Close dialog after successful deletion
+      setDeleteDialogOpen(null);
     } catch (error) {
       console.error('❌ Error removing document:', error);
       showError("Error", t("loads:create_wizard.phases.documents.error_messages.delete_document"));
+      setDeleteDialogOpen(null);
     } finally {
       setRemovingDocuments(prev => {
         const newSet = new Set(prev);
@@ -1145,7 +1155,7 @@ const [uploading, setUploading] = useState<string | null>(null);
               
               {/* Botón de eliminar - oculto para conductores en documentos restringidos */}
               {(userRole !== 'driver' || canDriverModifyDocument(docType.type)) && (
-                 <AlertDialog>
+                 <AlertDialog open={deleteDialogOpen === document.id} onOpenChange={(open) => setDeleteDialogOpen(open ? document.id : null)}>
                 <AlertDialogTrigger asChild>
                   <Button 
                     type="button"
