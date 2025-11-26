@@ -828,7 +828,14 @@ export function LoadDocumentsSection({
       console.log('✅ Successfully deleted from database');
       console.log('🔄 Reloading documents...');
       
-      // Reload documents
+      // Optimistically remove from local state
+      setDocuments(prev => {
+        const updated = prev.filter(doc => doc.id !== documentId);
+        onDocumentsChange?.(updated);
+        return updated;
+      });
+      
+      // Reload documents from server to stay in sync
       await loadDocuments();
       
       // Notify context about document change for global refresh

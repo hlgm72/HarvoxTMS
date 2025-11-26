@@ -194,9 +194,14 @@ export function LoadDocumentsList({
       console.log('✅ LoadDocumentsList - Deletion completed');
       showSuccess(t("documents.deleted_successfully"));
 
-      // Invalidate cache to refresh the list
+      // Optimistic update of local cache so UI updates immediately
+      queryClient.setQueryData<LoadDocument[]>(['load-documents', loadId], (old) => {
+        if (!old) return old;
+        return old.filter(d => d.id === undefined || d.id !== document.id);
+      });
+
+      // Invalidate cache to refresh the list from server
       queryClient.invalidateQueries({ queryKey: ['load-documents', loadId] });
-      queryClient.refetchQueries({ queryKey: ['load-documents', loadId] });
       queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadId] });
     } catch (error) {
       console.error('Error deleting document:', error);
