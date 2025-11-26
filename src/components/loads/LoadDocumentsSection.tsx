@@ -777,64 +777,71 @@ const [uploading, setUploading] = useState<string | null>(null);
       
       // It's a saved document, proceed with DB and storage deletion
       const document = documents.find(doc => doc.id === documentId);
-      if (!document) return;
-
-      // First, delete from database
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .delete()
-        .eq('id', documentId);
-
-      if (dbError) {
-        console.error('Error removing document from database:', dbError);
-        showError("Error", "No se pudo eliminar el documento");
+      if (!document) {
+        console.error('Document not found:', documentId);
+        showError("Error", "Documento no encontrado");
         return;
       }
 
-      // Remove file from storage if it exists
-      console.log('🗂️ handleRemoveDocument - Checking storage deletion. Document URL:', document.url);
+      console.log('🗑️ Starting deletion process for:', document.fileName);
+
+      // First, delete file from storage if it exists
       if (document.url && !document.url.startsWith('blob:')) {
-        console.log('📦 handleRemoveDocument - Attempting storage deletion...');
+        console.log('📦 Attempting storage deletion...');
         const storageFilePath = extractStoragePath(document.url);
-        console.log('🔗 handleRemoveDocument - Extracted storage path:', storageFilePath);
+        console.log('🔗 Extracted storage path:', storageFilePath);
         
         const { error: storageError } = await supabase.storage
           .from('load-documents')
           .remove([storageFilePath]);
 
         if (storageError) {
-          console.error('❌ handleRemoveDocument - Storage error:', storageError);
+          console.error('⚠️ Storage error:', storageError);
         } else {
-          console.log('✅ handleRemoveDocument - Successfully deleted from storage');
+          console.log('✅ Successfully deleted from storage');
         }
-      } else {
-        console.log('⏭️ handleRemoveDocument - Skipping storage deletion (no valid URL)');
       }
 
-      console.log('🔄 handleRemoveDocument - Reloading documents...');
+      // Then, delete from database
+      console.log('📝 Deleting from database...');
+      const { error: dbError } = await supabase
+        .from('load_documents')
+        .delete()
+        .eq('id', documentId);
+
+      if (dbError) {
+        console.error('❌ Database error:', dbError);
+        showError("Error", "No se pudo eliminar el documento de la base de datos");
+        return;
+      }
+
+      console.log('✅ Successfully deleted from database');
+      console.log('🔄 Reloading documents...');
+      
+      // Reload documents
       await loadDocuments();
       
       // Notify context about document change for global refresh
       notifyDocumentChange();
       
-      // Invalidar la query de validación de documentos para actualizar el indicador
+      // Invalidate queries
       if (loadData?.id) {
         queryClient.invalidateQueries({ queryKey: ['load-document-validation', loadData.id] });
         queryClient.refetchQueries({ queryKey: ['load-document-validation', loadData.id] });
       }
       
-      // Force invalidation of main document queries
       queryClient.invalidateQueries({ queryKey: ['load-documents'] });
       queryClient.refetchQueries({ queryKey: ['load-documents'] });
-      
-      // Invalidar queries de loads para actualizar tarjetas en Load Management
       queryClient.invalidateQueries({ queryKey: ['loads-v2'] });
       queryClient.invalidateQueries({ queryKey: ['loads-count'] });
       
-      console.log('🎉 handleRemoveDocument - Process completed');
-      showSuccess(t("loads:create_wizard.phases.documents.success_messages.document_deleted"), t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: document.fileName }));
+      console.log('🎉 Deletion process completed');
+      showSuccess(
+        t("loads:create_wizard.phases.documents.success_messages.document_deleted"), 
+        t("loads:create_wizard.phases.documents.success_messages.document_deleted_filename", { fileName: document.fileName })
+      );
     } catch (error) {
-      console.error('Error removing document:', error);
+      console.error('❌ Error removing document:', error);
       showError("Error", t("loads:create_wizard.phases.documents.error_messages.delete_document"));
     } finally {
       setRemovingDocuments(prev => {
@@ -1156,7 +1163,7 @@ const [uploading, setUploading] = useState<string | null>(null);
                     <span className="hidden sm:inline ml-1">Delete</span>
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                   <AlertDialogHeader>
                     <AlertDialogTitle>{t("loads:create_wizard.phases.documents.delete_dialog.title")}</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -1164,12 +1171,14 @@ const [uploading, setUploading] = useState<string | null>(null);
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>{t("loads:create_wizard.phases.documents.delete_dialog.cancel")}</AlertDialogCancel>
+                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                      {t("loads:create_wizard.phases.documents.delete_dialog.cancel")}
+                    </AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        handleRemoveDocument(document.id);
+                        await handleRemoveDocument(document.id);
                       }}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
