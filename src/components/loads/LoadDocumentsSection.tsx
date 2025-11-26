@@ -681,9 +681,14 @@ export function LoadDocumentsSection({
   // Get available document types (not uploaded yet)
   const getAvailableDocumentTypes = () => {
     const uploadedTypes = [...documents, ...temporaryDocuments].map(doc => doc.type);
+    
+    // Contar PODs existentes
+    const podCount = [...documents, ...temporaryDocuments].filter(doc => doc.type === 'pod').length;
+    
     return getUploadableDocumentTypes(userRole).filter(docType => {
-      // Permitir múltiples POD aunque ya exista uno
-      if (docType.type === 'pod') return true;
+      // Permitir máximo 2 PODs
+      if (docType.type === 'pod') return podCount < 2;
+      // Para otros documentos, solo permitir si no está subido
       return !uploadedTypes.includes(docType.type);
     });
   };
