@@ -1075,21 +1075,40 @@ const [uploading, setUploading] = useState<string | null>(null);
               </Button>
               <input
                 type="file"
-                onChange={(e) => {
+                onChange={async (e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   const selectedFile = e.target.files?.[0];
                   if (selectedFile) {
-                    // Capturar el archivo inmediatamente antes de cualquier operación async
                     const file = selectedFile;
-                    // Eliminar el documento actual y luego subir el nuevo
-                    handleRemoveDocument(document.id).then(() => {
-                      handleFileSelect(file, docType.type);
-                    }).catch((error) => {
-                      console.error('Error removing document during replace:', error);
-                      // Intentar subir el nuevo de todas formas
-                      handleFileSelect(file, docType.type);
-                    });
+                    
+                    try {
+                      // Primero, borrar el archivo del storage si existe
+                      if (document.url && !document.url.startsWith('blob:')) {
+                        const storageFilePath = extractStoragePath(document.url);
+                        console.log('🗑️ Deleting old file from storage:', storageFilePath);
+                        
+                        const { error: storageError } = await supabase.storage
+                          .from('load-documents')
+                          .remove([storageFilePath]);
+                        
+                        if (storageError) {
+                          console.error('⚠️ Error deleting old file from storage:', storageError);
+                        } else {
+                          console.log('✅ Old file deleted from storage');
+                        }
+                      }
+                      
+                      // Luego, eliminar de la base de datos
+                      await handleRemoveDocument(document.id);
+                      
+                      // Finalmente, subir el nuevo documento
+                      await handleFileSelect(file, docType.type);
+                      
+                    } catch (error) {
+                      console.error('Error during replace:', error);
+                      showError("Error", "Error al reemplazar el documento");
+                    }
                   }
                   e.target.value = '';
                 }}
