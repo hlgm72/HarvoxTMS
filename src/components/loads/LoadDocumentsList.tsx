@@ -179,15 +179,14 @@ export function LoadDocumentsList({
         }
       }
 
-      // Then, delete record from database
-      console.log('📝 LoadDocumentsList - Deleting from database, id:', document.id);
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .delete()
-        .eq('id', document.id);
+      // Then, delete record from database via RPC (handles validation/RLS)
+      console.log('📝 LoadDocumentsList - Deleting from database via RPC, id:', document.id);
+      const { error: dbError } = await supabase.rpc('delete_load_document_with_validation', {
+        document_id_param: document.id
+      });
 
       if (dbError) {
-        console.error('❌ LoadDocumentsList - Database delete error:', dbError);
+        console.error('❌ LoadDocumentsList - RPC delete error:', dbError);
         throw dbError;
       }
 
