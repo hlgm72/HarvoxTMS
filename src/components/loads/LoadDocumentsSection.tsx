@@ -811,15 +811,13 @@ export function LoadDocumentsSection({
         }
       }
 
-      // Then, delete from database
-      console.log('📝 Deleting from database...');
-      const { error: dbError } = await supabase
-        .from('load_documents')
-        .delete()
-        .eq('id', documentId);
+      console.log('📝 Deleting from database via RPC...');
+      const { error: dbError } = await supabase.rpc('delete_load_document_with_validation', {
+        document_id_param: documentId
+      });
 
       if (dbError) {
-        console.error('❌ Database error:', dbError);
+        console.error('❌ RPC delete error:', dbError);
         showError("Error", "No se pudo eliminar el documento de la base de datos");
         setDeleteDialogOpen(null);
         return;
