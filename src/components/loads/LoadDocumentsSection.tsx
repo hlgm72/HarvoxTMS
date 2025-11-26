@@ -460,7 +460,7 @@ const [uploading, setUploading] = useState<string | null>(null);
           .from('load-documents')
           .upload(filePath, file, {
             cacheControl: '3600',
-            upsert: false
+            upsert: true
           });
 
         if (error) {
@@ -607,7 +607,7 @@ const [uploading, setUploading] = useState<string | null>(null);
           .from('load-documents')
           .upload(filePath, file, {
             cacheControl: '3600',
-            upsert: false
+            upsert: true
           });
 
         if (error) {
